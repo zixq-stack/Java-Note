@@ -15,14 +15,14 @@ MQ全称：message queue 即 消息队列
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125238-212175822.png)
 
 
-这种情况，要是访问 1020次 / s呢？这种肯定会让支付系统宕机了，因为太大了嘛，受不了，所以：流量削峰
+这种情况，要是访问 10200次 / s呢？这种肯定会让支付系统宕机了，因为太大了嘛，受不了，所以：流量削峰
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124992-153781379.png)
 
 
 这样就让message排着队了，这样支付系统就可以承受得了了
 
-<br>
+
 
 
 
@@ -42,7 +42,7 @@ MQ全称：message queue 即 消息队列
 
 
 
-<br>
+
 
 
 
@@ -56,8 +56,8 @@ MQ全称：message queue 即 消息队列
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124624-633201002.png)
 
 
-<br>
-<br>
+
+
 
 
 
@@ -87,8 +87,8 @@ MQ全称：message queue 即 消息队列
 **Routes路由策略  / binding绑定：**交换机以什么样的策略将消息发布到Queue。也就是exchange交换机 和 queue队列之间的联系，即 二者之间的虚拟连接，它里面可以包含routing key 路由键
 
 
-<br>
-<br>
+
+
 
 ## 1.4、RabbitMQ的通讯方式
 
@@ -98,23 +98,23 @@ MQ全称：message queue 即 消息队列
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125338-706979566.png)
 
-- 1、hello word - 简单模式
-- 2、work queues - 工作队列模式
-- 3、publish / subscribe - 发布订阅模式
-- 4、Routing - 路由模式
-- 5、Topics - 主题模式
-- 6、RPC模式 - 目前不用了解也行
-- 7、publisher confirms - 发布确认模式
+1. hello word - 简单模式
+2. work queues - 工作队列模式
+3. publish / subscribe - 发布订阅模式
+4. Routing - 路由模式
+5. Topics - 主题模式
+6. RPC模式 - 目前不用了解也行
+7. publisher confirms - 发布确认模式
 
 
-<br>
-<br>
+
+
 
 # 2、安装RabbitMQ
 
 **以下的方式自行选择一种即可**
 
-<br>
+
 
 ## 2.1、在Centos 7下安装
 
@@ -127,8 +127,8 @@ MQ全称：message queue 即 消息队列
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180123061-1873517583.png)
 
 
-<br>
-<br>
+
+
 
 
 
@@ -144,19 +144,19 @@ MQ全称：message queue 即 消息队列
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125399-155943226.png)
 
-<br>
+
 
 当然：上面这种是下载gz压缩包，配置挺烦的，可以直接去github中下载rpm文件，地址：https://github.com/rabbitmq/erlang-rpm/releases ， 选择自己需要的版本即可，注意一个问题：要看是基于什么Linux的版本
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125048-918139794.png)
 
-<br>
+
 
 要是github下载慢的话，都有自己的文明上网加速方式，要是没有的话，可以进入 https://github.com/fhefh2015/Fast-GitHub 下载好了然后集成到自己浏览器的扩展程序中即可，而如果进入github很慢的话，可以选择去gitee中搜索一个叫做：`dev-sidecar`的东西安装，这样以后进入github就很快了，还有另外的很多方式，不介绍了。
 
 
 
-<br>
+
 
 
 **2、执行`rpm -ivh  erlang文件`** 命令
@@ -166,7 +166,7 @@ MQ全称：message queue 即 消息队列
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125452-1201074316.png)
 
-<br>
+
 
 
 **3、安装RabbitMQ需要的依赖环境**
@@ -177,12 +177,12 @@ MQ全称：message queue 即 消息队列
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180123453-2086115234.png)
 
-<br>
+
 
 
 **4、下载RabbitMQ的rpm文件**，github地址：https://github.com/rabbitmq/rabbitmq-server/releases ， 选择自己要的版本即可
 
-<br>
+
 
 
 **5、安装RabbitMQ**
@@ -191,7 +191,7 @@ MQ全称：message queue 即 消息队列
 
 
 
-<br>
+
 
 
 **6、启动RabbitMQ服务**
@@ -224,7 +224,7 @@ MQ全称：message queue 即 消息队列
 
 
 
-<br>
+
 
 
 **7、安装web管理插件**
@@ -276,8 +276,8 @@ firewall-cmd --reload
 同时查看自己的服务器有没有开放15672端口，不同的东西有不同的处理方式，如我的云服务器直接在服务器网址中添加规则即可，其他的方式自行百度
 
 
-<br>
-<br>
+
+
 
 
 ### 2.1.2、使用Docker安装
@@ -287,7 +287,7 @@ firewall-cmd --reload
 使用下面的两种方式都不需要进行web管理插件的安装和erlang的安装
 
 
-<br>
+
 
 **1、查看自己的docker容器中是否已有了rabbitmq这个名字的镜像**
 
@@ -306,7 +306,7 @@ firewall-cmd --reload
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124933-309485112.png)
 
 
-<br>
+
 
 
 
@@ -319,7 +319,7 @@ firewall-cmd --reload
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124430-1297320280.png)
 
 
-<br>
+
 
 
 
@@ -332,7 +332,7 @@ firewall-cmd --reload
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125573-280154900.png)
 
 
-<br>
+
 
 
 **4、再次在浏览器进行访问就可以吃鸡了，不需要再安装插件啊，刚刚上一步拉镜像和启动时已经安装好了**
@@ -341,14 +341,14 @@ firewall-cmd --reload
 
 
 
-<br>
-<br>
+
+
 
 ### 2.1.3、使用Docker-compose安装
 
 采用了第二种方式的话，记得把已经启动的Docker容器关了，以下是附加的一些Docker的基操
 
-<br>
+
 
 ```json
 # 拉取镜像
@@ -424,7 +424,7 @@ docker rm $(docker ps -qa)
 
 
 
-<br>
+
 
 
 **1、创建一个文件夹**，这些我很早之前就玩过了，所以建好了的
@@ -437,7 +437,7 @@ docker rm $(docker ps -qa)
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180122384-507194680.png)
 
 
-<br>
+
 
 
 **2、进入文件夹，创建docker-compose.yml文件，注意：文件名必须是这个**
@@ -449,7 +449,7 @@ docker rm $(docker ps -qa)
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125691-1713496554.png)
 
-<br>
+
 
 
 **3、编辑docker-compose.yml文件**
@@ -481,7 +481,7 @@ services:
 ```
 
 
-<br>
+
 
 
 
@@ -517,7 +517,7 @@ docker-compose logs -f
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180123917-1425970549.png)
 
-<br>
+
 
 
 去浏览器访问一样的吃鸡
@@ -527,8 +527,8 @@ docker-compose logs -f
 
 
 
-<br>
-<br>
+
+
 
 
 
@@ -540,7 +540,7 @@ docker-compose logs -f
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125765-375056583.png)
 
-<br>
+
 
 
 - 这是因为guest是游客身份，不能进入，需要添加新用户
@@ -567,7 +567,7 @@ docker-compose logs -f
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124083-387562532.png)
 
-<br>
+
 
 - 现在使用admin去浏览器登录就可以了
 
@@ -575,8 +575,8 @@ docker-compose logs -f
 
 
 
-<br>
-<br>
+
+
 
 
 
@@ -594,8 +594,8 @@ docker-compose logs -f
 
 
 
-<br>
-<br>
+
+
 
 
 
@@ -614,23 +614,23 @@ docker-compose logs -f
 ```
 
 
-<br>
 
 
 
 
-回到前面的RabbitMQ原理图
+
+回到前面的RabbitMQ结构图
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180126710-974752633.png)
 
 
 
-<br>
-<br>
 
-## 3.1、Hello word 简单模式
 
-对照原理图来玩，官网中有Hello word的模式图
+
+## 3.1、Hello Word 简单模式
+
+对照官网的结构图来玩，官网中有Hello word的结构图
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124894-243944497.png)
 
@@ -639,7 +639,7 @@ docker-compose logs -f
 
 
 
-<br>
+
 
 
 
@@ -649,7 +649,7 @@ docker-compose logs -f
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124392-1012867010.png)
 
-<br>
+
 
 
 ```java
@@ -664,8 +664,17 @@ import java.util.concurrent.TimeoutException;
 
 public class Producer {
 
-    private static final String HOST = "ip";		// 放RabbitMQ服务的服务器ip
-    private static final int PORT = 5672;		// 服务器中RabbitMQ的端口号，在浏览器用的15672是通过5672映射出来的15672
+  /**
+   * 放RabbitMQ服务的服务器ip
+   */
+    private static final String HOST = "ip";
+   /**
+    * 服务器中RabbitMQ的端口号
+    * 5672对应的是amqp，amqp也就是RabbitMQ的通信协议
+    * 15672对应的是http 是登录RabbitMQ后台管理时用的端口
+    * 另外：25672一般对应的是集群
+    */
+    private static final int PORT = 5672;
     private static final String USER_NAME = "admin";
     private static final String PASSWORD = "admin";
     private static final String QUEUE_NAME = "hello word";
@@ -729,7 +738,7 @@ public class Producer {
 
 ```
 
-<br>
+
 
 
 运行之后，去浏览器管理界面进行查看
@@ -740,7 +749,7 @@ public class Producer {
 
 
 
-<br>
+
 
 
 
@@ -808,8 +817,8 @@ public class Consumer {
 
 
 
-<br>
-<br>
+
+
 
 ## 3.2、work queue工作队列模式
 
@@ -827,7 +836,7 @@ public class Consumer {
   - 2、工作线程 / 消费者不能同时接收同一个消息，换言之：生产者推送的任务必须是轮询分发的，即：工作线程1接收第一个，工作线程2接收第二个；工作线程1再接收第三个，工作线程2接收第四个
 
 
-<br>
+
 
 
 > **抽取RabbitMQ链接的工具类**
@@ -866,7 +875,7 @@ public class MQUtil {
 
 
 
-<br>
+
 
 
 
@@ -875,7 +884,7 @@ public class MQUtil {
 
 和hello word没什么两样
 
-<br>
+
 
 ```java
 package cn.zixieqing.workqueue;
@@ -930,7 +939,7 @@ public class WorkProducer {
 
 ```
 
-<br>
+
 
 
 > **消费者**
@@ -973,7 +982,7 @@ public class WorkConsumer {
 
 ```
 
-<br>
+
 
 消费者02
 
@@ -1021,8 +1030,8 @@ public class WorkConsumer {
 
 
 
-<br>
-<br>
+
+
 
 
 
@@ -1037,8 +1046,8 @@ public class WorkConsumer {
 消费者接收队列中的消息时，没接收完，出现异常了，然后此时MQ以为消费者已经把消息接收并处理了（ MQ并没有接收到消息有没有被消费者处理完毕 ），然后MQ就把队列 / 消息给删了，后续消费者异常恢复之后再次接收消息，就会出现：接收不到了
 
 
-<br>
-<br>
+
+
 
 ### 3.3.1、消息应答机制的分类
 
@@ -1057,7 +1066,7 @@ public class WorkConsumer {
 
 
 
-<br>
+
 
 
 
@@ -1071,7 +1080,7 @@ public class WorkConsumer {
 
 优点：处理效率快，很高效
 
-<br>
+
 
 
 
@@ -1100,8 +1109,8 @@ public class WorkConsumer {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180128245-1173168805.png)
 
 
-<br>
-<br>
+
+
 
 
 #### 3.3.1.3、消息重新入队原理
@@ -1113,8 +1122,8 @@ public class WorkConsumer {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125820-505991279.png)
 
 
-<br>
-<br>
+
+
 
 #### 3.3.1.4、手动应答的代码演示
 
@@ -1171,7 +1180,7 @@ public class AckProducer {
 
 ```
 
-<br>
+
 
 
 > **消费者01**
@@ -1227,7 +1236,7 @@ public class AckConsumer {
 
 ```
 
-<br>
+
 
 
 > **消费者02**
@@ -1297,8 +1306,8 @@ public class AckConsumer {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125565-589326507.png)
 
 
-<br>
-<br>
+
+
 
 
 ### 3.4、RabbitMQ的持久化 durable
@@ -1349,8 +1358,8 @@ public class AckConsumer {
 
 
 
-<br>
-<br>
+
+
 
 
 ### 3.4.2、消息持久化
@@ -1437,8 +1446,8 @@ public class MessageProperties {
 
 
 
-<br>
-<br>
+
+
 
 
 
@@ -1466,7 +1475,7 @@ public class MessageProperties {
 
 ```
 
-<br>
+
 
 
 > **预取值**
@@ -1494,8 +1503,8 @@ public class MessageProperties {
 ```
 
 
-<br>
-<br>
+
+
 
 
 
@@ -1518,7 +1527,7 @@ public class MessageProperties {
 
 
 
-<br>
+
 
 
 > **开启发布确认**
@@ -1529,8 +1538,8 @@ public class MessageProperties {
 	channel.confirmSelect();		// 没有参数
 ```
 
-<br>
-<br>
+
+
 
 ### 3.6.2、发布确认的分类
 
@@ -1575,8 +1584,8 @@ public class MessageProperties {
 
 ```
 
-<br>
-<br>
+
+
 
 #### 3.6.2.2、批量确认发布
 
@@ -1632,8 +1641,8 @@ public class MessageProperties {
 
 ```
 
-<br>
-<br>
+
+
 
 #### 3.6.2.3、异步确认发布 - 必会
 
@@ -1734,8 +1743,8 @@ public class MessageProperties {
 ```
 
 
-<br>
-<br>
+
+
 
 
 
@@ -1749,8 +1758,8 @@ public class MessageProperties {
 **注意点：前面一直玩的那些模式，虽然没有写交换机，但并不是说RabbitMQ就没用交换机【 ps：使用的是""空串，也就是使用了RabbitMQ的默认交换机 】，生产者发送的消息只能发到交换机中，从而由交换机来把消息发给队列**
 
 
-<br>
-<br>
+
+
 
 
 ### 3.7.1、交换机exchange的分类
@@ -1760,7 +1769,7 @@ public class MessageProperties {
 - **标题 ( heanders )** - 这个已经很少用了
 - **扇出( fancut ) / 发布订阅模式**
 
-<br>
+
 
 > **临时队列**
 
@@ -1792,8 +1801,8 @@ public class MessageProperties {
 
 这样帮我们生成的队列效果就和`channel.queueDeclare(QUEUE_NAME, false, false, true, null);`是一样的了
 
-<br>
-<br>
+
+
 
 
 ### 3.7.2、fanout扇出 / 发布订阅模式
@@ -1804,7 +1813,7 @@ public class MessageProperties {
 
 实现方式就是让一个交换机binding绑定多个队列
 
-<br>
+
 
 
 > **生产者**
@@ -1846,7 +1855,7 @@ public class FanoutProducer {
 
 ```
 
-<br>
+
 
 
 > **消费者01**
@@ -1887,7 +1896,7 @@ public class FanoutConsumer01 {
 
 ```
 
-<br>
+
 
 
 > **消费者02**
@@ -1931,8 +1940,8 @@ public class FanoutConsumer02 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180126160-490313496.png)
 
 
-<br>
-<br>
+
+
 
 
 ### 3.7.3、direct交换机 / routing路由模式
@@ -1942,7 +1951,7 @@ public class FanoutConsumer02 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124074-379528733.png)
 
 
-<br>
+
 
 
 
@@ -1986,7 +1995,7 @@ public class DirectProducer {
 
 ```
 
-<br>
+
 
 
 > **消费者01**
@@ -2026,14 +2035,14 @@ public class DirectConsumer01 {
 
 ```
 
-<br>
+
 
 
 上面这种，生产者的消息肯定能够被01消费者给消费，因为：他们的交换机名字、队列名字和routing key的值都是相同的
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180126585-1201473819.png)
 
-<br>
+
 
 
 而此时再加一个消费者，让它的routing key值和生产者中的不同
@@ -2081,8 +2090,8 @@ public class DirectConsumer02 {
 
 
 
-<br>
-<br>
+
+
 
 
 ###  3.7.4、topic交换机 / topic主题模式 - 使用最广的一个
@@ -2094,7 +2103,7 @@ public class DirectConsumer02 {
 这样一看，发布订阅模式和路由模式都不能解决，更别说前面玩的简单模式、工作队列模式、发布确认模式了，这些和目前的这个需求更不搭了，因此：就来了这个topic主题模式
 
 
-<br>
+
 
 
 > **topic中routing key的要求**
@@ -2102,7 +2111,7 @@ public class DirectConsumer02 {
 只要交换机类型是topic类型的，那么其routing key就不能乱写，**要求：routing key只能是一个单词列表，多个单词之间采用点隔开，如：cn.zixieqing.rabbit**
 - **单词列表的长度不能超过255个字节**
 
-<br>
+
 
 
 - **在routing key的规则列表中有两个替换符可以用**
@@ -2110,7 +2119,7 @@ public class DirectConsumer02 {
   - **2、`#` 代表零活无数个单词**
 
 
-<br>
+
 
 
 
@@ -2126,7 +2135,7 @@ public class DirectConsumer02 {
 
 - **熟悉一下这种绑定关系（ 左为一些routes路由规则，右为能匹配到上图绑定关系的结果 ）**
 
-<br>
+
 
 ```json
 	quick.orange.rabbit 		被队列 Q1Q2 接收到
@@ -2145,7 +2154,7 @@ public class DirectConsumer02 {
   - **如果队列绑定键当中没有#和*出现，那么该队列绑定类型就是 direct 了**
 
 
-<br>
+
 
 
 
@@ -2201,7 +2210,7 @@ public class TopicProducer {
 ```
 
 
-<br>
+
 
 > **消费者01**
 
@@ -2236,7 +2245,7 @@ public class TopicConsumer01 {
 
 ```
 
-<br>
+
 
 > **消费者02**
 
@@ -2276,8 +2285,8 @@ public class TopicConsumer02 {
 
 
 
-<br>
-<br>
+
+
 
 
 ## 3.8、死信队列
@@ -2285,7 +2294,7 @@ public class TopicConsumer02 {
 **死信队列指的是：死了的消息，换言之就是：生产者把消息发送到交换机中，再由交换机把消息推到队列中，但由于某些原因，队列中的消息没有被正常消费，从而就让这些消息变成了死信，而专门用来放这种消息的队列就是死信队列**
 
 
-<br>
+
 
 
 
@@ -2294,7 +2303,7 @@ public class TopicConsumer02 {
   - **2、超过队列长度**
   - **3、消息被消费者绝收了**
 
-<br>
+
 
 
 实现下图的逻辑（ **下图成为死信的因素是只要出现一个就成为死信**  ）
@@ -2302,8 +2311,8 @@ public class TopicConsumer02 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124509-1290303022.png)
 
 
-<br>
-<br>
+
+
 
 ### 3.8.1、消息过期 TTL
 
@@ -2346,14 +2355,14 @@ public class TtlProducer {
 
 ```
 
-<br>
+
 
 
 > **实现下面**的消费者部分
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125446-2046727187.png)
 
-<br>
+
 
 
 > **C1消费者**
@@ -2412,7 +2421,7 @@ public class TtlConsumer01 {
 
 ```
 
-<br>
+
 
 
 启动C1，然后把C1关了（ 伪装成消费者无法消费消息 ），最后启动生产者
@@ -2420,7 +2429,7 @@ public class TtlConsumer01 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124186-980115030.png)
 
 
-<br>
+
 
 
 
@@ -2467,8 +2476,8 @@ public class TtlConsumer02 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124844-693665666.png)
 
 
-<br>
-<br>
+
+
 
 ### 3.8.2、队列超过最大长度
 
@@ -2476,7 +2485,7 @@ public class TtlConsumer02 {
 
 **意思就是：某一个队列要求只能放N个消息，但是放了N+1个消息，这就超过队列的最大个数了**
 
-<br>
+
 
 
 > **生产者**
@@ -2515,7 +2524,7 @@ public class Producer {
 ```
 
 
-<br>
+
 
 
 
@@ -2597,8 +2606,8 @@ public class Consumer01 {
 
 
 
-<br>
-<br>
+
+
 
 
 #### 3.8.2.2、超过队列能接受消息的最大字节长度
@@ -2611,7 +2620,7 @@ public class Consumer01 {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180126123-1701414327.png)
 
-<br>
+
 
 
 > **注意：关于两种情况同时使用的问题**
@@ -2629,8 +2638,8 @@ public class Consumer01 {
 
 
 
-<br>
-<br>
+
+
 
 ### 3.8.3、消息被拒收
 
@@ -2641,7 +2650,7 @@ public class Consumer01 {
 	channel.basicConsume(NORMAL_QUEUE,false,(consumeTag,message)->{},consumeTag->{});
 ```
 
-<br>
+
 
 > **生产者**
 
@@ -2675,7 +2684,7 @@ public class Producer {
 ```
 
 
-<br>
+
 
 > **消费者**
 
@@ -2746,8 +2755,8 @@ public class Consumer01 {
 
 
 
-<br>
-<br>
+
+
 
 
 ## 3.9、延迟队列 - 重要
@@ -2768,7 +2777,7 @@ public class Consumer01 {
 - 2、具备TTL知识
 - 然后将这二者结合，加一些东西，上好的烹饪就做好了
 
-<br>
+
 
 **实现如下的逻辑**
 
@@ -2783,8 +2792,8 @@ public class Consumer01 {
 - YD：死信交换机、死信队列的routing key
 
 
-<br>
-<br>
+
+
 
 ### 3.9.2、集成SpringBoot
 
@@ -2815,8 +2824,8 @@ public class Consumer01 {
 
 ```
 
-<br>
-<br>
+
+
 
 #### 3.9.2.2、yml文件配置
 
@@ -2833,8 +2842,8 @@ spring:
 ```
 
 
-<br>
-<br>
+
+
 
 #### 3.9.2.4、RabbitMQ配置
 
@@ -2990,8 +2999,8 @@ public class MqConfig {
 ```
 
 
-<br>
-<br>
+
+
 
 #### 3.9.2.5、生产者
 
@@ -3006,7 +3015,7 @@ public class MqConfig {
 
 ```
 
-<br>
+
 
 
 
@@ -3049,8 +3058,8 @@ public class MqProducerController {
 
 ```
 
-<br>
-<br>
+
+
 
 #### 3.9.2.6、消费者
 
@@ -3080,13 +3089,13 @@ public class DeadLetterQueueConsumer {
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220510163932069-119177931.png)
 
-<br>
+
 
 **但是：这种延迟队列有缺点**
 - 当有很多请求，而延迟时间也都不一样时，那么就要写N多的这种代码了
 
-<br>
-<br>
+
+
 
 ### 3.9.3、RabbitMQ插件实现延迟队列
 
@@ -3095,7 +3104,7 @@ public class DeadLetterQueueConsumer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124784-505551154.png)
 
-<br>
+
 
 
 
@@ -3108,14 +3117,14 @@ public class DeadLetterQueueConsumer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124391-1273667429.png)
 
-<br>
+
 
 **把下载的插件上传进去**
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125144-1335263505.png)
 
 
-<br>
+
 
 
 **启动插件**
@@ -3128,7 +3137,7 @@ public class DeadLetterQueueConsumer {
 
 
 
-<br>
+
 
 **重启rabbitMQ**
 
@@ -3140,8 +3149,8 @@ public class DeadLetterQueueConsumer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180123694-1845650991.png)
 
-<br>
-<br>
+
+
 
 #### 3.9.3.1、编写配置
 
@@ -3153,7 +3162,7 @@ public class DeadLetterQueueConsumer {
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180123945-2019356500.png)
 
 
-<br>
+
 
 
 **使插件之后的延迟设置**
@@ -3163,7 +3172,7 @@ public class DeadLetterQueueConsumer {
 
 
 
-<br>
+
 
 
 **使用插件，实现下面的逻辑图**
@@ -3249,8 +3258,8 @@ public class DelayedExchanegConfig {
 
 ```
 
-<br>
-<br>
+
+
 
 #### 3.9.3.2、生产者
 
@@ -3291,8 +3300,8 @@ public class DelatedQueueController {
 ```
 
 
-<br>
-<br>
+
+
 
 
 #### 3.9.3.3、消费者
@@ -3320,12 +3329,12 @@ public class DelayedQueueConsumer {
 
 ```
 
-<br>
+
 
 **发送两次消息，然后把传的TTL弄成不一样的，那么：TTL值小的消息就会先被消费，然后到了指定时间之后，TTL长的消息再消费**
 
-<br>
-<br>
+
+
 
 
 
@@ -3337,7 +3346,7 @@ public class DelayedQueueConsumer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180127800-177545409.png)
 
-<br>
+
 
 **但是：如果交换机出问题了呢，总之就是交换机没有接收到生产者发布的消息( 如：发消息时，交换机名字搞错了 )，那消息就直接丢了吗？**
 
@@ -3347,8 +3356,8 @@ public class DelayedQueueConsumer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124324-2114257789.png)
 
-<br>
-<br>
+
+
 
 
 
@@ -3366,8 +3375,8 @@ spring:
     publisher-returns: true
 ```
 
-<br>
-<br>
+
+
 
 
 **编写ConfirmCallback 和 returnCallback回调接口（ 伪代码 ）  - 注意点：这两个接口是RabbitTemplate的内部类（ 故而：就有大文章 )**
@@ -3420,14 +3429,14 @@ public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCa
 
 ```
 
-<br>
+
 
 **生产者调用的方法是：rabbitTemplate.convertAndSend(String exchange, String routingKey, Object message, CorrelationData correlationData)**
 
 多了一个CorrelationData 参数，这个参数携带的就是消息相关信息
 
-<br>
-<br>
+
+
 
 
 ## 3.11、备份交换机
@@ -3436,7 +3445,7 @@ public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCa
 
 **注意：这种方式优先级比前面的 ReturnCallback回退策略要高（ 演示：跳过 - 可以采用将这二者都配置好，然后进行测试，结果是备份交换机的方式会优先执行，而前面的回退策略的方式并不会执行 ）**
 
-<br>
+
 
 **采用备份交换机时的架构图**
 
@@ -3444,7 +3453,7 @@ public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCa
 
 
 
-<br>
+
 
 > **上图架构的伪代码配置编写**
 
@@ -3569,13 +3578,13 @@ public class AlternateExchangeConfig {
 
 ```
 
-<br>
+
 
 
 后续的操作就是差不多的，生产者发送消息，消费者消费消息，然后里面再做一些业务的细节处理就可以了
 
-<br>
-<br>
+
+
 
 
 ## 3.12、优先级队列
@@ -3584,7 +3593,7 @@ public class AlternateExchangeConfig {
 
 **使用场景：搞内幕，让某个人 / 某些人一定能够抢到什么商品**
 
-<br>
+
 
 **想要实现优先级队列，需要满足如下条件：**
 
@@ -3637,7 +3646,7 @@ public class AlternateExchangeConfig {
 
 ```
 
-<br>
+
 
 
 **注意点：设置了优先级之后，需要做到如下条件：**
@@ -3647,8 +3656,8 @@ public class AlternateExchangeConfig {
   ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180125364-426919581.png)
 
 
-<br>
-<br>
+
+
 
 
 ## 3.13、惰性队列
@@ -3656,21 +3665,21 @@ public class AlternateExchangeConfig {
 **这玩意儿指的就是让消息存放在磁盘中**
 
 
-<br>
+
 
 
 正常情况下是如下的样子
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180124756-1300698884.png)
 
-<br>
+
 
 但是：如果此时发送的消息是成千上万条，并且消费者出故障了( 下线、宕机、维护从而关闭 )，那么这些成千上万的消息就会堆积在MQ中，怎么办？就需要像下面这么搞
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202302/2421736-20230203180123605-1403100043.png)
 
 
-<br>
+
 
 
 > **设置惰性队列的配置**
@@ -3702,5 +3711,30 @@ public class AlternateExchangeConfig {
 
 **经过如上配置之后，那么内存中记录的就是指向磁盘的引用地址，而真实的数据是在磁盘中，下一次消费者恢复之后，就可以从磁盘中读取出来，然后再发给消费者（ 缺点：得先读取，然后发送，这性能很慢，但是：处理场景就是消费者挂彩了，不再消费消息时存储数据的情景 ）**
 
-<br>
-<br>
+
+
+
+
+
+# 4、SpringBoot+RabbitMQ
+
+链接：https://blog.csdn.net/qq_25235871/article/details/106022880
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
