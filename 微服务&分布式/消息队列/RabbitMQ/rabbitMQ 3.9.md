@@ -1385,8 +1385,7 @@ public static class BasicProperties extends AMQBasicProperties {
 // 不公平分发，就是在这里接收消息之前做处理
 
 /* 
-    basicQos( int prefetchCount )
-    为0、轮询分发 也是RabbitMQ的默认值
+    basicQos(int prefetchCount)
     为1、不公平分发
  */
 channel.basicQos(1);
