@@ -1413,7 +1413,7 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
 // 预取值，也是在这里接收消息之前做处理，和不公平分发调的是同一个API
 
 /* 
-    basicQos( int prefetchCount )	为0、轮询分发 也是RabbitMQ的默认值;为1、不公平分发
+    basicQos(int prefetchCount) 为1、不公平分发
     而当这里的数字变成其他的，如：上图中上面的那个消费者要消费20条消息，那么把下面的数字改成对应的即可
     注意点：这是要设置哪个消费者的预取值，那就是在哪个消费者代码中进行设定啊
  */
