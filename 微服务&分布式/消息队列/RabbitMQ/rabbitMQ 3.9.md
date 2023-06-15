@@ -6,7 +6,7 @@ MQ全称：message queue 即 消息队列
 
 队列里面存的就是message
 
-<br>
+
 
 ## 1.2、为什么要用MQ？
 
@@ -22,7 +22,7 @@ MQ全称：message queue 即 消息队列
 
 这样就让message排着队了，这样支付系统就可以承受得了了
 
-<br>
+
 
 
 
@@ -42,7 +42,7 @@ MQ全称：message queue 即 消息队列
 
 
 
-<br>
+
 
 
 
@@ -56,7 +56,7 @@ MQ全称：message queue 即 消息队列
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221408789-586077824.png)
 
 
-<br>
+
 
 
 
@@ -64,8 +64,9 @@ MQ全称：message queue 即 消息队列
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221413561-1239643409.png)
 
-
 图中的东西后续会慢慢见到
+
+注：上图只是为了便于理解，完整图自行百度
 
 **Broker实体：**接收和分发消息的应用 / RabbitMQ Server / Message Broker
 
@@ -86,7 +87,7 @@ MQ全称：message queue 即 消息队列
 **Routes路由策略  / binding绑定：**交换机以什么样的策略将消息发布到Queue。也就是exchange交换机 和 queue队列之间的联系，即 二者之间的虚拟连接，它里面可以包含routing key 路由键
 
 
-<br>
+
 
 ## 1.4、RabbitMQ的通讯方式
 
@@ -105,13 +106,13 @@ MQ全称：message queue 即 消息队列
 7. publisher confirms - 发布确认模式
 
 
-<br>
+
 
 # 2、安装RabbitMQ
 
 以下的方式自行选择一种即可
 
-<br>
+
 
 ## 2.1、在Centos 7下安装
 
@@ -124,7 +125,7 @@ uname -a
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221408889-21059602.png)
 
 
-<br>
+
 
 
 
@@ -147,9 +148,9 @@ uname -a
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221408884-1269355265.png)
 
-<br>
 
-<br>
+
+
 
 
 **2、执行`rpm -ivh  erlang文件`** 命令
@@ -157,7 +158,7 @@ uname -a
 - vh 就是显示安装进度条
 - 注意：需要保证自己的Linux中有rpm命令，没有的话，执行`yum install rpm`指令即可安装rpm
 
-<br>
+
 
 
 **3、安装RabbitMQ需要的依赖环境**
@@ -166,12 +167,12 @@ uname -a
 yum install socat -y
 ```
 
-<br>
+
 
 
 **4、下载RabbitMQ的rpm文件**，github地址：https://github.com/rabbitmq/rabbitmq-server/releases ， 选择自己要的版本即可
 
-<br>
+
 
 
 **5、安装RabbitMQ**
@@ -180,7 +181,7 @@ yum install socat -y
 
 
 
-<br>
+
 
 
 **6、启动RabbitMQ服务**
@@ -206,7 +207,7 @@ chkconfig rabbitmq-server on
 
 
 
-<br>
+
 
 
 **7、安装web管理插件**
@@ -257,7 +258,7 @@ firewall-cmd --reload
 同时查看自己的服务器有没有开放15672端口，不同的东西有不同的处理方式，如我的云服务器直接在服务器网址中添加规则即可，其他的方式自行百度
 
 
-<br>
+
 
 
 ### 2.1.2、使用Docker安装
@@ -269,7 +270,7 @@ firewall-cmd --reload
 使用下面的两种方式都不需要进行web管理插件的安装和erlang的安装
 
 
-<br>
+
 
 **1、查看自己的docker容器中是否已有了rabbitmq这个名字的镜像**
 
@@ -284,7 +285,7 @@ docker rmi 镜像ID
 
 ![image-20230613222240905](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613222242257-1934441976.png)
 
-<br>
+
 
 
 
@@ -304,7 +305,7 @@ docker run -it --rm --name rabbitmq \
 ```
 
 
-<br>
+
 
 
 
@@ -317,7 +318,7 @@ docker ps
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221409162-1456172558.png)
 
 
-<br>
+
 
 
 **4、再次在浏览器进行访问，使用设置的用户名和密码就可以吃鸡了**
@@ -325,7 +326,7 @@ docker ps
 
 
 
-<br>
+
 
 ### 2.1.3、使用Docker-compose安装
 
@@ -404,7 +405,7 @@ docker rm $(docker ps -qa)
 
 
 
-<br>
+
 
 **1、创建一个文件夹 并 进入 且 创建docker-compose.yml文件**
 
@@ -445,7 +446,7 @@ services:
 ```
 
 
-<br>
+
 
 
 
@@ -481,7 +482,7 @@ docker-compose logs -f [服务名1] [服务名2]
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221409454-1077259026.png)
 
-<br>
+
 
 
 去浏览器访问一样的吃鸡
@@ -489,7 +490,7 @@ docker-compose logs -f [服务名1] [服务名2]
 
 
 
-<br>
+
 
 
 
@@ -501,7 +502,7 @@ docker-compose logs -f [服务名1] [服务名2]
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221412114-1410908423.png)
 
-<br>
+
 
 这是因为guest是游客身份，不能进入，需要添加新用户
 
@@ -529,7 +530,7 @@ rabbitmqctl set_permissions -p "/" 用户名 ".*" ".*" ".*"
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221410746-1090801699.png)
 
-<br>
+
 
 现在使用创建的用户名和密码去浏览器登录就可以了
 
@@ -537,7 +538,7 @@ rabbitmqctl set_permissions -p "/" 用户名 ".*" ".*" ".*"
 
 
 
-<br>
+
 
 
 
@@ -555,7 +556,7 @@ rabbitmqctl set_permissions -p "/" 用户名 ".*" ".*" ".*"
 ```
 
 
-<br>
+
 
 
 
@@ -566,7 +567,7 @@ rabbitmqctl set_permissions -p "/" 用户名 ".*" ".*" ".*"
 
 
 
-<br>
+
 
 ## 3.1、Hello word 简单模式
 
@@ -578,7 +579,7 @@ rabbitmqctl set_permissions -p "/" 用户名 ".*" ".*" ".*"
 
 
 
-<br>
+
 
 
 
@@ -588,7 +589,7 @@ rabbitmqctl set_permissions -p "/" 用户名 ".*" ".*" ".*"
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221410393-1493120206.png)
 
-<br>
+
 
 
 ```java
@@ -675,7 +676,7 @@ public class Producer {
 }
 ```
 
-<br>
+
 
 
 运行之后，去浏览器管理界面进行查看
@@ -686,7 +687,7 @@ public class Producer {
 
 
 
-<br>
+
 
 
 
@@ -753,7 +754,7 @@ public class Consumer {
 
 
 
-<br>
+
 
 ## 3.2、work queue工作队列模式
 
@@ -771,7 +772,7 @@ public class Consumer {
 - 2、工作线程 / 消费者不能同时接收同一个消息，换言之：生产者推送的任务必须是轮询分发的，即：工作线程1接收第一个，工作线程2接收第二个；工作线程1再接收第三个，工作线程2接收第四个
 
 
-<br>
+
 
 
 
@@ -808,7 +809,7 @@ public class MQUtil {
 
 
 
-<br>
+
 
 
 
@@ -868,7 +869,7 @@ public class WorkProducer {
 }
 ```
 
-<br>
+
 
 
 
@@ -909,7 +910,7 @@ public class WorkConsumer {
 }
 ```
 
-<br>
+
 
 消费者02
 
@@ -954,7 +955,7 @@ public class WorkConsumer {
 
 
 
-<br>
+
 
 
 
@@ -969,7 +970,7 @@ public class WorkConsumer {
 消费者接收队列中的消息时，没接收完，出现异常了，然后此时MQ以为消费者已经把消息接收并处理了（ MQ并没有接收到消息有没有被消费者处理完毕 ），然后MQ就把队列 / 消息给删了，后续消费者异常恢复之后再次接收消息，就会出现：接收不到了
 
 
-<br>
+
 
 ### 3.3.1、消息应答机制的分类
 
@@ -988,7 +989,7 @@ channel.basicConsume(QUEUE_NAME, true, deliverCallback, cancelCallback);
 
 
 
-<br>
+
 
 
 
@@ -1002,7 +1003,7 @@ channel.basicConsume(QUEUE_NAME, true, deliverCallback, cancelCallback);
 
 优点：处理效率快，很高效
 
-<br>
+
 
 
 
@@ -1034,7 +1035,7 @@ ps：建议弄成false，虽然是挨个去处理，从而应答，效率慢，�
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221410641-2123069969.png)
 
 
-<br>
+
 
 
 #### 3.3.1.3、消息重新入队原理
@@ -1048,7 +1049,7 @@ ps：建议弄成false，虽然是挨个去处理，从而应答，效率慢，�
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221411708-1504912965.png)
 
 
-<br>
+
 
 #### 3.3.1.4、手动应答的代码演示
 
@@ -1102,7 +1103,7 @@ public class AckProducer {
 }
 ```
 
-<br>
+
 
 
 
@@ -1158,7 +1159,7 @@ public class AckConsumer {
 }
 ```
 
-<br>
+
 
 **消费者02**
 
@@ -1223,7 +1224,7 @@ public class AckConsumer {
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221414540-614971671.png)
 
 
-<br>
+
 
 ## 3.4、RabbitMQ的持久化 durable
 
@@ -1282,7 +1283,7 @@ channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 
 
 
-<br>
+
 
 ### 3.4.2、消息持久化
 
@@ -1368,7 +1369,7 @@ public static class BasicProperties extends AMQBasicProperties {
 
 
 
-<br>
+
 
 
 
@@ -1395,7 +1396,7 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
 });
 ```
 
-<br>
+
 
 
 
@@ -1425,7 +1426,7 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
 ```
 
 
-<br>
+
 
 
 
@@ -1438,9 +1439,12 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221410395-17883636.png)
 
 **在上面的过程中，想要让数据持久化，那么需要具备以下的条件**
-- 1、队列持久化
-- 2、消息持久化
-- 3、发布确认
+
+1. 队列持久化
+
+2. 消息持久化
+
+3. 发布确认
 
 **而所谓的发布确认指的就是：数据在刷写到磁盘时，成功了，那么MQ就回复生产者一下，数据确认刷写到磁盘了**，否则：只具备前面的二者的话，那也有可能出问题，如：数据推到了队列中，但是还没来得及刷写到磁盘呢，结果RabbitMQ宕机了，那数据也有可能会丢失,所以：现在持久化的过程就是如下的样子：
 
@@ -1448,7 +1452,7 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
 
 
 
-<br>
+
 
 
 
@@ -1458,7 +1462,7 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
 channel.confirmSelect();		// 没有参数
 ```
 
-<br>
+
 
 ### 3.6.2、发布确认的分类
 
@@ -1489,21 +1493,21 @@ public static void singleConfirm() throws IOException, TimeoutException, Interru
     for (int i = 1; i <= 100; i++) {
 
         // 发送消息 并 让消息持久化
-        channel.basicPublish("","singleConfirm", MessageProperties.PERSISTENT_TEXT_PLAIN,String.valueOf(i).getBytes() );
+        channel.basicPublish("","singleConfirm", MessageProperties.PERSISTENT_TEXT_PLAIN,String.valueOf(i).getBytes());
 
         // 发布一个 确认一个 channel.waitForConfirms()
-        if ( channel.waitForConfirms() )
-            System.out.println("消息".concat( String.valueOf(i) ).concat( "发送成功") );
+        if (channel.waitForConfirms())
+            System.out.println("消息".concat(String.valueOf(i)).concat( "发送成功"));
 
     }
 
     long end = System.currentTimeMillis();
 
-    System.out.println("单个确认发布发送这些消息花费".concat( String.valueOf( end-begin ) ).concat("ms") );
+    System.out.println("单个确认发布发送这些消息花费".concat(String.valueOf(end-begin)).concat("ms"));
 }
 ```
 
-<br>
+
 
 #### 3.6.2.2、批量确认发布
 
@@ -1538,13 +1542,13 @@ public static void batchConfirm() throws IOException, TimeoutException, Interrup
     for (int i = 1; i <= 100; i++) {
 
         // 发送消息 并 让消息持久化
-        channel.basicPublish("","batchConfirm", MessageProperties.PERSISTENT_TEXT_PLAIN,String.valueOf(i).getBytes() );
+        channel.basicPublish("","batchConfirm", MessageProperties.PERSISTENT_TEXT_PLAIN,String.valueOf(i).getBytes());
 
         // 批量发布 并 回复批量发布的结果 - 发了10条之后再确认
         if (i % 10 == 0) {
 
             channel.waitForConfirms();
-            System.out.println("消息" + ( i-10 ) + "====>" + i + "的消息发布成功");
+            System.out.println("消息" + (i-10) + "====>" + i + "的消息发布成功");
         }
     }
 
@@ -1557,7 +1561,7 @@ public static void batchConfirm() throws IOException, TimeoutException, Interrup
 }
 ```
 
-<br>
+
 
 #### 3.6.2.3、异步确认发布-必会
 
@@ -1609,18 +1613,13 @@ public static void asyncConfirm() throws IOException, TimeoutException {
     // 3、对信道channel进行监听
     // 成功确认发布回调
     ConfirmCallback ackCallback = (messageTag, multiple) -> {
-        System.out.println("确认发布了消息=====>" + messagePoolMap.headMap(messageTag) );
+        System.out.println("确认发布了消息=====>" + messagePoolMap.headMap(messageTag));
 
         // 4、把确认发布的消息删掉，减少内存开销
         // 判断是否是批量删除
         if ( multiple ){
             // 通过消息标识tag 把 确认发布的消息取出
             messagePoolMap.headMap(messageTag).clear();
-            /**
-             * 上面这句代码拆分写法
-             *    ConcurrentNavigableMap<Long, Object> confirmed = messagePoolMap.headMap(messageTag);
-             *    confirmed.clear();
-             */
         }else {
             messagePoolMap.remove(messageTag);
         }
@@ -1628,7 +1627,7 @@ public static void asyncConfirm() throws IOException, TimeoutException {
 
     // 没成功发布确认回调
     ConfirmCallback nackCallback = (messageTag, multiple) -> {
-        System.out.println("未确认的消息是：" + messagePoolMap.get(messageTag) );
+        System.out.println("未确认的消息是：" + messagePoolMap.get(messageTag));
     };
 
     // 进行channel监听 这是异步的
@@ -1637,7 +1636,7 @@ public static void asyncConfirm() throws IOException, TimeoutException {
      * 参数1、消息成功发布的回调函数 ackCallback()
      * 参数2、消息未成功发布的回调函数 nackCallback()
      */
-    channel.addConfirmListener( ackCallback,nackCallback );
+    channel.addConfirmListener(ackCallback,nackCallback);
 
     long begin = System.currentTimeMillis();
 
@@ -1647,7 +1646,7 @@ public static void asyncConfirm() throws IOException, TimeoutException {
         /*
             channel.getNextPublishSeqNo() 获取下一次将要发送的消息标识tag
          */
-        messagePoolMap.put(channel.getNextPublishSeqNo(),String.valueOf(i) );
+        messagePoolMap.put(channel.getNextPublishSeqNo(),String.valueOf(i));
         // 生产者只管发布就行
         channel.basicPublish("","async confirm",MessageProperties.PERSISTENT_TEXT_PLAIN,String.valueOf(i).getBytes());
 
@@ -1656,12 +1655,12 @@ public static void asyncConfirm() throws IOException, TimeoutException {
 
     long end = System.currentTimeMillis();
 
-    System.out.println("异步发布确认耗时：" + ( end-begin ) + "ms" );
+    System.out.println("异步发布确认耗时：" + (end-begin) + "ms");
 }
 ```
 
 
-<br>
+
 
 
 
@@ -1675,17 +1674,17 @@ public static void asyncConfirm() throws IOException, TimeoutException {
 **注意点：前面一直玩的那些模式，虽然没有写交换机，但并不是说RabbitMQ就没用交换机【 ps：使用的是""空串，也就是使用了RabbitMQ的默认交换机 】，生产者发送的消息只能发到交换机中，从而由交换机来把消息发给队列**
 
 
-<br>
+
 
 
 ### 3.7.1、交换机exchange的分类
 
-**直接( direct ) / routing 模式**
-**主题( topic )**
-**标题 ( heanders )** - 这个已经很少用了
-**扇出( fancut ) / 发布订阅模式**
+**直接(direct) / routing 模式**
+**主题(topic)**
+**标题 (heanders)** - 这个已经很少用了
+**扇出(fancut) / 广播 / 发布订阅模式**
 
-<br>
+
 
 
 
@@ -1699,7 +1698,7 @@ ps：当然让队列名随机生成就完全匹配了
 ```java
 /*
     下面这是参数的完整意思，源码中偷懒了，没有见名知意
-    queueDeclare( queueName,isPersist,isShare,isAutoDelete,properties )
+    queueDeclare(queueName,isPersist,isShare,isAutoDelete,properties)
     参数1、队列名字
     参数2、是否持久化( 保存到磁盘 ），默认是在内存中的
     参数3、是否共享，即：是否只供一个消费者消费，是否让多个消费者共享这个队列中的信息
@@ -1718,7 +1717,7 @@ String queueName = channel.queueDeclare().getQueue();
 
 这样帮我们生成的队列效果就和`channel.queueDeclare(QUEUE_NAME, false, false, true, null);`是一样的了
 
-<br>
+
 
 
 ### 3.7.2、fanout扇出 / 发布订阅模式
@@ -1729,7 +1728,7 @@ String queueName = channel.queueDeclare().getQueue();
 
 实现方式就是让一个交换机binding绑定多个队列
 
-<br>
+
 
 
 
@@ -1769,7 +1768,7 @@ public class FanoutProducer {
 }
 ```
 
-<br>
+
 
 
 
@@ -1810,7 +1809,7 @@ public class FanoutConsumer01 {
 }
 ```
 
-<br>
+
 
 
 
@@ -1866,7 +1865,7 @@ public class FanoutConsumer02 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221500027-440194686.png)
 
 
-<br>
+
 
 
 
@@ -1907,7 +1906,7 @@ public class DirectProducer {
 }
 ```
 
-<br>
+
 
 
 
@@ -1947,14 +1946,14 @@ public class DirectConsumer01 {
 }
 ```
 
-<br>
+
 
 
 上面这种，生产者的消息肯定能够被01消费者给消费，因为：他们的交换机名字、队列名字和routing key的值都是相同的
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221504703-1294697832.png)
 
-<br>
+
 
 
 而此时再加一个消费者，让它的routing key值和生产者中的不同
@@ -1999,7 +1998,7 @@ public class DirectConsumer02 {
 
 
 
-<br>
+
 
 
 ###  3.7.4、topic交换机 / topic主题模式
@@ -2011,21 +2010,21 @@ public class DirectConsumer02 {
 这样一看，发布订阅模式和路由模式都不能解决，更别说前面玩的简单模式、工作队列模式、发布确认模式了，这些和目前的这个需求更不搭了，因此：就来了这个topic主题模式
 
 
-<br>
+
 
 **topic中routing key的要求**。只要交换机类型是topic类型的，那么其routing key就不能乱写
 
 1. routing key只能是一个单词列表，多个单词之间采用 点 隔开，如：cn.zixieqing.rabbit
 2. 单词列表的长度不能超过255个字节
 
-<br>
+
 
 **在routing key的规则列表中有两个替换符可以用**
 
 1. `*` 代表一个单词
 2.  `#` 代表零活无数个单词
 
-<br>
+
 
 
 
@@ -2059,13 +2058,13 @@ lazy.orange.male.rabbit 	虽是四个单词，但匹配 Q2，因：符合lazy.#�
 - 当一个队列绑定键是#，那么这个队列将接收所有数据，就有点像 fanout 了
 - 如果队列绑定键当中没有#和*出现，那么该队列绑定类型就是 direct 了
 
-<br>
+
 
 把上面的绑定关系和测试转换成代码玩一波
 
 
 
-<br>
+
 
 #### 3.7.4.1、生产者
 
@@ -2113,7 +2112,7 @@ public class TopicProducer {
 }
 ```
 
-<br>
+
 
 #### 3.7.4.2、消费者
 
@@ -2147,7 +2146,7 @@ public class TopicConsumer01 {
 }
 ```
 
-<br>
+
 
 消费者02
 
@@ -2184,14 +2183,14 @@ public class TopicConsumer02 {
 
 
 
-<br>
+
 
 
 ## 3.8、死信队列
 
 >  **死信队列指的是：死了的消息，换言之就是：生产者把消息发送到交换机中，再由交换机把消息推到队列中，但由于某些原因，队列中的消息没有被正常消费，从而就让这些消息变成了死信，而专门用来放这种消息的队列就是死信队列**
 
-<br>
+
 
 
 
@@ -2201,7 +2200,7 @@ public class TopicConsumer02 {
 2.  超过队列长度
 3. 消息被消费者绝收了
 
-<br>
+
 
 
 实现下图的逻辑：下图成为死信的因素是只要出现一个就成为死信
@@ -2209,7 +2208,7 @@ public class TopicConsumer02 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221458828-639108912.png)
 
 
-<br>
+
 
 ### 3.8.1、消息过期 TTL
 
@@ -2249,7 +2248,7 @@ public class TtlProducer {
 }
 ```
 
-<br>
+
 
 
 
@@ -2259,7 +2258,7 @@ public class TtlProducer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221500448-1151964438.png)
 
-<br>
+
 
 C1消费者
 
@@ -2314,7 +2313,7 @@ public class TtlConsumer01 {
 }
 ```
 
-<br>
+
 
 
 启动C1，然后把C1关了（ 伪装成消费者无法消费消息 ），最后启动生产者
@@ -2322,7 +2321,7 @@ public class TtlConsumer01 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221459455-340647231.png)
 
 
-<br>
+
 
 
 
@@ -2364,7 +2363,7 @@ public class TtlConsumer02 {
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221459471-1229698575.png)
 
 
-<br>
+
 
 ### 3.8.2、队列超过最大长度
 
@@ -2372,7 +2371,7 @@ public class TtlConsumer02 {
 
 **意思就是：某一个队列要求只能放N个消息，但是放了N+1个消息，这就超过队列的最大个数了**
 
-<br>
+
 
 ##### 3.8.2.1.1、生产者
 
@@ -2408,7 +2407,7 @@ public class Producer {
 ```
 
 
-<br>
+
 
 ##### 3.8.2.1.2、消费者
 
@@ -2489,7 +2488,7 @@ public class Consumer01 {
 
 
 
-<br>
+
 
 
 #### 3.8.2.2、超过队列能接受消息的最大字节长度
@@ -2502,7 +2501,7 @@ params.put("x-max-length-bytes", 255);
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221502522-786841019.png)
 
-<br>
+
 
 
 > **注意：关于两种情况同时使用的问题**
@@ -2518,7 +2517,7 @@ params.put("x-max-length-bytes", 255);
 
 
 
-<br>
+
 
 ### 3.8.3、消息被拒收
 
@@ -2529,7 +2528,7 @@ params.put("x-max-length-bytes", 255);
 channel.basicConsume(NORMAL_QUEUE,false,(consumeTag,message)->{},consumeTag->{});
 ```
 
-<br>
+
 
 #### 3.8.3.1、生产者
 
@@ -2560,7 +2559,7 @@ public class Producer {
 ```
 
 
-<br>
+
 
 #### 3.8.3.2、消费者
 
@@ -2609,7 +2608,7 @@ public class Consumer01 {
             String msg = new String(message.getBody(), StandardCharsets.UTF_8);
 
             // 如果发送的消息为：生产者发送的消息5  则：拒收
-            if ( "生产者发送的消息5".equals( msg ) ) {
+            if ("生产者发送的消息5".equals(msg)) {
                 System.out.println("此消息====>" + msg + "===>是拒收的");
                 // 2、做拒收处理 - 注意：第二个参数设为false，表示不再重新入正常队列的队，这样消息才可以进入死信队列
                 channel.basicReject( message.getEnvelope().getDeliveryTag(),false);
@@ -2628,7 +2627,7 @@ public class Consumer01 {
 
 
 
-<br>
+
 
 
 ## 3.9、延迟队列-重要
@@ -2650,7 +2649,7 @@ public class Consumer01 {
 
 然后将这二者结合，加一些东西，上好的烹饪就做好了
 
-<br>
+
 
 **实现如下的逻辑**
 
@@ -2665,7 +2664,7 @@ XA、XB：正常交换机、正常队列的routing key
 YD：死信交换机、死信队列的routing key
 
 
-<br>
+
 
 ### 3.9.2、集成SpringBoot
 
@@ -2693,7 +2692,7 @@ YD：死信交换机、死信队列的routing key
 </dependency>
 ```
 
-<br>
+
 
 #### 3.9.2.2、yml文件配置
 
@@ -2709,7 +2708,7 @@ spring:
 ```
 
 
-<br>
+
 
 #### 3.9.2.4、RabbitMQ配置
 
@@ -2862,7 +2861,7 @@ public class MqConfig {
 ```
 
 
-<br>
+
 
 #### 3.9.2.5、生产者
 
@@ -2876,7 +2875,7 @@ public class MqConfig {
 </dependency>
 ```
 
-<br>
+
 
 
 
@@ -2916,7 +2915,7 @@ public class MqProducerController {
 }
 ```
 
-<br>
+
 
 #### 3.9.2.6、消费者
 
@@ -2942,12 +2941,12 @@ public class DeadLetterQueueConsumer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221513447-1608356189.png)
 
-<br>
+
 
 **但是：这种延迟队列有缺点**
 - 当有很多请求，而延迟时间也都不一样时，那么就要写N多的这种代码了
 
-<br>
+
 
 ### 3.9.3、RabbitMQ插件实现延迟队列
 
@@ -2956,7 +2955,7 @@ public class DeadLetterQueueConsumer {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221459269-610073682.png)
 
-<br>
+
 
 
 
@@ -2980,7 +2979,7 @@ systemctl restart rabbitmq-server
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221500428-1130997554.png)
 
-<br>
+
 
 #### 3.9.3.1、编写配置
 
@@ -3002,7 +3001,7 @@ systemctl restart rabbitmq-server
 
 
 
-<br>
+
 
 
 使用插件，实现下面的逻辑图
@@ -3085,7 +3084,7 @@ public class DelayedExchanegConfig {
 }
 ```
 
-<br>
+
 
 #### 3.9.3.2、生产者
 
@@ -3123,7 +3122,7 @@ public class DelatedQueueController {
 ```
 
 
-<br>
+
 
 
 #### 3.9.3.3、消费者
@@ -3154,7 +3153,7 @@ public class DelayedQueueConsumer {
 
 j
 
-<br>
+
 
 
 
@@ -3176,7 +3175,7 @@ j
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221459164-1168514475.png)
 
-<br>
+
 
 
 
@@ -3193,7 +3192,7 @@ spring:
     publisher-returns: true
 ```
 
-<br>
+
 
 **2、编写ConfirmCallback 和 returnCallback回调接口（ 伪代码 ）**
 
@@ -3246,13 +3245,13 @@ public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCa
 }
 ```
 
-<br>
+
 
 **生产者调用的方法是：`rabbitTemplate.convertAndSend(String exchange, String routingKey, Object message, CorrelationData correlationData)`**
 
 多了一个CorrelationData 参数，这个参数携带的就是消息相关信息
 
-<br>
+
 
 
 ## 3.11、备份交换机
@@ -3261,7 +3260,7 @@ public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCa
 
 **注意：这种方式优先级比前面的 ReturnCallback回退策略要高（ 演示：跳过 - 可以采用将这二者都配置好，然后进行测试，结果是备份交换机的方式会优先执行，而前面的回退策略的方式并不会执行 ）**
 
-<br>
+
 
 采用备份交换机时的架构图
 
@@ -3269,7 +3268,7 @@ public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCa
 
 
 
-<br>
+
 
 上图架构的伪代码配置编写
 
@@ -3391,12 +3390,12 @@ public class AlternateExchangeConfig {
 }
 ```
 
-<br>
+
 
 
 后续的操作就是差不多的，生产者发送消息，消费者消费消息，然后里面再做一些业务的细节处理就可以了
 
-<br>
+
 
 
 ## 3.12、优先级队列
@@ -3405,7 +3404,7 @@ public class AlternateExchangeConfig {
 
 **使用场景：搞内幕，让某个人 / 某些人一定能够抢到什么商品**
 
-<br>
+
 
 **想要实现优先级队列，需要满足如下条件：**
 
@@ -3457,7 +3456,7 @@ public class AlternateExchangeConfig {
   });
 ```
 
-<br>
+
 
 
 **注意点：设置了优先级之后，需要做到如下条件：**
@@ -3467,7 +3466,7 @@ public class AlternateExchangeConfig {
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221459319-199020151.png)
 
 
-<br>
+
 
 
 ## 3.13、惰性队列
@@ -3480,13 +3479,13 @@ public class AlternateExchangeConfig {
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221459553-1402114221.png)
 
-<br>
+
 
 但是：如果此时发送的消息是成千上万条，并且消费者出故障了( 下线、宕机、维护从而关闭 )，那么这些成千上万的消息就会堆积在MQ中，怎么办？就需要像下面这么搞
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221458993-1129464746.png)
 
-<br>
+
 
 
 
