@@ -1379,7 +1379,7 @@ public static class BasicProperties extends AMQBasicProperties {
 **这个东西是在消费者那一方进行设置的**
 **RabbitMQ默认是公平分发，即：轮询分发**
 - 轮询分发有缺点：如前面消费者01（ 设5秒的那个 ）和 消费者02 （ 设10秒的那个 ），这种情况如果采用轮询分发，那么：01要快一点，而02要慢一点，所以01很快处理完了，然后处于空闲状态，而02还在拼命奋斗中，最后的结果就是02不停干，而01悠悠闲闲的，浪费了时间，所以：应该压榨一下01，让它不能停
-- 设置方式：在消费者接收消息之前进行`channel.basicQos（ int prefetchCount ）设置`
+- 设置方式：在消费者接收消息之前进行`channel.basicQos（int prefetchCount)` 设置
 
 ```java
 // 不公平分发，就是在这里接收消息之前做处理
@@ -1402,7 +1402,7 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
 
 ### 3.5.2、预取值
 
-指的是：多个消费者在消费消息时，让每一个消费者预计消费多少条消息
+指的是：多个消费者在消费消息时，让每一个消费者预计消费多少条消息，消费完了再去管道继续接受消息
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613221411843-1874686659.png)
 
@@ -1418,7 +1418,7 @@ channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
     而当这里的数字变成其他的，如：上图中上面的那个消费者要消费20条消息，那么把下面的数字改成对应的即可
     注意点：这是要设置哪个消费者的预取值，那就是在哪个消费者代码中进行设定啊
  */
-channel.basicQos(10);		// 这样就表示这个代码所在的消费者需要消费10条消息了
+channel.basicQos(10);		// 这样就表示这个代码所在的消费者预取10条消息，消费完了再去管道中获取消息
 
 channel.basicConsume("qos queue", true, deliverCallback, consumerTag -> {
     System.out.println("消费者中断了接收消息行为触发的回调");
