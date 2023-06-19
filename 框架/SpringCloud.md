@@ -3351,7 +3351,215 @@ docker pull 192.168.xxx.yyy:8080/nginx:1.0
 
 # RabbitMQ 消息队列
 
-这里是一部分，全系列的知识去这里：https://www.cnblogs.com/xiegongzi/p/16242291.html
+官网：https://www.rabbitmq.com/
+
+这里只说明一部分(6种常用消息模型+消息转换器)，全系列的RabbitMQ理论与实操知识去这个旮旯地方：https://www.cnblogs.com/xiegongzi/p/16242291.html
+
+
+
+几种常见MQ的对比：
+
+|            | **RabbitMQ**            | **ActiveMQ**                   | **RocketMQ** | **Kafka**  |
+| ---------- | ----------------------- | ------------------------------ | ------------ | ---------- |
+| 公司/社区  | Rabbit                  | Apache                         | 阿里         | Apache     |
+| 开发语言   | Erlang                  | Java                           | Java         | Scala&Java |
+| 协议支持   | AMQP，XMPP，SMTP，STOMP | OpenWire,STOMP，REST,XMPP,AMQP | 自定义协议   | 自定义协议 |
+| 可用性     | 高                      | 一般                           | 高           | 高         |
+| 单机吞吐量 | 一般                    | 差                             | 高           | 非常高     |
+| 消息延迟   | 微秒级                  | 毫秒级                         | 毫秒级       | 毫秒以内   |
+| 消息可靠性 | 高                      | 一般                           | 高           | 一般       |
+
+追求可用性：Kafka、 RocketMQ 、RabbitMQ
+
+追求可靠性：RabbitMQ、RocketMQ
+
+追求吞吐能力：RocketMQ、Kafka
+
+追求消息低延迟：RabbitMQ、Kafka
+
+
+
+5种常用消息模型：
+
+![image-20210717163332646](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142728049-266151266.png)
+
+
+
+
+
+## SpringAMQP
+
+SpringAMQP是基于RabbitMQ封装的一套模板，并且还利用SpringBoot对其实现了自动装配，使用起来非常方便。
+
+SpringAmqp的官方地址：https://spring.io/projects/spring-amqp
+
+![image-20210717164024967](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142903817-352303968.png)
+
+![image-20210717164038678](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142902780-1778200583.png)
+
+
+
+SpringAMQP提供了三个功能：
+
+- 自动声明队列、交换机及其绑定关系
+- 基于注解的监听器模式，异步接收消息
+- 封装了RabbitTemplate工具，用于发送消息 
+
+
+
+依赖：
+
+```xml
+<!--AMQP依赖，包含RabbitMQ-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+```
+
+
+
+
+
+## Hello word 简单队列模式
+
+官网中的结构图：
+
+![image-20230616142003688](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142005369-1795079636.png)
+
+
+
+即：1个publisher生产者、1个默认交换机、1个队列、1个consumer消费者
+
+此种模型：做最简单的事情，一个生产者对应一个消费者，RabbitMQ相当于一个消息代理，负责将A的消息转发给B
+
+**应用场景：** 将发送的电子邮件放到消息队列，然后邮件服务在队列中获取邮件并发送给收件人
+
+
+
+
+
+### 生产者
+
+```java
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConnectionFactory;
+import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * <p>@description  : 该类功能  hello word 简单队列模型 生产者测试
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@SpringBootTest
+public class o1HelloWordTest {
+    private String host = "自己部署rabbitmq的虚拟机ip";
+    private int port = 5672;
+    private String username = "zixieqing";
+    private String password = "072413";
+    private String queueName = "hello-word";
+
+    @Test
+    public void helloWordTest() throws IOException, TimeoutException {
+        // 1、获取管道
+        ConnectionFactory conFactory = new ConnectionFactory();
+        conFactory.setHost(host);
+        conFactory.setPort(port);
+        conFactory.setUsername(username);
+        conFactory.setPassword(password);
+
+        // 2、获取管道
+        Channel channel = conFactory.newConnection().createChannel();
+        /*
+         * 3、订阅消息
+         * basicConsume(String queue, boolean autoAck, Consumer callback)
+         * 参数1   队列名
+         * 参数2   是否自动应答
+         * 参数3   回调函数
+         * */
+        channel.queueDeclare(queueName, false, false, false, null);
+
+        // 4、消息推送
+        String msg = "this is hello word";
+        /*
+        * basicPublish(String exchange, String routingKey, BasicProperties props, byte[] body)
+        * 参数1   交换机名
+        * 参数2   路由键
+        * 参数3   消息其他配置项
+        * 参数4   要发送的消息内容
+        * */
+        channel.basicPublish("", queueName, null, msg.getBytes());
+
+        // 5、释放资源
+        channel.close();
+        conFactory.clone();
+    }
+}
+```
+
+
+
+使用SpringAMQP就是如下的方式：
+
+- 配置application.yml
+
+```yaml
+spring:
+  rabbitmq:
+    host: 自己的ip
+    port: 5672
+    username: "zixieqing"
+    password: "072413"
+    # 要是mq设置的有独立的虚拟机空间，则在此处设置虚拟机
+#    virtual-host: /
+```
+
+
+
+- 发送消息的代码：
+
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+/**
+ * <p>@description  : 该类功能  SpringAMQP测试
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class WorkModeTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    /**
+     * 使用SpringAMQP实现 hello word 简单队列模式
+     */
+    @Test
+    public void springAMQP2HelloWordTest() {
+        // 1、引入spring-boot-starter-springamqp依赖
+
+        // 2、编写application.uml文件
+
+        // 3、发送消息
+        String queueName = "hello-word";
+        String message = "hello，this is springAMQP";
+        rabbitTemplate.convertAndSend(queueName, message);
+    }
+}
+```
 
 
 
@@ -3359,6 +3567,480 @@ docker pull 192.168.xxx.yyy:8080/nginx:1.0
 
 
 
+### 消费者
+
+```java
+import com.rabbitmq.client.*;
+import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * <p>@description  : 该类功能  hello word 简单工作队列模型 消费者测试
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@SpringBootTest
+public class HelloWordTest {
+    private String host = "自己部署rabbitmq的虚拟机ip";
+    private int port = 5672;
+    private String username = "zixieqing";
+    private String password = "072413";
+    private String queueName = "hello-word";
+
+    @Test
+    public void consumerTest() throws IOException, TimeoutException {
+        // 1、设置链接信息
+        ConnectionFactory conFactory = new ConnectionFactory();
+        conFactory.setHost(host);
+        conFactory.setPort(port);
+        conFactory.setUsername(username);
+        conFactory.setPassword(password);
+
+        // 2、获取管道
+        Channel channel = conFactory.newConnection().createChannel();
+
+        /*
+        * 3、队列声明
+        * queueDeclare(String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> arguments);
+        * 参数1   队列名
+        * 参数2   此队列是否持久化
+        * 参数3   此队列是否共享，即：是否让多个消费者共享这个队列中的信息
+        * 参数4   此队列是否自动删除，即：最后一个消费者获取信息之后，这个队列是否自动删除
+        * 参数5   其他配置项
+        *
+        * */
+        channel.queueDeclare(queueName, false, false, false, null);
+
+        /*
+        * 4、订阅消息
+        * basicConsume(String queue, boolean autoAck, Consumer callback)
+        * 参数1   队列名
+        * 参数2   是否自动应答
+        * 参数3   回调函数
+        * */
+        channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                System.out.println("consumerTag = " + consumerTag);
+                /*
+                * 可以获取到交换机、routingkey、deliveryTag
+                * */
+                System.out.println("envelope = " + envelope);
+                System.out.println("properties = " + properties);
+                System.out.println("处理了消息：" + new String(body));
+            }
+        });
+
+        // 这是另外一种接受消息的方式
+        /*DeliverCallback deliverCallback = (consumerTag, message) -> {
+            System.out.println("接收到了消息：" + new String(message.getBody(), StandardCharsets.UTF_8) );
+        };
+
+        CancelCallback cancelCallback = consumerTag -> System.out.println("消费者取消了消费信息行为");
+
+        channel.basicConsume(queueName, true, deliverCallback, cancelCallback);*/
+    }
+}
+```
+
+
+
+使用SpringAMQP就是如下的方式：
+
+- 配置application.yml
+
+```yaml
+spring:
+  rabbitmq:
+    host: 自己的ip
+    port: 5672
+    username: "zixieqing"
+    password: "072413"
+    # 要是mq设置的有独立的虚拟机空间，则在此处设置虚拟机
+#    virtual-host: /
+```
+
+
+
+- 接收消息的代码：
+
+```java
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
+
+/**
+ * <p>@description  : 该类功能  rabbitmq监听
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class RabbitmqListener {
+    // 1、导入spring-boot-starter-springamqp依赖
+
+    // 2、配置application.yml
+
+    // 3、编写接受消息逻辑
+
+    /**
+     * <p>@description  : 该方法功能 监听 hello-word 队列
+     * </p>
+     * <p>@methodName   : listenQueue2HelloWord</p>
+     * <p>@author: ZiXieqing</p>
+     *
+     * @param msg 接收到的消息
+     *//*
+    @RabbitListener(queues = "hello-word")
+    public void listenQueue2HelloWord(String msg) {
+        System.out.println("收到的消息 msg = " + msg);
+    }
+}
+```
+
+
+
+
+
+## Work Queue 工作队列模型
+
+官网中的结构图：
+
+![image-20230616145122494](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616145123911-1191538262.png)
+
+
+
+即：1个publisher生产者、1个默认交换机、1个queue队列、多个consumer消费者
+
+在多个消费者之间分配任务（竞争的消费者模式），一个生产者对应多个消费者，一般适用于执行资源密集型任务，单个消费者处理不过来，需要多个消费者进行处理
+
+**应用场景：** 一个订单的处理需要10s，有多个订单可以同时放到消息队列，然后让多个消费者同时处理，这样就是并行了，而不是单个消费者的串行情况
+
+
+
+### 生产者
+
+```java
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+/**
+ * <p>@description  : 该类功能  SpringAMQP测试
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class WorkModeTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    /**
+     * 使用SpringAMQP实现 work queue 工作队列模式
+     */
+    @Test
+    public void springAMQP2WorkQueueTest() {
+        // 1、引入spring-boot-starter-springamqp依赖
+
+        // 2、编写application.uml文件
+
+        // 3、发送消息
+        String queueName = "hello-word";
+        String message = "hello，this is springAMQP + ";
+        for (int i = 1; i <= 50; i++) {
+            rabbitTemplate.convertAndSend(queueName, message + i);
+        }
+    }
+}
+```
+
+
+
+### 消费者
+
+application.yml配置：
+
+```yaml
+spring:
+  rabbitmq:
+    host: 自己的ip
+    port: 5672
+    username: "zixieqing"
+    password: "072413"
+    # 要是mq设置的有独立的虚拟机空间，则在此处设置虚拟机
+#    virtual-host: /
+    listener:
+      simple:
+        # 不公平分发，预取值 消费者每次从队列获取的消息数量 默认一次250个  通过查看后台管理器中queue的unacked数量
+        prefetch: 1
+```
+
+
+
+```java
+package com.zixieqing.consumer.listener;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
+
+/**
+ * <p>@description  : 该类功能  rabbitmq监听
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class RabbitmqListener {
+    // 1、导入spring-boot-starter-springamqp依赖
+
+    // 2、配置application.yml
+
+    // 3、编写接受消息逻辑
+
+    /**
+     * <p>@description  : 该方法功能 监听 hello-word 队列
+     * </p>
+     * <p>@methodName   : listenQueue2HelloWord</p>
+     * <p>@author: ZiXieqing</p>
+     *
+     * @param msg 接收到的消息
+     */
+    @RabbitListener(queues = "hello-word")
+    public void listenQueue2WorkQueue1(String msg) throws InterruptedException {
+        System.out.println("消费者1收到的消息 msg = " + msg + " + " + LocalTime.now());
+        // 模拟性能，假设此消费者性能好
+        Thread.sleep(20);
+    }
+
+    /**
+     * <p>@description  : 该方法功能 监听 hello-word 队列
+     * </p>
+     * <p>@methodName   : listenQueue2HelloWord</p>
+     * <p>@author: ZiXieqing</p>
+     *
+     * @param msg 接收到的消息
+     */
+    @RabbitListener(queues = "hello-word")
+    public void listenQueue2WorkQueue2(String msg) throws InterruptedException {
+        System.err.println("消费者2.............收到的消息 msg = " + msg + " + " + LocalTime.now());
+        // 模拟性能，假设此消费者性差点
+        Thread.sleep(200);
+    }
+}
+```
+
+
+
+
+
+## 交换机
+
+**交换机的作用就是为了接收生产者发送的消息 并 将消息发送到队列中去**
+
+
+
+>  注意：前面一直玩的那些模式，虽然没有写交换机，但并不是说RabbitMQ就没用交换机
+>
+> - ps：使用的是""空串，也就是使用了RabbitMQ的默认交换机，生产者发送的消息只能发到交换机中，从而由交换机来把消息发给队列
+
+
+
+
+
+**交换机的分类**
+
+1. 直接(direct) / routing 模式
+2. 主题(topic)
+3. 标题 (heanders)- 这个已经很少用了
+4. 扇出(fancut) / 广播
+
+
+
+
+
+### Fanout Exchange 广播模型 / 发布订阅模式
+
+官网结构图：
+
+![image-20230616151102284](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616151103939-296865311.png)
+
+
+
+即：1个生产者、1个交换机、多个队列、多个消费者
+
+广播消息到所有队列，没有任何处理，速度最快。**类似群发，一人发，很多人收到消息**
+
+一次向许多消费者发送消息，一个生产者发送的消息会被多个消费者获取，也就是将消息将广播到所有的消费者中
+
+**应用场景：** 更新商品库存后需要通知多个缓存和多个数据库，这里的结构应该是：
+
+1. 一个fanout类型交换机扇出两个消息队列，分别为缓存消息队列、数据库消息队列
+2. 一个缓存消息队列对应着多个缓存消费者
+3. 一个数据库消息队列对应着多个数据库消费者
+
+
+
+
+
+#### 生产者
+
+```java
+package com.zixieqing.publisher;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+/**
+ * <p> fanout exchange 扇形/广播模型测试
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class o3FanoutExchangeTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Test
+    public void fanoutExchange4SendMsgTest() {
+        String exchangeName = "fanout.exchange";
+        String message = "this is fanout exchange";
+        rabbitTemplate.convertAndSend(exchangeName,"",message);
+    }
+}
+```
+
+
+
+
+
+#### 消费者
+
+创建交换机和队列 并 进行绑定
+
+```java
+package com.zixieqing.consumer.config;
+
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * <p> rabbitMQ配置
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Configuration
+public class RabbitmqConfig {
+    /**
+     * 定义交换机类型 fanout.exchange
+     */
+    @Bean
+    public FanoutExchange fanoutExchange() {
+        return new FanoutExchange("fanout.exchange");
+    }
+
+    /**
+     * 定义队列 fanout.queue1
+     */
+    @Bean
+    public Queue fanoutExchange4Queue1() {
+        return new Queue("fanout.queue1");
+    }
+
+    /**
+     * 将 fanout.exchange 和 fanout.queue1 两个进行绑定
+     */
+    @Bean
+    public Binding fanoutExchangeBindQueue1(Queue fanoutExchange4Queue1, FanoutExchange fanoutExchange) {
+        return BindingBuilder.bind(fanoutExchange4Queue1).to(fanoutExchange);
+    }
+
+    /**
+     * 定义队列 fanout.queue2
+     */
+    @Bean
+    public Queue fanoutExchange4Queue2() {
+        return new Queue("fanout.queue2");
+    }
+
+    /**
+     * 将 fanout.exchange 和 fanout.queue2 两个进行绑定
+     */
+    @Bean
+    public Binding fanoutExchangeBindQueue2(Queue fanoutExchange4Queue2, FanoutExchange fanoutExchange) {
+        return BindingBuilder.bind(fanoutExchange4Queue2).to(fanoutExchange);
+    }
+}
+```
+
+
+
+监听队列中的消息：
+
+```java
+package com.zixieqing.consumer.listener;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
+
+/**
+ * <p>@description  : 该类功能  rabbitmq监听
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class RabbitmqListener {
+    // 1、导入spring-boot-starter-springamqp依赖
+
+    // 2、配置application.yml
+
+    // 3、编写接受消息逻辑
+
+    /**
+     * fanoutExchange模型 监听fanout.queue1 队列的消息
+     * @param msg 收到的消息
+     */
+    @RabbitListener(queues = "fanout.queue1")
+    public void listenQueue14FanoutExchange(String msg) {
+        System.out.println("消费者1收到 fanout.queue1 的消息 msg = " + msg );
+    }
+
+    /**
+     * fanoutExchange模型 监听fanout.queue1 队列的消息
+     * @param msg 收到的消息
+     */
+    @RabbitListener(queues = "fanout.queue2")
+    public void listenQueue24FanoutExchange(String msg) {
+        System.err.println("消费者2收到 fanout.queue2 的消息 msg = " + msg );
+    }
+}
+```
 
 
 
@@ -3366,6 +4048,172 @@ docker pull 192.168.xxx.yyy:8080/nginx:1.0
 
 
 
+### Direct Exchange 路由模型
+
+官网中的结构图：
+
+![image-20230616190730692](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616190732193-808854073.png)
+
+
+
+即：1个消息发送者、1个交换机、routing key路由键、多个队列、多个消息消费者
+
+这个玩意儿吧就是发布订阅模式，也就是fanout类型交换机的变样板，即：多了一个routing key的配置而已，**也就是说：生产者和消费者传输消息就通过routing key进行关联起来**，**因此：现在就变成了生产者想把消息发给谁就发给谁**
+
+有选择地（Routing key）接收消息，发送消息到交换机并且要指定路由key ，消费者将队列绑定到交换机时需要指定路由key，仅消费指定路由key的消息
+
+**应用场景：** 如在商品库存中增加了1台iphone12，iphone12促销活动消费者指定routing key为iphone12，只有此促销活动会接收到消息，其它促销活动不关心也不会消费此routing key的消息
+
+
+
+
+
+#### 生产者
+
+```java
+package com.zixieqing.publisher;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+/**
+ * <p> DirectEXchange 路由模式测试
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class o4DirectExchangeTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Test
+    public void sendMsg4DirectExchangeTest() {
+        String exchangeNmae = "direct.exchange";
+        String message = "this is direct exchange";
+        // 把消息发给 routingkey 为zixieqing的队列中
+        rabbitTemplate.convertAndSend(exchangeNmae, "zixieqing", message);
+    }
+}
+```
+
+
+
+#### 消费者
+
+```java
+package com.zixieqing.consumer.listener;
+
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
+
+/**
+ * <p>@description  : 该类功能  rabbitmq监听
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class RabbitmqListener {
+    // 1、导入spring-boot-starter-springamqp依赖
+
+    // 2、配置application.yml
+
+    // 3、编写接受消息逻辑
+
+    /**
+     * 使用纯注解的方式声明队列、交换机及二者绑定、以及监听此队列的消息
+     *
+     * @param msg 监听到的消息
+     */
+    @RabbitListener(bindings = @QueueBinding(
+            // 队列声明
+            value = @Queue(name = "direct.queue1"),
+            // 交换机声明
+            exchange = @Exchange(name = "direct.exchange", type = ExchangeTypes.DIRECT),
+            // 队列和交换机的绑定键值，是一个数组
+            key = {"zixieqing"}
+    ))
+    public void listenQueue14DirectExchange(String msg) {
+        System.err.println("消费者1收到 direct.queue1 的消息 msg = " + msg);
+    }
+
+    /**
+     * 使用纯注解的方式声明队列、交换机及二者绑定、以及监听此队列的消息
+     *
+     * @param msg 监听到的消息
+     */
+    @RabbitListener(bindings = @QueueBinding(
+            // 队列声明
+            value = @Queue(name = "direct.queue2"),
+            // 交换机声明
+            exchange = @Exchange(name = "direct.exchange", type = ExchangeTypes.DIRECT),
+            // 队列和交换机的绑定键值，是一个数组
+            key = {"zimingxuan"}
+    ))
+    public void listenQueue24DirectExchange(String msg) {
+        System.err.println("消费者2收到 direct.queue2 的消息 msg = " + msg);
+    }
+}
+```
+
+从此处代码可以得知：
+
+1. 将每个队列与交换机的routing key改为一样的值，则变成Fanout Exchange了
+
+
+
+Fanout Exchange与Direct Exchange的区别：
+
+1. Fanout交换机将消息路由给**每一个**与之绑定的队列
+2. Direct交换机**根据Routing Key判断**路由给哪个队列
+
+
+
+
+
+### Topic Exchange 主题模型
+
+官网结构图：
+
+![image-20230616221649375](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616221652109-1311293641.png)
+
+
+
+前面玩的fanout扇出类型的交换机是一个生产者发布，多个消费者共享消息，和qq群类似；而direct 路由模式是消费者只能消费和消费者相同routing key的消息
+
+而上述这两种还有局限性，如：现在生产者的routing key为zi.xie.qing，而一个消费者只消费含xie的消息，一个消费者只消费含qing的消息，另一个消费者只消费第一个为zi的零个或无数个单词的消息，甚至还有一个消费者只消费最后一个单词为qing，前面有三个单词的routing key的消息呢？
+
+这样一看，发布订阅模式和路由模式都不能解决，更别说前面玩的简单模式、工作队列模式、发布确认模式了，这些和目前的这个需求更不搭了，因此：就来了这个topic主题模式
+
+
+
+**应用场景：** iphone促销活动可以接收主题为iphone的消息，如iphone12、iphone13等
+
+
+
+**topic中routing key的要求**。只要交换机类型是topic类型的，那么其routing key就不能乱写
+
+1. routing key只能是一个“单词列表”，多个单词之间采用 点 隔开，如：com.zixieqing.rabbit
+2. 单词列表的长度不能超过255个字节
+
+
+
+**在routing key的规则列表中有两个替换符可以用**
+
+1. `*` 代表一个单词
+2. `#` 代表零或无数个单词
 
 
 
@@ -3373,11 +4221,977 @@ docker pull 192.168.xxx.yyy:8080/nginx:1.0
 
 
 
+#### 生产者
+
+```java
+package com.zixieqing.publisher;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+/**
+ * <p> Topic Exchange 话题模式测试
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class o5TopicExchangeTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Test
+    public void sendMSg2TopicExchangeTest() {
+        String exchangeNmae = "topic.exchange";
+        String msg = "贫道又升迁了，离目标越来越近了";
+        // routing key变为 话题模式 com.zixieqing.blog
+        rabbitTemplate.convertAndSend(exchangeNmae, "com.zixieqing.blog", msg);
+    }
+}
+```
 
 
 
 
 
+#### 消费者
+
+```java
+package com.zixieqing.consumer.listener;
+
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
+
+/**
+ * <p>@description  : 该类功能  rabbitmq监听
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class RabbitmqListener {
+    // 1、导入spring-boot-starter-springamqp依赖
+
+    // 2、配置application.yml
+
+    // 3、编写接受消息逻辑
+
+    /**
+     * 使用纯注解的方式声明队列、交换机及二者绑定、以及监听此队列的消息
+     */
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "topic.queue1"),
+            exchange = @Exchange(name = "topic.exchange", type = ExchangeTypes.TOPIC),
+            // 只接收routing key 前面是一个词 且 含有 zixieiqng 发布的消息
+            key = {"*.zixieqing.#"}
+    ))
+    public void listenQueue14TopicExchange(String msg) {
+        System.out.println("消费者1收到 topic.queue1 的消息 msg = " + msg);
+    }
+
+    /**
+     * 使用纯注解的方式声明队列、交换机及二者绑定、以及监听此队列的消息
+     */
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "topic.queue2"),
+            exchange = @Exchange(name = "topic.exchange", type = ExchangeTypes.TOPIC),
+            // 只接收routing key含有 blog 发布的消息
+            key = {"#.blog"}
+    ))
+    public void listenQueue24TopicExchange(String msg) {
+        System.err.println("消费者1收到 topic.queue1 的消息 msg = " + msg);
+    }
+}
+```
+
+
+
+
+
+## publisher-confirms 发布确认模型
+
+正常的流程应该是下面的样子
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617005335080-1584963969.png)
+
+但是：如果交换机出问题了呢，总之就是交换机没有接收到生产者发布的消息(如：发消息时，交换机名字搞错了)，那消息就直接丢了吗？
+
+同理：要是队列出问题了呢，总之也就是交换机没有成功地把消息推到队列中(如：routing key搞错了)，咋办？
+
+而要解决这种问题，就需要使用标题中使用的两个回调，从而：让架构模式变成如下的样子
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617005335087-1086807902.png)
+
+
+
+发送消息确认：用来确认消息从 producer发送到 broker 然后broker 的 exchange 到 queue过程中，消息是否成功投递
+
+如果消息和队列是可持久化的，那么确认消息会将消息写入磁盘之后发出；如果是镜像队列，所有镜像接受成功后发确认消息
+
+**应用场景：** 对于消息可靠性要求较高，比如钱包扣款
+
+**流程**
+
+1. 如果消息没有到达exchange，则confirm回调，ack=false
+2. 如果消息到达exchange，则confirm回调，ack=true
+3. exchange到queue成功，则不回调return
+4. exchange到queue失败，则回调return(需设置mandatory=true，否则不会回调，这样消息就丢了)
+
+
+
+**生产者方需要开启两个配置：**
+
+```yaml
+spring:
+  rabbitmq:
+    # 生产者开启 return 确认机制   如果消息未能投递到目标queue中，触发returnCallback
+    publisher-returns: true
+    # 发布确认类型  生产者开启 confirm 确认机制(等价于旧版本的publisher-confirms=true)
+    # 有3种属性配置   correlated    none    simple
+    #     none  禁用发布确认模式，是默认值
+    #     correlated  异步回调  发布消息成功到exchange后会触发 rabbitTemplate.setConfirmCallback 回调方法
+    #     simple 同步等待confirm结果，直到超时
+    publisher-confirm-type: correlated
+```
+
+
+
+### ConfirmCallback 回调
+
+在前面 `publisher-confirm-type: correlated` 配置开启的前提下，发布消息成功到exchange后会进行  ConfirmCallback#confirm 异步回调，示例如下：
+
+```java
+@Component
+public class ConfirmCallbackService implements RabbitTemplate.ConfirmCallback {
+    /** 
+     * correlationData：对象内部有id （消息的唯一性）和 Message	
+     * 				   若ack为false，则Message不为null，可将Message数据 重新投递；
+     * 				   若ack是true，则correlationData为nul
+     * ack：消息投递到exchange 的状态，true表示成功
+     * cause：表示投递失败的原因
+     * 			若ack为false，则cause不为null
+     * 			若ack是true，则cause为null
+     */
+    @Override
+    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+		if(ack){
+			System.out.println("消息已经送达到Exchange");
+		}else{
+			System.out.println("消息没有送达到Exchange");
+		}
+    }
+}
+```
+
+
+
+在生产者发送消息时，可以给每一条信息添加一个dataId，放在CorrelationData，这样在RabbitConfirmCallback返回失败时可以知道哪个消息失败
+
+```java
+public void send(String dataId, String exchangeName, String rountingKey, String message){
+  CorrelationData correlationData = new CorrelationData();
+  // 可以给每条消息设置唯一id  在RabbitConfirmCallback返回失败时可以知道哪个消息失败
+  correlationData.setId(dataId);
+
+  rabbitTemplate.convertAndSend(exchangeName, rountingKey, message, correlationData);
+}
+
+public String receive(String queueName){
+  return String.valueOf(rabbitTemplate.receiveAndConvert(queueName));
+}
+```
+
+2.1版本之后，CorrelationData对象具有ListenableFuture，可用于获取结果，而不是在rabbitTemplate上使用ConfirmCallback
+
+```java
+CorrelationData correlationData = new CorrelationData();
+// 可以给每条消息设置唯一id  在RabbitConfirmCallback返回失败时可以知道哪个消息失败
+correlationData.setId(dataId);
+
+// 发送消息
+this.templateWithConfirmsEnabled
+    .convertAndSend(Exchange exchangeName, String routingKey, Object msg, correlationData);
+
+// 查看是否成功发送到Exchange中
+assertTrue(correlationData.getFuture().get(15, TimeUnit.SECONDS).isAck());
+```
+
+
+
+
+
+### ReturnCallback 回调
+
+如果消息未能投递到目标queue中，触发returnCallback#returnedMessage
+
+若向 queue 投递消息未成功，可记录下当前消息的详细投递数据，方便后续做重发或者补偿等操作
+
+
+
+但是这玩意儿又要涉及到另外一个配置：消息路由失败策略
+
+```yaml
+spring:
+  rabbitmq:
+    template:
+      # 生产者方消息路由失败策略
+      #   true：调用ReturnCallback
+      #   false：直接丢弃消息
+      mandatory: true
+```
+
+
+
+ReturnCallBack回调的玩法：
+
+```java
+@Component
+public class ReturnCallbackService implements RabbitTemplate.ReturnCallback {
+    /**
+     * 保证 spring.rabbitmq.template.mandatory = true 的前提下，如果消息未能投递到目标queue中，触发returnCallback#returnedMessage
+     * 参数1、消息 new String(message.getBody())
+     * 参数2、消息退回的状态码
+     * 参数3、消息退回的原因
+     * 参数4、交换机名字
+     * 参数5、路由键
+    */
+    @Override
+    public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+        System.out.println("消息没有送达到Queue");
+    }
+}
+```
+
+
+
+### ConfirmCallback 和 ReturnCallback 整合的写法
+
+消息发送者编写代码：
+
+```java
+package com.zixieqing.publisher.config;
+
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
+
+/**
+ * <p> mq的confirmCallback和ReturnCallback
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Configuration
+public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCallback, 
+        RabbitTemplate.ReturnCallback {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    /**
+     * 初始化方法
+     * 目的：因为ConfirmCallback 和 ReturnCallback这两个接口是RabbitTemplate的内部类
+     * 因此：想要让当前编写的PublisherConfirmAndReturnConfig能够访问到这两个接口
+     * 那么：就需要把当前类PublisherConfirmAndReturnConfig的confirmCallback 和 returnCallback
+     *      注入到RabbitTemplate中去 即：init的作用
+     */
+    @PostConstruct
+    public void init(){
+        rabbitTemplate.setConfirmCallback(this);
+        rabbitTemplate.setReturnCallback(this);
+    }
+
+    /**
+     * 在前面 publisher-confirm-type: correlated 配置开启的前提下，发布消息成功到exchange后
+     *       会进行 ConfirmCallback#confirm 异步回调
+     * 参数1、发送消息的ID - correlationData.getID()  和 消息的相关信息
+     * 参数2、是否成功发送消息给exchange  true成功；false失败
+     * 参数3、失败原因
+     */
+    @Override
+    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+        if(ack){
+            System.out.println("消息已经送达到Exchange");
+        }else{
+            System.out.println("消息没有送达到Exchange");
+        }
+    }
+
+    /**
+     * 保证 spring.rabbitmq.template.mandatory = true 的前提下，如果消息未能投递到目标queue中，
+     *      触发returnCallback#returnedMessage
+     * 参数1、消息 new String(message.getBody())
+     * 参数2、消息退回的状态码
+     * 参数3、消息退回的原因
+     * 参数4、交换机名字
+     * 参数5、路由键
+     */
+    @Override
+    public void returnedMessage(Message message, int replyCode, String replyText, 
+                                String exchange, String routingKey) {
+        System.out.println("消息没有送达到Queue");
+    }
+}
+```
+
+生产者调用的方法是：
+
+```java
+// 可以给每条消息设置唯一id
+CorrelationData correlationData = new CorrelationData();
+correlationData.setId(dataId);
+
+// 发送消息
+rabbitTemplate.convertAndSend(String exchange, String routingKey, Object message, correlationData);
+```
+
+
+
+
+
+## 消息转换器
+
+查看Spring中默认的MessageConverter消息转换器
+
+生产者代码编写：
+
+```java
+package com.zixieqing.publisher;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * mq消息转换器测试
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class o7MessageConverterTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Test
+    public void mqMSgConverterTest() {
+        // 准备消息
+        Map<String,Object> msgMap = new HashMap<>();
+        msgMap.put("name", "紫邪情");
+        msgMap.put("age", 18);
+        msgMap.put("profession", "java");
+        
+        // 发送消息
+        rabbitTemplate.convertAndSend("msg.converter.queue",msgMap);
+    }
+}
+```
+
+
+
+```java
+package com.zixieqing.publisher.config;
+
+import org.springframework.amqp.core.Queue;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 注册bean
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Configuration
+public class BeanConfig {
+    @Bean
+    public Queue msgConverterQueue() {
+        return new Queue("msg.converter.queue");
+    }
+}
+```
+
+
+
+查看mq后台管理界面：
+
+![image-20230617150353048](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617150354639-226036161.png)
+
+
+
+可知：spring中使用的消息转换器是 JDK序列化方式，即：ObjectOutputStream
+
+
+
+
+
+### 配置Jackson序列化
+
+生产者：
+
+```java
+package com.zixieqing.publisher.config;
+
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 注册bean
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Configuration
+public class BeanConfig {
+    /**
+     * 将消息转换器改为jackson序列化方式
+     */
+    @Bean
+    public MessageConverter jacksonMsgConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+}
+```
+
+
+
+消息发送：
+
+```java
+package com.zixieqing.publisher;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * mq消息转换器测试
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class o7MessageConverterTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Test
+    public void mqMSgConverterTest() {
+        // 准备消息
+        Map<String,Object> msgMap = new HashMap<>();
+        msgMap.put("name", "紫邪情");
+        msgMap.put("age", 18);
+        msgMap.put("profession", "java");
+
+        // 发送消息		注意：这里的msg消息类型是map
+        rabbitTemplate.convertAndSend("msg.converter.queue",msgMap);
+    }
+}
+```
+
+
+
+消费者：
+
+```java
+package com.zixieqing.consumer.config;
+
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * bean注册
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+
+@Configuration
+public class BeanConfig {
+    /**
+     * 将消息转换器改为jackson序列化方式
+     * @return
+     */
+    @Bean
+    public MessageConverter jacksonMsgConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+}
+```
+
+
+
+```java
+package com.zixieqing.consumer.listener;
+
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
+import java.util.Map;
+
+/**
+ * <p>@description  : 该类功能  rabbitmq监听
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class RabbitmqListener {
+    // 1、导入spring-boot-starter-springamqp依赖
+
+    // 2、配置application.yml
+
+    // 3、编写接受消息逻辑
+
+    /**
+     * 使用jackson的方式对消息进行接收
+     * @param msg   接收到的消息      注：这里的类型需要和生产者发送消息时的类型保持一致
+     */
+    @RabbitListener(queues = "msg.converter.queue")
+    public void listenQueue4Jackson(Map<String,Object> msg) {
+        System.out.println("消费者收到消息 msg = " + msg);
+    }
+}
+```
+
+
+
+
+
+# ElasticSearch 分布式搜索引擎
+
+此处只是浓缩内容，没基础的可能看不懂，全系列知识去下列链接：
+
+1. 基础语法(看前面即可，后面使用postman熟悉语法的方式可看可不看)：https://www.cnblogs.com/xiegongzi/p/15684307.html
+2. Java操作：https://www.cnblogs.com/xiegongzi/p/15690534.html
+3. 理论及原理：https://www.cnblogs.com/xiegongzi/p/15757337.html
+4. 续篇：ttps://www.cnblogs.com/xiegongzi/p/15770665.html
+
+
+
+
+
+## 关系型数据库与ES的对应关系
+
+![img](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617212656749-968465782.png)
+
+
+
+**注**：ES 7.x之后，type已经被淘汰了，其他的没变
+
+
+
+
+
+## 基础理论
+
+### 正向索引和倒排索引
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617213116322-1555655317.png)
+
+
+
+倒排索引中又有3个小东西：
+
+1. **词条**：**是指索引中的最小存储或查询单元**。这个其实很好理解，白话文来讲就是：字或者词组，英文就是一个单词，中文就是字或词组嘛，比如：你要查询的内容中具备含义的某一个字或词组，这就是词条呗，如：我是中国人，就可以分为：我、是、中国人、中国、国人这样的几个词条
+2. **词典**：就是词条的集合嘛。**字或者词组组成的内容呗**
+3. **倒排表**：**就是指 关键字 / 关键词 在索引中的位置。** 有点类似于数组，你查询数组中某个元素的位置，但是区别很大啊，我只是为了好理解，所以才这么举例子的
+
+
+
+### type 类型
+
+**这玩意儿就相当于关系型数据库中的表，注意啊：关系型中表是在数据库下，那么ES中也相应的 类型是在索引之下建立的**
+
+表是个什么玩意呢？行和列嘛，这行和列有多少？N多行和N多列嘛，所以：ES中的类型也一样，可以定义N种类型。
+同时：每张表要存储的数据都不一样吧，所以表是用来干嘛的？分类 / 分区嘛，所以ES中的类型的作用也来了：就是为了分类嘛。
+另外：关系型中可以定义N张表，那么在ES中，也可以定义N种类型
+
+**因此：ES中的类型类似于关系型中的表，作用：为了分类 / 分区，同时：可以定义N种类型，但是：类型必须是在索引之下建立的（ 是索引的逻辑体现嘛 ）**
+
+**但是：不同版本的ES，类型也发生了变化，上面的解读不是全通用的**
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617215117345-685221570.png)
+
+
+
+### field 字段
+
+**这也就类似于关系型中的列。 对文档数据根据不同属性（列字段）进行的分类标识**
+
+字段常见的简单类型：
+
+- 字符串：text（可分词的文本）、keyword（精确值，例如：品牌、国家、ip地址）
+- 数值：long、integer、short、byte、double、float、
+- 布尔：boolean
+- 日期：date
+- 对象：object
+
+**注意：**没有数组类型，但是可以实现出数组，因为每种类型可以有“多个值”，即可实现出类似于数组类型，例如下面的格式：
+
+```json
+{
+    "age": 21,	// Integer类型
+    "weight": 52.1,		// float类型
+    "isMarried": false,		// boolean类型
+    "info": "这就是一个屌丝女",		// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束时什么
+    "email": "zixq8@slafjkl.com",	// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束时什么
+    "score": [99.1, 99.5, 98.9],	// 类似数组	就是利用了一个类型可以有多个值
+    "name": {		// object对象类型
+        "firstName": "紫",
+        "lastName": "邪情"
+    }
+}
+```
+
+
+
+### document 文档
+
+**这玩意儿类似于关系型中的行。 一个文档是一个可被索引的基础信息单元，也就是一条数据嘛**
+
+即：用来搜索的数据，其中的每一条数据就是一个文档。例如一个网页、一个商品信息
+
+
+
+**新增文档：**
+
+```json
+// 这是kibana中进行的操作，要是使用如postman风格的东西发请求，则在 /索引库名/_doc/文档id 前加上es主机地址即可
+POST /索引库名/_doc/文档id		// 指定了文档id，若不指定则es自动创建
+{
+    "字段1": "值1",
+    "字段2": "值2",
+    "字段3": {
+        "子属性1": "值3",
+        "子属性2": "值4"
+    },
+    // ...
+}
+```
+
+**查看指定文档id的文档：**
+
+```json
+GET /{索引库名称}/_doc/{id}
+```
+
+**删除指定文档id的文档：**
+
+```json
+DELETE /{索引库名}/_doc/id值
+```
+
+**修改文档：**有两种方式
+
+- **全量修改**：直接覆盖原来的文档。其本质是：
+  - 根据指定的id删除文档
+  - 新增一个相同id的文档
+  - **注意**：如果根据id删除时，id不存在，第二步的新增也会执行，也就从修改变成了新增操作了
+
+```json
+// 语法格式
+PUT /{索引库名}/_doc/文档id
+{
+    "字段1": "值1",
+    "字段2": "值2",
+    // ... 略
+}
+```
+
+- **增量/局部修改**：是只修改指定id匹配的文档中的部分字段
+
+```json
+// 语法格式
+POST /{索引库名}/_update/文档id
+{
+    "doc": {
+         "字段名": "新的值",
+    }
+}
+```
+
+
+
+### mapping 映射
+
+**指的就是：结构信息 / 限制条件**
+
+还是对照关系型来看，在关系型中表有哪些字段、该字段是否为null、默认值是什么........诸如此的限制条件，所以**ES中的映射就是：数据的使用规则设置**
+
+
+
+mapping是对索引库中文档的约束，常见的mapping属性包括：
+
+- index：是否创建索引，默认为true
+- analyzer：使用哪种分词器
+- properties：该字段的子字段
+
+更多类型去官网查看：https://www.elastic.co/guide/en/elasticsearch/reference/8.8/mapping-params.html
+
+
+
+```json
+{
+  "mappings": {
+    "properties": {		// 子字段
+      "字段名1":{		// 定义字段名
+        "type": "text",		// 该字段的类型
+        "analyzer": "ik_smart"		// 该字段采用的分词器类型 这是ik分词器中的，一种为ik_smart 一种为ik_max_word，具体看一开始给的系列知识链接
+      },
+      "字段名2":{
+        "type": "keyword",
+        "index": "false"		// 该字段是否可以被索引，默认值为trus，即：不想被搜索的字段就可以显示声明为false
+      },
+      "字段名3":{
+        "properties": {
+          "子字段": {
+            "type": "keyword"
+          }
+        }
+      },
+      // ...略
+    }
+  }
+}
+```
+
+**创建索引库的同时，创建数据结构约束：**
+
+```json
+// 格式
+PUT /索引库名称				// 创建索引库
+{						// 同时创建数据结构约束信息
+  "mappings": {
+    "properties": {
+      "字段名":{
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "字段名2":{
+        "type": "keyword",
+        "index": "false"
+      },
+      "字段名3":{
+        "properties": {
+          "子字段": {
+            "type": "keyword"
+          }
+        }
+      },
+      // ...略
+    }
+  }
+}
+
+
+
+// 示例
+PUT /user
+{
+  "mappings": {
+    "properties": {
+      "info":{
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "email":{
+        "type": "keyword",
+        "index": "falsae"
+      },
+      "name":{
+        "properties": {
+          "firstName": {
+            "type": "keyword"
+          },
+		 "lastName": {
+			"type": "keyword"
+          }
+        }
+      },
+      // ... 略
+    }
+  }
+}
+```
+
+
+
+
+
+### index 索引
+
+**所谓索引：类似于关系型数据库中的数据库**
+
+但是索引这个东西在ES中又有点东西，它的作用和关系型数据库中的索引是一样的，相当于门牌号，一个标识，旨在：提高查询效率，当然，不是说只针对查询，CRUD都可以弄索引，所以这么一说ES中的索引和关系型数据库中的索引是一样的，就不太类似于关系型中的数据库了，此言差矣！在关系型中有了数据库，才有表结构（ 行、列、类型...... ）
+
+而在ES中就是有了索引，才有doc、field.....，因此：这就类似于关系型中的数据库，只是作用和关系型中的索引一样罢了
+
+**因此：ES中索引类似于关系型中的数据库，作用：类似于关系型中的索引，旨在：提高查询效率，当然：在一个集群中可以定义N多个索引，同时：索引名字必须采用全小写字母**
+
+当然：也别忘了有一个倒排索引
+
+- 关系型数据库通过增加一个**B+树索引**到指定的列上，以便提升数据检索速度。而ElasticSearch 使用了一个叫做 `倒排索引` 的结构来达到相同的目的
+
+
+
+**创建索引：** 相当于在创建数据库
+
+```json
+# 在kibana中进行的操作
+PUT /索引库名称
+
+# 在postman之类的地方创建
+http://ip:port/indexName     如：http://127.0.0.1:9200/createIndex    	请求方式：put
+```
+
+**注：put请求具有幂等性**，幂等性指的是： 不管进行多少次重复操作，都是实现相同的结果。可以采用把下面的请求多执行几次，然后：观察返回的结果
+
+**具有幂等性的有：put、delete、get**
+
+
+
+**查看索引库：**
+
+```json
+# 查看指定的索引库
+GET /索引库名
+
+# 查看所有的索引库
+GET /_cat/indices?v 
+```
+
+
+
+**修改索引库：**
+
+- 倒排索引结构虽然不复杂，但是一旦数据结构改变（比如改变了分词器），就需要重新创建倒排索引，这简直是灾难。因此索引库**一旦创建，无法修改mapping**。
+
+
+
+虽然无法修改mapping中已有的字段，但是却允许添加新的字段到mapping中，因为不会对倒排索引产生影响。
+
+**语法说明**：
+
+```json
+PUT /索引库名/_mapping
+{
+  "properties": {
+    "新字段名":{
+      "type": "integer"
+        // ............
+    }
+  }
+}
+```
+
+
+
+**删除索引库：**
+
+```json
+DELETE /索引库名
+```
+
+
+
+### shards 分片
+
+**这玩意儿就类似于关系型中的分表**
+
+在关系型中如果一个表的数据太大了，查询效率很低、响应很慢，所以就会采用大表拆小表，如：用户表，不可能和用户相关的啥子东西都放在一张表吧，这不是找事吗？因此：需要分表
+
+相应的在ES中，也需要像上面这么干，如：存储100亿文档数据的索引，在单节点中没办法存储这么多的文档数据，所以需要进行切割，就是将这整个100亿文档数据切几刀，然后每一刀切分出来的每份数据就是一个分片 （ 索引 ），然后将切开的每份数据单独放在一个节点中，这样切开的所有文档数据合在一起就是一份完整的100亿数据，因此：这个的作用也是为了提高效率
+
+**创建一个索引的时候，可以指定想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上**
+
+**分片有两方面的原因：**
+
+- 允许水平分割 / 扩展内容容量，水平扩充，负载均衡嘛
+- 允许在分片之上进行分布式的、并行的操作，进而提高性能 / 吞吐量
+
+**注意： 当 Elasticsearch 在索引中搜索的时候， 它发送查询到每一个属于索引的分片，然后合并每个分片的结果到一个全局的结果集中**
+
+
+
+### replicas 副本
+
+**这不是游戏中的刷副本的那个副本啊。是指：分片的复制品**
+
+失败是常有的事嘛，所以：在ES中也会失败呀，可能因为网络、也可能因此其他鬼原因就导致失败了，此时不就需要一种故障转移机制吗，也就是 **创建分片的一份或多份拷贝，这些拷贝就叫做复制分片( 副本 )**
+
+**副本（ 复制分片 ）之所以重要，有两个原因：**
+
+- 在分片 / 节点失败的情况下，**提供了高可用性。因为这个原因，复制分片不与原 / 主（ original / primary ）分片置于同一节点上是非常重要的**
+- 扩展搜索量 / 吞吐量，因为搜索可以在所有的副本上并行运行
+
+多说一嘴，分片和副本这两个不就是配套了吗，分片是切割数据，放在不同的节点中（ 服务中 ）；副本是以防服务宕掉了，从而丢失数据，进而把分片拷贝了任意份。这个像什么？不就是主备吗（ 我说的是主备，不是主从啊 ，这两个有区别的，主从是主机具有写操作，从机具有读操作；而主备是主机具有读写操作，而备机只有读操作，不一样的啊 ）
+
+**有个细节需要注意，在ES中，分片和副本不是在同一台服务器中，是分开的，如：分片P1在节点1中，那么副本R1就不能在节点1中，而是其他服务中，不然服务宕掉了，那数据不就全丢了吗**
+
+
+
+### allocation 分配
+
+前面讲到了分片和副本，对照Redis中的主备来看了，那么对照Redis的主从来看呢？主机宕掉了怎么重新选一个主机？Redis中是加了一个哨兵模式，从而达到的。那么在ES中哪个是主节点、哪个是从节点、分片怎么去分的？就是利用了分配
+
+**所谓的分配是指： 将分片分配给某个节点的过程，包括分配主分片或者副本。如果是副本，还包含从主分片复制数据的过程。注意：这个过程是由 master 节点完成的，和Redis还是有点不一样的啊**
+
+既然都说了这么多，那就再来一个ES的系统架构吧
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617215725410-1123704279.png)
+
+其中，**P表示分片、R表示副本**
+
+**默认情况下，分片和副本都是1，根据需要可以改变**
+
+
+
+
+
+
+
+## Java操作ES
 
 
 
