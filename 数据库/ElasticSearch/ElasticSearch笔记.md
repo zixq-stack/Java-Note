@@ -1,54 +1,63 @@
+# 基础理论和DSL语法
+
 ## 准备工作
-### 0、什么是ElasticSearch？它和Lucene以及solr的关系是什么？
+
+### 什么是ElasticSearch？它和Lucene以及solr的关系是什么？
 
 这些是自己的知识获取能力，自行百度百科
 
+<br>
 
-
-### 1、下载ElasticSearch的window版
+### 下载ElasticSearch的window版
 
 linux版后续说明
 
 自行百度Elastic，然后进到官网进行下载，我的版本是：7.8.0
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905508-979450190.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222900979-803597459.png)
 
+<br>
 
-
-### 2、下载postman
+### 下载postman
 
 自行百度进行下载
 
+<br>
 
-
-### 3、ElasticSearch中的目录解读
+### ElasticSearch中的目录解读
 
 会tomcat，看到这些目录就不陌生
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120904993-159453869.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222857550-1182300478.png)
+
+
 
 **进到bin目录下，点击 elasticsearch.bat 文件即可启动 ES 服务**
 
+<br>
 
-
-### 4、ELK技术是什么意思？
+### ELK技术是什么意思？
 
 就图中这三个
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905596-1157374499.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222905120-2029013187.png)
+
+<br>
 
 
 
-### 5、注意事项
+### 注意事项
 
 保证自己的JDK是1.8或以上，最低要求1.8
 
 
+<br>
 
 
-## 0、ES非关系型和关系型数据库对应关系
 
-![img](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905068-2086859363.png) 
+### ES非关系型和关系型数据库对应关系
+
+![img](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222902701-1239094255.png) 
 
 
 
@@ -56,70 +65,392 @@ linux版后续说明
 
 **只要玩ES，那么这个图就要牢牢地记在自己脑海里，后续的名词解释不再过多说明，就是操作这幅图中的东西**
 
-
-
-## 1、索引
-
-这里需要解释一个东西：**倒排索引**
-
-
-解释之前先来对照关系型数据库看一下：**正排索引**
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905141-1235396703.png)
+<br>
 
 
 
 
-### 1.1、创建索引
 
-**语法：**
+## 基础理论
+
+### 正向索引和倒排索引
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627225152906-1397781389.png)
+
+elasticsearch中使用的就是倒排索引
+
+
+
+倒排索引中又有3个小东西：
+
+1. **词条**：**是指索引中的最小存储或查询单元**。这个其实很好理解，白话文来讲就是：字或者词组，英文就是一个单词，中文就是字或词组嘛，比如：你要查询的内容中具备含义的某一个字或词组，这就是词条呗，如：我是中国人，就可以分为：我、是、中国人、中国、国人这样的几个词条
+2. **词典**：就是词条的集合嘛。**字或者词组组成的内容呗**
+3. **倒排表**：**就是指 关键字 / 关键词 在索引中的位置。** 有点类似于数组，你查询数组中某个元素的位置，但是区别很大啊，我只是为了好理解，所以才这么举例子的
+
+
+
+### type 类型
+
+**这玩意儿就相当于关系型数据库中的表，注意啊：关系型中表是在数据库下，那么ES中也相应的 类型是在索引之下建立的**
+
+表是个什么玩意呢？行和列嘛，这行和列有多少？N多行和N多列嘛，所以：ES中的类型也一样，可以定义N种类型。
+同时：每张表要存储的数据都不一样吧，所以表是用来干嘛的？分类 / 分区嘛，所以ES中的类型的作用也来了：就是为了分类嘛。
+另外：关系型中可以定义N张表，那么在ES中，也可以定义N种类型
+
+**因此：ES中的类型类似于关系型中的表，作用：为了分类 / 分区，同时：可以定义N种类型，但是：类型必须是在索引之下建立的（ 是索引的逻辑体现嘛 ）**
+
+**但是：不同版本的ES，类型也发生了变化，上面的解读不是全通用的**
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627225152905-1909735633.png)
+
+
+
+### field 字段
+
+**这也就类似于关系型中的列。 对文档数据根据不同属性（列字段）进行的分类标识**
+
+字段常见的简单类型：注意：id的类型在ES中id是字符串，这点需要注意
+
+- 字符串：text（可分词的文本）、keyword（精确值，例如：品牌、国家、ip地址）。text和keyword的区别如下；
+  - text类型支持全文检索和完全查询，即：我搜索时只用字符串中的一个字符照样得到结果。**原理：text使用了分词，就是把字符串拆分为单个字符串了**
+  - keyword类型支持完全查询，即：精确查询，**前提：index不是false**。**原理：keyword不支持分词，所以：查询时必须是完全查询（ 所有字符匹配上才可以 ）**
+
+- 数值：long、integer、short、byte、double、float、
+- 布尔：boolean
+- 日期：date
+- 对象：object
+- 地图类型：geo_point 和 geo_shape
+  - geo_point：有纬度(latitude) 和经度(longitude)确定的一个点，如：“32.54325453, 120.453254”
+  - geo_shape：有多个geo_point组成的复杂集合图形，如一条直线 “LINESTRING (-77.03653 38.897676, -77.009051 38.889939)”
+- 自动补全类型：completion
+
+
+
+**注意：**没有数组类型，但是可以实现出数组，因为每种类型可以有“多个值”，即可实现出类似于数组类型，例如下面的格式：
 
 ```json
-http://ip:port/index_name					// 如：http://127.0.0.1:9200/create_index    请求方式：put
+{
+    "age": 21,	// Integer类型
+    "weight": 52.1,		// float类型
+    "isMarried": false,		// boolean类型
+    "info": "这就是一个屌丝女",		// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束时什么
+    "email": "zixq8@slafjkl.com",	// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束时什么
+    "score": [99.1, 99.5, 98.9],	// 类似数组	就是利用了一个类型可以有多个值
+    "name": {		// object对象类型
+        "firstName": "紫",
+        "lastName": "邪情"
+    }
+}
+```
+
+**还有一个字段的拷贝：** 可以使用copy_to属性将当前字段拷贝到指定字段
+
+**使用场景：** 多个字段放在一起搜索的时候
+
+**注意：** 定义的要拷贝的那个字段在ES中看不到，但是确实是存在的，就像个虚拟的一样
+
+```json
+// 定义了一个字段
+"all": {
+    "type": "text",
+    "analyzer": "ik_max_word"
+}
+
+
+"name": {
+    "type": "text",
+    "analyzer": "ik_max_word",
+    "copy_to": "all"		// 将当前字段 name 拷贝到 all字段中去
+}
+```
+
+
+
+
+
+### document 文档
+
+**这玩意儿类似于关系型中的行。 一个文档是一个可被索引的基础信息单元，也就是一条数据嘛**
+
+即：用来搜索的数据，其中的每一条数据就是一个文档。例如一个网页、一个商品信息
+
+
+
+**新增文档：**
+
+```json
+// 这是kibana中进行的操作，要是使用如postman风格的东西发请求，则在 /索引库名/_doc/文档id 前加上es主机地址即可
+POST /索引库名/_doc/文档id		// 指定了文档id，若不指定则es自动创建
+{
+    "字段1": "值1",
+    "字段2": "值2",
+    "字段3": {
+        "子属性1": "值3",
+        "子属性2": "值4"
+    },
+    // ...
+}
+```
+
+**查看指定文档id的文档：**
+
+```json
+GET /{索引库名称}/_doc/{id}
+```
+
+**删除指定文档id的文档：**
+
+```json
+DELETE /{索引库名}/_doc/id值
+```
+
+**修改文档：**有两种方式
+
+- **全量修改**：直接覆盖原来的文档。其本质是：
+  - 根据指定的id删除文档
+  - 新增一个相同id的文档
+  - **注意**：如果根据id删除时，id不存在，第二步的新增也会执行，也就从修改变成了新增操作了
+
+```json
+// 语法格式
+PUT /{索引库名}/_doc/文档id
+{
+    "字段1": "值1",
+    "字段2": "值2",
+    // ... 略
+}
+```
+
+- **增量/局部修改**：是只修改指定id匹配的文档中的部分字段
+
+```json
+// 语法格式
+POST /{索引库名}/_update/文档id
+{
+    "doc": {
+         "字段名": "新的值",
+    }
+}
+```
+
+
+
+
+
+### mapping 映射
+
+**指的就是：结构信息 / 限制条件**
+
+还是对照关系型来看，在关系型中表有哪些字段、该字段是否为null、默认值是什么........诸如此的限制条件，所以**ES中的映射就是：数据的使用规则设置**
+
+
+
+mapping是对索引库中文档的约束，常见的mapping属性包括：
+
+- index：是否创建索引，默认为true
+- analyzer：使用哪种分词器
+- properties：该字段的子字段
+
+更多类型去官网查看：https://www.elastic.co/guide/en/elasticsearch/reference/8.8/mapping-params.html
+
+
+
+
+
+创建索引库，最关键的是mapping映射，而mapping映射要考虑的信息包括：
+
+- 字段名
+- 字段数据类型
+- 是否参与搜索
+- 是否需要分词
+- 如果分词，分词器是什么？
+
+其中：
+
+- 字段名、字段数据类型，可以参考数据表结构的名称和类型
+- 是否参与搜索要分析业务来判断，例如图片地址，就无需参与搜索
+- 是否分词呢要看内容，内容如果是一个整体就无需分词，反之则要分词
+- 分词器，我们可以统一使用ik_max_word
+
+
+
+
+
+```json
+{
+  "mappings": {
+    "properties": {		// 子字段
+      "字段名1":{		// 定义字段名
+        "type": "text",		// 该字段的类型
+        "analyzer": "ik_smart"		// 该字段采用的分词器类型 这是ik分词器中的，一种为ik_smart 一种为ik_max_word，具体看一开始给的系列知识链接
+      },
+      "字段名2":{
+        "type": "keyword",
+        "index": "false"		// 该字段是否可以被索引，默认值为trus，即：不想被搜索的字段就可以显示声明为false
+      },
+      "字段名3":{
+        "properties": {
+          "子字段": {
+            "type": "keyword"
+          }
+        }
+      },
+      // ...略
+    }
+  }
+}
+```
+
+**创建索引库的同时，创建数据结构约束：**
+
+```json
+// 格式
+PUT /索引库名称				// 创建索引库
+{						// 同时创建数据结构约束信息
+  "mappings": {
+    "properties": {
+      "字段名":{
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "字段名2":{
+        "type": "keyword",
+        "index": "false"
+      },
+      "字段名3":{
+        "properties": {
+          "子字段": {
+            "type": "keyword"
+          }
+        }
+      },
+      // ...略
+    }
+  }
+}
+
+
+
+// 示例
+PUT /user
+{
+  "mappings": {
+    "properties": {
+      "info":{
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "email":{
+        "type": "keyword",
+        "index": "falsae"
+      },
+      "name":{
+        "properties": {
+          "firstName": {
+            "type": "keyword"
+          },
+		 "lastName": {
+			"type": "keyword"
+          }
+        }
+      },
+      // ... 略
+    }
+  }
+}
+```
+
+
+
+
+
+### index 索引库
+
+**所谓索引：类似于关系型数据库中的数据库**
+
+但是索引这个东西在ES中又有点东西，它的作用和关系型数据库中的索引是一样的，相当于门牌号，一个标识，旨在：提高查询效率，当然，不是说只针对查询，CRUD都可以弄索引，所以这么一说ES中的索引和关系型数据库中的索引是一样的，就不太类似于关系型中的数据库了，此言差矣！在关系型中有了数据库，才有表结构（ 行、列、类型...... ）
+
+而在ES中就是有了索引，才有doc、field.....，因此：这就类似于关系型中的数据库，只是作用和关系型中的索引一样罢了
+
+**因此：ES中索引类似于关系型中的数据库，作用：类似于关系型中的索引，旨在：提高查询效率，当然：在一个集群中可以定义N多个索引，同时：索引名字必须采用全小写字母**
+
+当然：也别忘了有一个倒排索引
+
+- 关系型数据库通过增加一个**B+树索引**到指定的列上，以便提升数据检索速度。而ElasticSearch 使用了一个叫做 `倒排索引` 的结构来达到相同的目的
+
+
+
+**创建索引：** 相当于在创建数据库
+
+```json
+# 在kibana中进行的操作
+PUT /索引库名称
+
+# 在postman之类的地方创建
+http://ip:port/indexName     如：http://127.0.0.1:9200/createIndex    	请求方式：put
 ```
 
 **注：put请求具有幂等性**，幂等性指的是： 不管进行多少次重复操作，都是实现相同的结果。可以采用把下面的请求多执行几次，然后：观察返回的结果
 
-**还具有幂等性的有：put、delete、get**
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905444-1036278715.png)
+**具有幂等性的有：put、delete、get**
 
 
 
-
-### 1.1、获取索引
-
-**语法：**
+**查看索引库：**
 
 ```json
-http://ip:port/index_name					// 如：http://127.0.0.1:9200/create_index  请求方式：get
+# 查看指定的索引库
+GET /索引库名
+
+# 查看所有的索引库
+GET /_cat/indices?v 
+```
+
+
+
+**修改索引库：**
+
+- 倒排索引结构虽然不复杂，但是一旦数据结构改变（比如改变了分词器），就需要重新创建倒排索引，这简直是灾难。因此索引库**一旦创建，无法修改mapping**。
+
+
+
+虽然无法修改mapping中已有的字段，但是却允许添加新的字段到mapping中，因为不会对倒排索引产生影响。
+
+**语法说明**：
+
+```json
+PUT /索引库名/_mapping
+{
+  "properties": {
+    "新字段名":{
+      "type": "integer"
+        // ............
+    }
+  }
+}
+```
+
+
+
+**删除索引库：**
+
+```json
+DELETE /索引库名
 ```
 
 
 
 
-### 1.3、获取ES中的全部索引
-
-```json
-http://ip:port/_cat/indices?v			// 如：http://127.0.0.1:9200/_cat/indices?v
-```
 
 
 
 
-### 1.4、删除索引
-
-**语法：**
-
-```json
-http://ip:port/index_name			// 如：http://127.0.0.1:9200/create_index    注意：请求方式为delete
-```
 
 
 
-## 2、文档_doc
+## 文档_doc
 
-### 2.1、使用post创建doc
+### 使用post创建doc
 
 **这种方式：是采用ES随机生成id时使用的请求方式**
 
@@ -129,47 +460,45 @@ http://ip:port/index_name			// 如：http://127.0.0.1:9200/create_index    注�
 
 **语法：**
 
- ```json
- http://ip:port/index_name/_doc				// 如： http://127.0.0.1:9200/create_index/_doc    请求方式：post
+ ```txt
+ http://ip:port/indexName/_doc     如： http://ip:9200/createIndex/_doc    请求方式：post
  ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905743-1176022174.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222903828-1974717579.png)
 
 
+<br>
 
-
-
-### 2.2、使用put创建doc-转幂等性-自定义id
+### 使用put创建doc-转幂等性-自定义id
 
 在路径后面加一个要创建的id值即可
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905220-558659753.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222907182-1936688817.png)
 
 
+<br>
 
+### 查询文档_doc - 重点
 
-
-### 2.3、查询文档_doc - 重点
-
-#### 2.3.1、id查询单条_doc
+#### id查询单条_doc
 
 **语法：**
 
- ```json
- http://ip:port/index_name/_doc/id			// 如： http://127.0.0.1:9200/create_index/_doc/100001     请求方式：get
+ ```txt
+ http://ip:port/indexName/_doc/id      如： http://ip:9200/createIndex/_doc/100001     请求方式：get
  ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905273-1068352759.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222907206-597552959.png)
 
 
+<br>
 
-
-#### 2.3.2、查询ES中索引下的全部_doc
+#### 查询ES中索引下的全部_doc
 
 **语法：**
 
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
+```txt
+http://ip:port/indexName/_search    如： http://ip:9200/createIndex/_search     请求方式：get
 ```
 
 
@@ -178,7 +507,7 @@ http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index
 
 Unknown key for a VALUE_STRING in [title]
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905724-939255571.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222908057-722361093.png)
 
 
 
@@ -187,9 +516,9 @@ Unknown key for a VALUE_STRING in [title]
 
 ```json
 {
-    "took": 69,   查询花费的时间  毫秒值
-    "timed_out": false,     是否超时
-    "_shards": {    分片  还没学，先不看
+    "took": 69,   // 查询花费的时间  毫秒值
+    "timed_out": false,     // 是否超时
+    "_shards": {    // 分片  还没学，先不看
         "total": 1,
         "successful": 1,
         "skipped": 0,
@@ -201,488 +530,877 @@ Unknown key for a VALUE_STRING in [title]
             "relation": "eq"
         },
         "max_score": 1.0,
-        "hits": [   查询出来的 当前索引下的所有_doc文档
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pdy1sX0B_g8Hput6sCw6",
-                "_score": 1.0,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            },
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pty5sX0B_g8Hput6eyzA",
-                "_score": 1.0,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            },
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "100001",
-                "_score": 1.0,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            }
+        "hits": [   // 查询出来的 当前索引下的所有_doc文档
+            // .............................
         ]
     }
 }
 ```
 
 
+<br>
 
 
 
+### 文档_doc的修改
 
-### 2.4、文档_doc的修改
+#### 全量修改
 
-#### 2.4.1、全量修改
+> 原理：利用内容覆盖，重新发一份文档罢了
 
-**原理：利用内容覆盖，重新发一份文档罢了**
+
 
 **语法：**
 
-```json
-http://ip:port/index_name/_doc/id			// 如： http://127.0.0.1:9200/create_index/_doc/100001     请求方式：post
+```txt
+http://ip:port/indexName/_doc/id      如： http://ip:9200/createIndex/_doc/100001     请求方式：post
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905185-1193802917.png)
+![](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222904962-525012672.png)
 
 
 
+<br>
 
-获取_doc文档，检验一下
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905523-566860306.png)
-
-
-
-#### 2.4.2、局部修改
+#### 局部修改
 
 **语法：**
 
-```json
-http://ip:port/index_name/_update/id		// 如： http://127.0.0.1:9200/create_index/_update/100001    请求方式：post
+```txt
+http://ip:port/indexName/_update/id   如： http://ip:9200/createIndex/_update/100001    请求方式：post
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905782-1063870481.png)
-
-
-检验一下：
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905733-970473515.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222906923-142580147.png)
 
 
 
+<br>
 
-### 2.5、文档_doc的删除
+### 文档_doc的删除
 
 使用delete请求即可
 
+<br>
 
 
 
-### 2.6、条件查询 - 重点
+### 文档DSL查询
 
-#### 2.6.1、url携带条件
+elasticsearch的查询依然是基于JSON风格的DSL来实现的
 
-**语法：**
+
+
+#### DSL查询分类
+
+ElasticSearch提供了基于JSON的DSL（[Domain Specific Language](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html)）来定义查询。常见的查询类型包括：
+
+- **查询所有**：查询出所有数据，一般测试用。例如：match_all
+
+- **全文检索(full text)查询**：利用分词器对用户输入内容分词，然后去倒排索引库中匹配。例如：
+  - match_query
+  - multi_match_query
+- **精确查询**：根据精确词条值查找数据，一般是查找keyword、数值、日期、boolean等类型字段，所以**不会**对搜索条件分词。例如：
+  - ids
+  - range
+  - term
+- **地理（geo）查询**：根据经纬度查询。例如：
+  - geo_distance
+  - geo_bounding_box
+- **复合（compound）查询**：复合查询可以将上述各种查询条件组合起来，合并查询条件。例如：
+  - bool
+  - function_score
+- **聚合(aggregations)查询:** 可以让我们极其方便的实现对数据的统计、分析、运算，例如：
+  - **桶（Bucket）**聚合：用来对文档做分组
+  - **度量（Metric）**聚合：用以计算一些值，比如：最大值、最小值、平均值等
+  - **管道（pipeline）**聚合：其它聚合的结果为基础做聚合
+
+
+
+
+查询的语法基本一致：除了聚合查询
 
 ```json
-http://ip:port/index_name/_search?q=条件字段:值			// 请求方式：get
-
-// 如： http://127.0.0.1:9200/create_index/_search?q=author:邪
-```
-
-**注**：这种方式不建议用，了解即可吧
-
-
-
-
-
-#### 2.6.2、请求体携带条件 - 推荐使用的一种
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
-```
-
-请求体携带的数据：
-
-
-```json
+GET /indexName/_search
 {
-    "query": {
-        "match":{   // match  匹配、配对
-            "author": "邪"   // 条件
-        }
+  "query": {
+    "查询类型": {
+      "查询条件": "条件值"
+    }
+  }
+}
+
+
+
+// 例如：查询所有
+GET /indexName/_search
+{
+  "query": {
+    "match_all": {		// 查询类型为match_all
+    }				  // 没有查询条件
+  }
+}
+```
+
+其它查询无非就是**查询类型**、**查询条件**的变化
+
+
+
+
+
+
+
+#### 全文检索查询
+
+> **定义：** 利用分词器对用户输入内容分词，然后去倒排索引库中匹配
+
+
+
+全文检索查询的基本流程如下：
+
+1. 对用户搜索的内容做分词，得到词条
+2. 根据词条去倒排索引库中匹配，得到文档id
+3. 根据文档id找到文档，返回给用户
+
+
+
+**使用场景：** 搜索框搜索内容，如百度输入框搜索、google搜索框搜索……….
+
+
+
+**注意：** 因为是拿着词条去匹配，因此**参与搜索的字段必须是可分词的text类型的字段**
+
+
+
+常见的全文检索查询包括：
+
+- match查询：单字段查询
+- multi_match查询：多字段查询，任意一个字段符合条件就算符合查询条件
+
+match查询语法如下：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match": {
+      "field": "搜索的文本内容text"
+    }
+  }
+}
+
+
+// 例如：
+GET /indexName/_search
+{
+  "query": {
+    "match": {
+      "name": "紫邪情"
+    }
+  }
+}
+```
+
+mulit_match语法如下：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "搜索的文本内容text",
+      "fields": ["field1", "field2"]
+    }
+  }
+}
+
+
+// 例如：
+GET /indexName/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "Java",
+      "fields": ["username","title", "context"]
+    }
+  }
+}
+```
+
+**注意：** 搜索字段越多，对查询性能影响越大，因此建议采用copy_to，然后使用单字段查询的方式(即：match查询)
+
+
+
+
+
+
+
+#### 精准查询
+
+> **定义：** 根据精确词条值查找数据，一般是查找keyword、数值、日期、boolean等类型字段，所以**不会**对搜索条件分词
+
+
+
+常见的精准查询有：
+
+- term：根据词条精确值查询
+- range：根据值的范围查询
+
+
+
+
+
+##### term查询/精确查询
+
+因为精确查询的字段搜是不分词的字段，因此查询的条件也必须是**不分词**的词条。查询时，用户输入的内容跟自动值完全匹配时才认为符合条件。如果用户输入的内容过多，反而搜索不到数据
+
+
+
+语法说明：
+
+```json
+// term查询
+GET /indexName/_search
+{
+  "query": {
+    "term": {
+      "field": {
+        "value": "要精确查询的内容"
+      }
+    }
+  }
+}
+
+
+// 例如：
+GET /indexName/_search
+{
+  "query": {
+    "term": {
+      "field": {
+        "value": "遥远的救世主"
+      }
+    }
+  }
+}
+```
+
+
+
+
+
+##### range查询/范围查询
+
+> 范围查询，一般应用在对数值类型做范围过滤的时候。比如做价格范围过滤
+
+
+
+
+
+基本语法：
+
+```json
+// range查询
+GET /indexName/_search
+{
+  "query": {
+    "range": {
+      "FIELD": {
+        "gte": 10, // gte代表大于等于，gt则代表大于
+        "lte": 20 // lte代表小于等于，lt则代表小于
+      }
+    }
+  }
+}
+
+// 例如：
+GET /indexName/_search
+{
+  "query": {
+    "range": {
+      "price": {
+        "gte": 10000,
+        "lte": 20000
+      }
+    }
+  }
+}
+```
+
+
+
+
+
+
+
+#### 地理坐标查询
+
+> 所谓的地理坐标查询，其实就是根据经纬度查询，官方文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-queries.html
+
+
+
+常见的使用场景包括：
+
+- 携程：搜索我附近的酒店
+- 滴滴：搜索我附近的出租车
+- 微信：搜索我附近的人
+
+
+
+
+
+##### 矩形范围查询
+
+矩形范围查询，也就是geo_bounding_box查询，查询坐标落在某个矩形范围的所有文档
+
+查询时，需要指定矩形的**左上**、**右下**两个点的坐标，然后画出一个矩形(就是对两个点画“十”字，中间交汇的部分就是要的矩形)，落在该矩形内的都是符合条件的点，比如下图
+
+![DKV9HZbVS6](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230622193521922-1031103897.gif)
+
+
+
+
+
+语法如下：
+
+```json
+// geo_bounding_box查询
+GET /indexName/_search
+{
+  "query": {
+    "geo_bounding_box": {
+      "FIELD": {
+        "top_left": { // 左上点
+          "lat": 31.1,	// 这个点的经度
+          "lon": 121.5	// 这个点的纬度
+        },
+        "bottom_right": { // 右下点
+          "lat": 30.9,
+          "lon": 121.7
+        }
+      }
+    }
+  }
+}
+```
+
+
+
+
+
+
+
+##### 附近查询/距离查询
+
+附近查询，也叫做距离查询（geo_distance）：查询到指定中心点小于某个距离值的所有文档
+
+换句话来说，在地图上找一个点作为圆心，以指定距离为半径，画一个圆，落在圆内的坐标都算符合条件，如下
+
+![vZrdKAh19C](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230622194102711-1944482080.gif)
+
+
+
+
+
+语法说明：
+
+```json
+// geo_distance 查询
+GET /indexName/_search
+{
+  "query": {
+    "geo_distance": {
+      "distance": "距离", // 半径
+      "field": "经度,纬度" // 圆心
+    }
+  }
+}
+
+
+
+// 例如：在经纬度为 31.21,121.5 的方圆15km的附近
+GET /indexName/_search
+{
+  "query": {
+    "geo_distance": {
+      "distance": "15km", // 半径
+      "location": "31.21,121.5" // 圆心
+    }
+  }
+}
+```
+
+
+
+
+
+
+
+#### 复合查询
+
+> 复合查询可以将其它简单查询组合起来，实现更复杂的搜索逻辑
+
+
+
+常见的复合查询有两种：
+
+- fuction score：算分函数查询，可以控制文档相关性算分，控制文档排名
+- bool query：布尔查询，利用逻辑关系组合多个其它的查询，实现复杂搜索
+
+
+
+
+
+##### 相关性算分算法
+
+当我们利用match查询时，文档结果会根据与搜索词条的关联度打分（_score），返回结果时按照分值降序排列
+
+在elasticsearch中，早期使用的打分算法是TF-IDF算法，公式如下：
+
+![image-20210721190152134](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230622194749139-1479435428.png)
+
+
+
+在后来的5.1版本升级中，elasticsearch将算法改进为BM25算法，公式如下：
+
+![image-20210721190416214](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230622194749113-1396433065.png)
+
+
+
+
+
+TF-IDF算法有一各缺陷，就是词条频率越高，文档得分也会越高，单个词条对文档影响较大。而BM25则会让单个词条的算分有一个上限，曲线更加平滑：
+
+![image-20210721190907320](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230622194749495-591958408.png)
+
+
+
+
+
+
+
+##### function_score 算分函数查询
+
+> 算分函数查询可以控制文档相关性算分，控制文档排名
+
+
+
+以百度为例，你搜索的结果中，并不是相关度越高排名越靠前，而是谁掏的钱多排名就越靠前
+
+要想人为控制相关性算分，就需要利用elasticsearch中的function score 查询了
+
+
+
+
+
+**语法格式说明：**
+
+![image-20210721191544750](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230622195143155-1162661874.png)
+
+
+
+function score 查询中包含四部分内容：
+
+- **原始查询**条件：query部分，基于这个条件搜索文档，并且基于BM25算法给文档打分，**原始算分**（query score)
+- **过滤条件**：filter部分，符合该条件的文档才会重新算分
+- **算分函数**：符合filter条件的文档要根据这个函数做运算，得到的**函数算分**（function score），有四种函数
+  1. weight：函数结果是常量
+  2. field_value_factor：以文档中的某个字段值作为函数结果
+  3. random_score：以随机数作为函数结果
+  4. script_score：自定义算分函数算法
+- **运算模式**：算分函数的结果、原始查询的相关性算分，两者之间的运算方式，包括：
+  1. multiply：相乘
+  2. replace：用function score替换query score
+  3. 其它，例如：sum、avg、max、min
+
+
+
+function score的运行流程如下：
+
+1. 根据**原始条件**查询搜索文档，并且计算相关性算分，称为**原始算分**（query score）
+2. 根据**过滤条件**，过滤文档
+3. 符合**过滤条件**的文档，基于**算分函数**运算，得到**函数算分**（function score）
+4. 将**原始算分**（query score）和**函数算分**（function score）基于**运算模式**做运算，得到最终结果，作为相关性算分。
+
+
+
+因此，其中的关键点是：
+
+- 过滤条件：决定哪些文档的算分被修改
+- 算分函数：决定函数算分的算法
+- 运算模式：决定最终算分结果
+
+
+
+
+
+
+
+##### bool 布尔查询
+
+布尔查询是一个或多个查询子句的组合，每一个子句就是一个**子查询**。子查询的组合方式有：
+
+- must：必须匹配每个子查询，类似“与”
+- should：选择性匹配子查询，类似“或”
+- must_not：必须不匹配，**不参与算分**，类似“非”
+- filter：必须匹配，**不参与算分**
+
+
+
+**注意：** 搜索时，参与**打分的字段越多，查询的性能也越差**。因此这种多条件查询时，建议这样做：
+
+- 搜索框的关键字搜索，是全文检索查询，使用must查询，参与算分
+- 其它过滤条件，采用filter查询。不参与算分
+
+
+
+示例：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {"term": {"city": "上海" }}
+      ],
+      "should": [
+        {"term": {"brand": "皇冠假日" }},
+        {"term": {"brand": "华美达" }}
+      ],
+      "must_not": [
+        { "range": { "price": { "lte": 500 } }}
+      ],
+      "filter": [
+        { "range": {"score": { "gte": 45 } }}
+      ]
+    }
+  }
+}
+```
+
+
+
+
+
+
+
+#### 排序查询
+
+elasticsearch默认是根据相关度算分（_score）来排序，但是也支持自定义方式对搜索[结果排序](https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html)。可以排序字段类型有：keyword类型、数值类型、地理坐标类型、日期类型等
+
+
+
+keyword、数值、日期类型排序的语法基本一致
+
+**语法**：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "FIELD": "desc"  // 排序字段、排序方式ASC、DESC
+    }
+    // 多个字段排序就继续写
+  ]
+}
+```
+
+排序条件是一个数组，也就是可以写多个排序条件。按照声明的顺序，当第一个条件相等时，再按照第二个条件排序，以此类推
+
+
+
+地理坐标排序略有不同
+
+提示：获取你的位置的经纬度的方式：https://lbs.amap.com/demo/jsapi-v2/example/map/click-to-get-lnglat/
+
+**语法说明**：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "_geo_distance" : {
+          "FIELD" : "纬度，经度", // 文档中geo_point类型的字段名、目标坐标点
+          "order" : "asc", // 排序方式
+          "unit" : "km" // 排序的距离单位
+      }
+    }
+  ]
+}
+```
+
+这个查询的含义是：
+
+- 指定一个坐标，作为目标点
+- 计算每一个文档中，指定字段（必须是geo_point类型）的坐标 到目标点的距离是多少
+- 根据距离排序
+
+
+
+
+
+#### 分页查询
+
+elasticsearch 默认情况下只返回top10的数据。而如果要查询更多数据就需要修改分页参数了。elasticsearch中通过修改from、size参数来控制要返回的分页结果：
+
+- from：从第几个文档开始
+- size：总共查询几个文档
+
+类似于mysql中的`limit ?, ?`
+
+
+
+##### 基本分页
+
+分页的基本语法如下：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 0, // 分页开始的位置，默认为0
+  "size": 10, // 期望获取的文档总数
+  "sort": [
+    {"price": "asc"}
+  ]
+}
+```
+
+- 优点：支持随机翻页
+- 缺点：深度分页问题，默认查询上限（from + size）是10000
+- 场景：百度、京东、谷歌、淘宝这样的随机翻页搜索
+
+
+
+
+
+##### 深度分页问题
+
+现在，我要查询990~1000的数据，查询逻辑要这么写：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "from": 990, // 分页开始的位置，默认为0
+  "size": 10, // 期望获取的文档总数
+  "sort": [
+    {"price": "asc"}
+  ]
+}
+```
+
+这里是查询990开始的数据，也就是 第990~第1000条 数据
+
+不过，elasticsearch内部分页时，必须先查询 0~1000条，然后截取其中的990 ~ 1000的这10条：
+
+![image-20210721200643029](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230623115445291-121516878.png)
+
+
+
+查询TOP1000，如果es是单点模式，这并无太大影响
+
+但是elasticsearch将来一定是集群，例如我集群有5个节点，我要查询TOP1000的数据，并不是每个节点查询200条就可以了
+
+因为节点A的TOP200，在另一个节点可能排到10000名以外了
+
+因此要想获取整个集群的TOP1000，必须先查询出每个节点的TOP1000，汇总结果后，重新排名，重新截取TOP1000
+
+![image-20210721201003229](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230623115445422-276452929.png)
+
+
+
+那如果我要查询9900~10000的数据呢？是不是要先查询TOP10000呢？那每个节点都要查询10000条？汇总到内存中？
+
+
+
+当查询分页深度较大时，汇总数据过多，对内存和CPU会产生非常大的压力，因此elasticsearch会禁止from+ size 超过10000的请求
+
+
+
+针对深度分页，ES提供了两种解决方案，[官方文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html)：
+
+- search after：分页时需要排序，原理是从上一次的排序值开始，查询下一页数据。官方推荐使用的方式
+  - 优点：没有查询上限（单次查询的size不超过10000）
+  - 缺点：只能向后逐页查询，不支持随机翻页
+  - 场景：没有随机翻页需求的搜索，例如手机向下滚动翻页
+- scroll：原理将排序后的文档id形成快照，保存在内存。官方已经不推荐使用
+  - 优点：没有查询上限（单次查询的size不超过10000）
+  - 缺点：会有额外内存消耗，并且搜索结果是非实时的
+  - 场景：海量数据的获取和迁移。从ES7.1开始不推荐，建议用 search after方案
+
+
+
+
+
+#### 高亮查询
+
+高亮显示的实现分为两步：
+
+1. 给文档中的所有关键字都添加一个标签，例如`<em>`标签
+2. 页面给`<em>`标签编写CSS样式
+
+
+
+
+
+**高亮的语法**：
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match": {
+      "field": "TEXT" // 查询条件，高亮一定要使用全文检索查询
+    }
+  },
+  "highlight": {
+    "fields": {
+      "FIELD": { // 指定要高亮的字段
+        "pre_tags": "<em>",  // 用来标记高亮字段的前置标签，es默认添加的标签就是em
+        "post_tags": "</em>" // 用来标记高亮字段的后置标签
+      }
+    }
+  }
+}
+```
+
+**注意：**
+
+- 高亮是对关键字高亮，因此**搜索条件必须带有关键字**，而不能是范围这样的查询。
+- 默认情况下，**高亮的字段，必须与搜索指定的字段一致**，否则无法高亮
+- 如果要对非搜索字段高亮，则需要添加一个属性：required_field_match=false，可以解决的场景：要高亮的字段和搜索指定字段不一致。如：
+
+
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match": {
+      "name": "紫邪情" // 查询条件，高亮一定要使用全文检索查询
+    }
+  },
+  "highlight": {
+    "fields": {
+      "all": { // 假如这里的all字段是利用copy_to将其他很多字段copy进来的，就造成上面搜索字段name与这里要高亮得到字段不一致
+        "pre_tags": "<em>",
+        "post_tags": "</em>",
+        "require_field_match": "false"		// 是否要求字段匹配，即：要高亮字段和搜索字段是否匹配，默认是true
+      }
+    }
+  }
+}
+```
+
+
+
+
+
+#### 聚合查询/数据聚合
+
+**[聚合（](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)[aggregations](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)[）](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)**可以让我们极其方便的实现对数据的统计、分析、运算。例如：
+
+- 什么品牌的手机最受欢迎？
+- 这些手机的平均价格、最高价格、最低价格？
+- 这些手机每月的销售情况如何？
+
+实现这些统计功能的比数据库的sql要方便的多，而且查询速度非常快，可以实现近实时搜索效果
+
+
+
+
+
+##### 聚合的分类
+
+聚合常见的有三类：
+
+- **桶（Bucket）**聚合：用来对文档做分组
+  - TermAggregation：按照文档字段值分组，例如按照品牌值分组、按照国家分组
+  - Date Histogram：按照日期阶梯分组，例如一周为一组，或者一月为一组
+
+- **度量（Metric）**聚合：用以计算一些值，比如：最大值、最小值、平均值等
+  - Avg：求平均值
+  - Max：求最大值
+  - Min：求最小值
+  - Stats：同时求max、min、avg、sum等
+- **管道（pipeline）**聚合：其它聚合的结果为基础做聚合
+
+
+
+> **注意：**参加聚合的字段必须是keyword、日期、数值、布尔类型，即：只要不是 text 类型即可，因为text类型会进行分词，而聚合不能进行分词
+
+
+
+
+
+##### Bucket 桶聚合
+
+**桶（Bucket）**聚合：用来对文档做分组
+
+- TermAggregation：按照文档字段值分组，例如按照品牌值分组、按照国家分组
+- Date Histogram：按照日期阶梯分组，例如一周为一组，或者一月为一组
+
+
+
+语法如下：
+
+```json
+GET hhtp://ip:port/indexName/_search
+{
+  "query": {	// 加入基础查询，从而限定聚合范围，不然默认是将es中的文档全部查出来再聚合
+    "查询类型": {
+      "查询条件": "条件值"
+    }
+  },
+  "size": 0,  // 设置size为0，结果中不包含文档，只包含聚合结果	即：去掉结果hits中的hits数组的数据
+  "aggs": { // 定义聚合
+    "AggName": { //给聚合起个名字
+      "aggType": { // 聚合的类型，跟多类型去官网
+        "field": "value", // 参与聚合的字段
+        "size": 20, // 希望获取的聚合结果数量	默认是10
+		"order": {	// 改变聚合的排序规则，默认是 desc 降序
+			"_key": "asc" // 按照什么关键字以什么类型排列
+        }
+      }
+    }
+  }
+}
+```
+
+例如：
+
+```json
+// 数据聚合
+GET /indexName/_search
+{
+  "query": {
+    "range": {
+      "price": {
+        "lte": 200
+      }
     }
-}
-```
-
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905989-193141379.png)
-
-结果返回：
-
-```json
-{
-    "took": 3,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 2,
-            "relation": "eq"
-        },
-        "max_score": 0.18232156,
-        "hits": [
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pdy1sX0B_g8Hput6sCw6",
-                "_score": 0.18232156,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            },
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pty5sX0B_g8Hput6eyzA",
-                "_score": 0.18232156,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            }
-        ]
-    }
-}
-```
-
-
-
-
-### 2.7、分页查询 - 重点
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
-```
-
-请求体内容：
-
-```json
-{
-    "query":{
-        "match_all":{}    // 注意：这里使用的是match_all
-    },
-    "from": 0,    // 相当于：startNum  这个数字的算法：(当前页码-1)*要显示的条数
-    "size": 1   // 相当于：pageSize
-}
-```
-
-
-
-
-
-
-
-### 2.8、排序查询 - 重点
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search				// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
-```
-
-
-
-请求体内容：
-
-
-```json
-{
-    "query":{
-        "match_all":{}
-    },
-    "sort":{    // 排序
-        "_id":{   // 根据什么字段排序
-            "order":"desc"    // 排序方式  desc降序   asc升序
-        }
-    }
-}
-```
-
-返回结果：
-
-```json
-{
-    "took": 49,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 2,
-            "relation": "eq"
-        },
-        "max_score": null,
-        "hits": [
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pty5sX0B_g8Hput6eyzA",
-                "_score": null,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                },
-                "sort": [
-                    "Pty5sX0B_g8Hput6eyzA"
-                ]
-            },
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pdy1sX0B_g8Hput6sCw6",
-                "_score": null,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                },
-                "sort": [
-                    "Pdy1sX0B_g8Hput6sCw6"
-                ]
-            }
-        ]
-    }
-}
-```
-
-
-
-
-### 2.9、多条件查询 - 重点
-
-#### 2.9.1、and查询
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
-```
-
-
-
-请求体内容：
-
-```json
-{
-  "query":{
-    "bool":{
-      "must":[    // 就相当于是mysql中的 and拼接条件
-        {
-          "match":{   // and条件1
-            "author":"邪"
-          }
-        },{
-          "match":{   // and条件2
-            "_id":"Pdy1sX0B_g8Hput6sCw6"
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
-
-返回结果：
-
-
-```json
-{
-    "took": 2,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 1,
-            "relation": "eq"
-        },
-        "max_score": 1.1823215,
-        "hits": [
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pdy1sX0B_g8Hput6sCw6",
-                "_score": 1.1823215,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            }
-        ]
-    }
-}
-```
-
-
-
-
-
-
-#### 2.9.2、or查询
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
-```
-
-
-
-请求体内容：
-
-
-```json
-{
-  "query":{
-    "bool":{
-      "should":[    // 对照must，改变的地方
-        {
-          "match":{
-            "author":"邪"
-          }
-        },{
-          "match":{
-            "_id":"Pdy1sX0B_g8Hput6sCw6"
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
-返回的结果：
-
-
-```json
-{
-    "took": 2,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 2,
-            "relation": "eq"
-        },
-        "max_score": 1.1823215,
-        "hits": [
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pdy1sX0B_g8Hput6sCw6",
-                "_score": 1.1823215,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            },
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pty5sX0B_g8Hput6eyzA",
-                "_score": 0.18232156,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                }
-            }
-        ]
-    }
-}
-```
-
-
-
-
-### 2.10、范围查询 - 重点
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search				// 如： http://127.0.0.1:9200/create_index/_search    请求方式：get
-```
-
-
-
-请求体内容：
-
-
-```json
-{
-  "query":{
-    "bool":{
-      "should":[
-        {
-          "match":{
-            "author":"邪"
-          }
-        },{
-          "match":{
-            "title":"一"
-          }
-        }
-      ],
-      "filter":{    // 就多了这么一个filter range而已
-        "range":{
-          "id":{
-            "gt":1000   // gt >   lt <   在html中见过滴
-          }
+  }, 
+  "size": 0, 
+  "aggs": {
+    "brandAgg": {
+      "terms": {
+        "field": "brand",
+        "size": 15,
+        "order": {
+          "_count": "asc"
         }
       }
     }
@@ -690,533 +1408,167 @@ http://ip:port/index_name/_search				// 如： http://127.0.0.1:9200/create_inde
 }
 ```
 
-返回结果：下面的两条数据是我重新加的
+![image-20230627113244929](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627113248432-979326214.png)
+
+
+
+##### Metric 度量聚合
+
+**度量（Metric）**聚合：用以计算一些值，比如：最大值、最小值、平均值等
+
+- Avg：求平均值
+- Max：求最大值
+- Min：求最小值
+- Stats：同时求max、min、avg、sum等
+
+
+
+语法如下：
 
 ```json
+GET /indexName/_search
 {
-    "took": 34,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 2,
-            "relation": "eq"
-        },
-        "max_score": 0.0,
-        "hits": [
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Vtz2sn0B_g8Hput64ywM",
-                "_score": 0.0,
-                "_source": {
-                    "id": 10001,    
-                    "title": "大王叫我来巡山",
-                    "author": "王二麻子"
-                }
-            },
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "V9z5sn0B_g8Hput6HyyQ",
-                "_score": 0.0,
-                "_source": {
-                    "id": 10002,
-                    "title": "论皮包龙是怎么形成的",
-                    "author": "波多野结衣"
-                }
-            }
-        ]
-    }
-}
-```
-
-
-
-  
-
-### 2.11、完全匹配 - 精准匹配 - 重点
-
-在玩这个之前可以回到前面看一下我前面例子中的：条件查询
-
-在那里，贫道做的有一个操作：**只用了一个字符：邪，但是：最后得到了想要的结果**
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120905953-2013244675.png)
-
-
-**上面这种：叫做全文检索**，它是去：我创建的create_index索引下的找寻所有的内容，从而匹配出：author包含“邪”的内容，如果此时自己定的条件是：多个字符的话，那么：底层是把这些字符拆成单个字符了，从而匹配出来的
-
-**而所谓的完全匹配：就是精准匹配到某条数据，它虽然也会拆成单个字符，但是：==查询时，还是整串字符绑定在一起匹配的==**
-- 如：查询"紫邪情"，用全文检索就是：紫、邪、情，单独匹配，从而判定，如果此时：使用"紫邪晴"，那么：也会匹配到
-
-- 但是：如果使用的是完全匹配"紫邪晴"，虽然也会拆分为：紫、邪、晴，可是：它最后去匹配结果时，是使用"紫邪晴"这整个字符串来比对的，所以：最后结果不会匹配到
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
-```
-
-
-
-**全文检索和完全匹配对比**
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906219-1369084331.png)
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906191-1126827004.png)
-
-
-
-
-### 2.12、高亮查询
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search    请求方式：get
-```
-
-
-
-请求体内容：
-
-
-```json
-{
-    "query":{
-        "match":{
-            "author":"紫邪情"
+  "size": 0, 
+  "aggs": {
+    "aggName": { 
+      "aggType": { 
+        "field": "value", 
+        "size": 20,
+        "order": {
+            "_key": "orderType"
         }
-    },
-    "highlight":{   // 高亮
-        "fields":{    // 哪个字段需要高亮
-            "author":{}
+      },
+      "aggs": { // brands聚合的子聚合，也就是分组后对每组分别计算
+        "aggName": { // 聚合名称
+          "aggType": { // 聚合类型，这里stats可以计算min、max、avg等
+            "field": "value" // 聚合字段
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// 例如：
+GET /indexName/_search
+{
+  "size": 0, 
+  "aggs": {
+    "brandAgg": { 
+      "terms": { 
+        "field": "brand", 
+        "size": 20,
+        "order": {
+            "scoreAgg.avg": "asc"	// 注意：若是要使用子聚合来对每个桶进行排序，则这里的写法有点区别
         }
-    }
+      },
+      "aggs": {
+        "scoreAgg": {
+          "stats": {
+            "field": "score"
+          }
+        }
+      }
+    }
+  }
 }
 ```
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906381-1821308336.png)
+
+![image-20230627114819466](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627114820906-657603913.png)
 
 
-返回结果：
 
+
+
+
+
+#### 自动补全查询 completion
+
+elasticsearch提供了[Completion Suggester](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-suggesters.html)查询来实现自动补全功能。**这个查询会匹配以用户输入内容开头的词条并返回**。为了提高补全查询的效率，对于文档中字段的类型有一些约束：
+
+- 参与补全查询的字段**必须**是completion类型
+
+- 字段的内容一般是用来补全的多个词条形成的数组
+
+
+
+**场景：** 搜索框输入关键字，搜索框下面就会弹出很多相应的内容出来
+
+![image-20230627230906831](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627230908175-277805668.png)
+
+
+
+比如，一个这样的索引库：
 
 ```json
+// 创建索引库
+PUT test
 {
-    "took": 59,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 2,
-            "relation": "eq"
-        },
-        "max_score": 2.264738,
-        "hits": [
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pdy1sX0B_g8Hput6sCw6",
-                "_score": 2.264738,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                },
-                "highlight": {
-                    "author": [
-                        "<em>紫</em><em>邪</em><em>情</em>"
-                    ]
-                }
-            },
-            {
-                "_index": "create_index",
-                "_type": "_doc",
-                "_id": "Pty5sX0B_g8Hput6eyzA",
-                "_score": 2.264738,
-                "_source": {
-                    "title": "这是第一次学习ES的表数据创建",
-                    "author": "紫邪情",
-                    "sex": "girl"
-                },
-                "highlight": {
-                    "author": [
-                        "<em>紫</em><em>邪</em><em>情</em>"
-                    ]
-                }
-            }
-        ]
-    }
+  "mappings": {
+    "properties": {
+      "title":{
+        "type": "completion"	// 指定字段类型为 completion
+      }
+    }
+  }
 }
 ```
 
-
-
-### 2.13、组合查询
-
-#### 2.13.1、分组
-
-**语法：**
+然后插入下面的数据：
 
 ```json
-http://ip:port/index_name/_search				// 如： http://127.0.0.1:9200/create_index/_search     请求方式：get
-```
-
-
-
-请求体内容：
-
-```json
+// 示例数据
+POST test/_doc
 {
-    "aggs": {    // 组合操作标识
-        "author_group": {   // 分组之后的名称  随便取
-            "terms": {      // 分组标识
-                "field": "id"       // 注意：这里分组别用字符串类型的字段，如：author
-            }
-        }
-    },
-    "size": 0       // 设定不显示原始数据，否则："hits":{}这个原始数据也会暴露出来
+  "title": ["Sony", "WH-1000XM3"]	// 字段内容为多个词条组成的数组
 }
-```
-
-
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906187-1699410929.png)
-
-加上size之后的返回结果：
-
-
-```json
+POST test/_doc
 {
-    "took": 5,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 4,
-            "relation": "eq"
-        },
-        "max_score": null,
-        "hits": []    // 这里的hits就被去掉了
-    },
-    "aggregations": {
-        "author_group": {
-            "doc_count_error_upper_bound": 0,
-            "sum_other_doc_count": 0,
-            "buckets": [
-                {
-                    "key": 10001,
-                    "doc_count": 1
-                },
-                {
-                    "key": 10002,
-                    "doc_count": 1
-                }
-            ]
-        }
-    }
+  "title": ["SK-II", "PITERA"]
 }
-```
-
-
-
-
-#### 2.13.2、平均数
-
-**语法：**
-
-```json
-http://ip:port/index_name/_search			// 如： http://127.0.0.1:9200/create_index/_search   请求方式：get
-```
-
-
-
-请求体内容：
-
-```json
+POST test/_doc
 {
-    "aggs":{
-        "id_avg":{
-            "avg":{
-                "field":"id"
-            }
-        }
-    },
-    "size":0
+  "title": ["Nintendo", "switch"]
 }
 ```
 
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906115-791393480.png)
-
-返回结果：
-
+查询的DSL语句如下：
 
 ```json
+// 自动补全查询
+GET /test/_search
 {
-    "took": 4,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 4,
-            "relation": "eq"
-        },
-        "max_score": null,
-        "hits": []
-    },
-    "aggregations": {
-        "id_avg": {
-            "value": 10001.5
-        }
-    }
-}
-```
-
-同样的道理：sum总和之类的也可以写的，把标识改为对应的函数名字、field字段即可
-
-
-
-
-### 2.14、映射关系
-
-**就相当于：在做mysql数据库中的表结构（ 字段构建嘛：字段名、类型... )**
-
-
-
-#### 2.14.1、建立索引
-
-```json
-http:127.0.0.1:9200/user			// 请求类型：put
-```
-
-
-
-
-#### 2.14.2、建立映射关系
-
-
-```json
-http://127.0.0.1:9200/user/_mapping		// 请求方式：put
-
-
-
-// 请求体内容
-{
-    "properties":{
-        "name":{
-            "type":"text",
-            "index":true
-        },
-        "age":{
-            "type":"keyword",
-            "index":false
-        },
-        "address":{
-            "type":"keyword",
-            "index":true
-        }
-    }
-}
-
-
-// 2、查看映射关系
-http://127.0.0.1:9200/user/_mapping   // 请求方式：get
-
-
-// 3、添加数据
-http://127.0.0.1:9200/user/_doc   // 请求方式 post
-
-// 请求体内容
-{
-    "name":"紫邪情",
-    "sex":"女滴",
-    "age":18,
-    "address":"地球村"
-}
-
-
-// 4、查看数据
-http://127.0.0.1:9200/user/_search    // 请求方式 post
-```
-
-
-
-
-
-#### 2.14.3、测试 
-
-
-```json
-http://127.0.0.1:9200/user/_search    // 请求方式 get
-
-
-// 请求体内容
-{
-    "query":{
-        "bool":{
-            "must":[
-                {
-                    "match":{
-                        "name":"邪"
-                    }
-                },{
-                    "match":{
-                        "age":18
-                    }
-                },{
-                    "match":{
-                        "address":"地球村"
-                    }
-                }
-            ]
-        }
-    }
+  "suggest": {
+    "title_suggest": {	// 起个名字
+      "text": "s", // 关键字
+      "completion": {
+        "field": "title", // 补全查询的字段
+        "skip_duplicates": true, // 跳过重复的
+        "size": 10 // 获取前10条结果
+      }
+    }
+  }
 }
 ```
 
 
 
-**返回结果：**
-
-
-```json
-{
-    "error": {
-        "root_cause": [
-            {
-                "type": "query_shard_exception",
-                "reason": "failed to create query: Cannot search on field [age] since it is not indexed.",    // 重点信息在这里，但是：现在先不解答这个错误的原因，继续测试
-                "index_uuid": "To8O7VKkR3OM_drdWZQIIA",
-                "index": "user"
-            }
-        ],
-        "type": "search_phase_execution_exception",
-        "reason": "all shards failed",
-        "phase": "query",
-        "grouped": true,
-        "failed_shards": [
-            {
-                "shard": 0,
-                "index": "user",
-                "node": "w6AVu2CHT6OEaXAJmqT8mw",
-                "reason": {
-                    "type": "query_shard_exception",
-                    "reason": "failed to create query: Cannot search on field [age] since it is not indexed.",
-                    "index_uuid": "To8O7VKkR3OM_drdWZQIIA",
-                    "index": "user",
-                    "caused_by": {
-                        "type": "illegal_argument_exception",
-                        "reason": "Cannot search on field [age] since it is not indexed."
-                    }
-                }
-            }
-        ]
-    },
-    "status": 400
-}
-```
-
-
-**上面说：age不允许被index（检索） ， 那么删掉它，再看效果**
-
-请求体变为如下：
-
-```json
-{
-    "query":{
-        "bool":{
-            "must":[
-                {
-                    "match":{
-                        "name":"邪"
-                    }
-                },{   // 去掉了age属性
-                    "match":{
-                        "address":"地球村"
-                    }
-                }
-            ]
-        }
-    }
-}
-```
-
-
-发现能够获取到结果
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906193-1924393742.png)
-
-再变一下：
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906013-973192158.png)
-
-
-现在回到前面报的错：failed to create query: Cannot search on field [age] since it is not indexed
-
-为什么报这个错？其实已经告知得很清楚了：field [age] since it is not indexed 属性age不支持被检索，原因：
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906163-732621306.png)
-
-为什么前面使用"地球村"可以查到数据，而使用"地球"就不可以查到？
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619120906045-2016255207.png)
 
 
 
 
-#### 2.15.5、text和keyword类型的区别
+# Java操作ES篇 - 重点
 
-text类型支持全文检索和完全查询，即：我搜索时只用字符串中的一个字符照样得到结果
-
-- **原理：text使用了分词，就是把字符串拆分为单个字符串了**
-
-
-
-keyword类型支持完全查询，即：精确查询，**前提：index不是false**
-
-- **原理：keyword不支持分词，所以：查询时必须是完全查询（ 所有字符匹配上才可以 ）**
-
-
-
-
-
-
-
-
-
-
-## 3、Java操作ES篇 - 重点
-
-### 3.1、摸索Java链接ES的流程
+## 摸索Java链接ES的流程
 
 自行创建一个maven项目
 
 
 
-#### 3.1.1、父项目依赖管理
+### 父项目依赖管理
 
 ```xml
 <properties>
@@ -1224,6 +1576,7 @@ keyword类型支持完全查询，即：精确查询，**前提：index不是fal
     <log4j-version>1.2.17</log4j-version>
     <junit-version>4.13.2</junit-version>
     <jackson-version>2.13.0</jackson-version>
+    <fastjson.version>1.2.83</fastjson.version>
 </properties>
 
 <dependencyManagement>
@@ -1264,6 +1617,11 @@ keyword类型支持完全查询，即：精确查询，**前提：index不是fal
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
     </dependencies>
 </dependencyManagement>
 ```
@@ -1272,7 +1630,7 @@ keyword类型支持完全查询，即：精确查询，**前提：index不是fal
 
 
 
-#### 3.1.2、摸索链接流程
+### 摸索链接流程
 
 获取父项目中的依赖
 
@@ -1297,7 +1655,7 @@ keyword类型支持完全查询，即：精确查询，**前提：index不是fal
 
 
 
-##### 3.1.2.1、摸索流程
+代码编写：
 
 ```java
 import org.apache.http.HttpHost;
@@ -1308,24 +1666,10 @@ import org.junit.Test;
 
 import Java.io.IOException;
 
-/**
- * @ClassName ConnectionTest
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
+
 public class ConnectionTest {
-
-    /*
-     * @Author ZiXieQing
-     * @Description // TODO 测试Java链接ES
-     * @Date  2021/12/14
-     * @Param
-     * @return
-     */
-
     /**
-     * 下面这个逻辑，对照shiro中的realm、manager、FilterFactoryBean的逻辑来看 没用过的就当我没说^_^
+     * 倒着看逻辑即可
      */
     @Test
     public void test() throws IOException {
@@ -1334,17 +1678,16 @@ public class ConnectionTest {
         HttpHost host = new HttpHost("127.0.0.1", 9200);	// 需要：String hostname, int port
       // 当然：这个方法重载中有一个参数scheme  这个是：访问方式 根据需求用http / https都可以  这里想传的话用：http就可以了
 
-        // 2、创建RestClientBuilder 但是：点击源码发现 - 没有构造方法
-        // 既然没有，那肯定提供得有和xml版的mybatis加载完xml文件之后的builder之类的，找一下
+        // 2、创建RestClientBuilder
         RestClientBuilder clientBuilder = RestClient.builder(host);
         // 发现1、有重载；2、重载之中有几个参数，而HttpHost... hosts 这个参数貌似贴近我们想要的东西了，所以建一个HttpHost
 
 
         // 1、要链接client，那肯定需要一个client咯，正好：导入得有high-level-client
-        RestHighLevelClient esClient = new RestHighLevelClient(clientBuilder);   // 发现需要RestClientBuilder restClientBuilder，那就建
+        RestHighLevelClient esClient = new RestHighLevelClient(clientBuilder);
+        // 发现需要RestClientBuilder restClientBuilder，那就建
 
-        // 4、测试：只要 esClient. 就可以看到一些很熟悉的方法，可以在这里测试调一下那些方法，然后去postman中获取数据看一下对不对
-        // 这里不多做说明：Java链接ES客户端的流程就是上面这样的
+        // 4、释放资源
         esClient.close();
     }
 }
@@ -1354,17 +1697,11 @@ public class ConnectionTest {
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214112543974-1145516732.png) 
-
-
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214112555986-1711551616.png) 
 
 
 
 
-
-### 3.2、Java中操作ES索引
+## Java中操作ES索引
 
 向父项目获取自己要的依赖
 
@@ -1390,7 +1727,7 @@ public class ConnectionTest {
 
 
 
-#### 3.2.2、封装链接对象
+### 封装链接对象
 
 ```java
 import org.apache.http.HttpHost;
@@ -1410,1369 +1747,1442 @@ public class ESClientUtil {
 
     public static RestHighLevelClient getESClient() {
         return new RestHighLevelClient(RestClient.builder(new HttpHost(HOST, PORT)));
+        // 还有一种方式
+        // return new RestHighLevelClient(RestClient.builder(HttpHost.create("http://ip:9200")));
     }
 }
 ```
 
 
 
-#### 3.2.3、创建索引
+
+
+### 操作索引
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+import org.apache.http.HttpHost;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName CreateIndex
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class CreateIndex {
-
-    @Test
-    public void createIndexTest() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        /*
-         * 创建索引
-         * CreateIndexRequest()
-         * 		第一个参数：要创建的索引名
-         * 		第二个参数：请求选项  默认即可
-         * */
-        CreateIndexResponse response = esClient.indices()
-            .create(new CreateIndexRequest("person"), RequestOptions.DEFAULT);
-        
-
-        // 查看是否添加成功  核心方法：isAcknowledged()
-        System.out.println(response.isAcknowledged());
-
-        esClient.close();
-    }
-} 
-```
-
-
-
-用postman检验一下：
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214131136789-658396446.png) 
-
-
-
-
-
-#### 3.2.4、查询索引
-
-```java
-import cn.zixieqing.utile.ESClientUtil;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetIndexResponse;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName SearchIndex
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class SearchIndex {
-
-    /*
-     * @Author ZiXieQing
-     * @Description 查询索引
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
-     */
-    @Test
-    public void searchIndexTest() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        // 获取索引
-        GetIndexResponse response = esClient.indices()
-            .get(new GetIndexRequest("person"), RequestOptions.DEFAULT);
-
-
-        // 熟悉GetIndexResponse中的几个api
-        System.out.println("Aliases" + response.getAliases());
-        System.out.println("Mappings" + response.getMappings());
-        System.out.println("Settings" + response.getSettings());      // 这三者在用postman玩的时候，返回结果中都有
-
-        esClient.close();
-    }
-}  
-```
-
-
-
-#### 3.2.5、删除索引
-
-```java
-import cn.zixieqing.utile.ESClientUtil;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName DeleteIndex
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class DeleteIndex {
-
-    /*
-     * @Author ZiXieQing
-     * @Description 删除索引
-     * @Date  2021/12/14
-     * @Param
-     * @return
-     */
-
-    @Test
-    public void deleteIndexTest() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        // 删除索引
-        AcknowledgedResponse response = esClient.indices()
-            .delete(new DeleteIndexRequest("person"), RequestOptions.DEFAULT);
-
-        // 检验一下：是否删除成功
-        System.out.println(response.isAcknowledged());
-
-        esClient.close();
-    }
-} 
-```
-
-
-
-### 3.3、Java操作ES中的_doc - 重点
-
-#### 3.3.1、创建doc
-
-- 这里还需要jackson-databind：前面已经导入
-- 同时：为了偷懒，所以把lombok也一起导入了
-
-
-
-父项目依赖管理
-
-```xml
-<lombok-version>1.18.22</lombok-version>
-
-<dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-    <version>${lombok-version}</version>
-</dependency>
-```
-
-
-
-子项目获取依赖：
-
-```xml
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-databind</artifactId>
-</dependency>
-```
-
-
-
-测试：
-
-```java
-import cn.zixieqing.entity.UserEntity;
-import cn.zixieqing.utile.ESClientUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
+
+import static com.zixieqing.hotel.constant.MappingConstant.mappingContext;
 
 /**
- * @ClassName InsertDoc
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class InsertDoc {
+ * elasticsearch的索引库测试
+ * 规律：esClient.indices().xxx(xxxIndexRequest(IndexName), RequestOptions.DEFAULT)
+ *      其中 xxx 表示要对索引进行得的操作，如：create、delete、get、flush、exists.............
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description 新增文档_doc，当然下面这个过程利用ESClient封装的思路也可以抽离
-     * @Date  2021/12/14
-     * @Param
-     * @return
+@SpringBootTest(classes = HotelApp.class)
+public class o1IndexTest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://ip:9200")));
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * 创建索引 并 创建字段的mapping映射关系
      */
     @Test
-    public void insertDocTest() throws IOException {
+    void createIndexAndMapping() throws IOException {
+        // 1、创建索引
+        CreateIndexRequest request = new CreateIndexRequest("person");
+        // 2、创建字段的mapping映射关系   参数1：编写的mapping json字符串  参数2：采用的文本类型
+        request.source(mappingContext, XContentType.JSON);
+        // 3、发送请求 正式创建索引库与mapping映射关系
+        CreateIndexResponse response = client.indices().create(request, RequestOptions.DEFAULT);
+        // 查看是否创建成功
+        System.out.println("response.isAcknowledged() = " + response.isAcknowledged());
+        // 判断指定索引库是否存在
+        boolean result = client.indices().exists(new GetIndexRequest("person"), RequestOptions.DEFAULT);
+        System.out.println(result ? "hotel索引库存在" : "hotel索引库不存在");
+    }
 
-        // 1、获取链接
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
+    /**
+     * 删除指定索引库
+     */
+    @Test
+    void deleteIndexTest() throws IOException {
+        // 删除指定的索引库
+        AcknowledgedResponse response = client.indices()
+                .delete(new DeleteIndexRequest("person"), RequestOptions.DEFAULT);
+        // 查看是否成功
+        System.out.println("response.isAcknowledged() = " + response.isAcknowledged());
+    }
 
-        IndexRequest request = new IndexRequest();
+    // 索引库一旦创建，则不可修改，但可以添加mapping映射
 
-        // 选择索引及设置唯一标识
-        request.index("user").id("10002");
+    /**
+     * 获取指定索引库
+     */
+    @Test
+    void getIndexTest() throws IOException {
+        // 获取指定索引
+        GetIndexResponse response = client.indices()
+                .get(new GetIndexRequest("person"), RequestOptions.DEFAULT);
+    }
 
-        // 2、添加数据
-        // IndexRequest和IndexResponse这中间就是：做添加doc操作
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId( "100" ).setName( "紫邪情" ).setSex( "女" );
-
-        // 转json      注：objectMapper是jackson-databind中的，不是ES中的
-        String userJson = new ObjectMapper().writeValueAsString(userEntity);
-
-        // 把转成的json字符串存到ES中去
-        request.source(userJson , XContentType.JSON);
-
-        // 3、发起请求 获取响应对象
-        IndexResponse response = esClient.index(request, RequestOptions.DEFAULT);
-
-        // 看看这个IndexResponse有哪些有用的api
-        System.out.println("响应转态：" + response.getResult());   // 其他的一点 就可以看到了，都是字面意思
-
-        esClient.close();
+    /**
+     * 刷新索引库
+     */
+    @Test
+    void flushIndexTest() throws IOException {
+        // 刷新索引库
+        FlushResponse response = client.indices().flush(new FlushRequest("person"), RequestOptions.DEFAULT);
+        // 检查是否成功
+        System.out.println("response.getStatus() = " + response.getStatus());
     }
 }
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214155932117-1413379852.png) 
-
-
-
-postman检测一下：
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214155949592-2037144055.png) 
 
 
 
 
 
-#### 3.3.2、修改doc
 
-**这个修改是指的局部修改，全量修改就不用想了**
+
+
+
+
+
+
+
+
+
+
+## Java操作ES中的文档_doc - 重点
+
+这里还需要json依赖，使用jackson或fastjson均可
+
+同时：为了偷懒，所以把lombok也一起导入了
+
+
+
+### 基本的文档CRUD
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+import com.alibaba.fastjson.JSON;
+import com.zixieqing.hotel.pojo.Hotel;
+import com.zixieqing.hotel.pojo.HotelDoc;
+import com.zixieqing.hotel.service.IHotelService;
+import org.apache.http.HttpHost;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName DeleteDoc
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class UpdateDoc {
+ * elasticsearch的文档测试
+ * 规律：esClient.xxx(xxxRequest(IndexName, docId), RequestOptions.DEFAULT)
+ *      其中 xxx 表示要进行的文档操作，如：
+ *          index   新增文档
+ *          delete  删除指定id文档
+ *          get     获取指定id文档
+ *          update  修改指定id文档的局部数据
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description 删除doc
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+@SpringBootTest(classes = HotelApp.class)
+public class o2DocumentTest {
+    @Autowired
+    private IHotelService service;
+
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * 添加文档
      */
     @Test
-    public void deleteDoc() throws IOException {
+    void addDocumentTest() throws IOException {
 
-        // 1、获取链接对象
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
+        // 1、准备要添加的文档json数据
+        // 通过id去数据库获取数据
+        Hotel hotel = service.getById(36934L);
+        // 当数据库中定义的表结构和es中定义的字段mapping映射不一致时：将从数据库中获取的数据转成 es 中定义的mapping映射关系对象
+        HotelDoc hotelDoc = new HotelDoc(hotel);
 
-        UpdateRequest request = new UpdateRequest();
+        // 2、准备request对象    指定 indexName+文档id
+        IndexRequest request = new IndexRequest("hotel").id(hotel.getId().toString());
 
-        // 获取索引
-        request.index("user").id("10002");
+        // 3、把数据转成json
+        request.source(JSON.toJSONString(hotelDoc), XContentType.JSON);
 
-        // 2、修改doc数据
-        request.doc(XContentType.JSON, "name", "邪公子");
+        // 4、发起请求，正式在ES中添加文档    就是根据数据建立倒排索引，所以这里调研了index()
+        IndexResponse response = client.index(request, RequestOptions.DEFAULT);
 
-        // 3、发起请求、获得响应对象
-        UpdateResponse response = esClient.update(request, RequestOptions.DEFAULT);
-
-        System.out.println("响应状态为：" + response.getResult());
-
-        esClient.close();
+        // 5、检查是否成功     使用下列任何一个API均可   若成功二者返回的结果均是 CREATED
+        System.out.println("response.getResult() = " + response.getResult());
+        System.out.println("response.status() = " + response.status());
     }
-}
-```
 
-
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214161822821-1044941200.png) 
-
-
-
-postman检验一下：
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214161841318-83274449.png) 
-
-
-
-
-
-#### 3.3.3、查询doc
-
-```java
-import cn.zixieqing.utile.ESClientUtil;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName GetDoc
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class GetDoc {
-
-    @Test
-    public void getDocTest() throws IOException {
-
-        // 1、获取链接对象
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        GetRequest request = new GetRequest();
-
-        request.index("user").id("10002");
-
-        // 2、发起请求、获取响应对象
-        GetResponse response = esClient.get(request, RequestOptions.DEFAULT);
-
-        // 3、获取结果  推荐用getSourceAsString()
-        String result = response.getSourceAsString();
-
-        System.out.println("获得的doc为：" + result);
-
-        esClient.close();
-    }
-} 
-```
-
-
-
-#### 3.3.4、删除doc
-
-```java
-import cn.zixieqing.utile.ESClientUtil;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName DeleteDoc
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class DeleteDoc {
-
-    /*
-     * @Author ZiXieQing
-     * @Description 删除doc
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+    /**
+     * 根据id删除指定文档
      */
     @Test
-    public void deleteDocTest() throws IOException {
+    void deleteDocumentTest() throws IOException {
+        // 1、准备request对象
+        DeleteRequest request = new DeleteRequest("indexName", "docId");
 
-        // 1、获取链接对象
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        DeleteRequest request = new DeleteRequest();
-
-        // 获取索引
-        request.index("user").id("10002");
-
-        // 2、做删除操作
-        DeleteResponse response = esClient.delete(request, RequestOptions.DEFAULT);
-
-        System.out.println("响应状态为：" + response.getResult());
-
-        // 3、关闭链接
-        esClient.close();
+        // 2、发起请求
+        DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
+        // 查看是否成功   成功则返回 OK
+        System.out.println("response.status() = " + response.status());
     }
-}
-```
 
-
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214163802651-1486742156.png) 
-
-
-
-再次获取检验一下：
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214163821199-867450725.png) 
-
-
-
-
-
-#### 3.4.5、批量新增_doc数据
-
->  本质：把请求封装了而已，从而让这个请求可以传递各种类型参数，如：删除的、修改的、新增的，这样就可以搭配for循环
-
-
-
-```java
-import cn.zixieqing.utile.ESClientUtil;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName BatchDeleteDoc
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class BatchInsertDoc {
-
-    /*
-     * @Author ZiXieQing
-     * @Description 批量添加doc数据
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+    /**
+     * 获取指定id的文档
      */
     @Test
-    public void batchInsertDocTest() throws IOException {
+    void getDocumentTest() throws IOException {
+        // 1、获取request
+        GetRequest request = new GetRequest"indexName", "docId");
 
-        // 1、获取链接对象
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
+        // 2、发起请求，获取响应对象
+        GetResponse response = client.get(request, RequestOptions.DEFAULT);
 
-        BulkRequest request = new BulkRequest();
+        // 3、解析结果
+        HotelDoc hotelDoc = JSON.parseObject(response.getSourceAsString(), HotelDoc.class);
+        System.out.println("hotelDoc = " + hotelDoc);
+    }
 
-        // 当然：source的第二个参数都是传个对象
-        request.add(new IndexRequest()
-                .index("user")
-                .id("520")
-                .source(XContentType.JSON, "name", "小紫1"));
+    /**
+     * 修改指定索引库 和 文档id的局部字段数据
+     * 全量修改是直接删除指定索引库下的指定id文档，然后重新添加相同文档id的文档即可
+     */
+    @Test
+    void updateDocumentTest() throws IOException {
+        // 1、准备request对象
+        UpdateRequest request = new UpdateRequest("indexName", "docId");
 
-        request.add(new IndexRequest()
-                .index("user")
-                .id("521")
-                .source(XContentType.JSON, "name", "小紫2"));
+        // 2、要修改那个字段和值      注：参数是 key, value 形式 中间是 逗号
+        request.doc(
+                "price",500
+        );
 
-        request.add(new IndexRequest()
-                .index("user")
-                .id("522")
-                .source(XContentType.JSON, "name", "小紫3"));
-
-
-        // 2、发送请求
-        BulkResponse response = esClient.bulk(request, RequestOptions.DEFAULT);
-
-        // 查看执行时间
-        System.out.println(response.getTook());
-
-        esClient.close();
+        // 3、发起请求
+        UpdateResponse response = client.update(request, RequestOptions.DEFAULT);
+        // 查看结果 成功则返回 OK
+        System.out.println("response.status() = " + response.status());
     }
 }
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214171648016-1693800539.png) 
 
 
-
-postman检验一下：
-
-```json
-
-http://127.0.0.1:9200/user/_search		请求方式 get
-
-
-// 返回结果
-{
-    "took": 585,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 3,
-            "relation": "eq"
-        },
-        "max_score": 1.0,
-        "hits": [
-            {
-                "_index": "user",
-                "_type": "_doc",
-                "_id": "520",
-                "_score": 1.0,
-                "_source": {
-                    "name": "小紫1"
-                }
-            },
-            {
-                "_index": "user",
-                "_type": "_doc",
-                "_id": "521",
-                "_score": 1.0,
-                "_source": {
-                    "name": "小紫2"
-                }
-            },
-            {
-                "_index": "user",
-                "_type": "_doc",
-                "_id": "522",
-                "_score": 1.0,
-                "_source": {
-                    "name": "小紫3"
-                }
-            }
-        ]
-    }
-}
-
-```
-
-
-
-
-
-#### 3.4.6、批量删除_doc数据
+### 批量操作文档
 
 > 本质：把请求封装了而已，从而让这个请求可以传递各种类型参数，如：删除的、修改的、新增的，这样就可以搭配for循环
 
+
+
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel;
+
+import com.alibaba.fastjson.JSON;
+import com.zixieqing.hotel.pojo.Hotel;
+import com.zixieqing.hotel.pojo.HotelDoc;
+import com.zixieqing.hotel.service.IHotelService;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.get.MultiGetItemResponse;
+import org.elasticsearch.action.get.MultiGetRequest;
+import org.elasticsearch.action.get.MultiGetResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.Test;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
+import java.util.List;
 
 /**
- * @ClassName BarchDeleteDoc
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class BatchDeleteDoc {
+ * elasticsearch 批量操作文档测试
+ * 规律：EsClient.bulk(new BulkRequest()
+ *                    .add(xxxRequest("indexName").id().source())
+ *                    , RequestOptions.DEFAULT)
+ * 其中：xxx 表示要进行的操作，如
+ *      index   添加
+ *      delete  删除
+ *      get     查询
+ *      update  修改
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description 批量删除doc数据
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+@SpringBootTest(classes = HotelApp.class)
+public class o3BulkDocumentTest {
+    @Autowired
+    private IHotelService service;
+
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * 批量添加文档数据到es中
      */
     @Test
-    public void batchDeleteDoc() throws IOException {
+    void bulkAddDocumentTest() throws IOException {
+        // 1、去数据库批量查询数据
+        List<Hotel> hotels = service.list();
 
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
+        // 2、将数据库中查询的数据转成 es 的mapping需要的对象
         BulkRequest request = new BulkRequest();
+        for (Hotel hotel : hotels) {
+            HotelDoc hotelDoc = new HotelDoc(hotel);
+            // 批量添加文档数据到es中
+            request.add(new IndexRequest("hotel")
+                    .id(hotelDoc.getId().toString())
+                    .source(JSON.toJSONString(hotelDoc), XContentType.JSON));
+        }
 
-        // 和批量添加相比，变的地方就在这里而已
-        request.add(new DeleteRequest().index("user").id("520"));
-        request.add(new DeleteRequest().index("user").id("521"));
-        request.add(new DeleteRequest().index("user").id("522"));
+        // 3、发起请求
+        BulkResponse response = client.bulk(request, RequestOptions.DEFAULT);
+        // 检查是否成功   成功则返回OK
+        System.out.println("response.status() = " + response.status());
+    }
 
-        BulkResponse response = esClient.bulk(request, RequestOptions.DEFAULT);
-        
-        System.out.println(response.getTook());
+    /**
+     * 批量删除es中的文档数据
+     */
+    @Test
+    void bulkDeleteDocumentTest() throws IOException {
+        // 1、准备要删除数据的id
+        List<Hotel> hotels = service.list();
 
-        esClient.close();
+        // 2、准备request对象
+        BulkRequest request = new BulkRequest();
+        for (Hotel hotel : hotels) {
+            // 根据批量数据id 批量删除es中的文档
+            request.add(new DeleteRequest("hotel").id(hotel.getId().toString()));
+        }
+
+        // 3、发起请求
+        BulkResponse response = client.bulk(request, RequestOptions.DEFAULT);
+        // 检查是否成功       成功则返回 OK
+        System.out.println("response.status() = " + response.status());
+    }
+
+    
+    // 批量获取和批量修改是同样的套路  批量获取还可以使用 mget 这个API
+
+
+    /**
+     * mget批量获取
+     */
+    @Test
+    void mgetTest() throws IOException {
+        List<Hotel> hotels = service.list();
+
+        // 1、准备request对象
+        MultiGetRequest request = new MultiGetRequest();
+        for (Hotel hotel : hotels) {
+            // 添加get数据    必须指定index 和 文档id，可以根据不同index查询
+            request.add("hotel", hotel.getId().toString());
+        }
+
+        // 2、发起请求，获取响应
+        MultiGetResponse responses = client.mget(request, RequestOptions.DEFAULT);
+        for (MultiGetItemResponse response : responses) {
+            GetResponse resp = response.getResponse();
+            // 如果存在则打印响应信息
+            if (resp.isExists()) {
+                System.out.println("获取到的数据= " +resp.getSourceAsString());
+            }
+        }
     }
 }
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214171855672-1644830932.png) 
 
 
 
-postman检验一下：
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214171910258-431997650.png) 
+### Java进行DSL文档查询
+
+其实这种查询都是套路而已，一看前面玩的DSL查询的json形式是怎么写的，二看你要做的是什么查询，然后就是用 queryBuilds  将对应的查询构建出来，其他都是相同套路了
 
 
 
-#### 3.4.7、高级查询 - 重点
+#### 查询所有 match all
 
-##### 3.4.7.1、全量查询
+> match all：查询出所有数据
+
+
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
+import org.elasticsearch.search.SearchHits;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName MatchAll
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
+ * es的dsl文档查询之match all查询所有，也可以称之为 全量查询
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-public class MatchAll {
+@SpringBootTest
+public class o1MatchAll {
+    private RestHighLevelClient client;
 
-    /*
-     * @Author ZiXieQing
-     * @Description 高级查询 - 全量查询  就是基础语法中在请求体内使用match_all那个知识点
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+
+    /**
+     * 全量查询：查询所有数据
      */
     @Test
-    public void matchAllTest() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        // 全量查询 match_all
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .indices("user")
-                                                  .source(new SearchSourceBuilder()
-                                                          .query(QueryBuilders.matchAllQuery())),
-                                                  RequestOptions.DEFAULT);
-
-        // 查看执行了多少时间
-        System.out.println(response.getTook());
-
-        // 把数据遍历出来看一下
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
+    void matchAllTest() throws IOException {
+        // 1、准备request
+        SearchRequest request = new SearchRequest("indexName");
+        // 2、指定哪种查询/构建DSL语句
+        request.source().query(QueryBuilders.matchAllQuery());
+        // 3、发起请求 获取响应对象
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        // 4、处理响应结果
+        // 4.1、获取结果中的Hits
+        SearchHits searchHits = response.getHits();
+        // 4.2、获取Hits中的total
+        long total = searchHits.getTotalHits().value;
+        System.out.println("总共获取了 " + total + " 条数据");
+        // 4.3、获取Hits中的hits
+        SearchHit[] hits = searchHits.getHits();
+        for (SearchHit hit : hits) {
+            // 4.3.1、获取hits中的source 也就是真正的数据，获取到之后就可以用来处理自己要的逻辑了
+            String source = hit.getSourceAsString();
+            System.out.println("source = " + source);
         }
-
-        esClient.close();
     }
 }
 ```
 
+Java代码和前面玩的DSL语法的对应情况：
+
+![image-20230623213506444](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230623213508446-24732815.png)
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214192352035-167347418.png) 
 
 
 
+#### 全文检索查询
 
+##### match 单字段查询 与 multi match多字段查询
 
-##### 3.4.7.2、条件查询
+下面的代码根据情境需要，可以自行将响应结果处理进行抽取
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
+import org.elasticsearch.search.SearchHits;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName TermQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class TermQuery {
+ * DLS之全文检索查询：利用分词器对用户输入内容分词，然后去倒排索引库中匹配
+ * match_query 单字段查询 和 multi_match_query 多字段查询
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description term条件查询  注意：这里不是说的基础篇中的 filter range 那个条件啊 这个条件要求的是查询字段为int类型的
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+
+@SpringBootTest
+public class o2FullTextTest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * match_query  单字段查询
      */
     @Test
-    public void termQueryTest() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        // 条件查询
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .indices("user")
-                                                  .source(new SearchSourceBuilder()
-                                                          // 对照全量查询：变的就是这里的方法调用
-                                                          .query(QueryBuilders.termQuery("_id", "520"))),
-                                                  RequestOptions.DEFAULT);
-
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
+    void matchQueryTest() throws IOException {
+        // 1、准备request
+        SearchRequest request = new SearchRequest("indexName");
+        // 2、准备DSL
+        request.source().query(QueryBuilders.matchQuery("city", "上海"));
+        // 3、发送请求，获取响应对象
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
         }
+    }
 
-        esClient.close();
+    /**
+     * multi match 多字段查询 任意一个字段符合条件就算符合查询条件
+     */
+    @Test
+    void multiMatchTest() throws IOException {
+        SearchRequest request = new SearchRequest("indexName");
+        request.source().query(QueryBuilders.multiMatchQuery("成人用品", "name", "business"));
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
+        }
     }
 }
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214192422449-1984041700.png) 
+
+
+#### 精确查询
+
+> **精确查询**：根据精确词条值查找数据，一般是查找keyword、数值、日期、boolean等类型字段，所以**不会**对搜索条件分词
 
 
 
+##### range 范围查询 和 term精准查询
+
+> term：根据词条精确值查询
+>
+> range：根据值的范围查询
 
 
-##### 3.4.7.3、分页查询
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
+import org.elasticsearch.search.SearchHits;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName LimitQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class LimitQuery {
+ * DSL之精确查询：根据精确词条值查找数据，一般是查找keyword、数值、日期、boolean等类型字段，所以 不会 对搜索条件分词
+ * range 范围查询 和 term 精准查询
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description 分页查询    对应基础篇中的from size
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+@SpringBootTest
+public class o3ExactTest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * term 精准查询 根据词条精确值查询
+     * 和 match 单字段查询有区别，term要求内容完全匹配
      */
     @Test
-    public void limitQueryTest() throws IOException {
+    void termTest() throws IOException {
+        SearchRequest request = new SearchRequest("indexName");
+        request.source().query(QueryBuilders.termQuery("city", "深圳"));
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
-        // 1、获取链接对象
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        // 3、创建SearchSourceBuilder
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-        // 4、查询出所有的数据
-        SearchSourceBuilder sourceBuilder = searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-
-        // 5、对数据进行分页操作
-        sourceBuilder.from(0);
-        sourceBuilder.size(2);
-
-        // 2、发送请求
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .indices("user")
-                                                  .source(searchSourceBuilder),
-                                                  RequestOptions.DEFAULT);
-
-        // 7、查看数据
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
         }
+    }
 
-        // 8、关闭链接
-        esClient.close();
+    /**
+     * range 范围查询
+     */
+    @Test
+    void rangeTest() throws IOException {
+        SearchRequest request = new SearchRequest("indexName");
+        request.source().query(QueryBuilders.rangeQuery("price").lte(250));
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
+        }
     }
 }
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214192451797-2107474562.png) 
 
 
+#### 地理坐标查询
 
-
-
-##### 3.4.7.4、排序查询
+##### geo_distance 附近查询
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
-import org.junit.Test;
+import org.elasticsearch.search.SearchHits;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName SortQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class SortQuery {
+ * DSL之地理位置查询
+ * geo_bounding_box 矩形范围查询 和 geo_distance 附近查询
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
+@SpringBootTest
+public class o4GeoTest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * geo_distance 附近查询
+     */
     @Test
-    public void sortQueryTest() throws IOException {
+    void geoDistanceTest() throws IOException {
+        SearchRequest request = new SearchRequest("indexName");
+        request.source()
+                .query(QueryBuilders.geoDistanceQuery("location")
+                        .distance("15km").point(31.21,121.5));
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-        SearchSourceBuilder sourceBuilder = searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-
-        // 排序  以什么字段排序、排序方式是什么( 注意：别犯低级错误啊，用字符串来搞排序 ）
-        sourceBuilder.sort("_id", SortOrder.DESC);
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .indices("user")
-                                                  .source(searchSourceBuilder),
-                                                  RequestOptions.DEFAULT);
-
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
         }
-
-        esClient.close();
     }
 }
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214192519588-1355894956.png) 
+
+
+#### 复合查询
+
+function_score 算分函数查询 是差不多的道理
 
 
 
+##### bool 布尔查询之must、should、must not、filter查询
+
+布尔查询是一个或多个查询子句的组合，每一个子句就是一个**子查询**。子查询的组合方式有：
+
+- must：必须匹配每个子查询，类似“与”
+- should：选择性匹配子查询，类似“或”
+- must_not：必须不匹配，**不参与算分**，类似“非”
+- filter：必须匹配，**不参与算分**
+
+**注意：** 搜索时，参与**打分的字段越多，查询的性能也越差**。因此这种多条件查询时，建议这样做：
+
+- 搜索框的关键字搜索，是全文检索查询，使用must查询，参与算分
+- 其它过滤条件，采用filter查询。不参与算分
 
 
-
-
-##### 3.4.7.5、条件过滤查询
-
-````java
-import cn.zixieqing.utile.ESClientUtil;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName FilterQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class FilterQuery {
-
-    /*
-     * @Author ZiXieQing
-     * @Description 查询过滤
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
-     */
-    @Test
-    public void filterQueryTest() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-        // 查询结果只需要什么？
-        String[] includes = {"name"};
-        // 查询结果不需要什么？
-        String[] excludes = {};     // 根据需求自行填充
-
-        searchSourceBuilder.fetchSource(includes,excludes);
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .indices("user")
-                                                  .source(searchSourceBuilder), 
-                                                  RequestOptions.DEFAULT);
-
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
-        }
-
-        esClient.close();
-    }
-}
-````
-
-
-
-我的数据没弄好，我建的doc中只有一个name，而老衲又懒得加了，所以：这里别让结果把自己搞混了
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214193433725-1118278213.png) 
-
-
-
-
-
-
-
-##### 3.4.7.6、组合查询
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
+import org.elasticsearch.search.SearchHits;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName UnionQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class UnionQuery {
+ * DSL之复合查询：基础DSL查询进行组合，从而得到实现更复杂逻辑的复合查询
+ * function_score 算分函数查询
+ *
+ * bool布尔查询
+ *  must     必须匹配每个子查询   即：and “与”   参与score算分
+ *  should   选择性匹配子查询    即：or “或”    参与score算分
+ *  must not 必须不匹配         即：“非"       不参与score算分
+ *  filter   必须匹配           即：过滤        不参与score算分
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description 组合查询至must查询
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
-     */
-    @Test
-    public void mustQueryTest() throws IOException {
+@SpringBootTest
+public class o5Compound {
+    private RestHighLevelClient client;
 
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
 
-        // 注意：这里产生了改变，是调用的boolQuery()
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-
-        // 必须包含什么？
-        boolQuery.must(QueryBuilders.matchQuery("author", "邪"));
-        boolQuery.must(QueryBuilders.matchQuery("sex", "girl"));
-        // 当然：也就有mustNot()不包含什么了
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .source(new SearchSourceBuilder().query(boolQuery)),
-                                                  RequestOptions.DEFAULT);
-
-
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
-        }
-        
-        esClient.close();
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
     }
 
 
-    /*
-     * @Author ZiXieQing
-     * @Description 组合查询之should查询
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+    /**
+     * bool布尔查询
+     *  must     必须匹配每个子查询   即：and “与”   参与score算分
+     *  should   选择性匹配子查询    即：or “或”    参与score算分
+     *  must not 必须不匹配         即：“非"       不参与score算分
+     *  filter   必须匹配           即：过滤        不参与score算分
      */
     @Test
-    public void shouldQueryTest() throws IOException {
+    void boolTest() throws IOException {
+        SearchRequest request = new SearchRequest("indexName");
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        // 构建must   即：and 与
+        boolQueryBuilder.must(QueryBuilders.termQuery("city", "北京"));
+        // 构建should   即：or 或
+        boolQueryBuilder.should(QueryBuilders.multiMatchQuery("速8", "brand", "name"));
+        // 构建must not   即：非
+        boolQueryBuilder.mustNot(QueryBuilders.rangeQuery("price").gte(250));
+        // 构建filter   即：过滤
+        boolQueryBuilder.filter(QueryBuilders.termQuery("starName", "二钻"));
 
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
+        request.source().query(boolQueryBuilder);
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-
-        // 懒得烧蛇吃  不写了，知道这个should和must一样，复制粘贴多个条件即可
-        boolQuery.should(QueryBuilders.matchQuery("title", "是"));
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .source(new SearchSourceBuilder().query(boolQuery)),
-                                                  RequestOptions.DEFAULT);
-
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
         }
-
-        esClient.close();
     }
-} 
+}
 ```
 
+Java代码和前面玩的DSL语法对应关系：
+
+![image-20230624131548461](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230624131550457-305085644.png)
 
 
 
 
-##### 3.4.7.7、范围查询
+
+#### fuzzy 模糊查询
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
-
-import Java.io.IOException;
-
-/**
- * @ClassName RangeQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class RangeQuery {
-
-    /*
-     * @Author ZiXieQing
-     * @Description 范围查询  即：基础篇中的filter  range
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
-     */
-    @Test
-    public void rangeQuery() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("id");
-
-        // 对结果进行处理  gt >  lt <   gte >=     lte  <=
-        rangeQuery.gt("10000");
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .source(new SearchSourceBuilder().query(rangeQuery)),
-                                                  RequestOptions.DEFAULT);
-
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
-        }
-
-        esClient.close();
-    }
-} 
-```
-
-
-
-
-
-##### 3.4.7.8、模糊查询
-
-```java
-import cn.zixieqing.utile.ESClientUtil;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.index.query.FuzzyQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
+import org.elasticsearch.search.SearchHits;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName FuzzyQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class FuzzyQuery {
+ * DSL之模糊查询
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description 模糊查询
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+@SpringBootTest
+public class o6FuzzyTest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+	/**
+     * 模糊查询
      */
     @Test
-    public void fuzzyQuery() throws IOException {
+    void fuzzyTest() throws IOException {
+        SearchRequest request = new SearchRequest("indexName");
+        // fuzziness(Fuzziness.ONE)     表示的是：字符误差数  取值有：zero、one、two、auto
+        // 误差数  指的是：fuzzyQuery("name","深圳")这里面匹配的字符的误差    可以有几个字符不一样，多/少几个字符？
+        request.source().query(QueryBuilders.fuzzyQuery("name", "深圳").fuzziness(Fuzziness.ONE));
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        // 模糊查询
-        // fuzziness(Fuzziness.ONE) 表示的是：字符误差数  取值有：zero、one、two、auto
-        // 误差数  指的是：fuzzyQuery("author","网二")这里面匹配的字符的误差嘛
-        //                  可以有几个字符不一样 / 多 / 少几个字符？
-        FuzzyQueryBuilder fuzzyQuery = QueryBuilders.fuzzyQuery("author","网二").fuzziness(Fuzziness.ONE);
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .source(new SearchSourceBuilder().query(fuzzyQuery)),
-                                                  RequestOptions.DEFAULT);
-
-        for (SearchHit data : response.getHits()) {
-            System.out.println(data.getSourceAsString());
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
         }
-
-        esClient.close();
     }
-} 
+}
 ```
 
 
 
 
 
-##### 3.4.7.9、高亮查询
+
+
+#### 排序和分页查询
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.junit.Test;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
 
 /**
- * @ClassName HighLightQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
-public class HighLightQuery {
+ * DSL之排序和分页
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-    /*
-     * @Author ZiXieQing
-     * @Description 高亮查询 highLight
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
+
+@SpringBootTest
+public class o7SortAndPageTest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * sort 排序查询
      */
     @Test
-    public void highLightQueryTest() throws IOException {
+    void sortTest() throws IOException {
+        SearchRequest request = new SearchRequest("indexName");
+        request.source()
+                .query(QueryBuilders.matchAllQuery())
+                .sort("price", SortOrder.ASC);
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
-        // 1、获取链接对象
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
+        }
+    }
 
-        // 3、创建SearchSourceBuilder对象
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    /**
+     * page 分页查询
+     */
+    @Test
+    void pageTest() throws IOException {
+        int page = 2, size = 20;
+        SearchRequest request = new SearchRequest("indexName");
+        request.source()
+                .query(QueryBuilders.matchAllQuery())
+                .from((page - 1) * size).size(size);
 
-        // 4、查询什么数据？
-        TermsQueryBuilder termsQuery = QueryBuilders.termsQuery("author", "小紫1");
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        // 处理响应结果，后面都是一样的流程 都是解析json结果而已
+        SearchHits searchHits = response.getHits();
+        long total = searchHits.getTotalHits().value;
+        System.out.println("获取了 " + total + " 条数据");
+        for (SearchHit hit : searchHits.getHits()) {
+            String dataJson = hit.getSourceAsString();
+            System.out.println("dataJson = " + dataJson);
+        }
+    }
+}
+```
 
-        // 5、构建高亮
-        HighlightBuilder highlightBuilder = new HighlightBuilder();
 
-        // 高亮编写
-        highlightBuilder.preTags("<span color='blue'>");    // 构建标签前缀
-        highlightBuilder.postTags("</span>");       // 构建标签后缀
-        highlightBuilder.field("author");     // 构建高亮字段
 
-        // 6、设置高亮
-        searchSourceBuilder.highlighter(highlightBuilder);
 
-        // 7、进行查询
-        searchSourceBuilder.query(termsQuery);
 
-        // 2、发送请求、获取响应对象
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .indices("user")
-                                                  .source(searchSourceBuilder), 
-                                                  RequestOptions.DEFAULT);
 
-        // 验证
-        System.out.println(response);
 
+#### 高亮查询
+
+返回结果处理的逻辑有点区别，但思路都是一样的
+
+
+
+```java
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.alibaba.fastjson.JSON;
+import com.zixieqing.hotel.HotelApp;
+import com.zixieqing.hotel.pojo.HotelDoc;
+import org.apache.http.HttpHost;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.Map;
+
+/**
+ * DSL之高亮查询
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@SpringBootTest(classes = HotelApp.class)
+public class o8HighLightTest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    /**
+     * 高亮查询
+     * 返回结果处理不太一样
+     */
+    @Test
+    void highLightTest() throws IOException {
+        SearchRequest request = new SearchRequest("hotel");
+        request.source()
+                .query(QueryBuilders.matchQuery("city", "北京"))
+                .highlighter(SearchSourceBuilder.highlight()
+                        .field("name")  // 要高亮的字段
+                        .preTags("<em>")    // 前置HTML标签 默认就是em
+                        .postTags("</em>")  // 后置标签
+                        .requireFieldMatch(false));     // 是否进行查询字段和高亮字段匹配
+
+        // 发起请求，获取响应对象
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        // 处理响应结果
         for (SearchHit hit : response.getHits()) {
-            System.out.println(hit.getSourceAsString());
-            System.out.println( hit.getHighlightFields());
+            String originalData = hit.getSourceAsString();
+            HotelDoc hotelDoc = JSON.parseObject(originalData, HotelDoc.class);
+            System.out.println("原始数据为：" + originalData);
+
+            // 获取高亮之后的结果
+            // key 为要进行高亮的字段，如上为field("name")   value 为添加了标签之后的高亮内容
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            if (!CollectionUtils.isEmpty(highlightFields)) {
+                // 根据高亮字段，获取对应的高亮内容
+                HighlightField name = highlightFields.get("name");
+                if (name != null) {
+                    // 获取高亮内容   是一个数组
+                    String highLightStr = name.getFragments()[0].string();
+                    hotelDoc.setName(highLightStr);
+                }
+            }
+
+            System.out.println("hotelDoc = " + hotelDoc);
         }
-
-
-        // 9、关闭链接
-        esClient.close();
     }
 }
 ```
 
+代码和DSL语法对应关系： request.source()  获取到的就是返回结果的整个json文档
+
+![image-20230624175348848](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230624175351527-407883617.png)
 
 
 
 
-##### 3.4.7.10、聚合查询
+
+#### 聚合查询
+
+**[聚合（](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)[aggregations](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)[）](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)**可以让我们极其方便的实现对数据的统计、分析、运算
+
+
+
+聚合常见的有三类：
+
+- **桶（Bucket）**聚合：用来对文档做分组
+  - TermAggregation：按照文档字段值分组，例如按照品牌值分组、按照国家分组
+  - Date Histogram：按照日期阶梯分组，例如一周为一组，或者一月为一组
+
+- **度量（Metric）**聚合：用以计算一些值，比如：最大值、最小值、平均值等
+  - Avg：求平均值
+  - Max：求最大值
+  - Min：求最小值
+  - Stats：同时求max、min、avg、sum等
+- **管道（pipeline）**聚合：其它聚合的结果为基础做聚合
+
+
+
+> **注意：**参加聚合的字段必须是keyword、日期、数值、布尔类型，即：只要不是 text 类型即可，因为text类型会进行分词，而聚合不能进行分词
+
+
+
+
 
 ```java
-import cn.zixieqing.utile.ESClientUtil;
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import Java.io.IOException;
+import java.io.IOException;
+import java.util.List;
 
 /**
- * @ClassName AggQuery
- * @Author ZiXieQing
- * @Date 2021/12/14
- * Version 1.0
- **/
+ * 数据聚合 aggregation 可以让我们极其方便的实现对数据的统计、分析、运算
+ * 桶（Bucket）聚合：用来对文档做分组
+ *      TermAggregation：按照文档字段值分组，例如按照品牌值分组、按照国家分组
+ *      Date Histogram：按照日期阶梯分组，例如一周为一组，或者一月为一组
+ *
+ *  度量（Metric）聚合：用以计算一些值，比如：最大值、最小值、平均值等
+ *      Avg：求平均值
+ *      Max：求最大值
+ *      Min：求最小值
+ *      Stats：同时求max、min、avg、sum等
+ *
+ *  管道（pipeline）聚合：其它聚合的结果为基础做聚合
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
 
-// 聚合查询
-public class AggQuery {
+@SpringBootTest(classes = HotelApp.class)
+public class o9AggregationTest {
+    private RestHighLevelClient client;
 
-    /*
-     * @Author ZiXieQing
-     * @Description 最大值查询
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
-     */
-    @Test
-    public void maxQueryTest() throws IOException {
-
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-        // max("maxId")  这个名字是随便取的  不讲究，就是取个名字而已        联想：有max、就有min、avg、count、sum......
-        //                                  注：方法变成term()就是分组了
-        // field("_id")  对哪个字段求最大值
-        searchSourceBuilder.aggregation(AggregationBuilders
-                                        .max("maxId")
-                                        .field("id"));
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .source(searchSourceBuilder), 
-                                                  RequestOptions.DEFAULT);
-
-
-        // 检验
-        System.out.println(response);
-
-        esClient.close();
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
     }
 
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
 
-    /*
-     * @Author ZiXieQing
-     * @Description 分组查询
-     * @Date  2021/12/14
-     * @Param []
-     * @return void
-     */
     @Test
-    public void groupQueryTest() throws IOException {
+    void aggregationTest() throws IOException {
+        // 获取request
+        SearchRequest request = new SearchRequest("indexName");
+        // 组装DSL
+        request.source()
+                .size(0)
+                .query(QueryBuilders
+                        .rangeQuery("price")
+                        .lte(250)
+                )
+                .aggregation(AggregationBuilders
+                        .terms("brandAgg")
+                        .field("brand")
+                        .order(BucketOrder.aggregation("scoreAgg.avg",true))
+                        .subAggregation(AggregationBuilders
+                                .stats("scoreAgg")
+                                .field("score")
+                        )
+                );
 
-        RestHighLevelClient esClient = ESClientUtil.getESClient();
-        
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        // 分组
-        searchSourceBuilder.aggregation(AggregationBuilders
-                                        .terms("groupQuery")
-                                        .field("author"));
-
-        SearchResponse response = esClient.search(new SearchRequest()
-                                                  .source(searchSourceBuilder), 
-                                                  RequestOptions.DEFAULT);
-        
-        System.out.println(response);
-
-        esClient.close();
-
+        // 发送请求，获取响应
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        // 处理响应结果
+        System.out.println("response = " + response);
+        // 获取全部聚合结果对象 getAggregations
+        Aggregations aggregations = response.getAggregations();
+        // 根据聚合名 获取其聚合对象
+        Terms brandAgg = aggregations.get("brandAgg");
+        // 根据聚合类型 获取对应聚合对象
+        List<? extends Terms.Bucket> buckets = brandAgg.getBuckets();
+        for (Terms.Bucket bucket : buckets) {
+            // 根据key获取其value
+            String value = bucket.getKeyAsString();
+            // 将value根据需求做处理
+            System.out.println("value = " + value);
+        }
     }
 }
 ```
 
+请求组装对应关系：
+
+![image-20230627140843561](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627140846640-42593182.png)
+
+响应结果对应关系：
+
+![image-20230627141303392](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627141304881-71420632.png)
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211214233511028-2030642111.png) 
 
 
 
 
 
-## 4、ES高级篇
+#### 自动补全查询
 
-### 4.1、集群部署
+```java
+package com.zixieqing.hotel.dsl_query_document;
+
+import com.zixieqing.hotel.HotelApp;
+import org.apache.http.HttpHost;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.IOException;
+
+/**
+ * 自动补全 completion类型： 这个查询会匹配以用户输入内容开头的词条并返回
+ *  参与补全查询的字段 必须 是completion类型
+ *  字段的内容一般是用来补全的多个词条形成的数组
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@SpringBootTest(classes = HotelApp.class)
+public class o10Suggest {
+    private RestHighLevelClient client;
+
+    @BeforeEach
+    void setUp() {
+        this.client = new RestHighLevelClient(
+                RestClient.builder(HttpHost.create("http://ip:9200"))
+        );
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        this.client.close();
+    }
+
+    @Test
+    void completionTest() throws IOException {
+        // 准备request
+        SearchRequest request = new SearchRequest("hotel");
+        // 构建DSL
+        request.source()
+                .suggest(new SuggestBuilder()
+                        .addSuggestion(
+                                "title_suggest",
+                                SuggestBuilders.completionSuggestion("title")
+                                        .prefix("s")
+                                        .skipDuplicates(true)
+                                        .size(10)
+                        ));
+
+        // 发起请求，获取响应对象
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        // 解析响应结果
+        // 获取整个suggest对象
+        Suggest suggest = response.getSuggest();
+        // 通过指定的suggest名字，获取其对象
+        CompletionSuggestion titleSuggest = suggest.getSuggestion("title_suggest");
+        for (CompletionSuggestion.Entry options : titleSuggest) {
+            // 获取每一个options中的test内容
+            String context = options.getText().string();
+            // 按需求对内容进行处理
+            System.out.println("context = " + context);
+        }
+    }
+}
+```
+
+代码与DSL、响应结果对应关系：
+
+![image-20230627235426570](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627235428071-2109239701.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ES高级篇
+
+## 集群部署
 
 > 集群的意思：就是将多个节点归为一体罢了，这个整体就有一个指定的名字了
 
 
 
-#### 4.1.1、window中部署集群 - 了解
+### window中部署集群 - 了解
 
 把下载好的window版的ES中的data文件夹、logs文件夹下的所有的文件删掉，然后拷贝成三份，对文件重命名
 
@@ -3064,9 +3474,9 @@ index.indexing.slowlog.threshold.index.trace: 1s
 
 
 
-#### 4.1.2、linux中部署ES
+### Linux中部署ES
 
-##### 4.1.2.1、部署单机ES
+#### 部署单机ES
 
 **1、准备工作**
 
@@ -3272,7 +3682,13 @@ systemctl disable firewalld.service 	# 关闭防火墙，永久性生效，重�
 
 
 
-##### 4.1.2.2、部署集群ES
+
+
+
+
+
+
+#### 部署集群ES
 
 可以选择和windows版的集群搭建一样
 
@@ -3434,70 +3850,11 @@ bin/elasticsearch -d
 
 
 
+## 分片、副本、分配
 
 
 
-
-### 4.2、巩固核心概念
-
-#### 4.2.1、索引 index
-
-**所谓索引：类似于关系型数据库中的数据库**
-
-但是索引这个东西在ES中又有点东西，它的作用和关系型数据库中的索引是一样的，相当于门牌号，一个标识，旨在：提高查询效率，当然，不是说只针对查询，CRUD都可以弄索引，所以这么一说ES中的索引和关系型数据库中的索引是一样的，就不太类似于关系型中的数据库了，此言差矣！在关系型中有了数据库，才有表结构（ 行、列、类型...... ），而在ES中就是有了索引，才有doc、field.....，因此：这就类似于关系型中的数据库，只是作用和关系型中的索引一样罢了
-
-**因此：ES中索引类似于关系型中的数据库，作用：类似于关系型中的索引，旨在：提高查询效率，当然：在一个集群中可以定义N多个索引，同时：索引名字必须采用全小写字母**
-
-
-
-当然：也别忘了有一个倒排索引
--  关系型数据库通过增加一个**B+树索引**到指定的列上，以便提升数据检索速度。索引ElasticSearch 使用了一个叫做 `倒排索引` 的结构来达到相同的目的 
-
-
-
-
-
-#### 4.2.2、类型 type
-
-**这玩意儿就相当于关系型数据库中的表，注意啊：关系型中表是在数据库下，那么ES中也相应的 类型是在索引之下建立的**
-
-表是个什么玩意呢？行和列嘛，这行和列有多少N多行和N多列嘛，所以：ES中的类型也一样，可以定义N种类型。同时：每张表要存储的数据都不一样吧，所以表是用来干嘛的？分类 / 分区嘛，所以ES中的类型的作用也来了：就是为了分类嘛。另外：关系型中可以定义N张表，那么在ES中，也可以定义N种类型
-
-**因此：ES中的类型类似于关系型中的表，作用：为了分类 / 分区，同时：可以定义N种类型，但是：类型必须是在索引之下建立的（ 是索引的逻辑体现嘛 ）**
-
-**但是：不同版本的ES，类型也发生了变化，上面的解读不是全通用的**
-
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211231180250585-624115802.png) 
-
-
-
-
-
-#### 4.2.3、文档 document
-
-**这玩意儿类似管关系型中的行。 一个文档是一个可被索引的基础信息单元，也就是一条数据嘛**
-
-
-
-#### 4.2.4、字段field
-
-**这也就类似于关系型中的列。 对文档数据根据不同属性（ 列字段 ）进行的分类标识**
-
-
-
-
-
-#### 4.2.5、映射 mapping
-
-**指的就是：结构信息 / 限制条件**
-
-还是对照关系型来看，在关系型中表有哪些字段、该字段是否为null、默认值是什么........诸如此的限制条件，所以**ES中的映射就是：数据的使用规则设置**
-
-
-
-
-
-#### 4.2.6、分片 shards - 重要
+### 分片 shards - 重要
 
 **这玩意儿就类似于关系型中的分表**
 
@@ -3522,7 +3879,7 @@ bin/elasticsearch -d
 
 
 
-#### 4.2.7、副本 Replicas - 重要
+### 副本 Replicas - 重要
 
 **这不是游戏中的刷副本的那个副本啊。是指：分片的复制品**
 
@@ -3551,7 +3908,7 @@ bin/elasticsearch -d
 
 
 
-#### 4.2.8、分配  Allocation
+### 分配  Allocation
 
 前面讲到了分片和副本，对照Redis中的主备来看了，那么对照Redis的主从来看呢？主机宕掉了怎么重新选一个主机？Redis中是加了一个哨兵模式，从而达到的。那么在ES中哪个是主节点、哪个是从节点、分片怎么去分的？就是利用了分配
 
@@ -3577,7 +3934,7 @@ bin/elasticsearch -d
 
 
 
-### 4.3、单节点集群
+## 单节点集群
 
 这里为了方便就使用window版做演示，就不再linux中演示了
 
@@ -3611,7 +3968,7 @@ http://127.0.0.1:1001/users		// 请求方式：put
 
 **3、开始安装head插件，这就是一个可视化界面而已，后续还会用Kibana**
 
-- 自行到官网下载elasticsearch-head-master，这是用Vue写的。启动效果如下：
+自行到官网下载elasticsearch-head-master，这是用Vue写的。启动效果如下：
 
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101024752187-140685767.png) 
 
@@ -3658,7 +4015,7 @@ head链接ES之后就是下图的样子
 
 
 
-### 4.4、故障转移
+## 故障转移
 
 这个东西其实已经见到了，就是前面说的报master_not_discovered_exception的情况，此时再启动一个节点即可实现故障转移
 
@@ -3683,7 +4040,7 @@ head链接ES之后就是下图的样子
 
 
 
-### 4.5、水平扩容 / 负载均衡
+## 水平扩容 / 负载均衡
 
 **1、启动node-1003节点**
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101141712204-188942442.png)
@@ -3725,7 +4082,7 @@ http://127.0.0.1:1001/users/_settings		// 请求方式：put
 
 
 
-### 4.6、应对故障
+## 应对故障
 
 应对的是什么故障？前面一直在说：服务宕掉了嘛
 
@@ -3749,6 +4106,8 @@ http://127.0.0.1:1001/users/_settings		// 请求方式：put
 
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619190153514-1868983239.png)
+
+
 
 这就会报错： unless existing master is discovered 找不到主节点（ 对于启动的集群来说，它现在是新节点涩 ），因此：需要做一下配置修改（ node-1001的config/ElasticSearch.yml ）
 
@@ -3774,9 +4133,9 @@ discovery.seed_hosts: ["127.0.0.1:9302","127.0.0.1:9303"]\
 
 
 
-### 4.7、路由计算和分片控制理论
+## 路由计算和分片控制理论
 
-#### 4.7.1、路由计算
+### 路由计算
 
 路由、路由，这个东西太熟悉了，在Vue中就见过路由router了（ 用来转发和重定向的嘛 ）
 
@@ -3798,7 +4157,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-#### 4.7.2、分片控制
+### 分片控制
 
 既然有了存数据的问题，那当然就有取数据的问题了。
 
@@ -3808,34 +4167,33 @@ shard = hash( routing ) % number_of_primary_shards
 
 其实ES不知道数据在哪个节点中，但是：你自己却可以取到数据，为什么？
 
-负载均衡涩，轮询嘛。所以这里有个小知识点，就是：协调节点 `coordinating node`，**我们可以发送请求到集群中的任一节点，==每个节点都有能力处理任意请求，每个节点都知道集群中任一文档位置==，这就是分片控制，而我们发送请求的哪个节点就是：协调节点，它会去帮我们找到我们要的数据在哪里**
-
-- **因此：当发送请求的时候， 为了扩展负载，更好的做法是轮询集群中所有的节点（ 先知道这样做即可 ）**
+负载均衡，轮询嘛。所以这里有个小知识点，就是：协调节点 `coordinating node`，**我们可以发送请求到集群中的任一节点，==每个节点都有能力处理任意请求，每个节点都知道集群中任一文档位置==，这就是分片控制，而我们发送请求的哪个节点就是：协调节点，它会去帮我们找到我们要的数据在哪里**
 
 
 
+**因此：当发送请求的时候， 为了扩展负载，更好的做法是轮询集群中所有的节点（ 先知道这样做即可 ）**
 
 
 
 
-### 4.8、数据写流程
 
-新建、索引和删除请求都是写操作， 必须在主分片上面完成之后才能被复制到相关的副本分片
+
+
+## 数据写流程
+
+新建、删除请求都是写操作， 必须在主分片上面完成之后才能被复制到相关的副本分片
 
 **整个流程也很简单**
 
-- 客户端请求任意节点（ 协调节点 ）
-- 通过路由计算，协调节点把请求转向指定的节点
-- 转向的节点的主分片保存数据
-- 主节点再将数据转发给副本保存
-- 副本给主节点反馈保存结果
-- 主节点给客户端反馈保存结果
-- 客户端收到反馈结果
+1. 客户端请求任意节点（协调节点）
+2. 通过路由计算，协调节点把请求转向指定的节点
+3. 转向的节点的主分片保存数据
+4. 主节点再将数据转发给副本保存
+5. 副本给主节点反馈保存结果
+6. 主节点给客户端反馈保存结果
+7. 客户端收到反馈结果
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101175443731-783390209.png)
-
-
+![image-20230621160556854](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621163032209-201042988.png)
 
 但是：从图中就可以看出来，这套流程完了，才可以做其他事（ 如：才可以去查询数据 ），那我为什么不可以异步呢？就是我只要保证到了哪一个步骤之后，就可以进行数据查询，所以：这里有两个小东西需要了解
 
@@ -3845,23 +4203,34 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-#### 4.8.1、一致性 consistency
+### 一致性 consistency
 
-这玩意就是为了和读数据搭配起来嘛，写入和读取保证数据的一致性呗
+- 这玩意就是为了和读数据搭配起来嘛，写入和读取保证数据的一致性呗
 
-**这玩意儿可以设定的值如下：**
+  **这玩意儿可以设定的值如下：**
 
-- one ：只要主分片状态 ok 就允许执行读操作，这种写入速度快，但不能保证读到最新的更改
-- all：这是强一致性，必须要主分片和所有副本分片的状态没问题才允许执行写操作
-- quorum：**这是ES的默认值**, 即大多数的分片副本状态没问题就允许执行写操作。这是折中的方法，write的时候，W>N/2，即参与写入操作的节点数W，必须超过副本节点数N的一半，在这个默认情况下，ES是怎么判定你的分片数量的，就一个公式：**int( ( primary + number_of_replicas ) / 2 ) + 1**
-	- **注意：primary指的是创建的索引数量；number_of_replicas是指的在索引设置中设定的副本分片数，如果你的索引设置中指定了当前索引拥有3个副本分片，那规定数量的计算结果为：int( 1 primary + 3 replicas) / 2 ) + 1 = 3，如果此时你只启动两个节点，那么处于活跃状态的分片副本数量就达不到规定数量，也因此你将无法索引和删除任何文档**
-- realtime request：就是从translog里头读，可以保证是最新的。**但是注意：get是最新的，但是检索等其他方法不是( 如果需要搜索出来也是最新的，需要refresh，这个会刷新该shard但不是整个index，因此如果read请求分发到repliac shard，那么可能读到的不是最新的数据，这个时候就需要指定preference=_primar y)**
+  - one ：只要主分片状态 ok 就允许执行读操作，这种写入速度快，但不能保证读到最新的更改
+  - all：这是强一致性，必须要主分片和所有副本分片的状态没问题才允许执行写操作
+  - quorum：这是ES的默认值。即大多数的分片副本状态没问题就允许执行写操作。这是折中的方法，write的时候，W>N/2，即参与写入操作的节点数W，必须超过副本节点数N的一半，在这个默认情况下，ES是怎么判定你的分片数量的，就一个公式：
+
+  ```txt
+  int((primary + number_of_replicas) / 2) + 1
+  
+  primary						指的是创建的索引数量
+  number_of_replicas			 是指的在索引设置中设定的副本分片数
+  							如果你的索引设置中指定了当前索引拥有3个副本分片
+  							那规定数量的计算结果为：int(1 primary + 3 replicas) / 2) + 1 = 3，
+  							如果此时你只启动两个节点，那么处于活跃状态的分片副本数量就达不到规定数量，
+  							也因此你将无法索引和删除任何文档
+  ```
+
+  - realtime request：就是从translog里头读，可以保证是最新的。**但是注意：get是最新的，但是检索等其他方法不是( 如果需要搜索出来也是最新的，需要refresh，这个会刷新该shard但不是整个index，因此如果read请求分发到repliac shard，那么可能读到的不是最新的数据，这个时候就需要指定preference=_primar y)**
 
 
 
 
 
-#### 4.8.2、超时 timeout
+### 超时 timeout
 
 如果没有足够的副本分片会发生什么？Elasticsearch 会等待，希望更多的分片出现。默认情况下，它最多等待 1 分钟。 如果你需要，你可以使用timeout参数使它更早终止，单位是毫秒，如：100就是100毫秒
 
@@ -3877,11 +4246,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-
-
-
-
-### 4.9、数据读流程
+## 数据读流程
 
 有写流程，那肯定也要说一下读流程嘛，其实和写流程很像，只是变了那么一丢丢而已
 
@@ -3897,9 +4262,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-**当然：这里有个注意点啊（ 需要结合前面说的一致性理论 ）**
-
-- 在文档( 数据 ）被检索时，已经被索引的文档可能已经存在于主分片上但是还没有复制到副本分片。 在这种情况下，副本分片可能会报文档不存在，但是主分片可能成功返回文档。 一旦索引请求成功返回给用户，文档在主分片和副本分片都是可用的
+**这里有个注意点：** 在文档( 数据 ）被检索时，已经被索引的文档可能已经存在于主分片上但是还没有复制到副本分片。 在这种情况下，副本分片可能会报文档不存在，但是主分片可能成功返回文档。 一旦索引请求成功返回给用户，文档在主分片和副本分片都是可用的
 
 
 
@@ -3907,9 +4270,10 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-### 4.10、更新操作流程和批量更新操作流程
+## 更新操作流程和批量更新操作流程
 
-#### 4.10.1、更新操作流程
+### 更新操作流程
+
 ![image-20230619202310833](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619202324580-127614262.png)
 
 
@@ -3929,7 +4293,8 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-#### 4.10.2、批量更新操作流程
+### 批量更新操作流程
+
 这个其实更容易理解，单文档更新懂了，那多文档更新就懂了嘛，多文档就请求拆分呗
 
 **所谓的多文档更新就是：将整个多文档请求分解成每个分片的文档请求，并且将这些请求并行转发到每个参与节点。协调节点一旦收到来自每个节点的应答，就将每个节点的响应收集整理成单个响应，返回给客户端**
@@ -3948,7 +4313,7 @@ shard = hash( routing ) % number_of_primary_shards
 **用单个 mget 请求取回多个文档所需的步骤顺序:**
 
 1. 客户端向 Node 1 发送 mget 请求
-2. Node 1为每个分片构建多文档获取请求，然后并行转发这些请求到托管在每个所需的主分片或者副本分片的点节上。一旦收到所有答复，Node 1 构建响应并将其返回给客户端。可以对docs数组中每个文档设置routing参数
+2. Node 1为每个分片构建多文档获取请求，然后并行转发这些请求到托管在每个所需的主分片或者副本分片的节点上。一旦收到所有答复，Node 1 构建响应并将其返回给客户端。可以对docs数组中每个文档设置routing参数
 
 - bulk API， 允许在单个批量请求中执行多个创建、索引、删除和更新请求
 
@@ -3972,9 +4337,10 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-### 4.11、再次回顾分片和倒排索引
+## 再次回顾分片和倒排索引
 
-#### 4.11.1、分片
+### 分片
+
 所谓的分片就是：将索引切分成任意份嘛，然后得到的每一份数据都是一个单独的索引
 
 分片完成后，我们存数据时，存到哪个节点上，就是通过`shard = hash( routing ) % number_of_primary_shards`得到的
@@ -3985,8 +4351,8 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
+### 倒排索引
 
-#### 4.11.2、倒排索引
 这个其实在基础篇中一上来说明索引时就提到了，但是，那只是简单提了一下而已，其实还有三个东西没说明
 
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101221159368-364868269.png)
@@ -3997,7 +4363,9 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-##### 4.11.2.1、词条
+
+
+#### 词条
 
 **它是指：索引中的最小存储或查询单元**。这个其实很好理解，白话文来讲就是：字或者词组，英文就是一个单词，中文就是字或词组嘛，比如：你要查询的是某一个字或词组，这就是词条呗
 
@@ -4007,14 +4375,16 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-##### 4.11.2.2、词典
+#### 词典
+
 这个就更简单了，就是词条的集合嘛。**字或者词组组成的内容呗**
 
 
 
 
 
-##### 4.11.2.3、倒排表
+#### 倒排表
+
 **就是指：关键字 / 关键词在索引中的位置 / 概率，有点类似于数组，你查询数组中某个元素的位置，但是区别很大啊，我只是为了好理解，所以才这么举例子的**
 
 
@@ -4023,9 +4393,9 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-### 4.12、文档搜索
+## 文档搜索
 
-#### 4.12.1、不可变的倒排索引
+### 不可变的倒排索引
 
 以前的全文检索是将整个文档集合弄成一个倒排索引，然后存入磁盘中，当要建立新的索引时，只要新的索引准备就绪之后，旧的索引就会被替换掉，这样最近的文档数据变化就可以被检索到
 
@@ -4044,7 +4414,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-#### 4.12.2、可变的倒排索引
+### 可变的倒排索引
 
 **又想保留不可变性，又想能够实现倒排索引的更新，咋办？**
 
@@ -4076,7 +4446,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-### 4.13、近实时搜索、文档刷新、文档刷写、文档合并
+## 近实时搜索、文档刷新、文档刷写、文档合并
 
 > **ES的最大好处就是实时数据全文检索**
 >
@@ -4131,9 +4501,9 @@ shard = hash( routing ) % number_of_primary_shards
 
 **写入和打开一个新段的轻量的过程叫做refresh。默认情况下每个分片会每秒自动刷新一次。这就是为什么我们说 ES是近实时搜索：文档的变化并不是立即对搜索可见，但会在一秒之内变为可见**
 
-- 刷新是1s以内完成的，这是有时间间隙的，因此会造成：搜索一个文档时，可能并没有搜索到，因此：解决办法就是使用refresh API刷新一下即可
+刷新是1s以内完成的，这是有时间间隙的，所以会造成：搜索一个文档时，可能并没有搜索到，因此：解决办法就是使用refresh API刷新一下即可
 
-- **但是这样也伴随一个问题：虽然这种从内存刷新到缓存中看起来不错，但是还是有性能开销的。并不是所有的情况都需要refresh的，** 假如：是在索引日志文件呢？去refresh干嘛，浪费性能而已，所以此时：你要的是查询速度，而不是近实时搜索，因此：可以通过一个配置来进行改动，从而降低每个索引的刷新频率
+**但是这样也伴随一个问题：虽然这种从内存刷新到缓存中看起来不错，但是还是有性能开销的。并不是所有的情况都需要refresh的，** 假如：是在索引日志文件呢？去refresh干嘛，浪费性能而已，所以此时：你要的是查询速度，而不是近实时搜索，因此：可以通过一个配置来进行改动，从而降低每个索引的刷新频率
 
 ```json
 http://ip:port/index_name/_settings		// 请求方式：put
@@ -4146,7 +4516,7 @@ http://ip:port/index_name/_settings		// 请求方式：put
 }
 ```
 
-- refresh_interval可以在既存索引上进行动态更新。在生产环境中，当你正在建立一个大的新索引时，可以先关闭自动刷新，待开始使用该索引时，再把它们调回来。虽然有点麻烦，但是按照ES这个玩意儿来说，确实需要这么做比较好
+refresh_interval 可以在既存索引上进行动态更新。在生产环境中，当你正在建立一个大的新索引时，可以先关闭自动刷新，待开始使用该索引时，再把它们调回来。虽然有点麻烦，但是按照ES这个玩意儿来说，确实需要这么做比较好
 
 ```json
 // 关闭自动刷新
@@ -4167,7 +4537,7 @@ http://ip:port/users/_settings		// 请求方式：put
 
 
 
-另外：不断进行更新就会导致很多的段出现（ 在内存刷写到磁盘哪里，会造成很多的磁盘文件 ），因此：在哪里利用了文档合并的功能（ 也就是段的能力，合并文档，从而让刷写到磁盘中的文档变成一份 ）
+另外：不断进行更新就会导致很多的段出现（在内存刷写到磁盘那里，会造成很多的磁盘文件），因此：在哪里利用了文档合并的功能(也就是段的能力，合并文档，从而让刷写到磁盘中的文档变成一份)
 
 
 
@@ -4177,9 +4547,10 @@ http://ip:port/users/_settings		// 请求方式：put
 
 
 
-### 4.14、文档分析
+## 文档分析
+
 试想：我们在浏览器中，输入一条信息，如：搜索“博客园紫邪情”，为什么连“博客园也搜索出来了？我要的是不是这个结果涩”
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220104231825619-2002258303.png)
+![image-20230621232021726](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621232024641-127076645.png)
 
 
 
@@ -4210,11 +4581,12 @@ http://ip:port/users/_settings		// 请求方式：put
 
 
 
-#### 4.14.1、kibana
+### kibana
+
 **1、去Elastic [官网](https://www.elastic.co/cn/downloads/?elektra=home&storm=hero) 下载kibana。** 但是需要注意：==kibana的版本必须和ES的版本一致==
 
-- 下载好了kibana之后，解压到自己想要的目录（ 注：加压会有点久，因为是用Vue写的，里面有模块module 要是加压快的话，可能还下错了 ），然后点击bin/kibana.bat即可启动kibana、第一次进去会有一个选择页面，add … / explore，选择explore就可以了，进去之后就是如下界面：
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105013048852-1688209141.png)
+下载好了kibana之后，解压到自己想要的目录（ 注：加压会有点久，因为是用Vue写的，里面有模块module 要是加压快的话，可能还下错了 ），然后点击bin/kibana.bat即可启动kibana、第一次进去会有一个选择页面，add … / explore，选择explore就可以了，进去之后就是如下界面：
+![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105013048852-1688209141.png)
 
 
 
@@ -4240,9 +4612,10 @@ http://ip:port/users/_settings		// 请求方式：put
 
 
 
+### 内置分析器
 
-#### 4.14.2、内置分析器
-##### 4.14.2.1、标准分析器 standard
+#### 标准分析器 standard
+
 **这是根据Unicode定义的单词边界来划分文本，将字母转成小写，去掉大部分的标点符号，从而得到的各种语言的最常用文本选择，==另外：这是ES的默认分析器==。** 接下来演示一下
 
 
@@ -4312,7 +4685,8 @@ GET _analyze
 
 
 
-##### 4.14.2.2、简单分析器 simple
+#### 简单分析器 simple
+
 **简单分析器是“按非字母的字符分词，例如：数字、标点符号、特殊字符等，会去掉非字母的词，大写字母统一转换成小写”**
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105021823253-1892973906.png)
 
@@ -4320,8 +4694,8 @@ GET _analyze
 
 
 
+#### 空格分析器 whitespace
 
-##### 4.14.2.3、空格分析器 whitespace
 **是简单按照空格进行分词，相当于按照空格split了一下，大写字母不会转换成小写**
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105021950173-1159454518.png)
 
@@ -4331,7 +4705,8 @@ GET _analyze
 
 
 
-##### 4.14.2.4、去词分析器 stop
+#### 去词分析器 stop
+
 **会去掉无意义的词（此无意义是指语气助词等修饰性词，补语文：语气词是疑问语气、祈使语气、感叹语气、肯定语气和停顿语气），例如：the、a、an 、this等，大写字母统一转换成小写**
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105023052858-667836704.png)
 
@@ -4339,7 +4714,8 @@ GET _analyze
 
 
 
-##### 4.14.2.5、不拆分分析器 keyword
+#### 不拆分分析器 keyword
+
 **就是将整个文本当作一个词**
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105023223725-897621603.png)
 
@@ -4347,7 +4723,8 @@ GET _analyze
 
 
 
-#### 4.14.3、IK中文分词器
+### IK中文分词器
+
 来个实验：
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105145147364-1600170909.png)
 
@@ -4361,14 +4738,14 @@ GET _analyze
 
 **1、下载IK分词器：** https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v7.8.0
 
-- **注意：版本对应关系，** 还是和ES版本对应，https://github.com/medcl/elasticsearch-analysis-ik 这个链接进去之后有详细的版本对应
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105153145884-1511282106.png)
+**注意：版本对应关系，** 还是和ES版本对应，https://github.com/medcl/elasticsearch-analysis-ik 这个链接进去之后有详细的版本对应
+![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105153145884-1511282106.png)
 
-  
 
-  
 
-  
+
+
+
 
 
 
@@ -4428,16 +4805,11 @@ GET _analyze
 
 
 
-#### 4.14.4、自定义分析器
-这里还有一个自定义分析器的知识点，这个不了解也罢，有兴趣的自行百度百科了解一下
 
 
 
+### 多玩几次kibana
 
-
-
-
-#### 4.14.5、多玩几次kibana
 在第一篇高级篇中我边说过：kibana重要，只是经过前面这些介绍了使用之后，并不算熟悉，因此：多玩几次吧
 
 另外：就是前面说的kibana遵循rest风格，在ES中是怎么玩的？总结下来其实就下面这些，要上手简单得很，但理论却是一直弄到现在
@@ -4496,7 +4868,113 @@ GET _analyze
 
 
 
-### 4.15、文档控制-了解
+
+
+
+### 拼音分词器/自定义分析器
+
+官网：https://github.com/medcl/elasticsearch-analysis-pinyin
+
+安装和IK分词器一样
+
+- 下载
+- 上传解压
+- 重启es
+
+
+
+测试拼音分词器
+
+![image-20230627210119445](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627210121162-1437720046.png)
+
+由上可知，伴随2个问题：
+
+1. 只进行了拼音分词，汉字分词不见了
+2. 只采用拼音分词会出现一种情况：同音字，如“狮子”，“虱子”，这样的话明明想搜索的是“狮子”，结果“虱子”也出来了，所以这种搜索效果不好
+
+
+
+因此：需要定制，让汉字分词出现，同时搜索时使用的汉字是什么就是什么，别弄同音字
+
+要完成上面的需求，就需要结合前面的文档分析的过程
+
+在ES中有一个**文档分析的过程**，文档分析的过程也很简单：
+
+1. **将文本拆成适合于倒排索引的独立的词条，然后把这些词条统一变为一个标准格式，从而使文本具有“可搜索性”。** 而这个文档分析的过程在ES是由一个叫做“分析器 analyzer”的东西来做的，这个分析器里面做了三个步骤
+   1. 字符过滤器(character filters)：就是用来处理一些字符的嘛，像什么将 & 变为 and 啊、去掉HTML元素啊之类的。它是文本字符串在经过分词之前的一个步骤，文本字符串是按文本顺序经过每个字符串过滤器从而处理字符串
+   2. 分词器(tokenizer)：见名知意，就是用来分词的，也就是将字符串拆分成词条（ 字 / 词组 ），这一步和Java中String的split()一样的，通过指定的要求，把内容进行拆分，如：空格、标点符号
+   3. Token过滤器(tokenizer filter)：这个玩意儿的作用就是 词条经过每个Token过滤器，从而对数据再次进行筛选，如：字母大写变小写、去掉一些不重要的词条内容、添加一些词条（ 如：同义词 ）
+
+
+
+举例理解：character filters、tokenizer、tokenizer filter)
+
+![image-20210723210427878](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627210948649-220442440.png)
+
+因此现在自定义分词器就变成如下的样子：
+
+**注：** 是建立索引时自定义分词器，即自定义的分词器只对当前索引库有效
+
+```json
+PUT /test
+{
+  "settings": {
+    "analysis": {
+      "analyzer": { // 自定义分词器
+        "my_analyzer": {  // 分词器名称
+          "tokenizer": "ik_max_word",
+          "filter": "py"
+        }
+      },
+      "filter": { // 自定义tokenizer filter
+        "py": { // 过滤器名称
+          "type": "pinyin", // 过滤器类型，这里是pinyin，这些参数都在 拼音分词器官网有
+		  "keep_full_pinyin": false,
+          "keep_joined_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "remove_duplicated_term": true,
+          "none_chinese_pinyin_tokenize": false
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "analyzer": "my_analyzer",	// 指明在索引时使用的分词器
+        "search_analyzer": "ik_smart"	// 指明搜索时使用的分词器
+      }
+    }
+  }
+}
+```
+
+
+
+使用自定义分词器：
+
+![image-20230627212610200](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627212611330-349099004.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 文档控制-了解
+
 **所谓的文档控制就是：不断更新的情况，试想：多进程不断去更新文档，会造成什么情况？会把其他人更新过的文档进行覆盖更新了，而ES是怎么解决这个问题的？**
 
 
@@ -4512,15 +4990,8 @@ GET _analyze
 
 
 
+## ES的优化
 
-
-
-
-
-
-
-
-### 4.16、ES的优化
 **ES的所有索引和文档数据都是存储在本地的磁盘中的，所以：磁盘能处理的吞吐量越大，节点就越稳定**
 
 
@@ -4532,7 +5003,8 @@ GET _analyze
 
 
 
-#### 4.16.1、硬件方面
+### 硬件方面
+
 1、选用固态硬盘（ 即：SSD ），它比机械硬盘的好是因为：机械硬盘是通过旋转马达的驱动来进行的，所以这就会造成发热、磨损，就会影响ES的效率，而SSD是使用芯片式的闪存来存储数据的，性能比机械硬盘好得多
 
 2、使用RAID 0 （ 独立磁盘冗余阵列 ），它是把连续的数据分散到多个磁盘上存取，这样，系统有数据请求就可以被多个磁盘并行的执行，每个磁盘执行属于它自己的那部分数据请求。这种数据上的并行操作可以充分利用总线的带宽，显著提高磁盘整体存取性能
@@ -4551,7 +5023,8 @@ GET _analyze
 
 
 
-#### 4.16.2、分片策略
+### 分片策略
+
 分片和副本不是乱分配的！分片处在不同节点还可以（ 前提是节点中存的数据多 ），这样就类似于关系型中分表，确实可以算得到优化，但是：如果一个节点中有多个分片了，那么就会分片之间的资源竞争，这就会导致性能降低
 
 
@@ -4581,9 +5054,8 @@ PUT /_all/_settings
 
 
 
+### 带路由查询
 
-
-#### 4.16.3、带路由查询
 前面说过：路由计算公式 `shard = hash( routing ) % number_of_primary_shards`
 
 
@@ -4599,9 +5071,8 @@ PUT /_all/_settings
 
 
 
+### 内存优化
 
-
-#### 4.16.4、内存优化
 **修改es的config/jvm.options**
 ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105215239639-619799136.png)
 
@@ -4617,7 +5088,7 @@ PUT /_all/_settings
 
 
 
-### 4.17、附上一些配置说明
+## 附上一些配置说明
 
 | **参数名**                         | **参数值**    | **说明**                                                     |
 | ---------------------------------- | ------------- | ------------------------------------------------------------ |
@@ -4635,8 +5106,10 @@ PUT /_all/_settings
 
 
 
-### 4.19、说一些另外的理论吧
-#### 4.19.1、ES的master主节点选举流程
+## 说一些另外的理论吧
+
+### ES的master主节点选举流程
+
 1. 首先选主是由ZenDiscovery来完成的。ZenDiscovery做了两件事：
    1. 一个是Ping过程，发现节点嘛 
    2. 二是Unicast过程，控制哪些节点需要Ping通
@@ -4650,10 +5123,8 @@ PUT /_all/_settings
 
 
 
+### ES的集群脑裂问题
 
-
-
-#### 4.19.2、ES的集群脑裂问题
 **导致的原因：**
 - 网络问题：集群间的网络延迟导致一些节点访问不到master, 认为master 挂掉了从而选举出新的master,并对master上的分片和副本标红，分配新的主分片
 - 节点负载：主节点的角色既为master又为data,访问量较大时可能会导致ES停止响应造成大面积延迟，此时其他节点得不到主节点的响应认为主节点挂掉了，会重新选取主节点
