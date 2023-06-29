@@ -6,7 +6,7 @@
 
 这些是自己的知识获取能力，自行百度百科
 
-<br>
+
 
 ### 下载ElasticSearch的window版
 
@@ -16,13 +16,13 @@ linux版后续说明
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222900979-803597459.png)
 
-<br>
+
 
 ### 下载postman
 
 自行百度进行下载
 
-<br>
+
 
 ### ElasticSearch中的目录解读
 
@@ -34,7 +34,7 @@ linux版后续说明
 
 **进到bin目录下，点击 elasticsearch.bat 文件即可启动 ES 服务**
 
-<br>
+
 
 ### ELK技术是什么意思？
 
@@ -42,7 +42,7 @@ linux版后续说明
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222905120-2029013187.png)
 
-<br>
+
 
 
 
@@ -51,7 +51,7 @@ linux版后续说明
 保证自己的JDK是1.8或以上，最低要求1.8
 
 
-<br>
+
 
 
 
@@ -65,7 +65,7 @@ linux版后续说明
 
 **只要玩ES，那么这个图就要牢牢地记在自己脑海里，后续的名词解释不再过多说明，就是操作这幅图中的东西**
 
-<br>
+
 
 
 
@@ -83,7 +83,7 @@ elasticsearch中使用的就是倒排索引
 
 倒排索引中又有3个小东西：
 
-1. **词条**：**是指索引中的最小存储或查询单元**。这个其实很好理解，白话文来讲就是：字或者词组，英文就是一个单词，中文就是字或词组嘛，比如：你要查询的内容中具备含义的某一个字或词组，这就是词条呗，如：我是中国人，就可以分为：我、是、中国人、中国、国人这样的几个词条
+1. **词条**：**是指索引中的最小存储或查询单元**。这个其实很好理解，白话文来讲就是：字或者词组，英文就是一个单词，中文就是字或词组嘛，比如：你要查询的内容中具备含义的某一个字或词组，这就是词条呗，如：我是中国人，就可以分为：我、是、中国人、中国、国人这样的几个词条。但是数据千千万万，一般的数据结构能够存的下吗？不可能的，所以这里做了文章，采用的是B+树和hash存储(如：hashmap)
 2. **词典**：就是词条的集合嘛。**字或者词组组成的内容呗**
 3. **倒排表**：**就是指 关键字 / 关键词 在索引中的位置。** 有点类似于数组，你查询数组中某个元素的位置，但是区别很大啊，我只是为了好理解，所以才这么举例子的
 
@@ -467,7 +467,7 @@ DELETE /索引库名
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222903828-1974717579.png)
 
 
-<br>
+
 
 ### 使用put创建doc-转幂等性-自定义id
 
@@ -476,7 +476,7 @@ DELETE /索引库名
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222907182-1936688817.png)
 
 
-<br>
+
 
 ### 查询文档_doc - 重点
 
@@ -491,7 +491,7 @@ DELETE /索引库名
 ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621222907206-597552959.png)
 
 
-<br>
+
 
 #### 查询ES中索引下的全部_doc
 
@@ -538,7 +538,7 @@ Unknown key for a VALUE_STRING in [title]
 ```
 
 
-<br>
+
 
 
 
@@ -560,7 +560,7 @@ http://ip:port/indexName/_doc/id      如： http://ip:9200/createIndex/_doc/100
 
 
 
-<br>
+
 
 #### 局部修改
 
@@ -574,13 +574,13 @@ http://ip:port/indexName/_update/id   如： http://ip:9200/createIndex/_update/
 
 
 
-<br>
+
 
 ### 文档_doc的删除
 
 使用delete请求即可
 
-<br>
+
 
 
 
@@ -3156,16 +3156,46 @@ public class o10Suggest {
 
 
 
+#### ES与MySQL数据同步
+
+这里的同步指的是：MySQL发生变化，则elasticsearch索引库也需要跟着发生变化
+
+
+
+数据同步一般有三种方式：同步调用方式、异步通知方式、监听MySQL的binlog方式
 
 
 
 
 
+**1、同步调用：**
+
+- 优点：实现简单，粗暴
+- 缺点：业务耦合度高
+
+![image-20230628155716064](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628155716992-1015419003.png)
 
 
 
+**2、异步通知：**
+
+- 优点：低耦合，实现难度一般
+- 缺点：依赖mq的可靠性
 
 
+
+![image-20230628160432048](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160433144-390172066.png)
+
+
+
+**3、监听MySQL的binlog文件：**
+
+- 优点：完全解除服务间耦合
+- 缺点：开启binlog增加数据库负担、实现复杂度高
+
+
+
+![image-20230628160321828](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160321783-1630441014.png)
 
 
 
@@ -3186,7 +3216,7 @@ public class o10Suggest {
 
 把下载好的window版的ES中的data文件夹、logs文件夹下的所有的文件删掉，然后拷贝成三份，对文件重命名
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619135738481-645800270.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000228562-880977819.png)
 
 
 
@@ -3261,9 +3291,9 @@ network.host: 127.0.0.1
 http.port: 1002
 # 当前节点的通讯端口（ 监听端口 ）
 transport.tcp.port: 9302
-# 当前节点不知道集群中另外节点是哪些涩，所以配置，让当前节点能够找到其他节点
+# 当前节点不知道集群中另外节点是哪些，所以配置，让当前节点能够找到其他节点
 discovery.seed_hosts: ["127.0.0.1:9301"]
-# ping请求调用超时时间，但同时也是选主节点的delay time
+# ping请求调用超时时间，但同时也是选主节点的delay time 延迟时间
 discovery.zen.fd.ping_timeout: 1m
 # 重试次数，防止GC[ 垃圾回收 ]节点不响应被剔除
 discovery.zen.fd.ping_retries: 5
@@ -3305,7 +3335,7 @@ network.host: 127.0.0.1
 http.port: 1003
 # 当前节点的通讯端口（ 监听端口 ）
 transport.tcp.port: 9303
-# 当前节点不知道集群中另外节点是哪些涩，所以配置，让当前节点能够找到其他节点
+# 当前节点不知道集群中另外节点是哪些，所以配置，让当前节点能够找到其他节点
 discovery.seed_hosts: ["127.0.0.1:9301","127.0.0.1:9302"]
 # ping请求调用超时时间，但同时也是选主节点的delay time
 discovery.zen.fd.ping_timeout: 1m
@@ -3325,9 +3355,9 @@ http.cors.allow-origin: "*"
 用postman测试集群
 
 ```json
-http://localhost:1001/_cluster/health  # 请求方式：get
+GET http://localhost:1001/_cluster/health
 
-// 相应内容
+// 响应内容
 {
     "cluster_name": "es-colony",
     "status": "green",  // 重点查看位置 状态颜色
@@ -3349,50 +3379,66 @@ http://localhost:1001/_cluster/health  # 请求方式：get
 
 **status字段颜色表示：**当前集群在总体上是否工作正常。它的三种颜色含义如下：
 
-1. green：所有的主分片和副本分片都正常运行
-2. yellow：所有的主分片都正常运行，但不是所有的副本分片都正常运行
-3. red：有主分片没能正常运行
+1. **green：** 所有的主分片和副本分片都正常运行
+2. **yellow：** 所有的主分片都正常运行，但不是所有的副本分片都正常运行
+3. **red：** 有主分片没能正常运行
 
 
 
 **附加内容：一些配置说明，下面的一些配置目前有些人可能并没有遇到，但是在这里留个印象吧，知道个大概和怎么去找就行了**
 
-官网地址： https://www.elastic.co/guide/en/elasticsearch/reference/current/modules.html 
+官网地址： https://www.elastic.co/guide/en/elasticsearch/reference/current/modules.html
 
-**1、主节点 [ host区域 ]：**
+
+
+**主节点 [ host区域 ] 和 数据节点 [ stale区域 ]：**
 
 ```yaml
 cluster.name: elastics   # 定义集群名称所有节点统一配置
 node.name: es-0   # 节点名称自定义
 node.master: true  # 主节点,数据节点设置为 false
 node.data: false   # 数据节点设置为true
-path.data: /home/es/data   
-path.logs: /home/es/logs   
+path.data: /home/es/data	# 存储目录，可配置多个磁盘
+path.logs: /home/es/logs	# 日志文件路径
 bootstrap.mlockall: true        # 启动时锁定内存
-network.publish_host: es-0
-network.bind_host: es-0
-http.port: 9200
-discovery.zen.ping.multicast.enabled: false
+network.publish_host: es-0	# 绑定网卡
+network.bind_host: es-0		# 绑定网卡
+http.port: 9200		# http端口
+discovery.zen.ping.multicast.enabled: false	# 禁用多播，跨网段不能用多播
 discovery.zen.ping_timeout: 120s
-discovery.zen.minimum_master_nodes: 2 #至少要发现集群可做master的节点数，
+discovery.zen.minimum_master_nodes: 2 # 至少要发现集群可做master的节点数，
 client.transport.ping_timeout: 60s
-discovery.zen.ping.unicast.hosts: ["es-0","es-1", "es-2","es-7","es-8","es-4","es-5","es-6"] 
-discovery.zen.fd.ping_timeout: 120s
-discovery.zen.fd.ping_retries: 6
-discovery.zen.fd.ping_interval: 30s
-cluster.routing.allocation.disk.watermark.low: 100GB
-cluster.routing.allocation.disk.watermark.high: 50GB
-node.zone: hot                     # 磁盘区域，分为hot和stale，做冷热分离
-script.inline: true
+discovery.zen.ping.unicast.hosts: ["es-0","es-1", "es-2","es-7","es-8","es-4","es-5","es-6"]	# 集群自动发现
+
+# fd 是 fault detection 
+# discovery.zen.ping_timeout 仅在加入或者选举 master 主节点的时候才起作用；
+# discovery.zen.fd.ping_timeout 在稳定运行的集群中，master检测所有节点，以及节点检测 master是否畅通时长期有用
+discovery.zen.fd.ping_timeout: 120s		 # 超时时间(根据实际情况调整)
+discovery.zen.fd.ping_retries: 6		 # 重试次数，防止GC[垃圾回收]节点不响应被剔除
+discovery.zen.fd.ping_interval: 30s		 # 运行间隔
+
+# 控制磁盘使用的低水位。默认为85%，意味着如果节点磁盘使用超过85%，则ES不允许在分配新的分片。当配置具体的大小如100MB时，表示如果磁盘空间小于100MB不允许分配分片
+cluster.routing.allocation.disk.watermark.low: 100GB	# 磁盘限额
+
+# 控制磁盘使用的高水位。默认为90%，意味着如果磁盘空间使用高于90%时，ES将尝试分配分片到其他节点。上述两个配置可以使用API动态更新，ES每隔30s获取一次磁盘的使用信息，该值可以通过cluster.info.update.interval来设置
+cluster.routing.allocation.disk.watermark.high: 50GB	# 磁盘最低限额
+
+node.zone: hot	# 磁盘区域，分为hot和stale，做冷热分离
+script.inline: true	# 支持脚本
 script.indexed: true 
-cluster.routing.allocation.same_shard.host: true
-threadpool.bulk.type: fixed  
+cluster.routing.allocation.same_shard.host: true	# 一台机器部署多个节点时防止一个分配到一台机器上，宕机导致丢失数据
+
+# 以下6行为设置thread_pool
+threadpool.bulk.type: fixed
 threadpool.bulk.size: 32 
 threadpool.bulk.queue_size: 100
 threadpool.search.type: fixed  
 threadpool.search.size: 49 
 threadpool.search.queue_size: 10000
+
 script.engine.groovy.inline.aggs: on
+
+# 以下为配置慢查询和慢索引的时间
 index.search.slowlog.threshold.query.warn: 20s
 index.search.slowlog.threshold.query.info: 10s
 index.search.slowlog.threshold.query.debug: 4s
@@ -3405,70 +3451,15 @@ index.indexing.slowlog.threshold.index.warn: 20s
 index.indexing.slowlog.threshold.index.info: 10s
 index.indexing.slowlog.threshold.index.debug: 4s
 index.indexing.slowlog.threshold.index.trace: 1s
-indices.fielddata.cache.size: 20%
-indices.fielddata.cache.expire: "48h"
-indices.cache.filter.size: 10%
-index.search.slowlog.level: WARN
+
+# 索引库设置
+indices.fielddata.cache.size: 20%	# 索引库缓存时占用大小
+indices.fielddata.cache.expire: "48h"	# 索引库缓存的有效期
+indices.cache.filter.size: 10%	# 索引库缓存过滤占用大小
+index.search.slowlog.level: WARN	# 索引库搜索慢日志级别
 ```
 
 
-
-**2、数据节点 [ stale区域 ]**
-
-```yaml
-cluster.name: elastics  # 集群名字
-node.name: es-1     #节点名称
-node.master: false      # 不作为主节点，只存储数据
-node.data: true         # 做为数据节点
-path.data: /data1/es-data,/data2/es-data,/data3/es-data  # 存储目录，可配置多个磁盘
-path.logs: /opt/es/logs     # 日志目录
-bootstrap.mlockall: true    # 启动时锁定内存
-network.publish_host: es-1  # 绑定网卡
-network.bind_host: es-1     # 绑定网卡
-http.port: 9200             # http端口
-discovery.zen.ping.multicast.enabled: false       # 禁用多播，夸网段不能用多播
-discovery.zen.ping_timeout: 120s                  
-discovery.zen.minimum_master_nodes: 2             # 至少要发现集群可做master的节点数
-client.transport.ping_timeout: 60s
-discovery.zen.ping.unicast.hosts: ["es-0","es-1", "es-2","es-7","es-8","es-4","es-5","es-6"]     # 集群自动发现
-
-# fd 是 fault detection 
-# discovery.zen.ping_timeout 仅在加入或者选举 master 主节点的时候才起作用；
-# discovery.zen.fd.ping_timeout 在稳定运行的集群中，master检测所有节点，以及节点检测 master是否畅通时长期有用
-discovery.zen.fd.ping_timeout: 120s                # 超时时间(根据实际情况调整)
-discovery.zen.fd.ping_retries: 6                   # 重试次数，防止GC[垃圾回收]节点不响应被剔除
-discovery.zen.fd.ping_interval: 30s                # 运行间隔
-
-# 控制磁盘使用的低水位。默认为85%，意味着如果节点磁盘使用超过85%，则ES不允许在分配新的分片。当配置具体的大小如100MB时，表示如果磁盘空间小于100MB不允许分配分片
-cluster.routing.allocation.disk.watermark.low: 100GB      #磁盘限额
-
-# 控制磁盘使用的高水位。默认为90%，意味着如果磁盘空间使用高于90%时，ES将尝试分配分片到其他节点。上述两个配置可以使用API动态更新，ES每隔30s获取一次磁盘的使用信息，该值可以通过cluster.info.update.interval来设置
-cluster.routing.allocation.disk.watermark.high: 50GB      # 磁盘最低限额
-
-node.zone: stale                      # 磁盘区域，分为hot和stale，做冷热分离
-script.inline: true                   # 支持脚本
-script.indexed: true 
-cluster.routing.allocation.same_shard.host: true    #一台机器部署多个节点时防止一个分配到一台机器上，宕机导致丢失数据
-threadpool.bulk.type: fixed    # 以下6行为设置thread_pool
-threadpool.bulk.size: 32 
-threadpool.bulk.queue_size: 100
-threadpool.search.type: fixed  
-threadpool.search.size: 49 
-threadpool.search.queue_size: 10000
-script.engine.groovy.inline.aggs: on
-index.search.slowlog.threshold.query.warn: 20s    # 以下为配置慢查询和慢索引的时间
-index.search.slowlog.threshold.query.info: 10s
-index.search.slowlog.threshold.query.debug: 4s
-index.search.slowlog.threshold.query.trace: 1s
-index.search.slowlog.threshold.fetch.warn: 2s
-index.search.slowlog.threshold.fetch.info: 1600ms
-index.search.slowlog.threshold.fetch.debug: 500ms
-index.search.slowlog.threshold.fetch.trace: 200ms
-index.indexing.slowlog.threshold.index.warn: 20s
-index.indexing.slowlog.threshold.index.info: 10s
-index.indexing.slowlog.threshold.index.debug: 4s
-index.indexing.slowlog.threshold.index.trace: 1s
-```
 
 
 
@@ -3587,7 +3578,7 @@ bin/elasticsearch
 bin/elasticsearch -d 
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211229221756370-574256973.png) 
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229055-69575572.png) 
 
 
 
@@ -3600,7 +3591,7 @@ su es
 
 然后再次启动程序，**进入下一个坑**
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211229221821932-1082153671.png) 
+ ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229218-1478021295.png) 
 
 
 
@@ -3617,13 +3608,13 @@ chown -R es:es /opt/install/es
 su es
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211229221859467-1692441973.png) 
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000228601-598751838.png) 
 
 
 
 **11、再次启动程序**
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211229221920550-1900530728.png) 
+ ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230019-351307939.png) 
 
 吃鸡，这样linux中单机ES就部署成功了
 
@@ -3639,7 +3630,7 @@ su es
 version: "3.1"
 services:
   elasticsearch:
-#	注：此网站版本不全，可以直接用管我elasticsearch:7.8.0
+#	注：此网站版本不全，可以直接用官网 elasticsearch:7.8.0
     image: daocloud.io/library/elasticsearch:7.9.0
     restart: always
     container_name: elasticsearch
@@ -3670,11 +3661,11 @@ systemctl disable firewalld.service 	# 关闭防火墙，永久性生效，重�
 **12、测试是否成功**
 
 ```json
-// 在浏览器和postman中输入以下指令均可
- http://ip:9200/		// 注：ip是自己服务器的ip    如果是用postman，则：请求方式为 get
+// 在浏览器或postman中输入以下指令均可
+GET http://ip:9200/
 ```
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202112/2421736-20211229223016789-66269452.png) 
+ ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000228550-1072922586.png) 
 
 
 
@@ -3732,7 +3723,7 @@ fi
 p1=$1
 fname=`basename $p1`
 echo fname=$fname
-# 获取上级目录到绝对路径
+# 获取上级目录的绝对路径
 pdir=`cd -P $(dirname $p1); pwd`
 echo pdir=$pdir
 # 获取当前用户名称
@@ -3844,7 +3835,7 @@ bin/elasticsearch -d
 
 **8、集群验证**
 
- ![img](https://img-blog.csdnimg.cn/img_convert/0412e37cb5249d1ff0e813ee87f49a50.png) 
+ ![img](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000228608-371172604.png) 
 
 
 
@@ -3920,7 +3911,7 @@ bin/elasticsearch -d
 
 既然都说了这么多，那就再来一个ES的系统架构吧
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619144307760-58992001.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229228-1486448986.png)
 
 
 
@@ -3942,14 +3933,14 @@ bin/elasticsearch -d
 
 **1、打开前面玩的window版集群的1节点**
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101024705309-2049599270.png) 
+ ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000228550-528032722.png) 
 
 
 
 **2、创建索引  把这个索引切成3份（ 切片 ）、每份拷贝1份副本**
 
 ```json
-http://127.0.0.1:1001/users		// 请求方式：put
+PUT http://127.0.0.1:1001/users
 
 // 请求体内容
 {
@@ -3962,21 +3953,19 @@ http://127.0.0.1:1001/users		// 请求方式：put
 
 
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101024727584-806798957.png) 
-
-
-
 **3、开始安装head插件，这就是一个可视化界面而已，后续还会用Kibana**
+
+还有一种es的集群监控的方式是使用cerebro，官网地址：https://github.com/lmenezes/cerebro 下载解压，运行 bin/cerebro.bat 即可
 
 自行到官网下载elasticsearch-head-master，这是用Vue写的。启动效果如下：
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101024752187-140685767.png) 
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000228557-274732068.png) 
 
 
 
-访问上图中的地址即可，**但是：这个端口是9100，而我们的ES是9200端口，所以9100访问9200事跨越的，因此：需要对ES设置跨越问题，而这个问题在第一次玩ES集群时就配置了的**
+访问上图中的地址即可，**但是：这个端口是9100，而我们的ES是9200端口，所以9100访问9200是跨越的，因此：需要对ES设置跨越问题，而这个问题在第一次玩ES集群时就配置了的**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101024809993-1807170554.png) 
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000228639-1850737104.png) 
 
 
 
@@ -3984,32 +3973,31 @@ http://127.0.0.1:1001/users		// 请求方式：put
 
 head打开之后就是下图中的样子
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101024825967-1023261513.png) 
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229337-492049169.png)
+
 
 
 
 head链接ES之后就是下图的样子
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101135632160-1156170577.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230141-1297348078.png)
 
- 
+
+
 
 三种颜色再巩固一下：
-- green：所有的主分片和副本分片都正常运行
-- yellow：所有的主分片都正常运行，但不是所有的副本分片都正常运行
-- red：有主分片没能正常运行
+
+- **green**：所有的主分片和副本分片都正常运行
+- **yellow**：所有的主分片都正常运行，但不是所有的副本分片都正常运行
+- **red**：有主分片没能正常运行
 
 
 
-但是：上述的单节点集群有问题，就是将分片和副本都放在一个节点（ node-1001 ）中了，这样会导致前面说的服务宕掉，数据就没了，做的副本就是无用功
+但是：上述的单节点集群有问题，就是将分片和副本都放在一个节点（ node-1001 ）中了，这样会导致前面说的服务宕掉，数据就没了，做的副本就是无用功。要解决就要引入接下来的内容了
 
 
 
-当然：在head中测试时，可能会报master_not_discovered_exception，但是再启动一个节点node-1002之后，发现又可以得吃了，而head界面中的颜色从yellow变成green了，这种情况是因为：原有数据导致的，即前面玩windows版ES集群时有另外的数据在里面，只需要把目录下的data文件夹和logs文件夹“下”，把它的东西删了再启动就可以了
 
-
-
-回到正题，怎么解决这个集群问题？那就引入接下来的内容
 
 
 
@@ -4017,24 +4005,28 @@ head链接ES之后就是下图的样子
 
 ## 故障转移
 
-这个东西其实已经见到了，就是前面说的报master_not_discovered_exception的情况，此时再启动一个节点即可实现故障转移
+> 所谓的故障转移指的就是：
+>
+> 1. 若新开节点，那么ES就会将原有数据重新分配到所有节点上
+> 2. 若是节点挂了，那么ES就会将挂了的节点的数据进行拷贝到另外好的节点中。要是挂的正好是master主节点，那么还有多一个选主过程，然后再分配数据————这种情况也可以称之为“应对故障”
 
 
 
-**1、启动node-1002节点**
+**1、新开节点的情况：** 启动node-1002节点
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101140639845-222765913.png)
-
-
-
-一样的，可能由于玩windows版时的一些数据导致node-1002节点启动不了，所以删掉data文件夹和logs文件夹下的东西即可
+可能由于玩windows版时的一些数据导致node-1002节点启动不了，所以删掉data文件夹和logs文件夹下的东西即可
 
 刷新head可视化页面：
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101141146467-1195376810.png)
 
-
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229099-1217753837.png)
 
 恢复正常
+
+
+
+
+
+
 
 
 
@@ -4043,16 +4035,18 @@ head链接ES之后就是下图的样子
 ## 水平扩容 / 负载均衡
 
 **1、启动node-1003节点**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101141712204-188942442.png)
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229213-633979197.png)
 
 
 
 刷新head页面
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101142118836-570903667.png)
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229835-1314285878.png)
 
 
 
-对照前面单节点集群来看，数据就被很好的分开了，这样性能不就提上来了吗？试问是去一个节点上访问数据快还是把数据分开之后，减少压力从而效率快呢？肯定后者嘛
+对照前面单节点集群来看，数据就被很好的分开了，这样性能不就提上来了吗
 
 
 
@@ -4063,7 +4057,7 @@ head链接ES之后就是下图的样子
 - **因此：增加副本分片的数量即可**
 
 ```json
-http://127.0.0.1:1001/users/_settings		// 请求方式：put
+put http://127.0.0.1:1001/users/_settings
 
 // 请求体内容
 {
@@ -4074,7 +4068,8 @@ http://127.0.0.1:1001/users/_settings		// 请求方式：put
 
 
 刷新head页面
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101144041160-878860223.png)
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229214-1758584411.png)
 
 
 
@@ -4091,28 +4086,27 @@ http://127.0.0.1:1001/users/_settings		// 请求方式：put
 **1、关掉node-1001节点（ 主节点 ）**
 
 **2、刷新head页面**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101150701673-264262605.png)
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229968-1318340200.png)
 
 
 
-**但是注意啊：yellow虽然不正常，但是不影响操作啊，就像你看了这个yellow之后，影响你正常发挥吗？只是可能有点虚脱而已，所以对于ES来说也是可以正常查询数据的，只是：效率降低了而已嘛（ 主节点和3个分片都在的嘛 ）**
+**但是注意啊：yellow虽然不正常，但是不影响操作啊，就像你看了yellow之后，影响你正常发挥吗？只是可能有点虚脱而已，所以对于ES来说也是可以正常查询数据的，只是：效率降低了而已嘛（ 主节点和3个分片都在的嘛 ）**
 
 
 
-**3、解决这种问题**
-
-- 开启新节点（把node-1001节点启动。此时它就不是主节点了 ，当初新节点了嘛)
+**3、解决这种问题：** 开启新节点（把node-1001节点启动。此时它就不是主节点了 ，当成新节点了)
 
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619190153514-1868983239.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230069-419905273.png)
 
 
 
-这就会报错： unless existing master is discovered 找不到主节点（ 对于启动的集群来说，它现在是新节点涩 ），因此：需要做一下配置修改（ node-1001的config/ElasticSearch.yml ）
+这就会报错： unless existing master is discovered 找不到主节点（ 对于启动的集群来说，它现在是新节点]，因此：需要做一下配置修改（ node-1001的 config/ElasticSearch.yml ）
 
 ```yml
-discovery.seed_hosts: ["127.0.0.1:9302","127.0.0.1:9303"]\
+discovery.seed_hosts: ["127.0.0.1:9302","127.0.0.1:9303"]
 ```
 
 保存开启node-1001节点即可
@@ -4121,7 +4115,7 @@ discovery.seed_hosts: ["127.0.0.1:9302","127.0.0.1:9303"]\
 
 **4、刷新head页面**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101151711260-833507116.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229886-1031785461.png)
 
 
 
@@ -4140,16 +4134,18 @@ discovery.seed_hosts: ["127.0.0.1:9302","127.0.0.1:9303"]\
 路由、路由，这个东西太熟悉了，在Vue中就见过路由router了（ 用来转发和重定向的嘛 ）
 
 那在ES中的路由计算又是怎么回事？**这个主要针对的是ES集群中的存数据，试想：你知道你存的数据是在哪个节点 / 哪个主分片中吗（ 副本是拷贝的主分片，所以主分片才是核心 ）？**
+
 - 当然知道啊，就是那几个节点中的任意一个嘛。娘希匹~这样的骚回答好吗？其实这是由一个公式来决定的
 
 ```json
 shard = hash( routing ) % number_of_primary_shards
-```
 
-**其中**
-- routing是一个任意值，默认是文档的_id，也可以自定义
-- number_of_primary_shards 表示主分片的数量（ 如前面切分为了3份 ）
-- hash()是一个hash函数嘛
+routing 是一个任意值，默认是文档的_id，也可以自定义
+
+number_of_primary_shards 表示主分片的数量，如前面切分为了3份
+
+hash() 是一个hash函数
+```
 
 这就解释了为什么我们要在创建索引的时候就确定好主分片的数量并且永远不会改变这个数量：因为如果数量变化了，那么之前所有路由的值都会无效，文档也再也找不到了
 
@@ -4165,21 +4161,21 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-其实ES不知道数据在哪个节点中，但是：你自己却可以取到数据，为什么？
-
-负载均衡，轮询嘛。所以这里有个小知识点，就是：协调节点 `coordinating node`，**我们可以发送请求到集群中的任一节点，==每个节点都有能力处理任意请求，每个节点都知道集群中任一文档位置==，这就是分片控制，而我们发送请求的哪个节点就是：协调节点，它会去帮我们找到我们要的数据在哪里**
+负载均衡，轮询嘛。所以这里有个小知识点，就是：协调节点 `coordinating node`，**我们可以发送请求到集群中的任一节点，==每个节点都有能力处理任意请求，每个节点都知道集群中任一文档位置==，这就是分片控制，而我们发送请求的那个节点就是：协调节点，它会去帮我们找到我们要的数据在哪里**
 
 
 
-**因此：当发送请求的时候， 为了扩展负载，更好的做法是轮询集群中所有的节点（ 先知道这样做即可 ）**
+综合前面的知识就可以得到：
+
+1. 所谓的分片就是：将索引切分成任意份嘛，然后得到的每一份数据都是一个单独的索引
+
+2. 分片完成后，我们存数据时，存到哪个节点上，就是通过 shard = hash( routing ) % number_of_primary_shards 得到的
+
+3. 而我们查询数据时，ES怎么知道我们要找的数据在哪个节点上，就是通过**协调节点**做到的，它会去找到和数据相关的“所有节点”，从而轮询，然后进行数据整合，通过协调节点返回给客户端。因此最后的结果可能是从主分片上得到的，也可能是从副本上得到的，就看最后轮询到的是哪个节点罢了
 
 
 
-
-
-
-
-## 数据写流程
+## 集群下的数据写流程
 
 新建、删除请求都是写操作， 必须在主分片上面完成之后才能被复制到相关的副本分片
 
@@ -4193,7 +4189,7 @@ shard = hash( routing ) % number_of_primary_shards
 6. 主节点给客户端反馈保存结果
 7. 客户端收到反馈结果
 
-![image-20230621160556854](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621163032209-201042988.png)
+![image-20230621160556854](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230017-1073460259.png)
 
 但是：从图中就可以看出来，这套流程完了，才可以做其他事（ 如：才可以去查询数据 ），那我为什么不可以异步呢？就是我只要保证到了哪一个步骤之后，就可以进行数据查询，所以：这里有两个小东西需要了解
 
@@ -4203,28 +4199,30 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
+
 ### 一致性 consistency
 
-- 这玩意就是为了和读数据搭配起来嘛，写入和读取保证数据的一致性呗
+这玩意就是为了和读数据搭配起来嘛，写入和读取保证数据的一致性呗
 
-  **这玩意儿可以设定的值如下：**
+**这玩意儿可以设定的值如下：**
 
-  - one ：只要主分片状态 ok 就允许执行读操作，这种写入速度快，但不能保证读到最新的更改
-  - all：这是强一致性，必须要主分片和所有副本分片的状态没问题才允许执行写操作
-  - quorum：这是ES的默认值。即大多数的分片副本状态没问题就允许执行写操作。这是折中的方法，write的时候，W>N/2，即参与写入操作的节点数W，必须超过副本节点数N的一半，在这个默认情况下，ES是怎么判定你的分片数量的，就一个公式：
+- one ：只要主分片状态 ok 就允许执行读操作，这种写入速度快，但不能保证读到最新的更改
+- all：这是强一致性，必须要主分片和所有副本分片的状态没问题才允许执行写操作
+- quorum：这是ES的默认值。即大多数的分片副本状态没问题就允许执行写操作。这是折中的方法，write的时候，W>N/2，即参与写入操作的节点数W，必须超过副本节点数N的一半，在这个默认情况下，ES是怎么判定你的分片数量的，就一个公式：
 
-  ```txt
-  int((primary + number_of_replicas) / 2) + 1
-  
-  primary						指的是创建的索引数量
-  number_of_replicas			 是指的在索引设置中设定的副本分片数
-  							如果你的索引设置中指定了当前索引拥有3个副本分片
-  							那规定数量的计算结果为：int(1 primary + 3 replicas) / 2) + 1 = 3，
-  							如果此时你只启动两个节点，那么处于活跃状态的分片副本数量就达不到规定数量，
-  							也因此你将无法索引和删除任何文档
-  ```
+```txt
+int((primary + number_of_replicas) / 2) + 1
 
-  - realtime request：就是从translog里头读，可以保证是最新的。**但是注意：get是最新的，但是检索等其他方法不是( 如果需要搜索出来也是最新的，需要refresh，这个会刷新该shard但不是整个index，因此如果read请求分发到repliac shard，那么可能读到的不是最新的数据，这个时候就需要指定preference=_primar y)**
+primary						指的是创建的索引数量
+
+number_of_replicas			是指的在索引设置中设定的副本分片数
+							如果你的索引设置中指定了当前索引拥有3个副本分片
+							那规定数量的计算结果为：int(1 primary + 3 replicas) / 2) + 1 = 3，
+							如果此时你只启动两个节点，那么处于活跃状态的分片副本数量就达不到规定数量，
+							也因此你将无法索引和删除任何文档
+```
+
+- realtime request：就是从translog里头读，可以保证是最新的。**但是注意：get是最新的，但是检索等其他方法不是( 如果需要搜索出来也是最新的，需要refresh，这个会刷新该shard但不是整个index，因此如果read请求分发到repliac shard，那么可能读到的不是最新的数据，这个时候就需要指定preference=_primar y)**
 
 
 
@@ -4246,7 +4244,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-## 数据读流程
+## 集群下的数据读流程
 
 有写流程，那肯定也要说一下读流程嘛，其实和写流程很像，只是变了那么一丢丢而已
 
@@ -4258,7 +4256,7 @@ shard = hash( routing ) % number_of_primary_shards
 - 节点反馈结果
 - 客户端收到反馈结果
 
-![image-20230619202223102](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619202239905-637429374.png)
+![image-20230619202223102](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229608-2147419270.png)
 
 
 
@@ -4270,11 +4268,11 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 
-## 更新操作流程和批量更新操作流程
+## 集群下的更新操作流程
 
 ### 更新操作流程
 
-![image-20230619202310833](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619202324580-127614262.png)
+![image-20230619202310833](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230209-1656037049.png)
 
 
 
@@ -4302,7 +4300,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 原理图的话：我就在网上偷一张了
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101205310579-1860787772.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229530-995704350.png)
 
 
 
@@ -4317,7 +4315,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 - bulk API， 允许在单个批量请求中执行多个创建、索引、删除和更新请求
 
- ![img](https://img-blog.csdnimg.cn/img_convert/83499315a7b8ab81471a88f3e142f0a8.png) 
+ ![img](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230024-1242411568.png) 
 
 
 
@@ -4328,66 +4326,6 @@ shard = hash( routing ) % number_of_primary_shards
 1. 客户端向Node 1 发送 bulk请求
 2. Node 1为每个节点创建一个批量请求，并将这些请求并行转发到每个包含主分片的节点主机
 3. 主分片一个接一个按顺序执行每个操作。当每个操作成功时,主分片并行转发新文档（或删除）到副本分片，然后执行下一个操作。一旦所有的副本分片报告所有操作成功，该节点将向协调节点报告成功，协调节点将这些响应收集整理并返回给客户端
-
-
-
-
-
-
-
-
-
-## 再次回顾分片和倒排索引
-
-### 分片
-
-所谓的分片就是：将索引切分成任意份嘛，然后得到的每一份数据都是一个单独的索引
-
-分片完成后，我们存数据时，存到哪个节点上，就是通过`shard = hash( routing ) % number_of_primary_shards`得到的
-
-而我们查询数据时，ES怎么知道我们要找的数据在哪个节点上，就是通过`协调节点`做到的，它会去找到和数据相关的所有节点，从而轮询。所以最后的结果可能是从主分片上得到的，也可能是从副本上得到的，就看最后轮询到的是哪个节点罢了
-
-
-
-
-
-### 倒排索引
-
-这个其实在基础篇中一上来说明索引时就提到了，但是，那只是简单提了一下而已，其实还有三个东西没说明
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220101221159368-364868269.png)
-
-
-
-就像图中这里，是将内容（ 关键字 ）拆分了，然后来对应ID，所以：这里还有一种东西：**分词**，后面会接触Kibana，再做详细介绍
-
-
-
-
-
-#### 词条
-
-**它是指：索引中的最小存储或查询单元**。这个其实很好理解，白话文来讲就是：字或者词组，英文就是一个单词，中文就是字或词组嘛，比如：你要查询的是某一个字或词组，这就是词条呗
-
-
-
-但是，网上数据千千万万，一般的数据结构能够存的下吗？不可能的，所以这里做了文章，采用的是B+树和hash存储(如：hashmap)
-
-
-
-#### 词典
-
-这个就更简单了，就是词条的集合嘛。**字或者词组组成的内容呗**
-
-
-
-
-
-#### 倒排表
-
-**就是指：关键字 / 关键词在索引中的位置 / 概率，有点类似于数组，你查询数组中某个元素的位置，但是区别很大啊，我只是为了好理解，所以才这么举例子的**
-
-
 
 
 
@@ -4463,19 +4401,19 @@ shard = hash( routing ) % number_of_primary_shards
 
 
 **首先来看一下主副操作**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220104003247232-66241898.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229794-123533688.png)
 
 但是：这种去找寻节点的过程想都想得到会造成延时，而**延时 = 主分片延时 + 主分片拷贝数据给副本的延时**
 
 而且并不是这样就算完了，前面提到了N多次的分段、刷新到磁盘还没上堂呢，所以接着看
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220104012357616-597619654.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229411-445938052.png)
 
 
 
 但是：在flush到磁盘中的时候，万一断电了呢？或者其他原因导致出问题了，那最后数据不就没有flush到磁盘吗
 
 因此：其实还有一步操作，把数据保存到另外一个文件中去
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220104012442408-122951128.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230033-2132748470.png)
 
 
 
@@ -4491,7 +4429,7 @@ shard = hash( routing ) % number_of_primary_shards
 
 可是啊，还是有问题，flush刷写到磁盘是很耗性能的，假如：不断进行更新呢？这样不断进行IO操作，性能好吗？也不行，因此：继续改造(没有什么是加一层解决不了的，一层不够，那就再来一层)
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220104010946451-860053547.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230213-1598498312.png)
 
 
 
@@ -4550,7 +4488,7 @@ http://ip:port/users/_settings		// 请求方式：put
 ## 文档分析
 
 试想：我们在浏览器中，输入一条信息，如：搜索“博客园紫邪情”，为什么连“博客园也搜索出来了？我要的是不是这个结果涩”
-![image-20230621232021726](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621232024641-127076645.png)
+![image-20230621232021726](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230158-1026624158.png)
 
 
 
@@ -4586,7 +4524,7 @@ http://ip:port/users/_settings		// 请求方式：put
 **1、去Elastic [官网](https://www.elastic.co/cn/downloads/?elektra=home&storm=hero) 下载kibana。** 但是需要注意：==kibana的版本必须和ES的版本一致==
 
 下载好了kibana之后，解压到自己想要的目录（ 注：加压会有点久，因为是用Vue写的，里面有模块module 要是加压快的话，可能还下错了 ），然后点击bin/kibana.bat即可启动kibana、第一次进去会有一个选择页面，add … / explore，选择explore就可以了，进去之后就是如下界面：
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105013048852-1688209141.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231356-2124430229.png)
 
 
 
@@ -4596,7 +4534,7 @@ http://ip:port/users/_settings		// 请求方式：put
 
 **进入config/kibana.yml，刷到最底部**
 
-![image-20230619192916919](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619192919907-1927988241.png)
+![image-20230619192916919](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230144-627303359.png)
 
 
 
@@ -4621,12 +4559,12 @@ http://ip:port/users/_settings		// 请求方式：put
 
 
 1、启动ES和kibana，打开控制台
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105014716296-1206536683.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231190-580712443.png)
 
 
 
 2、编写指令
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105015151093-584374674.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230555-1183470716.png)
 
 ```json
 GET _analyze
@@ -4673,7 +4611,7 @@ GET _analyze
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105020023125-141039477.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000229930-500261460.png)
 
 
 
@@ -4688,7 +4626,7 @@ GET _analyze
 #### 简单分析器 simple
 
 **简单分析器是“按非字母的字符分词，例如：数字、标点符号、特殊字符等，会去掉非字母的词，大写字母统一转换成小写”**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105021823253-1892973906.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230910-910185186.png)
 
 
 
@@ -4697,7 +4635,7 @@ GET _analyze
 #### 空格分析器 whitespace
 
 **是简单按照空格进行分词，相当于按照空格split了一下，大写字母不会转换成小写**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105021950173-1159454518.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230432-1470145706.png)
 
 
 
@@ -4708,7 +4646,7 @@ GET _analyze
 #### 去词分析器 stop
 
 **会去掉无意义的词（此无意义是指语气助词等修饰性词，补语文：语气词是疑问语气、祈使语气、感叹语气、肯定语气和停顿语气），例如：the、a、an 、this等，大写字母统一转换成小写**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105023052858-667836704.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230043-81554053.png)
 
 
 
@@ -4717,7 +4655,7 @@ GET _analyze
 #### 不拆分分析器 keyword
 
 **就是将整个文本当作一个词**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105023223725-897621603.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230849-306225142.png)
 
 
 
@@ -4726,7 +4664,7 @@ GET _analyze
 ### IK中文分词器
 
 来个实验：
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105145147364-1600170909.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231504-376578282.png)
 
 
 
@@ -4739,7 +4677,7 @@ GET _analyze
 **1、下载IK分词器：** https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v7.8.0
 
 **注意：版本对应关系，** 还是和ES版本对应，https://github.com/medcl/elasticsearch-analysis-ik 这个链接进去之后有详细的版本对应
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105153145884-1511282106.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230743-1315918433.png)
 
 
 
@@ -4750,12 +4688,12 @@ GET _analyze
 
 
 **2、把IK解压到ES/plugins中去。** 如我的：
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105153337728-1575189913.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231784-785897373.png)
 
 
 
 **3、重启ES即可。**  kibana开着的话，也要关了重启 ，注意观察：重启时会有一个IK加载过程
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105153538766-781620581.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230750-1178181323.png)
 
 
 
@@ -4763,12 +4701,12 @@ GET _analyze
 
 
 - **ik_max_word		是细粒度的分词，就是：穷尽词汇的各种组成。** 4个字是一个词，继续看3个字是不是一个词，再看2个字又是不是一个词，以此穷尽..........
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105154426087-1329094664.png)
+  ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230977-604585597.png)
 
 
 
 - **ik_smart			是粗粒度的分词。** 如：那个叼毛也是一个程序员，就先看整句话是不是一个词(length = 11)，不是的话，就看length-1是不是一个词.....，如果某个长度是一个词了，那么这长度内的内容就不看了，继续看其他的是不是一个词，如“那个"是一个词，那就看后面的内容，继续length、length-1、length-2........
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105154611446-2137350220.png)
+  ![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231083-702192252.png)
 
 
 
@@ -4777,24 +4715,24 @@ GET _analyze
 回到前面的问题，“紫邪情”是名字，我不想让它分词，怎么做？上面哪些分词都是在一个“词典”中，所以我们自己搞一个词典即可
 
 **1、创建一个.dic文件  dic就是dictionary词典的简写**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105155414310-1843376299.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230842-616365710.png)
 
 
 
 **2、在创建的dic文件中添加不分词的词组，保存**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105155658747-1397300776.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230445-594840499.png)
 
 
 
 **3、把自定义的词典放到ik中去，保存**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105155845889-1043411400.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230956-1301907456.png)
 
 
 
 **4、重启ES和kibana**
 
 **5、测试**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105160054827-345258573.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230698-1664061840.png)
 
 
 
@@ -4813,7 +4751,7 @@ GET _analyze
 在第一篇高级篇中我边说过：kibana重要，只是经过前面这些介绍了使用之后，并不算熟悉，因此：多玩几次吧
 
 另外：就是前面说的kibana遵循rest风格，在ES中是怎么玩的？总结下来其实就下面这些，要上手简单得很，但理论却是一直弄到现在
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105194611033-2003263447.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231215-14108994.png)
 
 
 
@@ -4822,44 +4760,44 @@ GET _analyze
 
 
 **1、创建索引**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105200834345-1018761313.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230798-995800117.png)
 
 
 
 **2、查看索引**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105200938111-371770759.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230882-19004852.png)
 
 
 
 **3、创建文档（ 随机id值，想要自定义id值，在后面加上即可 ）**
 
 **4、删除索引**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105201030012-825246940.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231029-1738132378.png)
 
 
 
 **5、创建文档（ 自定义id ）**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105201606491-473612050.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230949-1098773880.png)
 
 
 
 **6、查看文档（ 通过id查询 ）**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105201932017-1594955388.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230947-885723701.png)
 
 
 
 **7、修改文档（ 局部修改 ）**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105202324831-413531788.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231071-1840753096.png)
 
 
 
 验证一下：
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105202406803-1472899659.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231272-1085429581.png)
 
 
 
 **8、建字段类型**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105214413765-1715258189.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000230948-690072417.png)
 
 
 
@@ -4885,7 +4823,7 @@ GET _analyze
 
 测试拼音分词器
 
-![image-20230627210119445](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627210121162-1437720046.png)
+![image-20230627210119445](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231116-1544979830.png)
 
 由上可知，伴随2个问题：
 
@@ -4909,45 +4847,45 @@ GET _analyze
 
 举例理解：character filters、tokenizer、tokenizer filter)
 
-![image-20210723210427878](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627210948649-220442440.png)
+![image-20210723210427878](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231009-17318988.png)
 
 因此现在自定义分词器就变成如下的样子：
 
 **注：** 是建立索引时自定义分词器，即自定义的分词器只对当前索引库有效
 
 ```json
-PUT /test
+PUT /test
 {
-  "settings": {
-    "analysis": {
-      "analyzer": { // 自定义分词器
-        "my_analyzer": {  // 分词器名称
-          "tokenizer": "ik_max_word",
-          "filter": "py"
-        }
-      },
-      "filter": { // 自定义tokenizer filter
-        "py": { // 过滤器名称
-          "type": "pinyin", // 过滤器类型，这里是pinyin，这些参数都在 拼音分词器官网有
-		  "keep_full_pinyin": false,
-          "keep_joined_full_pinyin": true,
-          "keep_original": true,
-          "limit_first_letter_length": 16,
-          "remove_duplicated_term": true,
-          "none_chinese_pinyin_tokenize": false
-        }
-      }
-    }
-  },
-  "mappings": {
-    "properties": {
-      "name": {
-        "type": "text",
-        "analyzer": "my_analyzer",	// 指明在索引时使用的分词器
-        "search_analyzer": "ik_smart"	// 指明搜索时使用的分词器
-      }
-    }
-  }
+  "settings": {
+    "analysis": {
+      "analyzer": { // 自定义分词器
+        "my_analyzer": {  // 分词器名称
+          "tokenizer": "ik_max_word",
+          "filter": "py"
+        }
+      },
+      "filter": { // 自定义tokenizer filter
+        "py": { // 过滤器名称
+          "type": "pinyin", // 过滤器类型，这里是pinyin，这些参数都在 拼音分词器官网有
+		  "keep_full_pinyin": false,
+          "keep_joined_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "remove_duplicated_term": true,
+          "none_chinese_pinyin_tokenize": false
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "analyzer": "my_analyzer",	// 指明在索引时使用的分词器
+        "search_analyzer": "ik_smart"	// 指明搜索时使用的分词器
+      }
+    }
+  }
 }
 ```
 
@@ -4955,7 +4893,7 @@ PUT /test
 
 使用自定义分词器：
 
-![image-20230627212610200](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627212611330-349099004.png)
+![image-20230627212610200](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231208-1118735277.png)
 
 
 
@@ -4980,7 +4918,7 @@ PUT /test
 
 
 **就是弄了一个锁来实现的，和Redis一样，也是用的乐观锁来实现的，这个其实没什么好说的，只需要看一下就知道了**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105203825737-375166735.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231143-1375649794.png)
 
 
 
@@ -4997,7 +4935,7 @@ PUT /test
 
 
 **要修改的话，是在config/elasticsearch.yml中改动**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105210626346-1575067102.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231135-1505585999.png)
 
 
 
@@ -5009,7 +4947,7 @@ PUT /test
 
 2、使用RAID 0 （ 独立磁盘冗余阵列 ），它是把连续的数据分散到多个磁盘上存取，这样，系统有数据请求就可以被多个磁盘并行的执行，每个磁盘执行属于它自己的那部分数据请求。这种数据上的并行操作可以充分利用总线的带宽，显著提高磁盘整体存取性能
 
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230619213829431-87939344.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231399-268504957.png)
 
 
 
@@ -5044,7 +4982,8 @@ PUT /_all/_settings
 	}
 }
 ```
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105212840898-1177630417.png)
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231171-1873569998.png)
 
 
 
@@ -5061,7 +5000,7 @@ PUT /_all/_settings
 
 
 而routing默认值就是文档id，所以查询时把文档id带上，如：前面玩kibana做的操作
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105213351198-1889428623.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231250-219437370.png)
 
 
 
@@ -5074,7 +5013,7 @@ PUT /_all/_settings
 ### 内存优化
 
 **修改es的config/jvm.options**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220105215239639-619799136.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629000231213-895296465.png)
 
 
 
@@ -5115,9 +5054,31 @@ PUT /_all/_settings
    2. 二是Unicast过程，控制哪些节点需要Ping通
 2. 对所有可以成为master的节点(文件中设置的node.master: true)根据nodeId字典排序，每次“选举节点(即：参与投票选举主节点的那个节点)”都把自己知道的节点排一次序，就是把排好序的第一个节点(第0位)认为是主节点(投一票)
 3. 当某个节点的投票数达到一个值时，此值为 (可以成为master节点数n / 2 ） + 1，而该节点也投自己，那么这个节点就是master节点，否则重新开始，直到选出master
-   1. **另外注意：** master节点的职责主要包括集群、节点和索引的管理，不负责文档级别的管理；data节点可以关闭http功能
 
 
+
+**另外注意：** master节点的职责主要包括集群、节点和索引的管理，不负责文档级别的管理；data节点可以关闭http功能
+
+ES中的节点职责如下：
+
+| **节点类型**    | **配置参数**                             | **默认值** | **节点职责**                                                 |
+| --------------- | ---------------------------------------- | ---------- | ------------------------------------------------------------ |
+| master eligible | node.master                              | true       | 备选主节点：主节点可以管理和记录集群状态、决定分片在哪个节点、处理创建和删除索引库的请求 |
+| data            | node.data                                | true       | 数据节点：存储数据、搜索、聚合、CRUD                         |
+| ingest          | node.ingest                              | true       | 数据存储之前的预处理 但：若是已经使用Java代码进行了预处理，那么此配置就无效了 |
+| coordinating    | 上面3个参数都为false则为coordinating节点 | 无         | 协调节点，路由请求到其它节点合并其它节点处理的结果，返回给用户 |
+
+默认情况下，集群中的任何一个节点都同时具备上述四种角色
+
+
+
+但是真实的集群一定要将集群职责分离：
+
+- master节点：对CPU要求高，但是内存要求第
+- data节点：对CPU和内存要求都高
+- coordinating节点：对网络带宽、CPU要求高
+
+职责分离可以让我们根据不同节点的需求分配不同的硬件去部署。而且避免业务之间的互相干扰
 
 
 
@@ -5125,23 +5086,42 @@ PUT /_all/_settings
 
 ### ES的集群脑裂问题
 
-**导致的原因：**
-- 网络问题：集群间的网络延迟导致一些节点访问不到master, 认为master 挂掉了从而选举出新的master,并对master上的分片和副本标红，分配新的主分片
-- 节点负载：主节点的角色既为master又为data,访问量较大时可能会导致ES停止响应造成大面积延迟，此时其他节点得不到主节点的响应认为主节点挂掉了，会重新选取主节点
-- 内存回收：data 节点上的ES进程占用的内存较大，引发JVM的大规模内存回收，造成ES进程失去响应
+> 所谓的脑裂一句话来概括就是老大(master节点)“没了”，然后小弟(有资格成为主节点的节点)重新选举出老大，结果最后旧老大回来了，从而造成新旧老大整合的数据不一样，最后就摊上事儿了
+
+
+
+**导致的原因：** 
+
+1. 网络问题：集群间的网络延迟导致一些候选主节点(文件中设置的node.master: true，即：可以成为主节点的节点)访问不到master, 认为master 挂掉了从而选举出新的master,并对master上的分片和副本标红，分配新的主分片
+2. 节点负载：主节点的角色既为master又为data,访问量较大时可能会导致ES停止响应造成大面积延迟，此时其他节点得不到主节点的响应认为主节点挂掉了，会重新选取主节点
+3. 内存回收：data 节点上的ES进程占用的内存较大，引发JVM的大规模内存回收，造成ES进程失去响应
 
 
 
 **脑裂问题解决方案：**
 
-- **减少误判：discovery.zen ping_ timeout 节点状态的响应时间，默认为3s，可以适当调大，如果master在该响应时间的范围内没有做出响应应答，判断该节点已经挂掉了。调大参数（ 如6s，discovery.zen.ping_timeout:6 ），可适当减少误判**
+1. **减少误判：discovery.zen ping_ timeout 节点状态的响应时间，默认为3s**。可以适当调大，如果master在该响应时间的范围内没有做出响应应答，判断该节点已经挂掉了。调大参数（ 如6s，discovery.zen.ping_timeout:6 ），可适当减少误判
 
-- **选举触发：discovery.zen.minimum. _master_ nodes:1，该参數是用于控制选举行为发生的最小集群主节点数量。当备选主节点的个數大于等于该参数的值，且备选主节点中有该参数个节点认为主节点挂了，进行选举。官方建议为(n / 2) +1, n为主节点个数（即有资格成为主节点的节点个数）**
+2. **选举触发：discovery.zen.minimum_master_nodes:1，该参數是用于控制选举行为发生的最小集群主节点数量**。当备选主节点的个數大于等于该参数的值，且备选主节点中有该参数个节点认为主节点挂了，进行选举。官方建议为(n / 2) +1，n为有资格成为主节点的节点个数）
 
-- **角色分离：即master节点与data节点分离，限制角色**
+   1. 多提一嘴：为了避免脑裂，要求选票超过 (n+1) / 2 才能当选为主，n为有资格成为主节点的节点个数(即：候选主节点个数)。因此n候选主节点数最好是奇数，对应配置就是上面的 discovery.zen.minimum_master_nodes 。当然，在es7.0以后，已经成为默认配置，es会自动去计算候选主节点的数量，从而进行配置，所以一般不会发生脑裂
 
-	- **主节点配置为：node master: true，node data: false**
-	- **从节点置为：node master: false，node data: true**
+3. **角色分离：即master节点与data节点分离，限制角色**
+
+   - 主节点配置为：node master: true，node data: false
+
+   - 从节点置为：node master: false，node data: true
+
+
+
+
+
+
+
+
+
+
+
 
 
 
