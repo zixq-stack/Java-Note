@@ -192,7 +192,7 @@ eureka-server启动时，开启了一个定时任务，该任务每60s/次，检
 
 但是EurekaClient也会因为网络等原因导致没有及时向EurekaServer发送心跳，因此EurekaServer为了保证误删服务就会有一个“自我保护机制”，俗称“好死不如赖活着”
 
-如果在短时间内EurekaServer丢失过多客户端时 (可能断网了，**低于85%的客户端节点都没有正常的心跳** )，那么Eureka Server就认为客户端与注册中心出现了网络故障，Eureka Server自动进入自我保护状态 。Eureka的这样设计更加精准地控制是网络通信延迟，而不是服务挂掉了，一旦进入自我保护模式，那么 EurekaServer就会保留这个节点的熟悉，不会删除，直到这个节点恢复正常心跳 
+如果在短时间内EurekaServer丢失过多客户端时 (可能断网了，**低于85%的客户端节点都没有正常的心跳** )，那么Eureka Server就认为客户端与注册中心出现了网络故障，Eureka Server自动进入自我保护状态 。Eureka的这样设计更加精准地控制是网络通信延迟，而不是服务挂掉了，一旦进入自我保护模式，那么 EurekaServer就会保留这个节点的属性，不会删除，直到这个节点恢复正常心跳 
 
 - 85% 这个阈值，可以通过如下配置来设置：
 
@@ -202,13 +202,11 @@ eureka:
     renewal-percent-threshold: 0.85
 ```
 
-这里存在一个个问题，这个85%是超过谁呢？这里有一个预期的续约数量，计算公式如下:
+这里存在一个问题，这个85%是超过谁呢？这里有一个预期的续约数量，计算公式如下:
 
 ```txt
 自我保护阀值 = 服务总数 * 每分钟续约数(60S/客户端续约间隔) * 自我保护续约百分比阀值因子
 ```
-
-
 
 
 
@@ -218,16 +216,16 @@ eureka:
 
 因此Eureka进入自我保护状态后，会出现以下几种情况:
 
-- Eureka Server仍然能够接受新服务的注册和查询请求，但是不会被同步到其他节点上，保证当前节点依然可用。Eureka自我保护机制，Eureka的自我保护机制可以通过如下的方式开启或关闭
+- Eureka Server仍然能够接受新服务的注册和查询请求，但是不会被同步到其他节点上，保证当前节点依然可用。Eureka的自我保护机制可以通过如下的方式开启或关闭
 
 ```yaml
 eureka:
   server:
-    # 开启Eureka自我保护机制，默认为true
+#   开启Eureka自我保护机制，默认为true
     enable-self-preservation: true
 ```
 
-- Eureka Server不再从注册列表中移除因为长时间没有收到心跳而应该剔除的过期服务，如果在保护期内如果服务刚好这个服务提供者非正常下线了，此时服务消费者就会拿到一个无效的服务实例，此时会调用失败，对于这个问题需要服务消费者端要有一些容错机制，如重试，断路器等！
+- Eureka Server不再从注册列表中移除因为长时间没有收到心跳而应该剔除的过期服务，如果在保护期内这个服务提供者刚好非正常下线了，此时服务消费者就会拿到一个无效的服务实例，此时会调用失败，对于这个问题需要服务消费者端要有一些容错机制，如重试，断路器等！
 
 
 
@@ -245,12 +243,10 @@ eureka:
 
 ### 搭建Eureka Server
 
-根据前面Eureka的自我保护机制中提到的结构图，现在来搭建Eureka
-
 自行单独创建一个Maven项目，导入依赖如下：
 
 ```xml
-<!--EurekaServer-->
+<!--Eureka Server-->
 <dependency>
   <groupId>org.springframework.cloud</groupId>
   <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
@@ -259,7 +255,7 @@ eureka:
 
 
 
-在yml文件中填入如下内容：
+在YAML文件中一般可配置内容如下：
 
 ```yaml
 server:
@@ -269,23 +265,24 @@ spring:
     name: EUREKA-SERVER
 eureka:
   instance:
-    # 此机Eureka的主机名，eureka集群服务器之间的区分
+    # Eureka的主机名，是为了eureka集群服务器之间好区分
     hostname: 127.0.0.1
     # 最后一次心跳后，间隔多久认定微服务不可用，默认90
     lease-expiration-duration-in-seconds: 90
   client:
-    # 不向自身注册。应用为单个注册中心设置为false，代表不向注册中心注册自己，默认true
-    #registerWithEureka: false
-    # 不从自身拉取注册信息。单个注册中心则不拉去自身信息，默认true
+    # 不向注册中心注册自己。应用为单个注册中心设置为false，代表不向注册中心注册自己，默认true
+    # registerWithEureka: false
+    # 不从注册中心拉取自身注册信息。单个注册中心则不拉取自身信息，默认true
     # fetchRegistry: false
     service-url:
+      # Eureka Server的地址
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
 #    server:
 #      # 开启Eureka自我保护机制，默认为true
 #      enable-self-preservation: true
 ```
 
-- **注：**在SpringCloud中配置文件yml有两种方式，一种是 `application.yml ` 另一种是 `bootstrap.yml `，区别去这里：https://www.cnblogs.com/sharpest/p/13678443.html
+- **注：**在SpringCloud中配置文件YAML有两种方式，一种是 `application.yml ` 另一种是 `bootstrap.yml `，这个知识后续Nacos注册中心会用到，区别去这里：https://www.cnblogs.com/sharpest/p/13678443.html
 
 
 
@@ -337,9 +334,7 @@ public class EurekaApplication {
 
 
 
-
-
-yml配置内容如下：
+YAML配置内容如下：
 
 ```yaml
 server:
@@ -349,12 +344,10 @@ spring:
     name: USER-SERVICE
 eureka:
   client:
-    # 将服务注册到哪个eureka server
     service-url:
+      # 将服务注册到哪个eureka server
       defaultZone: http://localhost:10086/eureka
 ```
-
-
 
 
 
@@ -392,7 +385,7 @@ public class UserApplication {
 }
 ```
 
-在eureka client启动类中，为什么有些人会加 `@EnableEurekaClient` 注解，而有些人不会加上？
+在eureka client启动类中，为什么有些人会加 `@EnableEurekaClient` 注解，而有些人不会加上，为什么？
 
 要弄这个问题，首先看yml中的配置，有些是在yml中做了一个操作：
 
@@ -400,7 +393,7 @@ public class UserApplication {
 eureka:
   client:
     service-url:
-      # 向那个eureka服务端进行服务注册
+      # 向哪个eureka server进行服务注册
       defaultZone: http://localhost:10086/eureka
     # 开启eureka client功能，默认就是true，差不多等价于启动类中加 @EnableEurekaClient 注解
     enabled: true
@@ -422,7 +415,7 @@ eureka:
 
 
 
-在这里使用 `EurekaAutoServiceRegistration类+@Bean注解` 意思就是通过 `@Bean` 注解，装配一个 EurekaAutoServiceRegistration 对象作为Spring的bean，而我们从名字就可以看出来EurekaClient的注册就是 EurekaAutoServiceRegistration 对象所进行操作的。
+在这里使用 `EurekaAutoServiceRegistration类+@Bean注解` 意思就是通过 `@Bean` 注解，装配一个 EurekaAutoServiceRegistration 对象作为Spring的bean，而我们从名字就可以看出来EurekaClient的注册就是 EurekaAutoServiceRegistration 对象所进行的操作
 
 同时，在这个方法上，也有这么一行 `@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)` 
 
@@ -456,19 +449,7 @@ eureka:
 
 
 
-**所以，我们的EurekaClient工程，并不需要显式的在SpringBoot的启动类上标注 `@EnableEurekaClient` 注解**
-
-
-
-
-
-
-
-
-
-
-
-
+**所以，我们的EurekaClient工程，并不需要显式地在SpringBoot的启动类上标注 `@EnableEurekaClient` 注解**
 
 
 
@@ -495,7 +476,7 @@ eureka:
 
 
 
-yml配置如下：
+YAML配置如下：
 
 ```yaml
 server:
@@ -506,7 +487,7 @@ spring:
 eureka:
   client:
     service-url:
-      # 向那个eureka服务端进行服务拉取
+      # 向哪个eureka server进行服务拉取
       defaultZone: http://localhost:10086/eureka
 ```
 
@@ -531,7 +512,7 @@ public class OrderApplication {
     }
 
     /**
-     * RestTemplate 用来进行远程调用服务提供方
+     * RestTemplate 用来进行远程调用服务提供方的服务
      * LoadBalanced 注解 是SpringCloud中的
      *              此处作用：赋予RestTemplate负载均衡的能力 也就是在依赖注入时，只注入实例化时被@LoadBalanced修饰的实例
      *              底层是 Spring的Qualifier注解，即为spring的原生操作
@@ -608,7 +589,7 @@ public class OrderService {
 
 ### 测试
 
-依次启动eureka-server、user-service、order-service，然后将user-service做一下模拟集群即可，将user-service弄为模拟集群操作方式如下：
+依次启动eureka-server、user-service、order-service，然后将user-service做一下模拟集群即可，将user-service弄为模拟集群操作方式如下：不同版本IDEA操作有点区别，出入不大
 
 ![image-20230523113542449](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523113543880-720911336.png)
 
@@ -654,7 +635,7 @@ Ribbon是Netflix发布的开源项目，`Spring Cloud Ribbon`是基于`Netflix R
 
 **LB负载均衡(Load Balance)是什么？**
 
-- 简单的说就是将用户的请求平摊的分配到多个服务上，从而达到系统的HA（高可用）
+- 简单地说就是将用户的请求平摊的分配到多个服务上，从而达到系统的HA（高可用）
 - 常见的负载均衡有软件Nginx，硬件 F5等
 
 
@@ -663,7 +644,7 @@ Ribbon是Netflix发布的开源项目，`Spring Cloud Ribbon`是基于`Netflix R
 
 **什么情况下需要负载均衡？**
 
-- 现在Java非常流行微服务，也就是所谓的面向服务开发，将一个项目拆分成了多个项目，其优点有很多，其中一个优点就是：将服务拆分成一个一个微服务后，我们很容易的来针对性的进行集群部署。例如订单模块用的人比较多，我就可以将这个模块多部署几台机器，来分担单个服务器的压力
+- 现在Java非常流行微服务，也就是所谓的面向服务开发，将一个项目拆分成了多个项目，其优点有很多，其中一个优点就是：将服务拆分成一个一个微服务后，我们很容易地来针对性的进行集群部署。例如订单模块用的人比较多，那就可以将这个模块多部署几台机器，来分担单个服务器的压力
 
 - 这时候有个问题来了，前端页面请求的时候到底请求集群当中的哪一台？既然是降低单个服务器的压力，所以肯定全部机器都要利用起来，而不是说一台用着，其他空余着。这时候就需要用负载均衡了，像这种前端页面调用后端请求的，要做负载均衡的话，常用的就是Nginx
 
@@ -671,10 +652,10 @@ Ribbon是Netflix发布的开源项目，`Spring Cloud Ribbon`是基于`Netflix R
 
 
 
-**Ribbon和Nginx负载均衡区别**
+**Ribbon和Nginx负载均衡的区别**
 
 - 当后端服务是集群的情况下，前端页面调用后端请求，要做负载均衡的话，常用的就是Nginx
-- Ribbon主要是在服务端内做负载均衡，举例：订单后端服务 要调用 支付后端服务，这属于后端之间的服务调用，压根根本不经过页面，而支付后端服务是集群，这时候订单服务就需要做负载均衡来调用支付服务，记住是订单服务做负载均衡 来调用 支付服务
+- Ribbon主要是在“服务端内”做负载均衡，举例：订单后端服务 要调用 支付后端服务，这属于后端之间的服务调用，压根根本不经过页面，而后端支付服务是集群，这时候订单服务就需要做负载均衡来调用支付服务，记住是订单服务做负载均衡 “来调用” 支付服务
 
 
 
@@ -691,7 +672,7 @@ Ribbon是Netflix发布的开源项目，`Spring Cloud Ribbon`是基于`Netflix R
 
 **Ribbon负载均衡**
 
-- Ribbon就属于进程内LB，它只是一个类库，集成于**消费方进程**
+- Ribbon就属于进程内LB，它只是一个类库，集成于**服务消费方进程**
 
 
 
@@ -713,7 +694,7 @@ Ribbon是Netflix发布的开源项目，`Spring Cloud Ribbon`是基于`Netflix R
 
 **Ribbon在工作时分成两步（这里以Eureka为例，consul和zk同样道理）：**
 
-- 第一步先选择 EurekaServer ,它优先选择在同一个区域内负载较少的server.
+- 第一步先选择 EurekaServer ，它优先选择在同一个区域内负载较少的server
 - 第二步再根据用户指定的策略(轮询、随机、响应时间加权.....)，从server取到的服务注册列表中选择一个地址
 
 
@@ -797,7 +778,7 @@ public class OrderService {
 
 
 
-然后进行Debug服务消费者
+然后对服务消费者进行Debug
 
 ![image-20230523164748273](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523164749307-84514600.png)
 
@@ -889,25 +870,25 @@ SpringCloudRibbon的底层采用了一个拦截器LoadBalancerInterceptor，拦�
 
 
 
-`ClientConfigEnabledRoundRobinRule`：该策略较为特殊，我们一般不直接使用它。因为它本身并没有实现什么特殊的处理逻辑。一般都是可以通过继承他重写一些自己的策略，默认的choose方法就实现了线性轮询机制
+`ClientConfigEnabledRoundRobinRule`：该策略较为特殊，我们一般不直接使用它。因为它本身并没有实现什么特殊的处理逻辑。一般都是可以通过继承他重写一些自己的策略，默认的choose()就实现了线性轮询机制
 
 - `BestAvailableRule`：继承自ClientConfigEnabledRoundRobinRule，会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务,然后选择一个并发量最小的服务，该策略的特性是可选出最空闲的实例
 
 
 
-`PredicateBasedRule`：继承自ClientConfigEnabledRoundRobinRule，抽象策略，需要重写方法的，然后自己来自己定义过滤规则的
+`PredicateBasedRule`：继承自ClientConfigEnabledRoundRobinRule，抽象策略，需要重写方法，然后自定义过滤规则
 
 - `AvailabilityFilteringRule`：继承PredicateBasedRule，先过滤掉故障实例,再选择并发较小的实例。过滤掉的故障服务器是以下两种：
-	- 1、在默认情况下，这台服务器如果3次连接失败，这台服务器就会被设置为“短路”状态。短路状态将持续30秒，如果再次连接失败，短路的持续时间就会几何级地增加
-	- 2、并发数过高的服务器。如果一个服务器的并发连接数过高，配置了AvailabilityFilteringRule规则的客户端也会将其忽略。并发连接数的上限，可以由客户端的`<clientName>.<clientConfigNameSpace>.ActiveConnectionsLimit` 属性进行配置
+	1. 在默认情况下，这台服务器如果3次连接失败，这台服务器就会被设置为“短路”状态。短路状态将持续30秒，如果再次连接失败，短路的持续时间就会几何级地增加
+	2. 并发数过高的服务器。如果一个服务器的并发连接数过高，配置了AvailabilityFilteringRule规则的客户端也会将其忽略。并发连接数的上限，可以由客户端的`<clientName>.<clientConfigNameSpace>.ActiveConnectionsLimit` 属性进行配置
 - `ZoneAvoidanceRule`：继承PredicateBasedRule，默认规则，复合判断server所在区域的性能和server的可用性选择服务器
 
 
 
 `com.netflix.loadbalancer.RoundRobinRule`：轮询 Ribbon的默认规则
 
-- `WeightedResponseTimeRule`：对RoundRobinRule的扩展,为每一个服务器赋予一个权重值，服务器响应时间越长，其权重值越小，这个权重值会影响服务器的选择，即：响应速度越快的实例选择权重越大,越容易被选择
-- `ResponseTimeWeightedRule`：对RoundRobinRule的扩展,响应时间加权
+- `WeightedResponseTimeRule`：对RoundRobinRule的扩展。为每一个服务器赋予一个权重值，服务器响应时间越长，其权重值越小，这个权重值会影响服务器的选择，即：响应速度越快的实例选择权重越大,越容易被选择
+- `ResponseTimeWeightedRule`：对RoundRobinRule的扩展。响应时间加权
 
 
 
@@ -915,7 +896,7 @@ SpringCloudRibbon的底层采用了一个拦截器LoadBalancerInterceptor，拦�
 
 `com.netflix.loadbalancer.StickyRule`：这个基本也没人用
 
-`com.netflix.loadbalancer.RetryRule`：先按照RoundRobinRule的策略获取服务,如果获取服务失败则在指定时间内会进行重试,获取可用的服务
+`com.netflix.loadbalancer.RetryRule`：先按照RoundRobinRule的策略获取服务,如果获取服务失败则在指定时间内会进行重试，从而获取可用的服务
 
 `ZoneAvoidanceRule`：先复合判断server所在区域的性能和server的可用性选择服务器，再使用Zone对服务器进行分类，最后对Zone内的服务器进行轮询
 
@@ -952,11 +933,15 @@ public IRule randomRule(){
 **2、@RibbonClient注解**：用法如下
 
 ```java
-// 在服务消费者的启动类中加入如下注解即可 如下注解指的是：调用 USER-SERVICE 服务时 使用MySelfRule负载均衡规则
-@RibbonClient(name = "USER-SERVICE",configuration=MySelfRule.class)		// 这里的MySelfRule可以弄为自定义逻辑的策略，也可以是前面提到的那些rule策略
+/**
+ * 在服务消费者的启动类中加入如下注解即可 如下注解指的是：调用 USER-SERVICE 服务时 使用MySelfRule负载均衡规则
+ *
+ * 这里的MySelfRule可以弄为自定义逻辑的策略，也可以是前面提到的那些rule策略
+ */
+@RibbonClient(name = "USER-SERVICE",configuration=MySelfRule.class)
 ```
 
-这种方式可以达到只针对某服务做负载均衡策略，但是：**官方给出了明确警告** `configuration=MySelfRule.class` 自定义配置类一定不能放到@ComponentScan所扫描的当前包下以及子包下，否则我们自定义的这个配置类就会被所有的`Ribbon`客户端所共享，达不到特殊化定制的目的了（也就是一旦被扫描到，RestTemplate直接不管调用哪个服务都会用指定的算法）
+这种方式可以达到只针对某服务做负载均衡策略，但是：**官方给出了明确警告** `configuration=MySelfRule.class` 自定义配置类一定不能放到@ComponentScan 所扫描的当前包下以及子包下，否则我们自定义的这个配置类就会被所有的`Ribbon`客户端所共享，达不到特殊化定制的目的了（也就是一旦被扫描到，RestTemplate直接不管调用哪个服务都会用指定的算法）
 
 > springboot项目当中的启动类使用了@SpringBootApplication注解，这个注解内部就有@ComponentScan注解，默认是扫描启动类包下所有的包，所以我们要达到定制化一定不要放在它能扫描到的地方
 
@@ -972,9 +957,7 @@ cloud中文官网：https://www.springcloud.cc/spring-cloud-greenwich.html#netfl
 
 
 
-
-
-**3、使用yml配置文件方式** 在服务消费方的yml配置文件中加入如下格式的内容即可
+**3、使用AYML配置文件方式** 在服务消费方的yml配置文件中加入如下格式的内容即可
 
 ```yml
 # 给某个微服务配置负载均衡规则，这里是user-service服务
@@ -983,8 +966,6 @@ user-service:
     # 负载均衡规则
     NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
 ```
-
-
 
 
 
@@ -1002,7 +983,7 @@ user-service:
 
 Ribbon默认是采用懒加载，即第一次访问时才会去创建LoadBalanceClient，请求时间会很长。
 
-而饥饿加载则会在项目启动时创建，降低第一次访问的耗时，通过下面配置开启饥饿加载：
+而饿汉加载则会在项目启动时创建，降低第一次访问的耗时，通过下面配置开启饥饿加载：
 
 ```yaml
 ribbon:
@@ -1040,28 +1021,23 @@ ribbon:
 
 ### windows安装
 
-GitHub主页：https://github.com/alibaba/nacos
+GitHub中下载：https://github.com/alibaba/nacos/releases
 
-GitHub的Release下载页：https://github.com/alibaba/nacos/releases
-
-下载好之后直接解压即可，但：别解压到有中文路径的地方
+下载好之后直接解压即可，但：别解压到有“中文路径”的地方
 
 Nacos的默认端口是8848，若该端口被占用则关闭该进程 或 修改nacos中的默认端口(conf/application.properties)
 
 
 
-启动Nacos
+启动Nacos：密码和账号均是 nacos
 
 ```txt
 startup.cmd -m standalone
 
--m 		modul 模式
-standalone	单机
+
+-m 				modul 模式
+standalone		单机
 ```
-
-
-
-密码和账号均是 nacos
 
 ![image-20230523220722633](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523220723591-2042011918.png)
 
@@ -1077,12 +1053,12 @@ Nacos是基于Java开发的，所以需要JDK支持，因此Linux中需要有JDK
 
 上传Linux版的JDK
 
-```txt
+```shell
 # 解压
 tar -xvf jdk-8u144-linux-x64.tar.gz
 
 # 配置环境变量
-export JAVA_HOME=/usr/local/java										=JDK解压后的路径
+export JAVA_HOME=/usr/local/java			# =JDK解压后的路径
 export PATH=$PATH:$JAVA_HOME/bin
 
 # 刷新环境变量
@@ -1091,15 +1067,13 @@ source /etc/profile
 
 
 
-
-
 上传Linux版的Nacos
 
-```txt
+```shell
 # 解压
 tar -xvf nacos-server-1.4.1.tar.gz
 
-# 进入nacos/bin目录中，输入命令启动Nacos：
+# 进入 nacos/bin 目录中，输入命令启动Nacos
 sh startup.sh -m standalone
 
 # 有8848端口冲突和windows中一样方式解决
@@ -1111,7 +1085,7 @@ sh startup.sh -m standalone
 
 ## 注册服务到Nacos中
 
-拉取Ncaos的依赖管理，父项目工程中加入如下依赖
+拉取Nacos的依赖管理，服务端加入如下依赖
 
 ```xml
 <dependency>
@@ -1134,7 +1108,7 @@ sh startup.sh -m standalone
 </dependency>
 ```
 
-**注：**不要有其他注册中心的依赖，如前面玩的Eureka，有的话先注释掉
+**注：**不要有其他注册中心的依赖，如前面玩的Eureka，有的话注释掉
 
 
 
@@ -1150,7 +1124,7 @@ spring:
     name: USER-SERVICE
   cloud:
     nacos:
-      # Nacos服务器地址，本地启动的Nacos
+      # Nacos服务器地址
       server-addr: localhost:8848
 #eureka:
 #  client:
@@ -1161,7 +1135,7 @@ spring:
 
 
 
-启动之后即可在前面打开的Nacos控制台看到信息了
+启动之后，在 ip+port/nacos 就在Nacos控制台看到信息了
 
 ![image-20230524172640484](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524172641663-1724265961.png)
 
@@ -1177,7 +1151,9 @@ spring:
 
 
 
-就多了一个集群，不像其他的是 服务-----> 实例，好处：微服务互相访问时，应该**尽可能访问同集群实例，因为本地访问速度更快。当本集群内不可用时，才访问其它集群**
+就多了一个集群，不像其他的是 服务-----> 实例
+
+好处：微服务互相访问时，应该**尽可能访问同集群实例，因为本地访问速度更快。当本集群内不可用时，才访问其它集群**
 
 
 
@@ -1192,13 +1168,13 @@ server:
     name: USER-SERVICE
   cloud:
     nacos:
-      # Nacos服务器地址，本地启动的Nacos
+      # Nacos服务器地址
       server-addr: localhost:8848
       # 配置集群名称，如：HZ，杭州
       cluster-name: HZ
 ```
 
-测试直接将服务提供者复刻多份，共用同一集群名启动，然后再复刻修改集群名启动即可，如下面的：
+测试则直接将“服务提供者”复刻多份，共用同一集群名启动，然后再复刻修改集群名启动即可，如下面的：
 
 ![image-20230524174419882](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524174420790-807433895.png)
 
@@ -1235,21 +1211,17 @@ USER-SERVICE:
 
 
 
-
-
-
-
 **3、加权策略** ：服务器权重值越高，越容易被选择，所以能者多劳，性能好的服务器被访问的次数应该越多
 
-权重值一般在 [0,10000] 之间。直接去Nacos得到控制台中选择想要修改权重值的服务，点击“详情”即可修改
+权重值一般在 [0,10000] 之间。直接去Nacos的控制台中选择想要修改权重值的服务，点击“详情”即可修改
+
+
+
+> **注：** 当权重值为0时，代表此服务实例不会再被访问，类似于停机迭代，而直接修改权重值为0之后，就可以直接进行版本迭代，然后慢慢调整权重值进行”引流“了
+
+
 
 ![image-20230524200353921](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524200355093-646170701.png)
-
-
-
-**注：** 当权重值为0时，代表此服务实例不会再被访问，类似于停机迭代，而直接修改权重值为0之后，就可以直接进行版本迭代，然后慢慢调整权重值进行”引流“了
-
-
 
 
 
@@ -1319,7 +1291,7 @@ spring:
 
 ## Nacos临时与非临时实例
 
-**1、Eureka和Nacos的不同：**不同在下图字体加粗的部分，加粗是Nacos具备而Eureka不具备的
+**1、Nacos和Eureka的不同：**不同在下图字体加粗的部分，加粗是Nacos具备而Eureka不具备的
 
 ![image-20230525141447350](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525141447179-1876206647.png)
 
@@ -1327,7 +1299,7 @@ spring:
 
 **临时实例：** 由服务提供者主动给Nacos发送心跳情况，在规定时间内要是没有发送，则Nacos认为此服务挂了，就会从服务列表中踢掉（非亲生儿子）
 
-**非临时实例：**由Nacos主动来询问服务是否还健康、活着(会让服务器压力大)，若非临时实例挂了，Naocs并不会将其踢掉（亲儿子）
+**非临时实例：**由Nacos主动来询问服务是否还健康、活着(此种实例会让服务器压力变大)，若非临时实例挂了，Naocs并不会将其踢掉（亲儿子）
 
 **push：**若是Nacos检测到有服务提供者挂了，就会主动给消费者发送服务变更的消息，然后服务消费者更新自己的服务缓存列表。这一步就会让服务列表更新很及时
 
@@ -1337,55 +1309,52 @@ spring:
 
 
 
+**补充：CAP定理** 这是分布式事务中的一个方法论
 
-
-**补充：CAP定理** 这是分布式中的一个方法论
-
-- C	即：数据一致性
-
-- A	即：可用性
-
-- P	即：分区容错性
-
-
+1. C	即：Consistency 数据一致性
+2. A	即：Availability 可用性
+3. P	即：Partition Tolerance 分区容错性
 
 **解读：**
 
-​	**数据一致性：一句话来形容，就是：无论以何种方式写入 / 显示数据，最终的结果都要一样**，反例：可能由于网络 / 机器故障，从而导致开始存到缓存中的数据（副本） 和 后面最新的数据在“故障”的情况下导致最终写入数据库的数据 / 显示出来的数据不一致，反过来：保证这两者一致就是：数据一致性
+1. **数据一致性：用户访问分布式系统中的任意节点，得到的数据必须一致**
 
-​	**可用性：还是一句话来形容，就是：在可接受的时间范围内，只要最终的数据能够成功写入 / 显示出来就行**，反例：一个页面显示的数据，原本最高限度是2秒之内能够显示出来就OK的，但是：整了10多秒还没显示出来，这就不能称之为可用了，就是个“垃圾”
+   
 
-​	**分区容错性：照样用一句话来形容，就是：由于某种原因，某个服务挂了，整个系统照样运行**
+2. **可用性：用户访问集群中的任意健康节点，必须能得到响应，而不是超时或拒绝**
 
+   
 
-
-**注：** 分区容错性是必须满足的，数据一致性( C ）和 可用性（ A ）只满足其一即可，当然：要是不考虑网络之类的原因的话，C和A也是可以同时满足的，可是一般的搭配是如下的**（即：取舍策略）：**
-
-- CP			保证数据的准确性
-
-- AP			保证数据的及时性
+3. **分区容错性：由于某种原因导致系统中任意信息的丢失或失败都不能不会影响系统的继续独立运作**
 
 
 
+**注：** 分区容错性是必须满足的，数据一致性( C ）和 可用性（ A ）只满足其一即可，一般的搭配是如下的**（即：取舍策略）：**
+
+1. CP			保证数据的准确性
+2. AP			保证数据的及时性
 
 
 
 
-既然CAP定理都整了，那就再加一个**Base理论**吧
 
-- BA	 即：基本可用性
+既然CAP定理都整了，那就再加一个**Base理论**吧，这个理论是对CAP中C和A这两个矛盾点的调和和选择
 
-- S	   即：软状态
-
-- E	   即：最终一致性
-
-
+1. BA	 即：Basically Available 基本可用性
+2. S	   即：Soft State 软状态
+3. E	   即：Eventual Consistency 最终一致性
 
 **解读：**
 
-- BA 	基本可用性，在发生故障的时候，可以允许损失“部分”的可用性，保证系统正常运行。如：搜索数据时，正常情况耗时0.5秒即可有数据显示，但是：发生故障了，可以允许有极短时间的延时，如：延时1 ~ 2秒以内
-- S		软状态，允许系统的数据存在中间状态，只要不影响整个系统的运行就行。如：架构的演进中说过的数据库的分库演进，在读数据库 和 写数据库之间的同步操作时，可以允许这个同步操作有一定的延时
-- E		最终一致性，无论以何种方式写入数据库 / 显示出来，都要保证系统最终的数据是一致的
+1. BA 	基本可用性，在发生故障的时候，可以允许损失“非核心部分”的可用性，保证系统正常运行，即保证核心部分可用
+
+   
+
+2. S		软状态，允许系统的数据存在中间状态，只要不影响整个系统的运行就行
+
+   
+
+3. E		最终一致性，无论以何种方式写入数据库 / 显示出来，都要保证系统最终的数据是一致的
 
 
 
@@ -1471,11 +1440,7 @@ spring:
 
 
 
-Nacos和SpringCloud原生的config不一样，Nacos是将注册中心+config结合在一起了，而SpringCloud原生的是Eureka+config
-
-
-
-
+Nacos和SpringCloud原生的config不一样，Nacos是将 注册中心+config 结合在一起了，而SpringCloud原生的是Eureka+config
 
 
 
@@ -1521,7 +1486,7 @@ Nacos和SpringCloud原生的config不一样，Nacos是将注册中心+config结�
 
 
 
-**3、resources下新建 bootstrap.yml，`bootstrap.yml` 中的配置内容如下**
+**3、resources下新建 bootstrap.yml，里面的配置内容如下**
 
 ```yml
 spring:
@@ -1542,7 +1507,7 @@ spring:
 
 
 
-![image-20230525205430252](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525205429454-1265194565.png)
+![image-20230630172914571](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630172916153-1344503629.png)
 
 
 
@@ -1552,15 +1517,13 @@ spring:
 
 
 
-**4、设置热更新：** 假如业务代码中有需要用到nacos中的服务，那nacos中的配置改变之后，不需要重启服务，自动更新。一共有两种方式
+**4、设置热更新：** 假如业务代码中有需要用到nacos中的配置信息，那nacos中的配置改变之后，不需要重启服务，自动更新。一共有两种方式
 
-- 1. **`@RefreshScope+@Value`注解：** 在@Value注入的变量**所在类上**添加注解@RefreshScope
+1. **`@RefreshScope+@Value`注解：** 在 @Value 注入的变量**所在类上**添加注解 @RefreshScope
 
 ![image-20230525205534523](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525205534211-29938183.png)
 
-
-
-- 2. `@ConfigurationProperties` 注解
+2. `@ConfigurationProperties` 注解
 
 ![image-20230525210116200](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525210115994-1555810348.png)
 
@@ -1580,7 +1543,7 @@ spring:
 
 ## Nacos多环境共享配置
 
-有时会遇到这样的情况：生产环境、开发环境、测试环境有些配置时相同的，这种应该不需要在每个环境中都配置，因此需要让这些相同的配置单独弄出来，然后实行共享
+有时会遇到这样的情况：生产环境、开发环境、测试环境有些配置是相同的，这种应该不需要在每个环境中都配置，因此需要让这些相同的配置单独弄出来，然后实行共享
 
 在前面一节中已经说到了一种Nacos的配置文件格式 即 `服务名-环境.后缀`，除了这种还有一种格式 即 `服务名.后缀`
 
@@ -1699,13 +1662,13 @@ spring:
 
 ## Feign与OpenFeign是什么？
 
-Feign是`Netflix`开发的`声明式、模板化`的HTTP客户端， 在 RestTemplate 的基础上做了进一步的封装，Feign可以帮助我们更快捷、优雅地调用HTTP API。具有可插入注释支持，包括Feign注释和JAX-RS注释，通过 Feign，我们只需要声明一个接口并通过注解进行简单的配置（类似于 Dao 接口上面的 Mapper 注解一样）即可实现对 HTTP 接口的绑定；通过 Feign，我们可以像调用本地方法一样来调用远程服务，而完全感觉不到这是在进行远程调用
+Feign是`Netflix`开发的`声明式、模板化`的HTTP客户端， 在 RestTemplate 的基础上做了进一步的封装，Feign可以帮助我们更快捷、优雅地调用HTTP API。具有可插入注解支持，包括Feign注解和JAX-RS注解，通过 Feign，我们只需要声明一个接口并通过注解进行简单的配置（类似于 Dao 接口上面的 Mapper 注解一样）即可实现对 HTTP 接口的绑定；通过 Feign，我们可以像调用本地方法一样来调用远程服务，而完全感觉不到这是在进行远程调用
 
 
 
-OpenFeign全称Spring Cloud OpenFeign，2019 年 Netflix 公司宣布 Feign 组件正式进入停更维护状态，于是 Spring 官方便推出了一个名为 OpenFeign 的组件作为 Feign 的替代方案。基于Netflix feign实现，是一个**声明式**的http客户端，整合了`Spring Cloud Ribbon`，除了支持netflix的feign注解之外，增加了对Spring MVC注释的支持，OpenFeign 的@FeignClient可以解析SpringMVC的@RequestMapping注解下的接口，并通过动态代理的方式产生实现类，实现类中做负载均衡并调用其他服务
+OpenFeign全称Spring Cloud OpenFeign，2019 年 Netflix 公司宣布 Feign 组件正式进入停更维护状态，于是 Spring 官方便推出了一个名为 OpenFeign 的组件作为 Feign 的替代方案。基于Netflix feign实现，是一个**声明式**的http客户端，整合了`Spring Cloud Ribbon`，除了支持netflix的feign注解之外，增加了对Spring MVC注释的支持，OpenFeign 的 @FeignClient 可以解析SpringMVC的 @RequestMapping 注解下的接口，并通过动态代理的方式产生实现类，实现类中做负载均衡并调用其他服务
 
-- **声明式·：** 即只需要将调研服务需要的东西声明出来，剩下就不用管了，交给feign即可
+- **声明式·：** 即只需要将调用服务需要的东西声明出来，剩下就不用管了，交给feign即可
 
 
 
@@ -1717,9 +1680,7 @@ OpenFeign全称Spring Cloud OpenFeign，2019 年 Netflix 公司宣布 Feign 组�
 
 ## OpenFeign 常用注解
 
-使用 OpenFegin 进行远程服务调用时，常用注解如下表。 
-
-
+使用 OpenFegin 进行远程服务调用时，常用注解如下表：
 
 | 注解                | 说明                                                         |
 | ------------------- | ------------------------------------------------------------ |
@@ -1737,7 +1698,7 @@ OpenFeign全称Spring Cloud OpenFeign，2019 年 Netflix 公司宣布 Feign 组�
 
 ## Feign VS OpenFeign 
 
-下面我们就来对比下 Feign 和 OpenFeign 的异同
+下面来对比下 Feign 和 OpenFeign 的异同
 
 
 
@@ -1747,10 +1708,10 @@ OpenFeign全称Spring Cloud OpenFeign，2019 年 Netflix 公司宣布 Feign 组�
 
 Feign 和 OpenFegin 具有以下相同点：
 
-- Feign 和 OpenFeign 都是 Spring Cloud 下的远程调用和负载均衡组件
-- Feign 和 OpenFeign 作用一样，都可以实现服务的远程调用和负载均衡
-- Feign 和 OpenFeign 都对 Ribbon 进行了集成，都利用 Ribbon 维护了可用服务清单，并通过 Ribbon 实现了客户端的负载均衡
-- Feign 和 OpenFeign 都是在服务消费者（客户端）定义服务绑定接口并通过注解的方式进行配置，以实现远程服务的调用
+1. Feign 和 OpenFeign 都是 Spring Cloud 下的远程调用和负载均衡组件
+2. Feign 和 OpenFeign 作用一样，都可以实现服务的远程调用和负载均衡
+3. Feign 和 OpenFeign 都对 Ribbon 进行了集成，都利用 Ribbon 维护了可用服务清单，并通过 Ribbon 实现了客户端的负载均衡
+4. Feign 和 OpenFeign 都是在服务消费者（客户端）定义服务绑定接口并通过注解的方式进行配置，以实现远程服务的调用
 
 
 
@@ -1758,14 +1719,14 @@ Feign 和 OpenFegin 具有以下相同点：
 
 Feign 和 OpenFeign 具有以下不同：
 
-- Feign 和 OpenFeign 的依赖项不同，Feign 的依赖为 spring-cloud-starter-feign，而 OpenFeign 的依赖为 spring-cloud-starter-openfeign
-- Feign 和 OpenFeign 支持的注解不同，Feign 支持 Feign 注解和 JAX-RS 注解，但不支持 Spring MVC 注解；OpenFeign 除了支持 Feign 注解和 JAX-RS 注解外，还支持 Spring MVC 注解
+1. Feign 和 OpenFeign 的依赖项不同，Feign 的依赖为 spring-cloud-starter-feign，而 OpenFeign 的依赖为 spring-cloud-starter-openfeign
+2. Feign 和 OpenFeign 支持的注解不同，Feign 支持 Feign 注解和 JAX-RS 注解，但不支持 Spring MVC 注解；OpenFeign 除了支持 Feign 注解和 JAX-RS 注解外，还支持 Spring MVC 注解
 
 
 
 ## 入手OpenFeign
 
-OpenFeign是Feign的增强版，使用时将依赖换一下，然后注意一下二者能支持的朱姐的区别即可
+OpenFeign是Feign的增强版，使用时将依赖换一下，然后注意一下二者能支持的注解的区别即可
 
 
 
@@ -1789,8 +1750,6 @@ OpenFeign是Feign的增强版，使用时将依赖换一下，然后注意一下
 
 
 
-
-
 **2、启动类假如如下注解：**在服务消费方启动类添加
 
 ```java
@@ -1799,21 +1758,21 @@ OpenFeign是Feign的增强版，使用时将依赖换一下，然后注意一下
 
 
 
-
-
 **3、创建接口，并使用 `@@org.springframework.cloud.openfeign.FeignClient` 注解：**这种方式相当于是 `DAO`
 
 ```java
 /**
+ * @FeignClient("USER-SERVICE")
+ * 
  * Spring Cloud 应用在启动时，OpenFeign 会扫描标有 @FeignClient 注解的接口生成代理，并注人到 Spring 容器中
+ *
+ * 参数为要调研的服务名，这里的服务名区分大小写
  */
 
-@FeignClient("USER-SERVICE")            /*参数为要调研的服务名，这里的服务名区分大小写*/
+@FeignClient("USER-SERVICE")
 public interface FeignClient {
     /**
      * 支持SpringMVC的所有注解
-     * @param id
-     * @return
      */
     @GetMapping("/user/{id}")
     User findById(@PathVariable("id") long id);
@@ -1822,10 +1781,8 @@ public interface FeignClient {
 
 在编写服务绑定接口时，需要注意以下 2 点：
 
-- 在 @FeignClient 注解中，value 属性的取值为：服务提供者的服务名，即服务提供者配置文件（application.yml）中 spring.application.name 的取值。
-- 接口中定义的每个方法都与 服务提供者 中 Controller 定义的服务方法对应
-
-
+1. 在 @FeignClient 注解中，value 属性的取值为：服务提供者的服务名，即服务提供者配置文件(application.yml）中 spring.application.name 的值
+2. 接口中定义的每个方法都与 服务提供者 中 Controller 定义的服务方法对应
 
 
 
@@ -1840,7 +1797,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>@description  : 该类功能  order服务
+ * <p>@description  : order服务
  * </p>
  * <p>@author       : ZiXieqing</p>
  */
@@ -1859,6 +1816,7 @@ public class OrderService {
     public Order queryOrderById(Long orderId) {
         // 1.查询订单
         Order order = orderMapper.findById(orderId);
+        
        /* // 2、远程调用服务的url 此处直接使用服务名，不用ip+port
         // 原因是底层有一个LoadBalancerInterceptor，里面有一个intercept()，后续玩负载均衡Ribbon会看到
         String url = "http://USER-SERVICE/user/" + order.getUserId();
@@ -1906,23 +1864,23 @@ Feign可以支持很多的自定义配置，如下表所示：
 
 ### 配置日志增强
 
-这个有4中配置方式，局部配置（2种=YAML+代码实现）、全局配置（2种=YAML+代码实现）
+这个有4种配置方式，局部配置（2种=YAML+代码实现）、全局配置（2种=YAML+代码实现）
 
 
 
+**1、YAML实现**
 
-
-基于YAML文件修改Feign的日志级别可以针对单个服务：即局部配置
+1. 基于YAML文件修改Feign的日志级别可以针对单个服务：即局部配置
 
 ```yaml
 feign:  
   client:
     config: 
       userservice: # 针对某个微服务的配置
-        loggerLevel: FULL #  日志级别 
+        loggerLevel: FULL #  日志级别
 ```
 
-也可以针对所有服务：即全局配置
+2. 也可以针对所有服务：即全局配置
 
 ```yaml
 feign:  
@@ -1934,14 +1892,14 @@ feign:
 
 
 
-
+**2、代码实现**
 
 也可以基于Java代码来修改日志级别，先声明一个类，然后声明一个Logger.Level的对象：
 
 ```java
 /** 
  * 注：这里可以不用加 @Configuration 注解
- * 因为要么在启动类得到 @EnableFeignClients 注解中进行声明这个配置类
+ * 因为要么在启动类 @EnableFeignClients 注解中进行声明这个配置类
  * 要么在远程服务调用的接口的 @FeignClient 注解中声明该配置
  */
 public class DefaultFeignConfiguration  {
@@ -1952,17 +1910,13 @@ public class DefaultFeignConfiguration  {
 }
 ```
 
-
-
-如果要**全局生效**，将其放到启动类的 `@EnableFeignClients` 这个注解中：
+1. 如果要**全局生效**，将其放到启动类的 `@EnableFeignClients` 这个注解中：
 
 ```java
 @EnableFeignClients(defaultConfiguration = DefaultFeignConfiguration .class) 
 ```
 
-
-
-如果是**局部生效**，则把它放到对应的 `@FeignClient` 这个注解中：
+2. 如果是**局部生效**，则把它放到对应的 `@FeignClient` 这个注解中：
 
 ```java
 @FeignClient(value = "userservice", configuration = DefaultFeignConfiguration .class) 
@@ -1974,25 +1928,19 @@ public class DefaultFeignConfiguration  {
 
 
 
-
-
-
-
 ### 配置客户端
 
 Feign底层发起http请求，依赖于其它的框架。其底层客户端实现包括：
 
-•URLConnection：默认实现，不支持连接池
-
-•Apache HttpClient ：支持连接池
-
-•OKHttp：支持连接池
+1. URLConnection：默认实现，不支持连接池
+2. Apache HttpClient ：支持连接池
+3. OKHttp：支持连接池
 
 
 
 
 
-#### 替换为Apache的HttpClient
+#### 替换为Apache HttpClient
 
 **1、在服务消费方添加依赖**
 
@@ -2004,14 +1952,12 @@ Feign底层发起http请求，依赖于其它的框架。其底层客户端实�
 </dependency>
 ```
 
-
-
 **2、在YAML中开启客户端和配置连接池**
 
 ```yaml
 feign:
   httpclient:
-    # 开启feign对HttpClient的支持		默认值就是true，即导入对应客户端依赖之后就开启了，但为了提高代码可读性，还是显示声明比较好
+    # 开启feign对HttpClient的支持  默认值就是true，即 导入对应客户端依赖之后就开启了，但为了提高代码可读性，还是显示声明比较好
     enabled: true
     # 最大的连接数
     max-connections: 200
@@ -2022,8 +1968,6 @@ feign:
     # 存活时间
     time-to-live: 900
 ```
-
-
 
 
 
@@ -2041,6 +1985,122 @@ Debug方式启动服务消费者，可以看到这里的client底层就是Apache
 
 
 
+## Feign的失败处理
+
+业务失败后，不能直接报错，而应该返回用户一个友好提示或者默认结果，这个就是失败降级逻辑
+
+给FeignClient编写失败后的降级逻辑
+
+1. 方式一：FallbackClass，无法对远程调用的异常做处理
+2. 方式二：FallbackFactory，可以对远程调用的异常做处理。一般选择这种
+
+
+
+
+
+### 使用FallbackFactory进行失败降级
+
+1. 在定义Feign-Client的地方创建失败逻辑处理
+
+   ```java
+   package com.zixieqing.feign.fallback;
+   
+   import com.zixieqing.feign.clients.UserClient;
+   import com.zixieqing.feign.pojo.User;
+   import feign.hystrix.FallbackFactory;
+   import lombok.extern.slf4j.Slf4j;
+   
+   /**
+    * userClient失败时的降级处理
+    *
+    * <p>@author       : ZiXieqing</p>
+    */
+   
+   @Slf4j
+   public class UserClientFallBackFactory implements FallbackFactory<UserClient> {
+       @Override
+       public UserClient create(Throwable throwable) {
+           return new UserClient() {
+               /**
+                * 重写userClient中的方法，编写失败时的降级逻辑
+                */
+               @Override
+               public User findById(Long id) {
+                   log.info("userClient的findById()在进行 id = {} 时失败", id);
+                   return new User();
+               }
+           };
+       }
+   }
+   ```
+
+2. 将定义的失败逻辑类丢给Spring容器
+
+   ```java
+       @Bean
+       public UserClientFallBackFactory userClientFallBackFactory() {
+           return new UserClientFallBackFactory();
+       }
+   ```
+
+3. 在对应的Feign-Client中使用fallbackFactory回调函数
+
+   ```java
+   package com.zixieqing.feign.clients;
+   
+   
+   import com.zixieqing.feign.fallback.UserClientFallBackFactory;
+   import com.zixieqing.feign.pojo.User;
+   import org.springframework.cloud.openfeign.FeignClient;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   
+   @FeignClient(value = "userservice",fallbackFactory = UserClientFallBackFactory.class)
+   public interface UserClient {
+   
+       @GetMapping("/user/{id}")
+       User findById(@PathVariable("id") Long id);
+   }
+   ```
+
+4. 调用，失败时就会进入自定义的失败逻辑中
+
+   ```java
+   package com.zixieqing.order.service;
+   
+   import com.zixieqing.feign.clients.UserClient;
+   import com.zixieqing.feign.pojo.User;
+   import com.zixieqing.order.mapper.OrderMapper;
+   import com.zixieqing.order.pojo.Order;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.stereotype.Service;
+   
+   @Service
+   public class OrderService {
+   
+       @Autowired
+       private OrderMapper orderMapper;
+   
+       @Autowired
+       private UserClient userClient;
+   
+       public Order queryOrderById(Long orderId) {
+           // 1.查询订单
+           Order order = orderMapper.findById(orderId);
+           // 2.用Feign远程调用
+           User user = userClient.findById(14321432143L);	// 传入错误 id=14321432143L 模拟错误
+           // 3.封装user到Order
+           order.setUser(user);
+           // 4.返回
+           return order;
+       }
+   }
+   ```
+
+   ![image-20230701213914563](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701213938464-410457792.png)
+
+
+
 
 
 
@@ -2049,16 +2109,23 @@ Debug方式启动服务消费者，可以看到这里的client底层就是Apache
 
 # Gateway网关
 
-在微服务架构中，一个系统往往由多个微服务组成，而这些服务可能部署在不同机房、不同地区、不同域名下。这种情况下，客户端（例如浏览器、手机、软件工具等）想要直接请求这些服务，就需要知道它们具体的地址信息，例如 IP 地址、端口号等。
+在微服务架构中，一个系统往往由多个微服务组成，而这些服务可能部署在不同机房、不同地区、不同域名下。这种情况下，客户端（例如浏览器、手机、软件工具等）想要直接请求这些服务，就需要知道它们具体的地址信息，如 IP 地址、端口号等
+
+
 
 这种客户端直接请求服务的方式存在以下问题：
 
-- 当服务数量众多时，客户端需要维护大量的服务地址，这对于客户端来说，是非常繁琐复杂的。
-- 在某些场景下可能会存在跨域请求的问题。
-- 身份认证的难度大，每个微服务需要独立认证。
+1. 当服务数量众多时，客户端需要维护大量的服务地址，这对于客户端来说，是非常繁琐复杂的
+2. 在某些场景下可能会存在跨域请求的问题
+3. 身份认证的难度大，每个微服务需要独立认证
 
 
-我们可以通过 API 网关来解决这些问题，下面就让我们来看看什么是 API 网关。
+
+我们可以通过 API 网关来解决这些问题，下面就让我们来看看什么是 API 网关
+
+
+
+
 
 ## API 网关
 
@@ -2073,11 +2140,11 @@ API 网关就像整个微服务系统的门面一样，是系统对外的唯一�
 
 对于服务数量众多、复杂度较高、规模比较大的系统来说，使用 API 网关具有以下好处：
 
-- 客户端通过 API 网关与微服务交互时，客户端只需要知道 API 网关地址即可，而不需要维护大量的服务地址，简化了客户端的开发。
-- 客户端直接与 API 网关通信，能够减少客户端与各个服务的交互次数。
-- 客户端与后端的服务耦合度降低。
-- 节省流量，提高性能，提升用户体验。
-- API 网关还提供了安全、流控、过滤、缓存、计费以及监控等 API 管理功能
+1. 客户端通过 API 网关与微服务交互时，客户端只需要知道 API 网关地址即可，而不需要维护大量的服务地址，简化了客户端的开发
+2. 客户端直接与 API 网关通信，能够减少客户端与各个服务的交互次数
+3. 客户端与后端的服务耦合度降低
+4. 节省流量，提高性能，提升用户体验
+5. API 网关还提供了安全、流控、过滤、缓存、计费以及监控等 API 管理功能
 
 
 
@@ -2085,11 +2152,11 @@ API 网关就像整个微服务系统的门面一样，是系统对外的唯一�
 
 常见的 API 网关实现方案主要有以下 5 种：
 
-- Spring Cloud Gateway
-- Spring Cloud Netflix Zuul
-- Kong
-- Nginx+Lua
-- Traefik
+1. Spring Cloud Gateway
+2. Spring Cloud Netflix Zuul
+3. Kong
+4. Nginx+Lua
+5. Traefik
 
 
 
@@ -2103,6 +2170,8 @@ Spring Cloud Gateway 是 Spring Cloud 团队基于 Spring 5.0、Spring Boot 2.0 
 
 Spring Cloud Gateway 旨在提供一种简单而有效的途径来发送 API，并为它们提供横切关注点，例如：安全性，监控/指标和弹性
 
+
+
 > Spring Cloud Gateway 是基于 WebFlux 框架实现的，而 WebFlux 框架底层则使用了高性能的 Reactor 模式通信框架 Netty
 
 
@@ -2111,17 +2180,15 @@ Spring Cloud Gateway 旨在提供一种简单而有效的途径来发送 API，�
 
 ## Spring Cloud Gateway 核心概念
 
-Spring Cloud GateWay 最主要的功能就是路由转发，而在定义转发规则时主要涉及了以下三个核心概念，如下表。
+Spring Cloud Gateway 最主要的功能就是路由转发，而在定义转发规则时主要涉及了以下三个核心概念，如下表：
 
+| 核心概念       | 描述                                                         |
+| -------------- | ------------------------------------------------------------ |
+| Route 路由     | 网关最基本的模块。它由一个 ID、一个目标 URI、一组断言（Predicate）和一组过滤器（Filter）组成 |
+| Predicate 断言 | 路由转发的判断条件，我们可以通过 Predicate 对 HTTP 请求进行匹配，如请求方式、请求路径、请求头、参数等，如果请求与断言匹配成功，则将请求转发到相应的服务 |
+| Filter 过滤器  | 过滤器，我们可以使用它对请求进行拦截和修改，还可以使用它对上文的响应进行再处理 |
 
-
-| 核心概念          | 描述                                                         |
-| ----------------- | ------------------------------------------------------------ |
-| Route（路由）     | 网关最基本的模块。它由一个 ID、一个目标 URI、一组断言（Predicate）和一组过滤器（Filter）组成。 |
-| Predicate（断言） | 路由转发的判断条件，我们可以通过 Predicate 对 HTTP 请求进行匹配，例如请求方式、请求路径、请求头、参数等，如果请求与断言匹配成功，则将请求转发到相应的服务。 |
-| Filter（过滤器）  | 过滤器，我们可以使用它对请求进行拦截和修改，还可以使用它对上文的响应进行再处理。 |
-
-> 注意：其中 Route 和 Predicate 必须同时声明。
+> 注意：其中 Route 和 Predicate 必须同时声明
 
 
 
@@ -2129,9 +2196,11 @@ Spring Cloud GateWay 最主要的功能就是路由转发，而在定义转发�
 
 网关的**核心功能特性**：
 
-- 请求路由
-- 权限控制
-- 限流
+1. 请求路由
+2. 权限控制
+3. 限流
+
+
 
 架构图：
 
@@ -2139,11 +2208,11 @@ Spring Cloud GateWay 最主要的功能就是路由转发，而在定义转发�
 
 
 
-**权限控制**：网关作为微服务入口，需要校验用户是是否有请求资格，如果没有则进行拦截。
+**权限控制**：网关作为微服务入口，需要校验用户是是否有请求资格，如果没有则进行拦截
 
-**路由和负载均衡**：一切请求都必须先经过gateway，但网关不处理业务，而是根据某种规则，把请求转发到某个微服务，这个过程叫做路由。当然路由的目标服务有多个时，还需要做负载均衡。
+**路由和负载均衡**：一切请求都必须先经过gateway，但网关不处理业务，而是根据指定规则，把请求转发到某个微服务，这个过程叫做路由。当然路由的目标服务有多个时，还需要做负载均衡
 
-**限流**：当请求流量过高时，在网关中按照下流的微服务能够接受的速度来放行请求，避免服务压力过大
+**限流**：当请求流量过高时，在网关中按照下游的微服务能够接受的速度来放行请求，避免服务压力过大
 
 
 
@@ -2164,17 +2233,17 @@ Spring Cloud Gateway 工作流程如下图:
 
 Spring Cloud Gateway 工作流程说明如下：
 
-1. 客户端将请求发送到 Spring Cloud Gateway 上。
-2. Spring Cloud Gateway 通过 Gateway Handler Mapping 找到与请求相匹配的路由，将其发送给 Gateway Web Handler。
-3. Gateway Web Handler 通过指定的过滤器链（Filter Chain），将请求转发到实际的服务节点中，执行业务逻辑返回响应结果。
-4. 过滤器之间用虚线分开是因为过滤器可能会在转发请求之前（pre）或之后（post）执行业务逻辑。
-5. 过滤器（Filter）可以在请求被转发到服务端前，对请求进行拦截和修改，例如参数校验、权限校验、流量监控、日志输出以及协议转换等。
-6. 过滤器可以在响应返回客户端之前，对响应进行拦截和再处理，例如修改响应内容或响应头、日志输出、流量监控等。
+1. 客户端将请求发送到 Spring Cloud Gateway 上
+2. Spring Cloud Gateway 通过 Gateway Handler Mapping 找到与请求相匹配的路由，将其发送给 Gateway Web Handler
+3. Gateway Web Handler 通过指定的过滤器链（Filter Chain），将请求转发到实际的服务节点中，执行业务逻辑返回响应结果
+4. 过滤器之间用虚线分开是因为过滤器可能会在转发请求之前（pre）或之后（post）执行业务逻辑
+5. 过滤器（Filter）可以在请求被转发到服务端前，对请求进行拦截和修改，例如参数校验、权限校验、流量监控、日志输出以及协议转换等
+6. 过滤器可以在响应返回客户端之前，对响应进行拦截和再处理，例如修改响应内容或响应头、日志输出、流量监控等
 7. 响应原路返回给客户端
 
 
 
-总而言之，客户端发送到 Spring Cloud Gateway 的请求需要通过一定的匹配条件，才能定位到真正的服务节点。在将请求转发到服务进行处理的过程前后（pre 和 post），我们还可以对请求和响应进行一些精细化控制。
+总而言之，客户端发送到 Spring Cloud Gateway 的请求需要通过一定的匹配条件，才能到达真正的服务节点。在将请求转发到服务进行处理的过程前后（pre 和 post），我们还可以对请求和响应进行一些精细化控制。
 
 Predicate 就是路由的匹配条件，而 Filter 就是对请求和响应进行精细化控制的工具。有了这两个元素，再加上目标 URI，就可以实现一个具体的路由了
 
@@ -2194,9 +2263,9 @@ Spring Cloud Gateway 通过 Predicate 断言来实现 Route 路由的匹配规�
 
 使用 Predicate 断言需要注意以下 3 点：
 
-- Route 路由与 Predicate 断言的对应关系为“一对多”，一个路由可以包含多个不同断言。
-- 一个请求想要转发到指定的路由上，就必须同时匹配路由上的所有断言。
-- 当一个请求同时满足多个路由的断言条件时，请求只会被首个成功匹配的路由转发。
+1. Route 路由与 Predicate 断言的对应关系为“一对多”，一个路由可以包含多个不同断言条件
+2. 一个请求想要转发到指定的路由上，就必须同时匹配路由上的所有断言
+3. 当一个请求同时满足多个路由的断言条件时，请求只会被首个成功匹配的路由转发
 
 
 
@@ -2208,9 +2277,7 @@ Spring Cloud Gateway 通过 Predicate 断言来实现 Route 路由的匹配规�
 
 
 
-常见的 Predicate 断言如下表（假设转发的 URI 为 http://localhost:8001）
-
-
+常见的 Predicate 断言如下表：假设转发的 URI 为 http://localhost:8001
 
 | 断言       | 示例                                                         | 说明                                                         |
 | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -2221,14 +2288,14 @@ Spring Cloud Gateway 通过 Predicate 断言来实现 Route 路由的匹配规�
 | Cookie     | - Cookie=name,www.cnblogs.com/xiegongzi                      | 携带 Cookie 且 Cookie 的内容为 name=www.cnblogs.com/xiegongzi 的请求，才会被转发到 http://localhost:8001 上 |
 | Header     | - Header=X-Request-Id,\d+                                    | 请求头上携带属性 X-Request-Id 且属性值为整数的请求，才会被转发到 http://localhost:8001 上 |
 | Method     | - Method=GET                                                 | 只有 GET 请求才会被转发到 http://localhost:8001 上           |
-| Host       | -  Host=**.somehost.org,**.anotherhost.org                   | 请求必须是访问.somehost.org,.anotherhost.org这两个host（域名）才会被转发到 http://localhost:8001 上 |
+| Host       | -  Host=.somehost.org,.anotherhost.org                       | 请求必须是访问.somehost.org和.anotherhost.org这两个host（域名）才会被转发到 http://localhost:8001 上 |
 | Query      | - Query=name                                                 | 请求参数必须包含指定参数(name)，才会被转发到 http://localhost:8001 上 |
 | RemoteAddr | - RemoteAddr=192.168.1.1/24                                  | 请求者的ip必须是指定范围（192.168.1.1 到 192.168.1.24)       |
 | Weight     | ![image-20230605120547194](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230605120548651-1280651580.png) | 权重处理weight,有两个参数：group和weight(一个整数)<br />如示例中表示：分80%的流量给weihthigh.org |
 
 上表中这些也叫“**Predicate断言工厂**”，我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件
 
-例如Path=/user/**是按照路径匹配，这个规则是由
+例如 Path=/user/** 是按照路径匹配，这个规则是由
 
 `org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory`类来
 
@@ -2240,45 +2307,21 @@ Spring Cloud Gateway 通过 Predicate 断言来实现 Route 路由的匹配规�
 
 ## 入手Gateway
 
-新建一个Maven项目，pom内容如下：
+新建一个Maven项目，依赖如下：
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.zixieqing</groupId>
-        <artifactId>gateway-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+<!--Nacos服务发现-->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
 
-    <artifactId>gateway</artifactId>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <dependencies>
-        <!--Nacos服务发现-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-
-        <!--网关-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
-        </dependency>
-    </dependencies>
-</project>
+<!--网关-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-gateway</artifactId>
+</dependency>
 ```
-
-
 
 
 
@@ -2306,7 +2349,7 @@ spring:
             - Path=/user/**
 ```
 
-经过如上方式，就简单搭建了Gateway网关，启动、访问 localhost:10010/user/1 或 localhost:10010/order/101 即可
+经过如上方式，就简单搭建了Gateway网关，启动、访问 localhost:10010/user/id 或 localhost:10010/order/id 即可
 
 
 
@@ -2318,7 +2361,7 @@ spring:
 
 通常情况下，出于安全方面的考虑，服务端提供的服务往往都会有一定的校验逻辑，例如用户登陆状态校验、签名校验等
 
-在微服务架构中，系统由多个微服务组成，所有这些服务都需要这些校验逻辑，此时我们就可以将这些校验逻辑写到 Spring Cloud Gateway 的 Filter 过滤器中
+在微服务架构中，系统由多个微服务组成，所以这些服务都需要这些校验逻辑，此时我们就可以将这些校验逻辑写到 Spring Cloud Gateway 的 Filter 过滤器中
 
 
 
@@ -2328,20 +2371,18 @@ Filter是网关中提供的一种过滤器，可以对进入网关的请求和�
 
 
 
-pring Cloud Gateway 提供了以下两种类型的过滤器，可以对请求和响应进行精细化控制。
-
-
+pring Cloud Gateway 提供了以下两种类型的过滤器，可以对请求和响应进行精细化控制
 
 | 过滤器类型 | 说明                                                         |
 | ---------- | ------------------------------------------------------------ |
-| Pre 类型   | 这种过滤器在请求被转发到微服务之前可以对请求进行拦截和修改，例如参数校验、权限校验、流量监控、日志输出以及协议转换等操作。 |
-| Post 类型  | 这种过滤器在微服务对请求做出响应后可以对响应进行拦截和再处理，例如修改响应内容或响应头、日志输出、流量监控等。 |
+| Pre 类型   | 这种过滤器在请求被转发到微服务“之前”可以对请求进行拦截和修改，如参数校验、权限校验、流量监控、日志输出以及协议转换等操作 |
+| Post 类型  | 这种过滤器在微服务对请求做出响应“之后”可以对响应进行拦截和再处理，如修改响应内容或响应头、日志输出、流量监控等 |
 
 
 按照作用范围划分，Spring Cloud gateway 的 Filter 可以分为 2 类：
 
-- GatewayFilter：应用在单个路由或者一组路由上的过滤器。
-- GlobalFilter：应用在所有的路由上的过滤器。
+1. GatewayFilter：应用在“单个路由”或者“一组路由”上的过滤器
+2. GlobalFilter：应用在“所有的路由”上的过滤器
 
 
 
@@ -2351,11 +2392,11 @@ pring Cloud Gateway 提供了以下两种类型的过滤器，可以对请求和
 
 ### GatewayFilter 网关过滤器
 
-GatewayFilter 是 Spring Cloud Gateway 网关中提供的一种应用在单个或一组路由上的过滤器。它可以对单个路由或者一组路由上传入的请求和传出响应进行拦截，并实现一些与业务无关的功能，比如登陆状态校验、签名校验、权限校验、日志输出、流量监控等
+GatewayFilter 是 Spring Cloud Gateway 网关中提供的一种应用在“单个路由”或“一组路由”上的过滤器。它可以对单个路由或者一组路由上传入的请求和传出响应进行拦截，并实现一些与业务无关的功能，如登陆状态校验、签名校验、权限校验、日志输出、流量监控等
 
 
 
-GatewayFilter 在配置文件（例如 application.yml）中的写法与 Predicate 类似，格式如下：
+GatewayFilter 在配置文件(如 application.yml)中的写法与 Predicate 类似，格式如下：
 
 ```yaml
 server:
@@ -2422,13 +2463,13 @@ public class UserController {
 
 
 
-此种路由一共有37种，它们的用法和上面的差不多，可以多个过滤器共同使用，详细去看链接：https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#gatewayfilter-factories
+> 此种路由一共有37种，它们的用法和上面的差不多，可以多个过滤器共同使用
+>
+> 详细去看链接：https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#gatewayfilter-factories
 
 
 
 下表中列举了几种常用的网关过滤器：
-
-
 
 | 路由过滤器             | 描述                                                         | 参数                                                         | 使用示例                                               |
 | ---------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------ |
@@ -2483,7 +2524,7 @@ spring:
         - AddRequestHeader=name, zixieqing
 ```
 
-此种方式缺点就是要是需要编写复杂的业务逻辑时会非常不方便，但是：**这种过滤器的优先级比下面一种要高**
+缺点：要是需要编写复杂的业务逻辑时会非常不方便，但是：**这种过滤器的优先级比下面一种要高**
 
 
 
@@ -2494,7 +2535,7 @@ spring:
 ```java
 public interface GlobalFilter {
     /**
-     *  处理当前请求，有必要的话通过{@link GatewayFilterChain}将请求交给下一个过滤器处理
+     * 处理当前请求，有必要的话通过 GatewayFilterChain 将请求交给下一个过滤器处理
      *
      * @param exchange 请求上下文，里面可以获取Request、Response等信息
      * @param chain 用来把请求委托给下一个过滤器 
@@ -2506,9 +2547,9 @@ public interface GlobalFilter {
 
 在filter中编写自定义逻辑，可以实现下列功能：
 
-- 登录状态判断
-- 权限校验
-- 请求限流等
+1. 登录状态判断
+2. 权限校验
+3. 请求限流等
 
 
 
@@ -2528,7 +2569,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 /**
- * <p>@description  : 该类功能  自定义gateway全局路由器
+ * <p>@description  : 自定义gateway全局路由器
  * </p>
  * <p>@author       : ZiXieqing</p>
  */
@@ -2573,20 +2614,17 @@ public class MyGlobalFilter implements GlobalFilter {
 
 排序的规则是什么呢？
 
-- 每一个过滤器都必须指定一个int类型的order值，**order值越小，优先级越高，执行顺序越靠前**。
-- GlobalFilter通过实现Ordered接口，或者添加@Order注解来指定order值，由我们自己指定
-- 路由过滤器和defaultFilter的order由Spring指定，默认是按照声明顺序从1递增。
-- 当过滤器的order值一样时，会按照 defaultFilter > 路由过滤器 > GlobalFilter的顺序执行。
+1. 每一个过滤器都必须指定一个int类型的order值，**order值越小，优先级越高，执行顺序越靠前**
+2. GlobalFilter通过实现Ordered接口，或者添加 @Order 注解来指定order值，由我们自己指定
+3. 路由过滤器和defaultFilter的order由Spring指定，默认是按照声明顺序从1递增
+4. 当过滤器的order值一样时，会按照 defaultFilter > 路由过滤器 > GlobalFilter的顺序执行。
 
 
 
 详细内容，可以查看源码：
 
-`org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator#getFilters()`方法是先加载defaultFilters，然后再加载某个route的filters，然后合并。
-
-
-
-`org.springframework.cloud.gateway.handler.FilteringWebHandler#handle()`方法会加载全局过滤器，与前面的过滤器合并后根据order排序，组织过滤器链
+1. `org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator#getFilters()`方法是先加载defaultFilters，然后再加载某个route的filters，最后合并
+2. `org.springframework.cloud.gateway.handler.FilteringWebHandler#handle()`方法会加载全局过滤器，与前面的过滤器合并后根据order排序，组织过滤器链
 
 
 
@@ -2602,13 +2640,13 @@ public class MyGlobalFilter implements GlobalFilter {
 
 - 域名不同： www.taobao.com 和 www.taobao.org 和 www.jd.com 和 miaosha.jd.com
 
-- 域名相同，端口不同：localhost:8080和localhost8081
+- 域名相同，端口不同：localhost:8080 和 localhost8081
+
+
 
 跨域问题：浏览器禁止请求的发起者与服务端发生跨域ajax请求，请求被浏览器拦截的问题
 
-
-
-解决方案：CORS，想学习的话可以去这里 https://www.ruanyifeng.com/blog/2016/04/cors.html
+解决方案：CORS，了解CORS可以去这里 https://www.ruanyifeng.com/blog/2016/04/cors.html
 
 
 
@@ -2623,7 +2661,8 @@ spring:
   cloud:
     gateway:
       globalcors: # 全局的跨域处理
-        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题。CORS跨域浏览器会问服务器可不可以跨域，而这种请求是options，网关默认会拦截这种请求
+        # 解决options请求被拦截问题。CORS跨域浏览器会问服务器可不可以跨域，而这种请求是options，网关默认会拦截这种请求
+        add-to-simple-url-handler-mapping: true
         corsConfigurations:
           '[/**]':	# 拦截哪些请求，此处为拦截所有请求，即凡是进入网关的请求都拦截
             allowedOrigins: # 允许哪些网站的跨域请求 
@@ -4319,250 +4358,6 @@ public class RabbitmqListener {
 
 
 
-## publisher-confirms 发布确认模型
-
-正常的流程应该是下面的样子
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617005335080-1584963969.png)
-
-但是：如果交换机出问题了呢，总之就是交换机没有接收到生产者发布的消息(如：发消息时，交换机名字搞错了)，那消息就直接丢了吗？
-
-同理：要是队列出问题了呢，总之也就是交换机没有成功地把消息推到队列中(如：routing key搞错了)，咋办？
-
-而要解决这种问题，就需要使用标题中使用的两个回调，从而：让架构模式变成如下的样子
-
-![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617005335087-1086807902.png)
-
-
-
-发送消息确认：用来确认消息从 producer发送到 broker 然后broker 的 exchange 到 queue过程中，消息是否成功投递
-
-如果消息和队列是可持久化的，那么确认消息会将消息写入磁盘之后发出；如果是镜像队列，所有镜像接受成功后发确认消息
-
-**应用场景：** 对于消息可靠性要求较高，比如钱包扣款
-
-**流程**
-
-1. 如果消息没有到达exchange，则confirm回调，ack=false
-2. 如果消息到达exchange，则confirm回调，ack=true
-3. exchange到queue成功，则不回调return
-4. exchange到queue失败，则回调return(需设置mandatory=true，否则不会回调，这样消息就丢了)
-
-
-
-**生产者方需要开启两个配置：**
-
-```yaml
-spring:
-  rabbitmq:
-    # 生产者开启 return 确认机制   如果消息未能投递到目标queue中，触发returnCallback
-    publisher-returns: true
-    # 发布确认类型  生产者开启 confirm 确认机制(等价于旧版本的publisher-confirms=true)
-    # 有3种属性配置   correlated    none    simple
-    #     none  禁用发布确认模式，是默认值
-    #     correlated  异步回调  发布消息成功到exchange后会触发 rabbitTemplate.setConfirmCallback 回调方法
-    #     simple 同步等待confirm结果，直到超时
-    publisher-confirm-type: correlated
-```
-
-
-
-### ConfirmCallback 回调
-
-在前面 `publisher-confirm-type: correlated` 配置开启的前提下，发布消息成功到exchange后会进行  ConfirmCallback#confirm 异步回调，示例如下：
-
-```java
-@Component
-public class ConfirmCallbackService implements RabbitTemplate.ConfirmCallback {
-    /** 
-     * correlationData：对象内部有id （消息的唯一性）和 Message	
-     * 				   若ack为false，则Message不为null，可将Message数据 重新投递；
-     * 				   若ack是true，则correlationData为nul
-     * ack：消息投递到exchange 的状态，true表示成功
-     * cause：表示投递失败的原因
-     * 			若ack为false，则cause不为null
-     * 			若ack是true，则cause为null
-     */
-    @Override
-    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-		if(ack){
-			System.out.println("消息已经送达到Exchange");
-		}else{
-			System.out.println("消息没有送达到Exchange");
-		}
-    }
-}
-```
-
-
-
-在生产者发送消息时，可以给每一条信息添加一个dataId，放在CorrelationData，这样在RabbitConfirmCallback返回失败时可以知道哪个消息失败
-
-```java
-public void send(String dataId, String exchangeName, String rountingKey, String message){
-  CorrelationData correlationData = new CorrelationData();
-  // 可以给每条消息设置唯一id  在RabbitConfirmCallback返回失败时可以知道哪个消息失败
-  correlationData.setId(dataId);
-
-  rabbitTemplate.convertAndSend(exchangeName, rountingKey, message, correlationData);
-}
-
-public String receive(String queueName){
-  return String.valueOf(rabbitTemplate.receiveAndConvert(queueName));
-}
-```
-
-2.1版本之后，CorrelationData对象具有ListenableFuture，可用于获取结果，而不是在rabbitTemplate上使用ConfirmCallback
-
-```java
-CorrelationData correlationData = new CorrelationData();
-// 可以给每条消息设置唯一id  在RabbitConfirmCallback返回失败时可以知道哪个消息失败
-correlationData.setId(dataId);
-
-// 发送消息
-this.templateWithConfirmsEnabled
-    .convertAndSend(Exchange exchangeName, String routingKey, Object msg, correlationData);
-
-// 查看是否成功发送到Exchange中
-assertTrue(correlationData.getFuture().get(15, TimeUnit.SECONDS).isAck());
-```
-
-
-
-
-
-### ReturnCallback 回调
-
-如果消息未能投递到目标queue中，触发returnCallback#returnedMessage
-
-若向 queue 投递消息未成功，可记录下当前消息的详细投递数据，方便后续做重发或者补偿等操作
-
-
-
-但是这玩意儿又要涉及到另外一个配置：消息路由失败策略
-
-```yaml
-spring:
-  rabbitmq:
-    template:
-      # 生产者方消息路由失败策略
-      #   true：调用ReturnCallback
-      #   false：直接丢弃消息
-      mandatory: true
-```
-
-
-
-ReturnCallBack回调的玩法：
-
-```java
-@Component
-public class ReturnCallbackService implements RabbitTemplate.ReturnCallback {
-    /**
-     * 保证 spring.rabbitmq.template.mandatory = true 的前提下，如果消息未能投递到目标queue中，触发returnCallback#returnedMessage
-     * 参数1、消息 new String(message.getBody())
-     * 参数2、消息退回的状态码
-     * 参数3、消息退回的原因
-     * 参数4、交换机名字
-     * 参数5、路由键
-    */
-    @Override
-    public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-        System.out.println("消息没有送达到Queue");
-    }
-}
-```
-
-
-
-### ConfirmCallback 和 ReturnCallback 整合的写法
-
-消息发送者编写代码：
-
-```java
-package com.zixieqing.publisher.config;
-
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
-
-/**
- * <p> mq的confirmCallback和ReturnCallback
- * </p>
- * <p>@author       : ZiXieqing</p>
- */
-
-@Configuration
-public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCallback, 
-        RabbitTemplate.ReturnCallback {
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    /**
-     * 初始化方法
-     * 目的：因为ConfirmCallback 和 ReturnCallback这两个接口是RabbitTemplate的内部类
-     * 因此：想要让当前编写的PublisherConfirmAndReturnConfig能够访问到这两个接口
-     * 那么：就需要把当前类PublisherConfirmAndReturnConfig的confirmCallback 和 returnCallback
-     *      注入到RabbitTemplate中去 即：init的作用
-     */
-    @PostConstruct
-    public void init(){
-        rabbitTemplate.setConfirmCallback(this);
-        rabbitTemplate.setReturnCallback(this);
-    }
-
-    /**
-     * 在前面 publisher-confirm-type: correlated 配置开启的前提下，发布消息成功到exchange后
-     *       会进行 ConfirmCallback#confirm 异步回调
-     * 参数1、发送消息的ID - correlationData.getID()  和 消息的相关信息
-     * 参数2、是否成功发送消息给exchange  true成功；false失败
-     * 参数3、失败原因
-     */
-    @Override
-    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-        if(ack){
-            System.out.println("消息已经送达到Exchange");
-        }else{
-            System.out.println("消息没有送达到Exchange");
-        }
-    }
-
-    /**
-     * 保证 spring.rabbitmq.template.mandatory = true 的前提下，如果消息未能投递到目标queue中，
-     *      触发returnCallback#returnedMessage
-     * 参数1、消息 new String(message.getBody())
-     * 参数2、消息退回的状态码
-     * 参数3、消息退回的原因
-     * 参数4、交换机名字
-     * 参数5、路由键
-     */
-    @Override
-    public void returnedMessage(Message message, int replyCode, String replyText, 
-                                String exchange, String routingKey) {
-        System.out.println("消息没有送达到Queue");
-    }
-}
-```
-
-生产者调用的方法是：
-
-```java
-// 可以给每条消息设置唯一id
-CorrelationData correlationData = new CorrelationData();
-correlationData.setId(dataId);
-
-// 发送消息
-rabbitTemplate.convertAndSend(String exchange, String routingKey, Object message, correlationData);
-```
-
-
-
-
-
 ## 消息转换器
 
 查看Spring中默认的MessageConverter消息转换器
@@ -4793,6 +4588,476 @@ public class RabbitmqListener {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+## publisher-confirms 发布确认模型
+
+**如何确保RabbitMQ消息的可靠性？**
+
+1. 生产者方：
+   1. 开启生产者确认机制，确保生产者的消息能到达队列
+   2. 开启持久化功能，确保消息未消费前在队列中不会丢失
+2. 消费者方：
+   1. 开启消费者确认机制为auto，由spring确认消息处理成功后完成ack
+   2. 开启消费者失败重试机制，并设置MessageRecoverer，多次重试失败后将消息投递到异常交换机，交由人工处理
+
+
+
+
+
+正常的流程应该是下面的样子
+
+![image](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617005335080-1584963969.png)
+
+但是：如果交换机出问题了呢，总之就是交换机没有接收到生产者发布的消息(如：发消息时，交换机名字搞错了)，那消息就直接丢了吗？
+
+同理：要是队列出问题了呢，总之也就是交换机没有成功地把消息推到队列中(如：routing key搞错了)，咋办？
+
+那就需要第一个条件 **发送消息确认：用来确认消息从 producer发送到 exchange， exchange 到 queue过程中，消息是否成功投递**
+
+**应用场景：** 对于消息可靠性要求较高，比如钱包扣款
+
+**流程**
+
+1. 如果消息没有到达exchange，则confirm回调，ack=false
+2. 如果消息到达exchange，则confirm回调，ack=true
+3. exchange到queue成功，则不回调return
+4. exchange到queue失败，则回调return(需设置mandatory=true，否则不会回调，这样消息就丢了)
+
+
+
+**生产者方需要开启两个配置：**
+
+```yaml
+spring:
+  rabbitmq:
+    # 发布确认类型  生产者开启 confirm 确认机制	等价于旧版本的publisher-confirms=true
+    # 有3种属性配置   correlated    none    simple
+    #     none  禁用发布确认模式，是默认值
+    #     correlated  异步回调  发布消息成功到exchange后会触发 rabbitTemplate.setConfirmCallback 回调方法
+    #     simple 同步等待confirm结果，直到超时
+    publisher-confirm-type: correlated
+    # 生产者开启 return 确认机制   如果消息未能投递到目标queue中，触发returnCallback
+    publisher-returns: true
+```
+
+
+
+### ConfirmCallback 回调
+
+在前面 `publisher-confirm-type: correlated` 配置开启的前提下，发布消息成功到exchange后会进行  ConfirmCallback#confirm 异步回调，示例如下：
+
+```java
+@Component
+public class ConfirmCallbackService implements RabbitTemplate.ConfirmCallback {
+    /** 
+     * correlationData：对象内部有id （消息的唯一性）和 Message	
+     * 				    若ack为false，则Message不为null，可将Message数据 重新投递；
+     * 				    若ack是true，则correlationData为nul
+     * ack：消息投递到exchange 的状态，true表示成功
+     * cause：表示投递失败的原因
+     * 			若ack为false，则cause不为null
+     * 			若ack是true，则cause为null
+     */
+    @Override
+    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+		if(ack){
+			System.out.println("消息已经送达到Exchange");
+		}else{
+			System.out.println("消息没有送达到Exchange");
+		}
+    }
+}
+```
+
+
+
+在生产者发送消息时，可以给每一条信息添加一个dataId，放在CorrelationData，这样在RabbitConfirmCallback返回失败时可以知道哪个消息失败
+
+```java
+public void send(String dataId, String exchangeName, String rountingKey, String message){
+  CorrelationData correlationData = new CorrelationData();
+  // 可以给每条消息设置唯一id  在RabbitConfirmCallback返回失败时可以知道哪个消息失败
+  correlationData.setId(dataId);
+
+  rabbitTemplate.convertAndSend(exchangeName, rountingKey, message, correlationData);
+}
+
+public String receive(String queueName){
+  return String.valueOf(rabbitTemplate.receiveAndConvert(queueName));
+}
+```
+
+2.1版本之后，CorrelationData对象具有getFuture，可用于获取结果，而不是在rabbitTemplate上使用ConfirmCallback
+
+```java
+CorrelationData correlationData = new CorrelationData();
+// 可以给每条消息设置唯一id  在RabbitConfirmCallback返回失败时可以知道哪个消息失败
+correlationData.setId(dataId);
+
+// 在新版中correlationData具有getFuture，可获取结果，而不用在rabbitTemplate上使用ConfirmCallback
+correlationData.getFuture().addCallback( // 对照Ajax
+    // 成功
+    result -> {
+        // 成功发送到exchange
+        if (result.isAck()) {
+            // 消息发送成功 ack回执
+            System.out.println(correlationData.getId() + " 消息发送成功");
+        } else {	// 未成功发送到exchange
+            // 消息发送失败 nack回执
+            System.out.println(correlationData.getId() + " 消息发送失败，原因：" + result.getReason());
+        }
+    }, ex -> { // ex 即 exception   不知道什么原因，抛了异常，没收到MQ的回执
+        System.out.println(correlationData.getId() + " 消息发送失败，原因：" + ex.getMessage());
+    }
+);
+
+rabbitTemplate.convertAndSend(exchangeName, rountingKey, message, correlationData);
+```
+
+
+
+
+
+### ReturnCallback 回调
+
+**如果消息未能投递到目标queue中，触发returnCallback#returnedMessage**
+
+**注意点：每个RabbitTemplate只能配置一个ReturnCallback。** 即Spring全局只有这一个Return回调，不能说想写多少个就写多少个
+
+若向 queue 投递消息未成功，可记录下当前消息的详细投递数据，方便后续做重发或者补偿等操作
+
+
+
+但是这玩意儿又要涉及到另外一个配置：消息路由失败策略
+
+```yaml
+spring:
+  rabbitmq:
+    template:
+      # 生产者方消息路由失败策略
+      #   true：调用ReturnCallback
+      #   false：直接丢弃消息
+      mandatory: true
+```
+
+
+
+ReturnCallBack回调的玩法：
+
+```java
+@Component
+public class ReturnCallbackService implements RabbitTemplate.ReturnCallback {
+    /**
+     * 保证 spring.rabbitmq.template.mandatory = true 的前提下，如果消息未能投递到目标queue中，触发returnCallback#returnedMessage
+     * 参数1、消息 new String(message.getBody())
+     * 参数2、消息退回的状态码
+     * 参数3、消息退回的原因
+     * 参数4、交换机名字
+     * 参数5、路由键
+    */
+    @Override
+    public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+        System.out.println("消息没有送达到Queue");
+    }
+}
+```
+
+
+
+### ConfirmCallback 和 ReturnCallback 整合的写法
+
+消息发送者编写代码：
+
+```java
+package com.zixieqing.publisher.config;
+
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
+
+/**
+ * <p> mq的confirmCallback和ReturnCallback
+ * </p>
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Configuration
+public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCallback, 
+        RabbitTemplate.ReturnCallback {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    /**
+     * 初始化方法
+     * 目的：因为ConfirmCallback 和 ReturnCallback这两个接口是RabbitTemplate的内部类
+     * 因此：想要让当前编写的PublisherConfirmAndReturnConfig能够访问到这两个接口
+     * 那么：就需要把当前类PublisherConfirmAndReturnConfig的confirmCallback 和 returnCallback
+     *      注入到RabbitTemplate中去 即：init的作用
+     */
+    @PostConstruct
+    public void init(){
+        rabbitTemplate.setConfirmCallback(this);
+        rabbitTemplate.setReturnCallback(this);
+    }
+
+    /**
+     * 在前面 publisher-confirm-type: correlated 配置开启的前提下，发布消息成功到exchange后
+     *       会进行 ConfirmCallback#confirm 异步回调
+     * 参数1、发送消息的ID - correlationData.getID()  和 消息的相关信息
+     * 参数2、是否成功发送消息给exchange  true成功；false失败
+     * 参数3、失败原因
+     */
+    @Override
+    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+        if(ack){
+            System.out.println("消息已经送达到Exchange");
+        }else{
+            System.out.println("消息没有送达到Exchange");
+        }
+    }
+
+    /**
+     * 保证 spring.rabbitmq.template.mandatory = true 的前提下，如果消息未能投递到目标queue中，
+     *      触发returnCallback#returnedMessage
+     * 参数1、消息 new String(message.getBody())
+     * 参数2、消息退回的状态码
+     * 参数3、消息退回的原因
+     * 参数4、交换机名字
+     * 参数5、路由键
+     */
+    @Override
+    public void returnedMessage(Message message, int replyCode, String replyText, 
+                                String exchange, String routingKey) {
+        System.out.println("消息没有送达到Queue");
+    }
+}
+```
+
+生产者调用的方法是：
+
+```java
+// 可以给每条消息设置唯一id
+CorrelationData correlationData = new CorrelationData();
+correlationData.setId(dataId);
+
+// 发送消息
+rabbitTemplate.convertAndSend(String exchange, String routingKey, Object message, correlationData);
+```
+
+
+
+
+
+
+
+## 消息持久化
+
+生产者确认可以确保消息投递到RabbitMQ的队列中，但是消息发送到RabbitMQ以后，如果突然宕机，也可能导致消息丢失
+
+要想确保消息在RabbitMQ中安全保存，必须开启消息持久化机制：
+
+1. **交换机持久化**：RabbitMQ中交换机默认是非持久化的，mq重启后就丢失。SpringAMQP中可以通过代码指定交换机持久化。**默认情况下，由SpringAMQP声明的交换机都是持久化的**
+
+```java
+@Bean
+public DirectExchange simpleExchange(){
+    // 三个参数：交换机名称、是否持久化、当没有queue与其绑定时是否自动删除
+    return new DirectExchange(exchangeName, true, false);
+}
+```
+
+2. **队列持久化**：RabbitMQ中队列默认是非持久化的，mq重启后就丢失。SpringAMQP中可以通过代码指定交换机持久化。**默认情况下，由SpringAMQP声明的队列都是持久化的**
+
+```java
+@Bean
+public Queue simpleQueue(){
+    // 使用QueueBuilder构建队列，durable就是持久化的
+    return QueueBuilder.durable(queueName).build();
+}
+```
+
+3. **消息持久化**：利用SpringAMQP发送消息时，可以设置消息的属性（MessageProperties），指定delivery-mode：非持久化 / 持久化。**默认情况下，SpringAMQP发出的任何消息都是持久化的**
+
+```java
+// 构建消息
+Message msg = MessageBuilder.
+    // 消息体
+    withBody(message.getBytes(StandardCharsets.UTF_8))
+    // 持久化
+    .setDeliveryMode(MessageDeliveryMode.PERSISTENT)
+    .build();
+```
+
+
+
+
+
+## 消费者消息确认
+
+RabbitMQ是**阅后即焚**机制，RabbitMQ确认消息被消费者消费后会立刻删除
+
+而RabbitMQ是通过消费者回执来确认消费者是否成功处理消息的：消费者获取消息后，应该向RabbitMQ发送ACK回执，表明自己已经处理消息
+
+设想这样的场景：
+
+1. RabbitMQ投递消息给消费者
+2. 消费者获取消息后，返回ACK给RabbitMQ
+3. RabbitMQ删除消息
+4. 消费者宕机，消息尚未处理
+
+这样，消息就丢失了。因此消费者返回ACK的时机非常重要
+
+
+
+而SpringAMQP则允许配置三种确认模式：
+
+1. **manual**：手动ack，需要在业务代码结束后，调用api发送ack，所以要自己根据业务情况，判断什么时候该ack
+2. **auto**：自动ack，由spring监测listener代码是否出现异常，没有异常则返回ack；抛出异常则返回nack。一般要用就用此种方式即可
+3. **none**：关闭ack，MQ假定消费者获取消息后会成功处理，因此消息投递后立即被删除。不可靠，消息可能丢失
+
+
+
+使用确认模式：在**消费者方**的YAML文件中配置如下内容：
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: auto # 自动应答模式
+```
+
+
+
+
+
+## 失败重试机制
+
+上面发布确认模式+消息持久化+消费者消息确认之后，还会有问题，如下面的代码：
+
+```java
+@RabbitListener(queues = "simple.queue")
+public void listenSimpleQueue(String msg) {
+    log.info("消费者接收到simple.queue的消息：【{}】", msg);
+    // 模拟异常
+    System.out.println(1 / 0);
+    log.debug("消息处理完成！");
+}
+```
+
+会死循环：当消费者出现异常后，消息会不断requeue（重入队）到队列，再重新发送给消费者，然后再次异常，再次requeue，无限循环，导致mq的消息处理飙升，带来不必要的压力
+
+![image-20230709002843115](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709002845387-819379886.png)
+
+要解决就就得引入后面的内容
+
+
+
+
+
+### 本地重试机制
+
+可以利用Spring的retry机制，在消费者出现异常时利用本地重试，而不是无限制的requeue到mq队列
+
+在**消费者方**的YAML文件中添加如下内容即可：
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        retry:
+          enabled: true # 开启消费者失败重试
+          initial-interval: 1000 # 初识的失败等待时长为1秒
+          multiplier: 1 # 失败的等待时长倍数，下次等待时长 = multiplier * last-interval
+          max-attempts: 3 # 最大重试次数
+          stateless: true # true无状态；false有状态。如果业务中包含事务，这里改为false
+```
+
+开启本地重试时，消息处理过程中抛出异常，不会requeue到队列，而是在消费者本地重试
+
+**重试达到最大次数后，Spring会返回ack，消息会被丢弃**。这不可取，对于补充要的消息可以采用这种方式，但是有时的开发场景中有些消息很重要，达到重试上限后，不能丢弃，得使用另外的方式：**失败策略**
+
+
+
+
+
+### 失败策略
+
+达到最大重试次数后，消息会被丢弃，这是由Spring内部机制决定的
+
+在开启重试模式后，重试次数耗尽，如果消息依然失败，则需要有MessageRecovery接口来处理，它包含三种不同的实现：
+
+1. RejectAndDontRequeueRecoverer：重试耗尽后，直接reject，丢弃消息。默认就是这种方式
+2. ImmediateRequeueMessageRecoverer：重试耗尽后，返回nack，消息重新入队
+3. **RepublishMessageRecoverer**：重试耗尽后，将失败消息投递到指定的交换机
+
+
+
+使用RepublisherMessageRecoverer失败策略：在**消费者方**定义失败之后要丢去的exchange+queue
+
+```java
+package com.zixieqing.mq.config;
+
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.rabbit.retry.RepublishMessageRecoverer;
+import org.springframework.context.annotation.Bean;
+
+@Configuration
+public class ErrorMessageConfig {
+    @Bean
+    public DirectExchange errorMessageExchange(){
+        return new DirectExchange("error.direct");
+    }
+    @Bean
+    public Queue errorQueue(){
+        return new Queue("error.queue", true);
+    }
+    @Bean
+    public Binding errorBinding(Queue errorQueue, DirectExchange errorMessageExchange){
+        return BindingBuilder.bind(errorQueue).to(errorMessageExchange).with("error");
+    }
+
+    /**
+     * 定义RepublishMessageRecoverer，关联队列和交换机
+     */
+    @Bean
+    public MessageRecoverer republishMessageRecoverer(RabbitTemplate rabbitTemplate){
+        return new RepublishMessageRecoverer(rabbitTemplate, "error.direct", "error");
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7221,6 +7486,830 @@ public class o10Suggest {
 
 # Sentinel 微服务保护
 
+Sentinel是阿里巴巴开源的一款微服务流量控制组件。官网地址：https://sentinelguard.io/zh-cn/index.html
+
+
+
+## 雪崩问题和解决方式
+
+> 所谓的雪崩指的是：微服务之间相互调用，调用链中某个微服务出现问题了，导致整个服务链的所有服务也跟着出问题，从而造成所有服务都不可用
+>
+> ![image-20230629232716886](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629232718861-1781673253.png)
+
+
+
+
+
+**解决方式：**
+
+1. **超时处理**：是一种临时方针，即设置定时器，请求超过规定的时间就返回错误信息，不会无休止等待
+
+   1. ![image-20230629233450322](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629233450956-993381892.png)
+   2. 缺点：在超时时间内，还未返回错误信息内，服务未处理完，请求激增，一样会导致后面的请求阻塞
+
+   
+
+2. **线程隔离**：也叫舱壁模式，即限定每个业务能使用的线程数，避免耗尽整个tomcat的资源
+
+   1. ![image-20230629233809486](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629233810724-498144747.png)
+   2. 缺点：会造成一定资源的浪费。明明服务已经不可用了，还占用固定数量的线程
+
+   
+
+3. **熔断降级**：
+
+   1. **熔断：** 由“断路器”统计业务执行的异常比例，如果超出“阈值”则会熔断/暂停该业务，拦截访问该业务的一切请求，后续搞好了再开启。从而做到在流量过大时（或下游服务出现问题时），可以自动断开与下游服务的交互，并可以通过自我诊断下游系统的错误是否已经修正，或上游流量是否减少至正常水平，来恢复自我恢复。熔断更像是自动化补救手段，可能发生在服务无法支撑大量请求或服务发生其他故障时，对请求进行限制处理，同时还可尝试性的进行恢复
+   2. **降级：** 丢车保帅。针对非核心业务功能，核心业务超出预估峰值需要进行限流；所谓降级指的就是在预计流量峰值前提下，整体资源快不够了，忍痛将某些非核心服务先关掉，待渡过难关，再开启回来
+
+   
+
+4. **限流：** 也叫流浪控制。指的是限制业务访问的QPS，避免服务因流量的突增而故障。是防御保护手段，从流量源头开始控制流量规避问题
+
+   1. ![image-20230630001726188](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630001726890-238228668.png)
+
+
+
+
+
+**限流**是对服务的保护，避免因瞬间高并发流量而导致服务故障，进而避免雪崩。是一种**预防**措施
+
+**超时处理、线程隔离、降级熔断**是在部分服务故障时，将故障控制在一定范围，避免雪崩。是一种**补救**措施
+
+
+
+
+
+## 服务保护技术对比
+
+在SpringCloud当中支持多种服务保护技术：
+
+- [Netfix Hystrix](https://github.com/Netflix/Hystrix)
+- [Sentinel](https://github.com/alibaba/Sentinel)
+- [Resilience4J](https://github.com/resilience4j/resilience4j)
+
+
+
+早期比较流行的是Hystrix框架(后面这叼毛不维护、不更新了)，所以目前国内实用最广泛的是阿里巴巴的Sentinel框架
+
+|                | **Sentinel**                                   | **Hystrix**                   |
+| -------------- | ---------------------------------------------- | ----------------------------- |
+| 隔离策略       | 信号量隔离                                     | 线程池隔离/信号量隔离         |
+| 熔断降级策略   | 基于慢调用比例或异常比例                       | 基于失败比率                  |
+| 实时指标实现   | 滑动窗口                                       | 滑动窗口（基于 RxJava）       |
+| 规则配置       | 支持多种数据源                                 | 支持多种数据源                |
+| 扩展性         | 多个扩展点                                     | 插件的形式                    |
+| 基于注解的支持 | 支持                                           | 支持                          |
+| 限流           | 基于 QPS，支持基于调用关系的限流               | 有限的支持                    |
+| 流量整形       | 支持慢启动、匀速排队模式                       | 不支持                        |
+| 系统自适应保护 | 支持                                           | 不支持                        |
+| 控制台         | 开箱即用，可配置规则、查看秒级监控、机器发现等 | 不完善                        |
+| 常见框架的适配 | Servlet、Spring Cloud、Dubbo、gRPC  等         | Servlet、Spring Cloud Netflix |
+
+
+
+
+
+## 安装sentinel
+
+1. 下载：https://github.com/alibaba/Sentinel/releases 是一个jar包，这是sentinel的ui控制台，下载了放到“非中文”目录中
+
+2. 运行
+
+   ```java
+   java -jar sentinel-dashboard-1.8.1.jar
+   ```
+
+如果要修改Sentinel的默认端口、账户、密码，可以通过下列配置：
+
+| **配置项**                       | **默认值** | **说明**   |
+| -------------------------------- | ---------- | ---------- |
+| server.port                      | 8080       | 服务端口   |
+| sentinel.dashboard.auth.username | sentinel   | 默认用户名 |
+| sentinel.dashboard.auth.password | sentinel   | 默认密码   |
+
+例如，修改端口：
+
+```sh
+java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
+```
+
+3. 访问。如http://localhost:8080，用户名和密码都是sentinel
+
+
+
+
+
+
+
+## 入手sentinel
+
+1. 依赖
+
+   ```xml
+   <!--sentinel-->
+   <dependency>
+       <groupId>com.alibaba.cloud</groupId> 
+       <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+   </dependency>
+   ```
+
+2. YAML配置
+
+   ```yaml
+   server:
+     port: 8088
+   spring:
+     cloud: 
+       sentinel:
+         transport:
+   # 		sentinel的ui控制台地址
+           dashboard: localhost:8080
+   ```
+
+3. 然后将服务提供者、服务消费者、网关、Feign……启动，发送请求即可在前面sentinel的ui控制台看到信息了
+
+![image-20230630191055722](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630191055598-1891678688.png)
+
+
+
+
+
+
+
+## 流量控制/限流
+
+雪崩问题虽然有四种方案，但是限流是避免服务因突发的流量而发生故障，是对微服务雪崩问题的预防，因此先来了解这种模式
+
+
+
+### 簇点链路
+
+![image-20230630232923426](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630232924098-1383625366.png)
+
+
+
+> **簇点链路：** 就是项目内的调用链路，链路中被监控的每个接口就是一个“资源”
+
+当请求进入微服务时，首先会访问DispatcherServlet，然后进入Controller、Service、Mapper，这样的一个调用链就就叫做**簇点链路**。簇点链路中被监控的每一个接口就是一个**资源**
+
+默认情况下sentinel会监控SpringMVC的每一个端点（Endpoint，也就是controller中的方法），因此SpringMVC的每一个端点（Endpoint）就是调用链路中的一个资源
+
+
+
+例如下图中的端点：/order/{orderId}
+
+![image-20230630233547622](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630233547524-1380692667.png)
+
+流控、熔断等都是针对簇点链路中的资源来设置的，因此我们可以点击对应资源后面的按钮来设置规则：
+
+1. 流控：流量控制
+2. 降级：降级熔断
+3. 热点：热点参数限流，是限流的一种
+4. 授权：请求的权限控制
+
+
+
+
+
+### 入门流控
+
+1. 点击下图按钮
+
+   ![image-20230630234126929](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630234126489-1698184768.png)
+
+2. 设置基本流控信息
+
+   ![image-20230630235201675](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630235201380-320755412.png)
+
+   上图的含义是限制 /order/{orderId} 这个资源的单机QPS为1，即：每秒只允许1次请求，超出的请求会被拦截并报错
+
+
+
+
+
+
+
+### 流控模式的分类
+
+![image-20230630235600999](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701001533748-1421619907.png)
+
+在添加限流规则时，点击高级选项，可以选择三种**流控模式**：
+
+1. **直接模式**：一句话来说就是“对当前资源限流”。统计当前资源的请求，当其触发阈值时，对当前资源直接限流。上面这张图就是此种模式。这也是默认的模式
+2. **关联模式**：一句话来说就是“高优先级触发阈值，对低优先级限流”。统计与当前资源A**“相关”**的另一个资源B，A资源触发阈值时，对B资源限流
+   1. 如：在一个Controller中，一个高流量的方法和一个低流量的方法都调用了这个Controller中的另一个方法，为了预防雪崩问题，就对低流量的方法进行限流设置
+   2. **适用场景**：两个有竞争关系的资源，一个优先级高，一个优先级低，优先级高的触发阈值时，就对优先级低的进行限流
+3. **链路模式**：一句话来说就是“对请求来源做限流”。统计从“指定链路”访问到本资源的请求，触发阈值时，对指定链路限流
+   1. 如：两个不同链路的请求，如需要读库和写库，这两个请求都调用了同一个服务/资源/接口，所以为了需求考虑，可以设置读库达到了阈值就进行限流
+
+
+
+
+
+示例：
+
+1. **关联模式：** 对谁进行限流，就低级谁的流控按钮进行设置
+
+   ![image-20230701010739230](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701010740490-994040095.png)
+
+   上图含义：当 /order/update 请求单机达到 每秒1000 请求量的阈值时，就会对 /order/query 进行限流，从而避免影响 /order/update 资源
+
+   
+
+2. **链路模式：** 请求链路访问的是哪个资源，就点击哪个资源的流控按钮进行配置
+
+   1. ![image-20230701011441588](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701011442949-2124782434.png)
+   2. 上图含义：只有来自 /user/queryGoods 链路的请求来访问 /order/queryGoods 资源时，每秒请求量达到1000，就会对/ user/queryGoods 进行限流
+
+
+
+
+
+> **链路模式的注意事项：**
+>
+> 1. 默认情况下，Service中的方法是不被Sentinel监控的，想要Service中的方法也被Sentinel监控的话，则需要我们自己通过    @SentinelResource("起个名字 或 像controllerz中请求路径写法")    注解来标记要监控的方法
+>
+> 2. 链路模式中，是对不同来源的两个链路做监控。但是sentinel默认会给进入SpringMVC的所有请求设置同一个root资源，进行了context整合，所以会导致链路模式失效。因此需要关闭一个context整合设置：
+>
+>    ```yaml
+>    spring:
+>      cloud:
+>        sentinel:
+>          web-context-unify: false # 关闭context整合
+>    ```
+>
+>    同一个root资源指的是：
+>
+>    ![image-20230701014514323](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701014516195-545720538.png)
+
+
+
+
+
+
+
+### 流控效果及其分类
+
+> **流控效果**：指请求达到流控阈值时应该采取的措施
+
+
+
+**分类**
+
+![image-20230701014735316](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701014736593-1780186698.png)
+
+1. **快速失败**：达到阈值后，新的请求会被立即拒绝并抛出FlowException异常。是默认的处理方式
+2. **warm up**：预热模式，对超出阈值的请求同样是拒绝并抛出异常。但这种模式阈值会动态变化，从一个较小值逐渐增加到最大阈值
+3. **排队等待**：让所有的请求按照先后次序排队执行，两个请求的间隔不能小于指定时长
+
+
+
+
+
+
+
+#### warn up 预热模式
+
+> **warm up**：预热模式，对超出阈值的请求同样是拒绝并抛出异常。但这种模式阈值会动态变化，从一个较小值逐渐增加到最大阈值
+
+
+
+阈值一般是一个微服务能承担的最大QPS，但是一个服务刚刚启动时，一切资源尚未初始化（**冷启动**），如果直接将QPS跑到最大值，可能导致服务瞬间宕机
+
+
+
+warm up也叫**预热模式**，是应对服务冷启动的一种方案
+
+请求阈值初始值 = maxThreshold / coldFactor
+
+- maxThreshold 就是设置的QPS数量。持续指定时长后，逐渐提高到maxThreshold值。
+- coldFactor 预热因子的默认值是3
+
+
+
+![image-20230701015808477](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701015810163-235886151.png)
+
+
+
+
+
+
+
+#### 排队等待
+
+> **排队等待**：让所有的请求按照先后次序排队执行，两个请求的间隔不能小于指定时长
+
+当请求超过QPS阈值时，快速失败和warm up 会拒绝新的请求并抛出异常
+
+而排队等待则是让所有请求进入一个队列中，然后按照阈值允许的时间间隔依次执行。后来的请求必须等待前面执行完成，如果请求预期的等待时间超出最大时长，则会被拒绝
+
+![image-20230701021826754](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701021827938-48306738.png)
+
+QPS = 5，那么 1/5(个/秒) = 200(个/秒)，意味着每200ms处理一个队列中的请求；timeout = 2000，意味着**预期等待时长**超过2000ms的请求会被拒绝并抛出异常
+
+那什么叫做预期等待时长呢？
+
+![image-20230701022551052](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701022552990-2084402102.png)
+
+如果使用队列模式做流控，所有进入的请求都要排队，以固定的200ms的间隔执行，QPS会变的很平滑
+
+平滑的QPS曲线，对于服务器来说是更友好的
+
+
+
+
+
+
+
+### 热点参数限流
+
+> 之前的限流是统计访问某个资源的所有请求，判断是否超过QPS阈值
+>
+> 热点参数限流是**分别统计参数值相同的请求**，判断是否超过QPS阈值
+>
+> **注意事项**：热点参数限流对默认的SpringMVC资源无效，需要利用@SentinelResource注解标记资源，例如：
+>
+> ![image-20230701121244611](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701121246681-1500235555.png)
+
+
+
+![image-20230701023349080](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023409228-1581920767.png)
+
+但是配置时不要通过上面按钮点击配置，会有BUG，而是通过下图中的方式：
+
+![image-20230701023746175](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023747870-1133268354.png)
+
+
+
+
+
+**所谓的参数值指的是**：
+
+![image-20230701023138057](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023139319-2063828243.png)
+
+id参数值会有变化，热点参数限流会根据参数值分别统计QPS
+
+当id=1的请求触发阈值被限流时，id值不为1的请求不受影响
+
+
+
+
+
+
+
+#### 全局参数限流
+
+就是基础设置，没有加入高级设置的情况
+
+![image-20230701121800057](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701121801661-838481950.png)
+
+上图含义：对于来访问hot资源的请求，每1秒**相同参数值**的请求数不能超过10000
+
+
+
+
+
+
+
+
+
+#### 热点参数限流
+
+刚才的配置中，对查询商品这个接口的所有商品一视同仁，QPS都限定为10000
+
+而在实际开发中，可能部分商品是热点商品，例如秒杀商品，我们希望这部分商品的QPS限制与其它商品不一样，高一些。那就需要配置热点参数限流的高级选项了
+
+![image-20230701122405067](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701122406512-675478864.png)
+
+上图含义：对于来访问hot资源的请求，id=110时的QPS阈值为30000，id=4132443时的QPS阈值为50000，id为其他的则QPS阈值为10000
+
+
+
+
+
+
+
+## Sentinel整合Feign
+
+Sentinel是做服务保护的，而在微服务中调来调去是常有的事，要远程调用就离不开Feign
+
+
+
+1. **修改配置，开启sentinel功能：** 在服务消费方的feign配置添加如下配置内容
+
+```yaml
+feign:
+  sentinel:
+    enabled: true # 开启feign对sentinel的支持
+```
+
+2. **feign-client中编写失败降级逻辑：** 后面的流程就是前面玩Fengn时失败降级的流程
+
+```java
+package com.zixieqing.feign.fallback;
+
+import com.zixieqing.feign.clients.UserClient;
+import com.zixieqing.feign.pojo.User;
+import feign.hystrix.FallbackFactory;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * userClient失败时的降级处理
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Slf4j
+public class UserClientFallBackFactory implements FallbackFactory<UserClient> {
+    @Override
+    public UserClient create(Throwable throwable) {
+        return new UserClient() {
+            /**
+             * 重写userClient中的方法，编写失败时的降级逻辑
+             */
+            @Override
+            public User findById(Long id) {
+                log.info("userClient的findById()在进行 id = {} 时失败", id);
+                return new User();
+            }
+        };
+    }
+}
+```
+
+3. **在失败降级逻辑的类丢给Spring容器**
+
+```java
+@Bean
+public UserClientFallBackFactory userClientFallBackFactory() {
+    return new UserClientFallBackFactory();
+}
+```
+
+4. **在相关feign-client定义处使用fallbackFactory回调函数即可**
+
+```java
+package com.zixieqing.feign.clients;
+
+
+import com.zixieqing.feign.fallback.UserClientFallBackFactory;
+import com.zixieqing.feign.pojo.User;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(value = "userservice",fallbackFactory = UserClientFallBackFactory.class)
+public interface UserClient {
+
+    @GetMapping("/user/{id}")
+    User findById(@PathVariable("id") Long id);
+}
+```
+
+5. 调用，失败时就会进入自定义的失败逻辑中
+
+```java
+package com.zixieqing.order.service;
+
+import com.zixieqing.feign.clients.UserClient;
+import com.zixieqing.feign.pojo.User;
+import com.zixieqing.order.mapper.OrderMapper;
+import com.zixieqing.order.pojo.Order;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class OrderService {
+
+    @Autowired
+    private OrderMapper orderMapper;
+
+    @Autowired
+    private UserClient userClient;
+
+    public Order queryOrderById(Long orderId) {
+        // 1.查询订单
+        Order order = orderMapper.findById(orderId);
+        // 2.用Feign远程调用
+        User user = userClient.findById(order.getId());
+        // 3.封装user到Order
+        order.setUser(user);
+        // 4.返回
+        return order;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+## 隔离与降级
+
+### 线程隔离
+
+线程隔离有两种方式实现：
+
+1. **线程池隔离**：给每个服务调用业务分配一个线程池，利用线程池本身实现隔离效果
+   1. 优点：
+      1. 支持主动超时：也就是调用进行逻辑处理时超过了规定时间，直接噶了，不再让其继续处理
+      2. 支持异步调用：线程池隔离了嘛，彼此不干扰，因此可以异步了
+   2. 缺点：造成资源浪费。明明被调用的服务都出问题了，还占用固定的线程池数量
+   3. 适用场景：低扇出。MQ中扇出交换机的那个扇出，也就是较少的请求量，扇出/广播到很多服务上
+2. **信号量隔离**（Sentinel默认采用）：不创建线程池，而是计数器模式，记录业务使用的线程数量，达到信号量上限时，禁止新的请求
+   1. 优点：轻量级、无额外开销
+   2. 缺点：不支持主动超时、不支持异步调用
+   3. 适用场景：高频调用、高扇出
+
+
+
+![image-20210716123036937](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701215706517-1071618767.png)
+
+
+
+
+
+#### 配置Sentinel的线程隔离-信号量隔离
+
+在添加限流规则时，可以选择两种阈值类型：
+
+![image-20230701223024446](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701223109157-1720665438.png)
+
+
+
+
+
+
+
+
+
+### 熔断降级
+
+熔断降级是解决雪崩问题的重要手段。其思路是由**断路器**统计服务调用的异常比例、慢请求比例，如果超出阈值则会**熔断**该服务。即拦截访问该服务的一切请求；而当服务恢复时，断路器会放行访问该服务的请求
+
+断路器控制熔断和放行是通过状态机来完成的：
+
+![image-20230701224942874](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701224956810-101544858.png)
+
+断路器熔断策略有三种：慢调用、异常比例、异常数
+
+状态机包括三个状态：
+
+- **Closed**：关闭状态，断路器放行所有请求，并开始统计异常比例、慢请求比例。超过阈值则切换到open状态
+- **Open**：打开状态，服务调用被**熔断**，访问被熔断服务的请求会被拒绝，快速失败，直接走降级逻辑。Open状态默认5秒后会进入half-open状态
+- **Half-Open**：半开状态，放行一次请求，根据执行结果来判断接下来的操作。
+  - 请求成功：则切换到closed状态
+  - 请求失败：则切换到open状态
+
+
+
+
+
+#### 断路器熔断策略：慢调用
+
+> **慢调用**：业务的响应时长（RT）大于指定时长的请求认定为慢调用请求
+>
+> 在指定时间内，如果请求数量超过设定的最小数量，慢调用比例大于设定的阈值，则触发熔断
+
+
+
+![image-20230701233817345](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701233832865-1796001964.png)
+
+上图含义：
+
+1. 相应时间为500ms的即为慢调用
+2. 如果1000ms内有100次请求，且慢调用比例不低于0.05(即：100*0.05=5个慢调用)，则触发熔断(暂停该服务)
+3. 熔断时间达到1s进入half-open状态，然后放行一次请求测试
+   1. 成功则进入Closed状态关闭断路器
+   2. 失败则进入Open状态打开断路器，继续像前面一样开始统计RT=500ms，1s内有100次请求……………..
+
+
+
+
+
+
+
+#### 断路器熔断策略：异常比例 与 异常数
+
+1. **异常比例**：
+
+![image-20230701234145913](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701234156895-1334365124.png)
+
+上图含义：在1s内，若是请求数量不低于100个，且异常比例不低于0.08(即：100*0.08=8个有异常)，则触发熔断，熔断市场达到1s就进入half-open状态
+
+2. **异常数：**直接敲定有多少个异常数量就触发熔断
+
+![image-20230701234559086](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701234617472-1975223605.png)
+
+
+
+
+
+## 授权规则
+
+> 授权规则可以对请求方来源做判断和控制
+
+
+
+授权规则可以对调用方的来源做控制，有白名单和黑名单两种方式：
+
+1. 白名单：来源（origin）在白名单内的调用者允许访问
+2. 黑名单：来源（origin）在黑名单内的调用者不允许访问
+
+
+
+![image-20230702163745507](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702163746947-2048469173.png)
+
+- 资源名：就是受保护的资源，例如/order/{orderId}
+
+- 流控应用：是来源者的名单
+  - 如果是勾选白名单，则名单中的来源被许可访问
+  - 如果是勾选黑名单，则名单中的来源被禁止访问
+
+
+
+![image-20230702163846680](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702163847319-229518068.png)
+
+我们允许请求从gateway到order-service，不允许浏览器访问order-service，那么白名单中就要填写**网关的来源名称（origin）**
+
+但是上图中怎么区分请求是从网关来的还是浏览器来的？在微服务中的想法是所有请求只能走网关，然后由网关路由到具体的服务，直接访问服务应该阻止才对，像下面直接跳过网关去访问服务，应该不行才对
+
+![image-20230702185115299](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702185116027-9908147.png)
+
+要做到就需要使用授权规则了：
+
+1. 网关授权拦截：针对于别人不知道内部服务接口的情况可以拦截成功
+2. 服务授权控制/流控应用控制：针对“内鬼“ 或者 别人知道了内部服务接口，我们限定只能从哪里来的请求才能访问该服务，否则直接拒绝
+
+
+
+
+
+
+
+### 流控应用怎么控制的？
+
+下图中的名字怎么定义？
+
+![image-20230702184506257](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702184508966-522606338.png)
+
+需要实现RequestOriginParser这个接口的parseOrigin()来获取请求的来源从而做到
+
+```java
+public interface RequestOriginParser {
+    /**
+     * 从请求request对象中获取origin，获取方式自定义
+     */
+    String parseOrigin(HttpServletRequest request);
+}
+```
+
+
+
+**示例：**
+
+1. 在需要进行保护的服务中编写请求来源解析逻辑
+
+```java
+package com.zixieqing.order.intercepter;
+
+import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.RequestOriginParser;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * 拦截请求，允许从什么地方来的请求才能访问此微服务
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class RequestInterceptor implements RequestOriginParser {
+    @Override
+    public String parseOrigin(HttpServletRequest request) {
+        // 获取请求中的请求头 可自定义
+        String origin = request.getHeader("origin");
+        if (StringUtils.isEmpty(origin))
+            origin = "black";
+
+        return origin;
+    }
+}
+```
+
+2. 在网关中根据2中parseOrigin()的逻辑添加相应的东西
+
+![image-20230702191129751](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702191131516-1120198898.png)
+
+3. 添加流控规则：不要在簇点链路中选择相应服务来配置授权，会有BUG
+
+![image-20230702215009306](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702215010222-522341457.png)
+
+经过上面的操作之后，要进入服务就只能通过网关路由过来了，不是从网关过来的就无法访问服务
+
+
+
+
+
+
+
+
+
+## 自定义异常
+
+默认情况下，发生限流、降级、授权拦截时，都会抛出异常到调用方。异常结果都是flow limmiting（限流）。这样不够友好，无法得知是限流还是降级还是授权拦截
+
+
+
+而如果要自定义异常时的返回结果，需要实现BlockExceptionHandler接口：
+
+```java
+public interface BlockExceptionHandler {
+    /**
+     * 处理请求被限流、降级、授权拦截时抛出的异常：BlockException
+     */
+    void handle(HttpServletRequest request, HttpServletResponse response, BlockException e) throws Exception;
+}
+```
+
+这个方法有三个参数：
+
+- HttpServletRequest request：request对象
+- HttpServletResponse response：response对象
+- BlockException e：被sentinel拦截时抛出的异常
+
+
+
+这里的BlockException包含多个不同的子类：
+
+| **异常**             | **说明**           |
+| -------------------- | ------------------ |
+| FlowException        | 限流异常           |
+| ParamFlowException   | 热点参数限流的异常 |
+| DegradeException     | 降级异常           |
+| AuthorityException   | 授权规则异常       |
+| SystemBlockException | 系统规则异常       |
+
+
+
+
+
+**示例：**
+
+1. 在需要的服务中实现 BlockExceptionHandler 接口
+
+```java
+package com.zixieqing.order.exception;
+
+import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.csp.sentinel.slots.block.authority.AuthorityException;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeException;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowException;
+import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowException;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * 自定义sentinel的各种异常处理
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Component
+public class SentinelExceptionHandler implements BlockExceptionHandler {
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, BlockException e) throws Exception {
+        String msg = "未知异常";
+        int status = 429;
+
+        if (e instanceof FlowException) {
+            msg = "请求被限流了";
+        } else if (e instanceof ParamFlowException) {
+            msg = "请求被热点参数限流";
+        } else if (e instanceof DegradeException) {
+            msg = "请求被降级了";
+        } else if (e instanceof AuthorityException) {
+            msg = "没有权限访问";
+            status = 401;
+        }
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setStatus(status);
+        response.getWriter().println("{\"msg\": " + msg + ", \"status\": " + status + "}");
+    }
+}
+```
+
+2. 重启服务，不同异常就会出现不同结果了
 
 
 
@@ -7232,8 +8321,1038 @@ public class o10Suggest {
 
 
 
+## 规则持久化
+
+在默认情况下，sentinel的所有规则都是内存存储，重启后所有规则都会丢失。在生产环境下，我们必须确保这些规则的持久化，避免丢失
 
 
+
+规则是否能持久化，取决于规则管理模式，sentinel支持三种规则管理模式：
+
+1. 原始模式：Sentinel的默认模式，将规则保存在内存，重启服务会丢失
+2. pull模式
+3. push模式
+
+
+
+### pull模式
+
+> pull模式：控制台将配置的规则推送到Sentinel客户端，而客户端会将配置规则保存在本地文件或数据库中。以后会定时去本地文件或数据库中查询，更新本地规则
+>
+> 缺点：服务之间的规则更新不及时。因为是定时去读取，在时间还未到时，可能规则发生了变化
+
+
+
+![image-20230702220034454](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702220035218-1832066945.png)
+
+
+
+### push模式
+
+> push模式：控制台将配置规则推送到远程配置中心(如Nacos)。Sentinel客户端监听Nacos，获取配置变更的推送消息，完成本地配置更新
+
+
+
+![image-20230702220313630](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702220314078-2136869.png)
+
+
+
+
+
+
+
+### 使用push模式实现规则持久化
+
+在想要进行规则持久化的服务中引入如下依赖：
+
+```xml
+<!--sentinel规则持久化到Nacos的依赖-->
+<dependency>
+    <groupId>com.alibaba.csp</groupId>
+    <artifactId>sentinel-datasource-nacos</artifactId>
+</dependency>
+```
+
+配置此服务的YAML文件，内容如下：
+
+```yaml
+spring:
+  cloud:
+    sentinel:
+      datasource:
+        flow: # 流控规则持久化
+          nacos:
+            server-addr: localhost:8848 # nacos地址
+            dataId: orderservice-flow-rules
+            groupId: SENTINEL_GROUP
+            rule-type: flow # 还可以是：degrade 降级、authority 授权、param-flow 热点参数限流
+#        degrade:  # 降级规则持久化
+#          nacos:
+#            server-addr: localhost:8848 # nacos地址
+#            dataId: orderservice-degrade-rules
+#            groupId: SENTINEL_GROUP
+#            rule-type: degrade
+#        authority:  # 授权规则持久化
+#          nacos:
+#            server-addr: localhost:8848 # nacos地址
+#            dataId: orderservice-authority-rules
+#            groupId: SENTINEL_GROUP
+#            rule-type: authority
+#        param-flow: # 热电参数限流持久化
+#          nacos:
+#            server-addr: localhost:8848 # nacos地址
+#            dataId: orderservice-param-flow-rules
+#            groupId: SENTINEL_GROUP
+#            rule-type: param-flow
+```
+
+
+
+
+
+#### 修改sentinel的源代码
+
+因为阿里的sentinel默认采用的是将规则内容存到内存中的，因此需要改源码
+
+
+
+1. 使用git克隆sentinel的源码，之后IDEA等工具打开
+
+```shell
+git clone https://github.com/alibaba/Sentinel.git
+```
+
+2. 修改nacos依赖。在sentinel-dashboard模块的pom文件中，nacos的依赖默认的scope如果是test，那它只能在测试时使用，所以要去除 scope 标签
+
+```xml
+<dependency>
+    <groupId>com.alibaba.csp</groupId>
+    <artifactId>sentinel-datasource-nacos</artifactId>
+</dependency>
+```
+
+3. 添加nacos支持。在sentinel-dashboard的test包下，已经编写了对nacos的支持，我们需要将其拷贝到src/main/java/com/alibaba/csp/sentinel/dashboard/rule 下
+
+![image-20230702233650568](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702233651740-1927616371.png)
+
+4. 修改nacos地址，让其读取application.properties中的配置
+
+![image-20230703000721756](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703000723173-852016594.png)
+
+5. 在sentinel-dashboard的application.properties中添加nacos地址配置
+
+```properties
+nacos.addr=127.0.0.1:8848	# ip和port改为自己想要的即可
+```
+
+6. 配置nacos数据源
+
+![image-20230703003435769](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703003437293-2039227035.png)
+
+7. 修改前端
+
+![image-20230703003934857](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703003936123-1555282183.png)
+
+8. 重现编译打包Sentinel-Dashboard模块
+
+![image-20230703004155921](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703004156789-343598019.png)
+
+9. 重现启动sentinel即可
+
+```shell
+java -jar -Dnacos.addr=127.0.0.1:8848 sentinel-dashboard.jar
+```
+
+
+
+
+
+
+
+
+
+# 分布式事务 Seata
+
+Seata是 2019 年 1 月份蚂蚁金服和阿里巴巴共同开源的分布式事务解决方案。致力于提供高性能和简单易用的分布式事务服务，为用户打造一站式的分布式解决方案。
+
+官网地址：http://seata.io/
+
+
+
+## CAP定理和Base理论
+
+这两个在前面弄Nacos的时候已经说过了
+
+**补充：CAP定理** 这是分布式事务中的一个方法论
+
+1. C	即：Consistency 数据一致性
+2. A	即：Availability 可用性
+3. P	即：Partition Tolerance 分区容错性
+
+**解读：**
+
+1. **数据一致性：用户访问分布式系统中的任意节点，得到的数据必须一致**
+
+   
+
+2. **可用性：用户访问集群中的任意健康节点，必须能得到响应，而不是超时或拒绝**
+
+   
+
+3. **分区容错性：由于某种原因导致系统中任意信息的丢失或失败都不能不会影响系统的继续独立运作**
+
+
+
+**注：** 分区容错性是必须满足的，数据一致性( C ）和 可用性（ A ）只满足其一即可，一般的搭配是如下的**（即：取舍策略）：**
+
+1. CP			保证数据的准确性
+2. AP			保证数据的及时性
+
+
+
+
+
+既然CAP定理都整了，那就再加一个**Base理论**吧，这个理论是对CAP中C和A这两个矛盾点的调和和选择
+
+1. BA	 即：Basically Available 基本可用性
+2. S	   即：Soft State 软状态
+3. E	   即：Eventual Consistency 最终一致性
+
+**解读：**
+
+1. BA 	基本可用性，在发生故障的时候，可以允许损失“非核心部分”的可用性，保证系统正常运行，即保证核心部分可用
+
+   
+
+2. S		软状态，允许系统的数据存在中间状态，只要不影响整个系统的运行就行
+
+   
+
+3. E		最终一致性，无论以何种方式写入数据库 / 显示出来，都要保证系统最终的数据是一致的
+
+
+
+
+
+分布式事务最大问题就是各个子事务的数据一致性问题，由CAP定理和Base理论进行综合之后，得出的分布式事务中的两个模式：
+
+1. AP模式 ——–> 最终一致性：各个分支事务各自执行和提交，允许出现短暂的结果不一致，采用弥补措施将数据进行同步，从而恢复数据，达到最终数据一致
+2. CP模式 ——–> 强一致性：各个分支事务执行后互相等待，同时提交或回滚，达成数据的强一致性
+
+
+
+
+
+
+
+## Seata 的架构
+
+Seata事务管理中有三个重要的角色：
+
+1. **TC (Transaction Coordinator) -** **事务协调者：**维护全局和分支事务的状态，协调全局事务提交或回滚
+2. **TM (Transaction Manager) -** **事务管理器：**定义全局事务的范围、开始全局事务、提交或回滚全局事务
+3. **RM (Resource Manager) -** **资源管理器：**管理分支事务处理的资源，与TC交谈以注册分支事务和报告分支事务的状态，并驱动分支事务提交或回滚
+
+
+
+![image-20230705233836478](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230705233840468-213285774.png)
+
+Seata基于上述架构提供了四种不同的分布式事务解决方案：
+
+1. XA模式：强一致性分阶段事务模式，牺牲了一定的可用性。无业务侵入
+2. AT模式：最终一致的分阶段事务模式，也是Seata的默认模式。无业务侵入
+3. TCC模式：最终一致的分阶段事务模式。有业务侵入
+4. SAGA模式：长事务模式。有业务侵入
+
+
+
+无论哪种方案，都离不开TC，也就是事务的协调者
+
+
+
+
+
+
+
+## 部署TC服务
+
+1. 下载Seata-Server 并 解压。链接：https://github.com/seata/seata/releases 或 http://seata.io/zh-cn/blog/download.html
+2. 修改 conf/registry.conf 文件
+
+```properties
+registry {
+  # tc服务的注册中心	file 、nacos 、eureka、redis、zk、consul、etcd3、sofa
+  type = "nacos"
+
+  # 配置Nacos注册中心信息
+  nacos {
+    application = "seata-tc-server"
+    serverAddr = "127.0.0.1:8848"
+    group = "DEFAULT_GROUP"
+    namespace = ""
+    cluster = "HZ"
+    username = "nacos"
+    password = "nacos"
+  }
+}
+
+config {
+  # 配置中心：读取tc服务端的配置文件的方式，这里是从nacos配置中心读取，这样如果tc是集群，可以共享配置
+  #  file、nacos 、apollo、zk、consul、etcd3
+  type = "nacos"
+
+  nacos {
+    serverAddr = "127.0.0.1:8848"
+    namespace = ""
+    group = "DEFAULT_GROUP"
+    username = "nacos"
+    password = "nacos"
+    dataId = "seataServer.properties"
+  }
+}
+```
+
+3. 在Nacos中配置2中的 seataServer.properties，内容如下：
+
+```properties
+# 数据存储方式，db代表数据库
+store.mode=db
+store.db.datasource=druid
+store.db.dbType=mysql
+store.db.driverClassName=com.mysql.jdbc.Driver
+store.db.url=jdbc:mysql://127.0.0.1:3306/seata?useUnicode=true&rewriteBatchedStatements=true
+store.db.user=root
+store.db.password=zixieqing072413
+store.db.minConn=5
+store.db.maxConn=30
+store.db.globalTable=global_table
+store.db.branchTable=branch_table
+store.db.queryLimit=100
+store.db.lockTable=lock_table
+store.db.maxWait=5000
+# 事务、日志等配置
+server.recovery.committingRetryPeriod=1000
+server.recovery.asynCommittingRetryPeriod=1000
+server.recovery.rollbackingRetryPeriod=1000
+server.recovery.timeoutRetryPeriod=1000
+server.maxCommitRetryTimeout=-1
+server.maxRollbackRetryTimeout=-1
+server.rollbackRetryTimeoutUnlockEnable=false
+server.undo.logSaveDays=7
+server.undo.logDeletePeriod=86400000
+
+# 客户端与服务端传输方式
+transport.serialization=seata
+transport.compressor=none
+# 关闭metrics功能，提高性能
+metrics.enabled=false
+metrics.registryType=compact
+metrics.exporterList=prometheus
+metrics.exporterPrometheusPort=9898
+```
+
+4. 创建数据库表：tc服务在管理分布式事务时，需要记录事务相关数据到数据库中(3中配置了的)
+
+```sql
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- 分支事务表
+-- ----------------------------
+DROP TABLE IF EXISTS `branch_table`;
+CREATE TABLE `branch_table`  (
+  `branch_id` bigint(20) NOT NULL,
+  `xid` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `transaction_id` bigint(20) NULL DEFAULT NULL,
+  `resource_group_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `resource_id` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `branch_type` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `status` tinyint(4) NULL DEFAULT NULL,
+  `client_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `application_data` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `gmt_create` datetime(6) NULL DEFAULT NULL,
+  `gmt_modified` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`branch_id`) USING BTREE,
+  INDEX `idx_xid`(`xid`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- 全局事务表
+-- ----------------------------
+DROP TABLE IF EXISTS `global_table`;
+CREATE TABLE `global_table`  (
+  `xid` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `transaction_id` bigint(20) NULL DEFAULT NULL,
+  `status` tinyint(4) NOT NULL,
+  `application_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `transaction_service_group` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `transaction_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `timeout` int(11) NULL DEFAULT NULL,
+  `begin_time` bigint(20) NULL DEFAULT NULL,
+  `application_data` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `gmt_create` datetime NULL DEFAULT NULL,
+  `gmt_modified` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`xid`) USING BTREE,
+  INDEX `idx_gmt_modified_status`(`gmt_modified`, `status`) USING BTREE,
+  INDEX `idx_transaction_id`(`transaction_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+SET FOREIGN_KEY_CHECKS = 1;
+```
+
+5. 启动seat-server
+
+![image-20230706001012905](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706001014284-1512828995.png)
+
+6. 验证是否成功
+
+![image-20230706001335257](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706001336504-412458505.png)
+
+
+
+
+
+
+
+
+
+## SpringCloud集成Seata
+
+1. 依赖
+
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+    <exclusions>
+        <!--版本较低，1.3.0，因此排除-->
+        <exclusion>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <groupId>io.seata</groupId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<!--seata starter 采用1.4.2版本-->
+<dependency>
+    <groupId>io.seata</groupId>
+    <artifactId>seata-spring-boot-starter</artifactId>
+    <version>${seata.version}</version>
+</dependency>
+```
+
+2. 给需要注册到TC的微服务的YAML文件配置如下内容：
+
+```yaml
+seata:
+  registry: # TC服务注册中心的配置，微服务根据这些信息去注册中心获取tc服务地址	参考tc服务自己的registry.conf中的配置
+    type: nacos
+    nacos: # tc
+      server-addr: 127.0.0.1:8848
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-tc-server # tc服务在nacos中的服务名称
+  tx-service-group: seata-demo # 事务组，根据这个获取tc服务的cluster名称
+  service:
+    vgroup-mapping: # 事务组与TC服务cluster的映射关系
+      seata-demo: HZ
+```
+
+经过如上操作就集成成功了
+
+
+
+
+
+
+
+
+
+## 分布式事务之XA模式
+
+XA 规范 是 X/Open 组织定义的分布式事务处理（DTP，Distributed Transaction Processing）标准，XA 规范 描述了全局的TM与局部的RM之间的接口，几乎所有主流的数据库都对 XA 规范 提供了支持。实现的原理都是基于两阶段提交
+
+
+
+1. 正常情况：
+
+![image-20230706142940811](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706142942006-763984510.png)
+
+2. 异常情况：
+
+![image-20230706143016059](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706143016616-1907949140.png)
+
+一阶段：
+
+1. 事务协调者通知每个事物参与者执行本地事务
+2. 本地事务执行完成后报告事务执行状态给事务协调者，此时事务不提交，继续持有数据库锁
+
+二阶段：
+
+- 事务协调者基于一阶段的报告来判断下一步操作
+  1. 如果一阶段都成功，则通知所有事务参与者，提交事务
+  2. 如果一阶段任意一个参与者失败，则通知所有事务参与者回滚事务
+
+
+
+
+
+## Seata之XA模式 - 强一致性
+
+**应用场景：** 并发量不大，但数据很重要的项目
+
+Seata对原始的XA模式做了简单的封装和改造，以适应自己的事务模型
+
+![image-20230706143211225](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706143212037-1460622248.png)
+
+RM一阶段的工作：
+
+1. 注册分支事务到TC
+2. 执行分支业务sql但不提交
+3. 报告执行状态到TC
+
+TC二阶段的工作：TC检测各分支事务执行状态
+
+1. 如果都成功，通知所有RM提交事务
+2. b.如果有失败，通知所有RM回滚事务
+
+RM二阶段的工作：
+
+- 接收TC指令，提交或回滚事务
+
+
+
+XA模式的优点：
+
+1. 事务的强一致性，满足ACID原则
+2. 常用数据库都支持，实现简单，并且没有代码侵入
+
+XA模式的缺点：
+
+1. 因为一阶段需要锁定数据库资源，等待二阶段结束才释放，性能较差
+2. 依赖关系型数据库实现事务
+
+
+
+
+
+
+
+### Java实现Seata的XA模式
+
+1. 修改注册到TC的微服务的YAML配置
+
+```yaml
+seata:
+  data-source-proxy-mode: XA	# 开启XA模式
+```
+
+2. 给发起全局事务的入口方法添加 @GlobalTransactional 注解。就是要开启事务的方法，如下：
+
+![image-20230706144212402](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706144215962-1798496890.png)
+
+3. 重启服务即可成功实现XA模式了
+
+
+
+
+
+
+
+## Seata之AT模式 - 最终一致性
+
+AT模式同样是分阶段提交的事务模型，不过却弥补了XA模型中资源锁定周期过长的缺陷
+
+**应用场景：** 高并发互联网应用，允许数据出现短时不一致
+
+
+
+基本架构图：
+
+![image-20230706144505339](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706144506965-443367842.png)
+
+阶段一RM的工作：
+
+1. 注册分支事务
+2. 记录undo-log（数据快照）
+3. 执行业务sql**并提交**
+4. 报告事务状态
+
+阶段二提交时RM的工作：删除undo-log即可
+
+阶段二回滚时RM的工作：根据undo-log恢复数据到更新前。恢复数据之后也会把undo-log中的数据删掉
+
+
+
+流程图如下：
+
+![image-20230706145423923](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706145424746-1612481270.png)
+
+
+
+
+
+AT模式与XA模式的区别是什么？
+
+- XA模式一阶段**不提交事务**，锁定资源；AT模式一阶段**直接提交**，不锁定资源。
+- XA模式依赖数据库机制实现回滚；AT模式利用数据快照实现数据回滚。
+- XA模式强一致；AT模式最终一致
+
+
+
+
+
+
+
+### AT模式的脏写问题
+
+![AT模式脏写问题](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706150656483-1306782989.gif)
+
+解决思路就是引入了全局锁的概念。在释放DB锁之前，先拿到全局锁。避免同一时刻有另外一个事务来操作当前数据，从而来做到写隔离
+
+- **全局锁：** 由TC记录当前正在执行数据的事务，该事务持有全局锁，具备执行权
+
+![image-20230706145943940](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706145945005-1394340454.png)
+
+但就算引入了全局锁，也还会有BUG，因为上面两个事务都是Seata管理，若事务1是Seata管理，而事务2是非Seata管理，同时这两个事务都在修改同一条数据，那么就还会造成脏写问题
+
+![AT模式脏写问题](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706151012307-544058691.gif)
+
+为了防止这个问题，Seata在保存快照时实际上会记录2份快照，一份是修改之前的快照，一份是修改之后的快照
+
+1. 在恢复快照数据时，会将更新后的快照值和当前数据库的实际值进行比对(类似CAS过程)
+   1. 如果数值不匹配则说明在此期间有另外的事务修改了数据，此时直接释放全局锁，事务1记录异常，发送告警信息让人工介入
+   2. 如果一致则恢复数据，释放全局锁即可
+
+
+
+![AT模式脏写解决方式](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706152038191-864543402.png)
+
+
+
+
+
+AT模式的优点：
+
+1. 一阶段完成直接提交事务，释放数据库资源，性能比较好
+2. 利用全局锁实现读写隔离
+3. 没有代码侵入，框架自动完成回滚和提交
+
+AT模式的缺点：
+
+1. 两阶段之间属于软状态，属于最终一致
+2. 框架的快照功能会影响性能，但比XA模式要好很多
+
+
+
+
+
+
+
+### Java实现AT模式
+
+AT模式中的快照生成、回滚等动作都是由框架自动完成，没有任何代码侵入
+
+只不过，AT模式需要一个表来记录全局锁、另一张表来记录数据快照undo_log。其中：
+
+- lock_table表：需要放在TC服务关联的数据库中。例如表结构如下：
+
+```sql
+DROP TABLE IF EXISTS `lock_table`;
+CREATE TABLE `lock_table`  (
+  `row_key` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `xid` varchar(96) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `transaction_id` bigint(20) NULL DEFAULT NULL,
+  `branch_id` bigint(20) NOT NULL,
+  `resource_id` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `table_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `pk` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `gmt_create` datetime NULL DEFAULT NULL,
+  `gmt_modified` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`row_key`) USING BTREE,
+  INDEX `idx_branch_id`(`branch_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+```
+
+- undo_log表 ：需要放在微服务关联的数据库中。例如表结构如下：
+
+```sql
+DROP TABLE IF EXISTS `undo_log`;
+CREATE TABLE `undo_log`  (
+  `branch_id` bigint(20) NOT NULL COMMENT 'branch transaction id',
+  `xid` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'global transaction id',
+  `context` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'undo_log context,such as serialization',
+  `rollback_info` longblob NOT NULL COMMENT 'rollback info',
+  `log_status` int(11) NOT NULL COMMENT '0:normal status,1:defense status',
+  `log_created` datetime(6) NOT NULL COMMENT 'create datetime',
+  `log_modified` datetime(6) NOT NULL COMMENT 'modify datetime',
+  UNIQUE INDEX `ux_undo_log`(`xid`, `branch_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'AT transaction mode undo table' ROW_FORMAT = Compact;
+```
+
+然后修改注册到TC中的微服务的YAML配置，最后重启服务，模式就变为AT模式了
+
+```yaml
+seata:
+  data-source-proxy-mode: AT # 默认就是AT
+```
+
+
+
+
+
+
+
+## Seata之TCC模式 - 最终一致性
+
+**应用场景：** 高并发互联网应用，允许数据出现短时不一致，可通过对账程序或补录来保证最终一致性
+
+TCC模式与AT模式非常相似，每阶段都是独立事务，不同的是TCC通过人工编码来实现数据恢复。需要实现三个方法：
+
+1. **Try**：资源的检测和预留
+2. **Confirm**：完成资源操作业务；要求 Try 成功 Confirm 一定要能成功
+3. **Cancel**：预留资源释放，可以理解为try的反向操作。
+
+
+
+举例说明三个方法：一个扣减用户余额的业务。假设账户A原来余额是100，需要余额扣减30元
+
+![TCC模式流程分析](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230708125104454-142271522.png)
+
+
+
+
+
+
+
+### TCC模式的架构
+
+![image-20230707133410426](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230707133410708-343026245.png)
+
+TCC模式的每个阶段是做什么的？
+
+1. Try：资源检查和预留
+2. Confirm：业务执行和提交
+3. Cancel：预留资源的释放
+
+TCC的优点是什么？
+
+1. 一阶段完成直接提交事务，释放数据库资源，性能好
+2. 相比AT模型，无需生成快照，无需使用全局锁，性能最强
+3. 不依赖数据库事务，而是依赖补偿操作，可以用于非事务型数据库
+
+TCC的缺点是什么？
+
+1. 有代码侵入，需要人为编写try、Confirm和Cancel接口，太麻烦
+2. 软状态，事务是最终一致
+3. **需要考虑Confirm和Cancel的失败情况，做好幂等处理**
+
+
+
+
+
+
+
+### 空回滚和业务悬挂
+
+> **空补偿 / 空回滚：** 未执行try(原服务)就执行了cancel(补偿服务)。即当某分支事务的try阶段**阻塞**时，可能导致全局事务超时而触发二阶段的cancel操作。在未执行try操作时先执行了cancel操作，这时cancel不能做回滚，就是“空回滚”
+>
+> **因此：执行cancel操作时，应当判断try是否已经执行，如果尚未执行，则应该空回滚**
+>
+> 
+>
+> **业务悬挂：** 已经空回滚的业务，之前阻塞的try恢复了，然后继续执行try，之后就永不可能执行confirm或cancel，从而变成“业务悬挂”
+>
+> **因此：执行try操作时，应当判断cancel是否已经执行过了，如果已经执行，应当阻止空回滚后的try操作，避免悬挂**
+
+
+
+![image-20230707133831809](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230707133832213-1995370184.png)
+
+
+
+### Java实现TCC模式示例
+
+Try业务：
+
+- 根据xid查询account_freeze ，如果已经存在则证明Cancel已经执行，拒绝执行try业务
+- 记录冻结金额和事务状态到account_freeze表
+- 扣减account表可用金额
+
+Confirm业务
+
+- 需判断此方法的幂等性问题
+- 根据xid删除account_freeze表的冻结记录
+
+Cancel业务
+
+- 需判断此方法的幂等性问题
+- 根据xid查询account_freeze，如果为null则说明try还没做，需要空回滚
+- 修改account_freeze表，冻结金额为0，state为2
+- 修改account表，恢复可用金额
+
+
+
+1. 在业务管理的库中建表：是为了实现空回滚、防止业务悬挂，以及幂等性要求。所以在数据库记录冻结金额的同时，记录当前事务id和执行状态
+
+```sql
+CREATE TABLE `account_freeze_tbl` (
+  `xid` varchar(128) NOT NULL COMMENT '全局事务id',
+  `user_id` varchar(255) DEFAULT NULL COMMENT '用户id',
+  `freeze_money` int(11) unsigned DEFAULT '0' COMMENT '冻结金额',
+  `state` int(1) DEFAULT NULL COMMENT '事务状态，0:try，1:confirm，2:cancel',
+  PRIMARY KEY (`xid`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT
+```
+
+2. 业务接口定义try+confirm+cancel三个方法
+
+```java
+package com.zixieqing.account.service;
+
+import io.seata.rm.tcc.api.BusinessActionContext;
+import io.seata.rm.tcc.api.BusinessActionContextParameter;
+import io.seata.rm.tcc.api.LocalTCC;
+import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
+import org.springframework.stereotype.Service;
+
+/**
+ * Seata之TCC模式实现业务的account接口
+ *
+ * "@LocalTCC"    SpringCloud + Feign，Feign的调用基于http
+ *                此注解所在的接口需要实现TCC的两阶段提交对应方法才行
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Service
+@LocalTCC
+public interface AccountTccService {
+    /**
+     * 扣款
+     *
+     * Try逻辑	资源检查和预留，同时需要判断Cancel是否已经执行，是则拒绝执行本次业务
+     *
+     * "@TwoPhaseBusinessAction" 中
+     * 								name属性要与当前方法名一致，用于指定Try逻辑对应的方法
+     * 								commitMethod属性值就是confirm逻辑的方法
+     * 								rollbackMethod属性值就是cancel逻辑的方法
+     *
+     * "@BusinessActionContextParameter" 将指定的参数传递给confirm和cancel
+     *
+     * @param userId 用户id
+     * @param money 要扣的钱
+     */
+    @TwoPhaseBusinessAction(
+            name = "deduct",
+            commitMethod = "confirm",
+            rollbackMethod = "cancel"
+    )
+    void deduct(@BusinessActionContextParameter(paramName = "userId") String userId,
+                @BusinessActionContextParameter(paramName = "money") int money);
+
+    /**
+     * 二阶段confirm确认方法	业务执行和提交		另外需考虑幂等性问题
+     * 						 方法名可以另命名，但需保证与commitMethod一致
+     *
+     * @param context 上下文，可以传递try方法的参数
+     * @return boolean 执行是否成功
+     */
+    boolean confirm(BusinessActionContext context);
+
+    /**
+     * 二阶段回滚方法	预留资源释放	另外需考虑幂等性问题	需要判断try是否已经执行，否就需要空回滚
+     * 				 方法名须保证与rollbackMethod一致
+     *
+     * @param context 上下文，可以传递try方法的参数
+     * @return boolean 执行是否成功
+     */
+    boolean cancel(BusinessActionContext context);
+}
+```
+
+3. 实现类逻辑编写
+
+```java
+package com.zixieqing.account.service.impl;
+
+import com.zixieqing.account.entity.AccountFreeze;
+import com.zixieqing.account.mapper.AccountFreezeMapper;
+import com.zixieqing.account.mapper.AccountMapper;
+import com.zixieqing.account.service.AccountTccService;
+import io.seata.core.context.RootContext;
+import io.seata.rm.tcc.api.BusinessActionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * 扣款业务
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+
+public class AccountTccServiceImpl implements AccountTccService {
+    @Autowired
+    private AccountMapper accountMapper;
+    @Autowired
+    private AccountFreezeMapper accountFreezeMapper;
+
+    /**
+     * 扣款
+     *
+     * Try逻辑	资源检查和预留，同时需要判断Cancel是否已经执行，是则拒绝执行本次业务
+     *
+     * "@TwoPhaseBusinessAction" 中
+     * name属性要与当前方法名一致，用于指定Try逻辑对应的方法
+     * commitMethod属性值就是confirm逻辑的方法
+     * rollbackMethod属性值就是cancel逻辑的方法
+     *
+     * "@BusinessActionContextParameter" 将指定的参数传递给confirm和cancel
+     *
+     * @param userId 用户id
+     * @param money  要扣的钱
+     */
+    @Override
+    public void deduct(String userId, int money) {
+        // RootContext 是seata中的
+        String xid = RootContext.getXID();
+        AccountFreeze accountFreeze = accountFreezeMapper.selectById(xid);
+        // 业务悬挂处理：判断cancel是否已经执行，若执行过则free表中肯定有数据
+        if (accountFreeze == null) {
+            // 进行扣款
+            accountMapper.deduct(userId, money);
+            // 记录本次状态
+            AccountFreeze freeze = new AccountFreeze();
+            freeze.setXid(xid)
+                    .setUserId(userId)
+                    .setFreezeMoney(money)
+                    .setState(AccountFreeze.State.TRY);
+            accountFreezeMapper.insert(freeze);
+        }
+    }
+
+    /**
+     * 二阶段confirm确认方法	业务执行和提交		另外需考虑幂等性问题
+     * 方法名可以另命名，但需保证与commitMethod一致
+     *
+     * @param context 上下文，可以传递try方法的参数
+     * @return boolean 执行是否成功
+     */
+    @Override
+    public boolean confirm(BusinessActionContext context) {
+        // 删掉freeze表中的记录即可  delete方法本身就具有幂等性
+        return accountFreezeMapper.deleteById(context.getXid()) == 1;
+    }
+
+    /**
+     * 二阶段回滚方法	预留资源释放	另外需考虑幂等性问题	需要判断try是否已经执行，否 就需要空回滚
+     * 方法名须保证与rollbackMethod一致
+     *
+     * @param context 上下文，可以传递try方法的参数
+     * @return boolean 执行是否成功
+     */
+    @Override
+    public boolean cancel(BusinessActionContext context) {
+        // 空回滚处理：判断try是否已经执行
+        AccountFreeze freeze = accountFreezeMapper.selectById(context.getXid());
+        // 若为null，则try肯定没执行
+        if (freeze == null) {
+            // 需要进行空回滚
+            freeze = new AccountFreeze();
+            freeze.setXid(context.getXid())
+                    // getActionContext("userId" 的key就是@BusinessActionContextParameter(paramName = "userId")的pramName值
+                    .setUserId(context.getActionContext("userId").toString())
+                    .setFreezeMoney(0)
+                    .setState(AccountFreeze.State.CANCEL);
+            return accountFreezeMapper.updateById(freeze) == 1;
+        }
+
+        // 幂等性处理
+        if (freeze.getState() == AccountFreeze.State.CANCEL) {
+            // 说明已经执行过一次cancel了，直接拒绝执行本次业务
+            return true;
+        }
+
+        // 不为null，则回滚数据
+        accountMapper.refund(freeze.getUserId(), freeze.getFreezeMoney());
+        // 将冻结金额归0，并修改本次状态
+        freeze.setFreezeMoney(0)
+                .setState(AccountFreeze.State.CANCEL);
+        return accountFreezeMapper.updateById(freeze) == 1;
+    }
+}
+```
+
+最后正常使用service调用使用3中的实现类即可
+
+
+
+
+
+
+
+
+
+## Seata之Saga模式 - 最终一致性
+
+Saga 模式是 Seata 的长事务解决方案，由蚂蚁金服主要贡献
+
+其理论基础是Hector & Kenneth  在1987年发表的论文[Sagas](https://microservices.io/patterns/data/saga.html)
+
+Seata官网对于Saga的指南：https://seata.io/zh-cn/docs/user/saga.html
+
+**适用场景：** 
+
+1. 业务流程长、，业务流程多且需要保证事务最终一致性的业务系统
+2. 银行业金融机构
+3. 需要与第三方交互，如：调用支付宝支付接口->出库失败->调用支付宝退款接口
+
+
+
+优点：
+
+1. 事务参与者**可以基于事件驱动实现异步调用**，吞吐高
+2. 一阶段直接提交事务，无锁，性能好
+3. 不用编写TCC中的三个阶段，实现简单
+
+缺点：
+
+1. 软状态持续时间不确定，时效性差
+2. 由于一阶段已经提交本地数据库事务，且没有进行“预留”动作，所以不能保证隔离性，同时也没有锁，所以会有脏写
+
+
+
+Saga模式是SEATA提供的长事务解决方案。也分为两个阶段：
+
+1. 一阶段：直接提交本地事务
+2. 二阶段：成功则什么都不做；失败则通过编写补偿业务来回滚
+
+
+
+![image-20230708123817123](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230708123823966-1360469057.png)
+
+Saga 是一种补偿协议，Saga 正向服务与补偿服务也需要业务开发者实现。在 Saga 模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。
+
+分布式事务执行过程中，依次执行各参与者的正向操作，如果所有正向操作均执行成功，那么分布式事务提交；如果任何一个正向操作执行失败，那么分布式事务会退回去执行前面各参与者的逆向回滚操作，回滚已提交的参与者，使分布式事务回到初始状态
+
+
+
+
+
+
+
+
+
+## Seata四种模式对比
+
+|              | **XA**                         | **AT**                                       | **TCC**                                            | **SAGA**                                                     |
+| ------------ | ------------------------------ | -------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------ |
+| **一致性**   | 强一致                         | 弱一致                                       | 弱一致                                             | 最终一致                                                     |
+| **隔离性**   | 完全隔离                       | 基于全局锁隔离                               | 基于资源预留隔离                                   | 无隔离                                                       |
+| **代码侵入** | 无                             | 无                                           | 有，要编写三个接口                                 | 有，要编写状态机和补偿业务                                   |
+| **性能**     | 差                             | 好                                           | 非常好                                             | 非常好                                                       |
+| **场景**     | 对一致性、隔离性有高要求的业务 | 基于关系型数据库的大多数分布式事务场景都可以 | 对性能要求较高的事务。有非关系型数据库要参与的事务 | 业务流程长、业务流程多参与者包含其它公司或遗留系统服务，无法提供 TCC 模式要求的三个接口 |
 
 
 
