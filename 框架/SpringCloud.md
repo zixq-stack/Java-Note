@@ -3552,6 +3552,8 @@ spring:
   rabbitmq:
     host: 自己的ip
     port: 5672
+#    集群的链接方式
+#    addresses: ip:5672,ip:5673,ip:5674
     username: "zixieqing"
     password: "072413"
     # 要是mq设置的有独立的虚拟机空间，则在此处设置虚拟机
@@ -5051,9 +5053,237 @@ public class ErrorMessageConfig {
 
 
 
+## 死信队列
+
+> **死信队列：指的是死了的消息。** 换言之就是：生产者把消息发送到交换机中，再由交换机推到队列中，但由于某些原因，队列中的消息没有被正常消费，从而就让这些消息变成了死信，而专门用来放这种消息的队列就是死信队列
+>
+> 
+>
+> **让消息成为死信的三大因素：**
+>
+> 1. 消息过期 即：TTL(time to live)过期
+> 2. 超过队列长度
+> 3. 消息被消费者绝收了
 
 
 
+
+
+### TTL消息过期成死信
+
+超时分为两种情况：若下面两个都设置了，那么以时间短的一个为主
+
+- 消息所在的队列设置了超时时间
+- 消息本身设置了超时时间
+
+
+
+实现下图逻辑：
+
+![image-20230709230801915](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709230805203-633364493.png)
+
+1. 生产者：给消息设置超时间是
+
+```java
+package com.zixieqing.publisher;
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.nio.charset.StandardCharsets;
+
+/**
+ * 死信队列测试
+ *
+ * <p>@author       : ZiXieqing</p>
+ */
+
+@Slf4j
+@SpringBootTest(classes = PublisherApp.class)
+public class o8DelayedQueueTest {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    /**
+     * 发消息给TTL正常交换机
+     */
+    @Test
+    void TTLMessageTest() {
+        Message message = MessageBuilder
+                .withBody("hello,dead-letter-exchange".getBytes(StandardCharsets.UTF_8))
+                // 给消息设置失效时间，单位ms
+                .setExpiration("5000")
+                .build();
+
+        rabbitTemplate.convertAndSend("ttl.direct", "ttl", message);
+
+        log.info("消息发送成功");
+    }
+}
+```
+
+2. 消费者：声明死信交换机+死信队列+二者的绑定，以及接收消息并处理
+
+```java
+    /**
+     * TTL正常队列，同时与死信交换机进行绑定
+     */
+    @Bean
+    public Queue ttlQueue() {
+        return QueueBuilder
+                .durable("ttl.queue")
+                // 设置队列的超时时间
+                .ttl(10000)
+                // 与死信交换机进行绑定
+                .deadLetterExchange("dl.direct")
+                // 死信交换机与死信队列的routing key
+                .deadLetterRoutingKey("dl")
+                .build();
+    }
+
+    /**
+     * 将正常交换机和正常队列进行绑定
+     */
+    @Bean
+    public Binding ttlBinding() {
+        return BindingBuilder
+                .bind(ttlQueue())
+                .to(ttlExchange())
+                .with("ttl");
+    }
+
+
+
+
+
+    /**
+     * 监听死信队列：死信交换机+死信队列进行绑定
+     */
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "dl.queue", durable = "true"),
+            exchange = @Exchange(name = "dl.direct"),
+            key = "dl"
+    ))
+    public void listenDlQueue(String msg) {
+        log.info("消费者收到了dl.queue的消息：{}", msg);
+    }
+```
+
+
+
+
+
+
+
+### 超过队列最大长度
+
+分为两种情况：
+
+1. 队列中只能放多少条消息
+2. 队列中只能放多少字节的消息
+
+```java
+    @Bean
+    public Queue queueLength() {
+        QueueBuilder.durable("length.queue")
+                .maxLength(100)
+                .maxLengthBytes(10240)
+                .build();
+        
+        // 或下面的方式声明
+        
+        Map<String, Object> params = new HashMap<>();
+        // 队列最大长度，即队列中只能放这么多个消息
+        params.put("x-max-length", 100);
+        // 队列中最大的字节数
+        params.put("x-max-length=bytes", 10240);
+        return new Queue("length.queue",false,false,false,params);
+    }
+```
+
+另外一种被消费者拒收就是nack了，早已熟悉
+
+
+
+
+
+
+
+
+
+## 惰性队列
+
+**解决的问题：** 消息堆积问题。当生产者发送消息的速度超过了消费者处理消息的速度，就会导致队列中的消息堆积，直到队列存储消息达到上限。之后发送的消息就会成为死信，可能会被丢弃，这就是消息堆积问题
+
+**惰性队列：** RabbitMQ 3.6加入的，名为lazy queue
+
+1. 接收到消息后直接存入磁盘而非内存
+2. 消费者要消费消息时才会从磁盘中读取并加载到内存
+3. 支持数百万条的消息存储
+
+解决消息堆积有两种思路：
+
+1. 增加更多消费者，提高消费速度。也就是我们之前说的work queue模式
+2. 扩大队列容积，提高堆积上限(惰性对垒要采用的方式)
+
+
+
+1. Linux中声明
+
+````shell
+rabbitmqctl set_policy Lazy "^lazy-queue$" '{"queue-mode":"lazy"}' --apply-to queues  
+
+rabbitmqctl						RabbitMQ的命令行工具
+set_policy						添加一个策略
+Lazy							策略名称，可以自定义
+"^lazy-queue$" 					用正则表达式匹配队列的名字
+'{"queue-mode":"lazy"}'			设置队列模式为lazy模式
+--apply-to queues				策略的作用对象，是所有的队列
+````
+
+2. Java代码声明：消费者方定义即可
+
+```java
+    /**
+     * 惰性队列声明：Bean注解的方式
+     */
+    @Bean
+    public Queue lazyQueue() {
+        Map<String, Object> params = new HashMap();
+        params.put("x-queue-mode", "lazy");
+        new Queue("lazy.queue", true, true, false, params);
+        
+        // 或使用下面更方便的方式
+        
+        return QueueBuilder
+                .durable("lazy.queue")
+                // 声明为惰性队列
+                .lazy()
+                .build();
+    }
+
+
+
+
+
+    /**
+     * 惰性队列：RabbitListener注解的方式 这种就是new一个Map里面放参数的方式
+     * @param msg
+     */
+    @RabbitListener(queuesToDeclare = @org.springframework.amqp.rabbit.annotation.Queue(
+            name = "lazy.queue",
+            durable = "true",
+            arguments = @Argument(name = "x-queue-mode", value = "lazy")
+    ))
+    public void lazyQueue(String msg) {
+        System.out.println("消费者接收到了消息：" + msg);
+    }
+```
 
 
 
