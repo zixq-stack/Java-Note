@@ -3052,7 +3052,7 @@ public class DelayedExchanegConfig {
     @Bean
     public CustomExchange delayedExchange() {
 
-        HashMap<String, Object> params = new HashMap<>(3);
+        HashMap<String, Object> params = new HashMap<>();
         // 延迟类型
         params.put("x-delayed-type", "direct");
 
