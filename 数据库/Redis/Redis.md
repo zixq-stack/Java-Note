@@ -1375,15 +1375,124 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
 # 缓存击穿及解决方式
 
+> 缓存击穿问题也叫热点Key问题，就是一个被**高并发访问**并且**缓存重建业务较复杂**的key突然失效了，无数的请求访问会在瞬间给数据库带来巨大的冲击
+>
+> ![1653328022622](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230805174159873-1089270998.png)
+
+常见的解决方案有两种：
+
+1. 互斥锁
+2. 逻辑过期
+
+![1653357522914](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230805174429476-662892920.png)
 
 
 
 
 
+## 互斥锁 - 保一致
+
+> 互斥锁：保一致性，会让线程阻塞，有死锁风险
+>
+> 本质：利用了String的setnx指令；key不存在则添加，存在则不操作
+>
+> ![1653328288627](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230805175226036-587427717.png)
+
+
+
+示例：下列逻辑该封装则封装即可
+
+```java
+public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IShopService {
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Override
+    public Result queryShopById(Long id) {
+        String cacheKey = CACHE_SHOP_KEY + id;
+        // 查 redis
+        Map<Object, Object> shopMap = stringRedisTemplate.opsForHash().entries(cacheKey);
+
+        // redis 中有责返回
+        if (!shopMap.isEmpty()) {
+            Shop shop = BeanUtil.fillBeanWithMap(shopMap, new Shop(), false);
+            return Result.ok(shop);
+        }
+
+        Shop shop = null;
+
+        try {
+            // 无则获取 互斥锁
+            Boolean res = stringRedisTemplate
+                    .opsForValue()
+                    .setIfAbsent(LOCK_SHOP_KEY + id, UUID.randomUUID().toString(true), LOCK_SHOP_TTL, TimeUnit.MINUTES);
+            boolean flag = BooleanUtil.isTrue(res);
+
+            // 获取失败则等一会儿再试
+            if (!flag) {
+                Thread.sleep(20);
+                return queryShopById(id);
+            }
+
+            // 获取锁成功则查 redis 此时有没有，从而减少缓存重建
+            Map<Object, Object> shopMa = stringRedisTemplate.opsForHash().entries(cacheKey);
+
+            // redis 中有责返回
+            if (!shopMa.isEmpty()) {
+                shop = BeanUtil.fillBeanWithMap(shopMa, new Shop(), false);
+                return Result.ok(shop);
+            }
+            // 有则返回，无则查库
+            shop = getById(id);
+
+            // 库中无
+            if (null == shop) {
+                // 向 redis放入 空值，并设置有效期
+                Map<String, String> hashMap = new HashMap<>(16);
+                hashMap.put("", "");
+                stringRedisTemplate.opsForHash().putAll(cacheKey, hashMap);
+                stringRedisTemplate.expire(cacheKey, 2L, TimeUnit.MINUTES);
+
+                return Result.fail("无此数据");
+            }
+
+            // 库中有则写入 redis，并设置有效期
+            Map<String, Object> sMap = BeanUtil.beanToMap(shop, new HashMap<>(16),
+                    CopyOptions.create()
+                            .ignoreNullValue()
+                            .setIgnoreError(false)
+                            .setFieldValueEditor((filedKey, filedValue) -> filedValue = filedValue + "")
+            );
+            stringRedisTemplate.opsForHash().putAll(cacheKey, sMap);
+            stringRedisTemplate.expire(cacheKey, CACHE_SHOP_TTL, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 释放锁
+            stringRedisTemplate.delete(LOCK_SHOP_KEY + id);
+        }
+
+        //返回客户端
+        return Result.ok(shop);
+    }
+}
+```
 
 
 
 
+
+## 逻辑过期 - 保性能
+
+这玩意儿在互斥锁的基础上再变动一下即可
+
+
+
+逻辑过期：不保一致性，性能好，有额外内存消耗，会造成短暂的数据不一致
+
+本质：数据不过期，一直在Redis中，只是程序员自己使用过期字段和当前时间来判定是否过期，过期则获取“互斥锁”，获取锁成功(此时可以再判断一下Redis中的数据是否过期，减少缓存重建)，则开线程重建缓存即可
+
+![image-20230806173104369](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230806173109028-754493451.png)
 
 
 

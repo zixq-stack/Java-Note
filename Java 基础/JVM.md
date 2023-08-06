@@ -1128,7 +1128,7 @@ public class MyClassLoader extends ClassLoader {
 
 3、这类Test 类本身可以被 AppClassLoader 类加载，因此我们不能把com/pdai/jvm/classloader/Test2.class 放在类路径下。否则，由于双亲委托机制的存在，会直接导致该类由 AppClassLoader 加载，而不会通过我们自定义类加载器来加载。
 
-## [#](#参考文章) 参考文章
+## 参考文章
 
 - http://www.cnblogs.com/ityouknow/p/5603287.html
 - http://blog.csdn.net/ns_code/article/details/17881581
