@@ -1498,33 +1498,108 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
 
 
+示例：
+
+```java
+@Data
+@Accessors(chain = true)
+public class RedisData {
+    private LocalDateTime expireTime;
+    private Object data;
+}
+```
 
 
 
+```java
+@Service
+public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IShopService {
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
+    private static final ExecutorService EXECUTORS = Executors.newFixedThreadPool(10);
 
+    @Override
+    public Result queryShopById(Long id) {
+        // 使用互斥锁解决 缓存击穿
+        // return cacheBreakDownWithMutex(id);
 
+        String cacheKey = CACHE_SHOP_KEY + id;
 
+        // 查 redis
+        String shopJson = stringRedisTemplate.opsForValue().get(cacheKey);
 
+        // redis 中没有则报错(理论上是一直存在redis中的，逻辑过期而已，所以这一步不用判断都可以)
+        if (StrUtil.isBlank(shopJson)) {
+            return Result.fail("无此数据");
+        }
 
+        // redis 中有，则看是否过期
+        RedisData redisData = JSONUtil.toBean(shopJson, RedisData.class);
+        LocalDateTime expireTime = redisData.getExpireTime();
+        Shop shop = JSONUtil.toBean((JSONObject) redisData.getData(), Shop.class);
+        // 没过期，直接返回数据
+        if (expireTime.isAfter(LocalDateTime.now())) {
+            return Result.ok(shop);
+        }
 
+        try {
+            // 获取互斥锁    LOCK_SHOP_TTL = 10L
+            Boolean res = stringRedisTemplate
+                    .opsForValue()
+                    .setIfAbsent(LOCK_SHOP_KEY + id, UUID.randomUUID().toString(true),
+                            LOCK_SHOP_TTL, TimeUnit.SECONDS);
+            boolean flag = BooleanUtil.isTrue(res);
+            // 获取锁失败则眯一会儿再尝试
+            if (!flag) {
+                Thread.sleep(20);
+                return queryShopById(id);
+            }
+            // 获取锁成功
+            // 再看 redis 中的数据是否过期，减少缓存重建
+            shopJson = stringRedisTemplate.opsForValue().get(cacheKey);
+            redisData = JSONUtil.toBean(shopJson, RedisData.class);
+            expireTime = redisData.getExpireTime();
+            shop = JSONUtil.toBean((JSONObject) redisData.getData(), Shop.class);
+            // 已过期
+            if (expireTime.isBefore(LocalDateTime.now())) {
+                EXECUTORS.submit(() -> {
+                    // 重建缓存
+                    this.buildCache(id, 20L);
+                });
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 释放锁
+            stringRedisTemplate.delete(LOCK_SHOP_KEY + id);
+        }
 
+        // 返回客户端
+        return Result.ok(shop);
+    }
 
+    
+    /**
+     * 重建缓存
+     */
+    public void buildCache(Long id, Long expireTime) {
+        String key = LOCK_SHOP_KEY + id;
+        // 重建缓存
+        Shop shop = getById(id);
+        if (null == shop) {
+            // 库中没有则放入 空对象
+            stringRedisTemplate.opsForValue().set(key, "", 10L, TimeUnit.SECONDS);
+        }
 
+        RedisData redisData = new RedisData();
+        redisData.setExpireTime(LocalDateTime.now().plusSeconds(expireTime))
+                .setData(shop);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(redisData));
+    }
+}
+```
 
 
 
