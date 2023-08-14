@@ -416,6 +416,8 @@ help [command]
 **使用场景：**
 
 1. 验证码保存
+1. 不易变动的对象保存
+1. 简单锁的保存
 
 
 
@@ -480,7 +482,8 @@ Redis的key允许有多个单词形成层级结构，多个单词之间用`:`隔
 
 **使用场景：**
 
-1. 对象保存
+1. 易对象的保存
+1. 分布式锁的保存(Redisson分布式锁的实现原理)
 
 
 
@@ -608,6 +611,122 @@ SortedSet的常见命令有：
 
 - **升序**获取sorted set 中的指定元素的排名：ZRANK key member
 - **降序**获取sorted set 中的指定元素的排名：ZREVRANK key memeber
+
+
+
+
+
+
+
+
+
+## PubSub 发布订阅
+
+PubSub（发布订阅）是Redis2.0版本引入的消息传递模型。顾名思义，消费者可以订阅一个或多个channel，生产者向对应channel发送消息后，所有订阅者都能收到相关消息
+
+-  SUBSCRIBE channel [channel] ：订阅一个或多个频道
+- PUBLISH channel msg ：向一个频道发送消息
+-  PSUBSCRIBE pattern[pattern] ：订阅与pattern格式匹配的所有频道。pattern支持的通配符如下：
+
+```txt
+?			表示 一个 字符			如：h?llo 则可以为 hallo、hxllo
+*			表示 0个或N个 字符		   如：h*llo 则可以为 hllo、heeeello.........
+[ae]		表示 是a或e都行			如：h[ae]llo 则可以为  hello、hallo
+```
+
+优点：
+
+* 采用发布订阅模型，支持多生产、多消费
+
+缺点：
+
+* 不支持数据持久化
+* 无法避免消息丢失
+* 消息堆积有上限，超出时数据丢失
+
+
+
+
+
+
+
+
+
+## Stream命令
+
+### 基于Stream的消息队列-消费者组
+
+消费者组（Consumer Group）：将多个消费者划分到一个组中，监听同一个队列。具备下列特点：
+
+![1653577801668](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230811225358960-2007682593.png)
+
+
+
+1. **创建消费者组**
+
+```shell
+XGROUP CREATE key groupName ID [MKSTREAM]
+```
+
+- key：队列名称
+- groupName：消费者组名称
+- ID：起始ID标示，$代表队列中最后一个消息，0则代表队列中第一个消息
+- MKSTREAM：队列不存在时自动创建队列
+
+2. **删除指定的消费者组**
+
+```java
+XGROUP DESTORY key groupName
+```
+
+3. **给指定的消费者组添加消费者**
+
+```java
+XGROUP CREATECONSUMER key groupname consumername
+```
+
+4. **删除消费者组中的指定消费者**
+
+```java
+XGROUP DELCONSUMER key groupname consumername
+```
+
+5. **从消费者组读取消息**
+
+```java
+XREADGROUP GROUP group consumer [COUNT count] [BLOCK milliseconds] [NOACK] STREAMS key [key ...] ID [ID ...]
+```
+
+* group：消费组名称
+
+* consumer：消费者名称，如果消费者不存在，会自动创建一个消费者
+* count：本次查询的最大数量
+* BLOCK milliseconds：当没有消息时最长等待时间
+* NOACK：无需手动ACK，获取到消息后自动确认
+* STREAMS key：指定队列名称
+* ID：获取消息的起始ID：
+  * ">"：从下一个未消费的消息开始
+  * 其它：根据指定id从pending-list中获取已消费但未确认的消息，例如0，是从pending-list中的第一个消息开始
+
+
+
+STREAM类型消息队列的XREADGROUP命令特点：
+
+* 消息可回溯
+* 可以多消费者争抢消息，加快消费速度
+* 可以阻塞读取
+* 没有消息漏读的风险
+* 有消息确认机制，保证消息至少被消费一次
+
+
+
+消费者监听消息的基本思路：
+
+![1653578211854](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230811230118820-2081752327.png)
+
+
+
+
 
 
 
@@ -1600,6 +1719,652 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+# 简单认识Lua脚本
+
+Redis提供了Lua脚本功能，在一个脚本中编写多条Redis命令，确保多条命令执行时的原子性
+
+基本语法可以参考网站：https://www.runoob.com/lua/lua-tutorial.html
+
+
+
+Redis提供的调用函数，语法如下：
+
+```lua
+redis.call('命令名称', 'key', '其它参数', ...)
+```
+
+如：先执行set name Rose，再执行get name，则脚本如下：
+
+```lua
+# 先执行 set name jack
+redis.call('set', 'name', 'Rose')
+# 再执行 get name
+local name = redis.call('get', 'name')
+# 返回
+return name
+```
+
+写好脚本以后，需要用Redis命令来调用脚本，调用脚本的常见命令如下：
+
+![1653392181413](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810165702559-1702901168.png)
+
+
+
+例如，我们要执行 redis.call('set', 'name', 'jack') 这个脚本，语法如下：
+
+![1653392218531](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810165723010-1959499269.png)
+
+
+
+
+
+如果脚本中的key、value不想写死，可以作为参数传递
+
+key类型参数会放入KEYS数组，其它参数会放入ARGV数组，在脚本中可以从KEYS和ARGV数组获取这些参数：
+
+![1653392438917](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810165723046-1915316918.png)
+
+
+
+
+
+## Java+Redis调用Lua脚本
+
+RedisTemplate中，可以利用execute方法去执行lua脚本，参数对应关系就如下图股
+
+![1653393304844](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810165856998-785266953.png)
+
+
+
+示例：
+
+```java
+private static final DefaultRedisScript<Long> UNLOCK_SCRIPT;
+
+    static {
+        // 搞出脚本对象	DefaultRedisScript是RedisTemplate的实现类
+        UNLOCK_SCRIPT = new DefaultRedisScript<>();
+        // 脚本在哪个旮旯地方
+        UNLOCK_SCRIPT.setLocation(new ClassPathResource("unlock.lua"));
+        // 返回值类型
+        UNLOCK_SCRIPT.setResultType(Long.class);
+    }
+
+public void unlock() {
+    // 调用lua脚本
+    stringRedisTemplate.execute(
+            UNLOCK_SCRIPT,	// lua脚本
+            Collections.singletonList(KEY_PREFIX + name),	// 对应key参数的数值：KEYS数组
+            ID_PREFIX + Thread.currentThread().getId());	// 对应其他参数的数值：ARGV数组
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Redisson
+
+官网地址： https://redisson.org
+
+GitHub地址： https://github.com/redisson/redisson
+
+
+
+分布式锁需要解决几个问题：而下图的问题可以通过Redisson这个现有框架解决
+
+![1653546070602](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810171004232-1394415801.png)
+
+
+
+
+
+Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。它不仅提供了一系列的分布式的Java常用对象，还提供了许多分布式服务，其中就包含了各种分布式锁的实现
+
+![1653546736063](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810171140157-1555188208.png)
+
+
+
+
+
+
+
+## 使用Redisson
+
+1. 依赖2
+
+```xml
+<!-- 基本 -->
+<dependency>
+	<groupId>org.redisson</groupId>
+	<artifactId>redisson</artifactId>
+	<version>3.13.6</version>
+</dependency>
+
+
+<!-- Spring Boot整合的依赖 -->
+<dependency>
+    <groupId>org.redisson</groupId>
+    <artifactId>redisson-spring-boot-starter</artifactId>
+    <version>3.13.6</version>
+</dependency>
+```
+
+2. 创建redisson客户端
+
+YAML配置：[常用参数戳这里](https://github.com/redisson/redisson/wiki/2.-%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95#23-%E5%B8%B8%E7%94%A8%E8%AE%BE%E7%BD%AE)
+
+```yaml
+spring:
+  application:
+    name: springboot-redisson
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          password: "redis服务密码"
+          address: "redis:/redis服务ip:6379"
+          database: 1
+        threads: 0
+        nettyThreads: 0
+        codec: !<org.redisson.codec.FstCodec> {}
+        transportMode: "NIO"
+```
+
+代码配置
+
+```java
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
+import org.redisson.config.TransportMode;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RedissonConfig {
+
+    @Bean
+    public RedissonClient redissonClient(){
+        Config config = new Config();
+        config.setTransportMode(TransportMode.NIO);
+        // 添加redis地址，这里添加了单点的地址，也可以使用 config.useClusterServers() 添加集群地址
+        config.useSingleServer()
+            .setAddress("redis://redis服务ip:6379")
+            .setPassword("redis密码");
+        
+        // 创建RedissonClient对象
+        return Redisson.create(config);
+    }
+}
+```
+
+3. 使用redisson客户端
+
+```java
+@Resource
+private RedissionClient redissonClient;
+
+@Test
+void testRedisson() throws Exception{
+    // 获取锁(可重入)，指定锁的名称
+    RLock lock = redissonClient.getLock("lockName");
+    /*
+     * 尝试获取锁
+     *
+     * 参数分别是：获取锁的最大等待时间(期间会重试)，锁自动释放时间，时间单位
+     */
+    boolean isLock = lock.tryLock(1, 10, TimeUnit.SECONDS);
+    // 判断获取锁成功
+    if(isLock){
+        try{
+            System.out.println("执行业务");          
+        }finally{
+            //释放锁
+            lock.unlock();
+        }
+        
+    }
+}
+```
+
+
+
+
+
+
+
+## Redisson 可重入锁原理
+
+1. 采用Hash结构
+2. key为锁名
+3. field为线程标识
+4. value就是一个计数器count，同一个线程再来获取锁就让此值 +1，同线程释放一次锁此值 -1
+   - PS：Java中使用的是state，C语言中用的是count，作用差不多
+
+
+
+源码在：`lock.tryLock(waitTime, leaseTime, TimeUnit)`中，leaseTime这个参数涉及到WatchDog机制，所以可以直接看 `lock.tryLock(waitTime, TimeUnit)` 这个的源码
+
+![1653548087334](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810173333002-523706514.png)
+
+
+
+核心点在里面的lua脚本中：
+
+```lua
+"if (redis.call('exists', KEYS[1]) == 0) then " +	-- KEYS[1] ： 锁名称		判断锁是否存在
+        -- ARGV[2] = id + ":" + threadId		锁的小key	充当 field
+        "redis.call('hset', KEYS[1], ARGV[2], 1); " +	-- 当前这把锁不存在则添加锁，value=count=1 是hash结构
+        "redis.call('pexpire', KEYS[1], ARGV[1]); " +	-- 并给此锁设置有效期
+        "return nil; " +	-- 获取锁成功，返回nil，即：null
+"end; " +
+
+"if (redis.call('hexists', KEYS[1], ARGV[2]) == 1) then " +	-- 判断 key+field 是否存在。即：判断是否是同一线程来获取锁
+    "redis.call('hincrby', KEYS[1], ARGV[2], 1); " +	-- 是自己，让value +1
+    "redis.call('pexpire', KEYS[1], ARGV[1]); " +		-- 给锁重置有效期
+    "return nil; " +	-- 成功，返回nil，即：null
+"end; " +
+
+"return redis.call('pttl', KEYS[1]);"	-- 获取锁失败(含失效)，返回锁的TTL有效期
+```
+
+
+
+
+
+
+
+
+
+## Redission 锁重试 和 WatchDog机制
+
+看源码时选择：RedissonLock
+
+
+
+### 锁重试
+
+这里的 `tryLock(long waitTime, long leaseTime, TimeUnit unit)`选择的是带参的，无参的 `tryLock()`是，默认不会重试的
+
+```java
+public class RedissonLock extends RedissonExpirable implements RLock {
+ 
+    @Override
+    public boolean tryLock(long waitTime, long leaseTime, TimeUnit unit) throws InterruptedException {
+        // 将 waitTime 最大等待时间转成 毫秒
+        long time = unit.toMillis(waitTime);
+        // 获取此时的毫秒值
+        long current = System.currentTimeMillis();
+        // 获取当前线程ID
+        long threadId = Thread.currentThread().getId();
+        // 抢锁逻辑：涉及到WatchDog，待会儿再看
+        Long ttl = tryAcquire(waitTime, leaseTime, unit, threadId);
+        // lock acquired	表示在上一步 tryAcquire() 中抢锁成功
+        if (ttl == null) {
+            return true;
+        }
+        
+        // 有获取当前时间
+        time -= System.currentTimeMillis() - current;
+        // 看执行上面的逻辑之后，是否超出了waitTime最大等待时间
+        if (time <= 0) {
+            // 超出waitTime最大等待时间，则获取锁失败
+            acquireFailed(waitTime, unit, threadId);
+            return false;
+        }
+        // 再精确时间，看经过上面逻辑之后，是否超出waitTime最大等待时间
+        current = System.currentTimeMillis();
+        // 订阅	发布逻辑是在 lock.unLock() 的逻辑中，里面有一个lua脚本，使用了 publiser 命令
+        RFuture<RedissonLockEntry> subscribeFuture = subscribe(threadId);
+        // 若订阅在waitTime最大等待时间内未完成，即超出waitTime最大等待时间
+        if (!subscribeFuture.await(time, TimeUnit.MILLISECONDS)) {
+            // 同时订阅也未取消
+            if (!subscribeFuture.cancel(false)) {
+                subscribeFuture.onComplete((res, e) -> {
+                    if (e == null) {
+                        // 则取消订阅
+                        unsubscribe(subscribeFuture, threadId);
+                    }
+                });
+            }
+            // 订阅在waitTime最大等待时间内未完成，则获取锁失败
+            acquireFailed(waitTime, unit, threadId);
+            return false;
+        }
+
+        try {
+            // 继续精确时间，经过上面逻辑之后，是否超出waitTime最大等待时间
+            time -= System.currentTimeMillis() - current;
+            if (time <= 0) {
+                acquireFailed(waitTime, unit, threadId);
+                return false;
+            }
+        
+            // 还在waitTime最大等待时间内		这里面就是重试的逻辑
+            while (true) {
+                long currentTime = System.currentTimeMillis();
+                // 抢锁
+                ttl = tryAcquire(waitTime, leaseTime, unit, threadId);
+                // lock acquired	获取锁成功
+                if (ttl == null) {
+                    return true;
+                }
+
+                time -= System.currentTimeMillis() - currentTime;
+                if (time <= 0) {	// 经过上面逻辑之后，时间已超出waitTime最大等待时间，则获取锁失败
+                    acquireFailed(waitTime, unit, threadId);
+                    return false;
+                }
+
+                // waiting for message
+                currentTime = System.currentTimeMillis();
+                // 未失效 且 失效期还在 waitTime最大等待时间 以内
+                if (ttl >= 0 && ttl < time) {
+                    // 同时该进程也未被中断，则通过该信号量继续获取锁
+                    subscribeFuture.getNow().getLatch().tryAcquire(ttl, TimeUnit.MILLISECONDS);
+                } else {
+                    // 否则处于任务调度的目的，从而禁用当前线程，让其处于休眠状态
+                    // 除非其他线程调用当前线程的 release方法 或 当前线程被中断 或 waitTime已过
+                    subscribeFuture.getNow().getLatch().tryAcquire(time, TimeUnit.MILLISECONDS);
+                }
+
+                time -= System.currentTimeMillis() - currentTime;
+                if (time <= 0) {
+                    // 还未获取锁成功，那就真的是获取锁失败了
+                    acquireFailed(waitTime, unit, threadId);
+                    return false;
+                }
+            }
+        } finally {
+            // 取消订阅
+            unsubscribe(subscribeFuture, threadId);
+        }
+//        return get(tryLockAsync(waitTime, leaseTime, unit));
+    }
+}
+```
+
+
+
+上面说到“订阅”，“发布”的逻辑需要进入：`lock.unlock();`，和前面说的一样，选择：RedissonLock
+
+```java
+import org.junit.jupiter.api.Test;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
+
+@SpringBootTest
+class ApplicationTests {
+    @Resource
+    private RedissonClient redissonClient;
+
+    /**
+     * 伪代码
+     */
+    @Test
+    void buildCache() throws InterruptedException {
+        // 获取 锁名字
+        RLock lock = redissonClient.getLock("");
+        // 获取锁
+        boolean isLock = lock.tryLock(1L, TimeUnit.SECONDS);
+        // 释放锁
+        lock.unlock();
+    }
+}
+```
+
+
+
+```java
+public class RedissonLock extends RedissonExpirable implements RLock {
+ 
+	protected RFuture<Boolean> unlockInnerAsync(long threadId) {
+        
+        return evalWriteAsync(
+            getName(), 
+            LongCodec.INSTANCE, 
+            RedisCommands.EVAL_BOOLEAN,
+            "if (redis.call('hexists', KEYS[1], ARGV[3]) == 0) then " +
+            	"return nil;" +
+            "end; " +
+            
+            "local counter = redis.call('hincrby', KEYS[1], ARGV[3], -1); " +
+            
+            "if (counter > 0) then " +
+            	"redis.call('pexpire', KEYS[1], ARGV[2]); " +
+            	"return 0; " +
+            "else " +
+            	"redis.call('del', KEYS[1]); " +
+            	"redis.call('publish', KEYS[2], ARGV[1]); " +	// 发布，从而在上面的 重试 中进行订阅
+            	"return 1; " +
+            "end; " +
+            
+            "return nil;",
+            Arrays.asList(
+                	getName(), getChannelName()), LockPubSub.UNLOCK_MESSAGE, 
+            		internalLockLeaseTime, getLockName(threadId)
+        	);
+    }
+}
+```
+
+
+
+
+
+
+
+### WatchDog 机制
+
+上一节中有如下的代码：进入 `tryAcquire()`
+
+```java
+// 抢锁逻辑：涉及到WatchDog，待会儿再看
+Long ttl = tryAcquire(waitTime, leaseTime, unit, threadId);
+```
+
+
+
+```java
+public class RedissonLock extends RedissonExpirable implements RLock {
+
+    private Long tryAcquire(long waitTime, long leaseTime, TimeUnit unit, long threadId) {
+        return get(tryAcquireAsync(waitTime, leaseTime, unit, threadId));
+    }
+
+
+
+    /**
+     * 异步获取锁
+     */
+    private <T> RFuture<Long> tryAcquireAsync(long waitTime, long leaseTime, TimeUnit unit, long threadId) {
+        // leaseTime到期时间 等于 -1 否，此值决定着是否开启watchDog机制
+        if (leaseTime != -1) {
+            return tryLockInnerAsync(waitTime, leaseTime, unit, threadId, RedisCommands.EVAL_LONG);
+        }
+
+        RFuture<Long> ttlRemainingFuture = tryLockInnerAsync(
+            waitTime, 
+            /*
+             * getLockWatchdogTimeout() 就是获取 watchDog 时间，即：
+             * 		private long lockWatchdogTimeout = 30 * 1000;
+             */
+            commandExecutor.getConnectionManager().getCfg().getLockWatchdogTimeout(),
+            TimeUnit.MILLISECONDS, 
+            threadId, 
+            RedisCommands.EVAL_LONG
+        );
+
+        // 上一步ttlRemainingFuture异步执行完时
+        ttlRemainingFuture.onComplete((ttlRemaining, e) -> {
+            // 若出现异常了，则说明获取锁失败，直接滚犊子了
+            if (e != null) {
+                return;
+            }
+
+            // lock acquired	获取锁成功
+            if (ttlRemaining == null) {
+                // 过期了，则重置到期时间，进入这个方法瞄一下
+                scheduleExpirationRenewal(threadId);
+            }
+        });
+        return ttlRemainingFuture;
+    }
+    
+    
+    
+    /**
+     * 重新续约到期时间
+     */
+	private void scheduleExpirationRenewal(long threadId) {
+        ExpirationEntry entry = new ExpirationEntry();
+        /*
+         * private static final ConcurrentMap<String, ExpirationEntry> EXPIRATION_RENEWAL_MAP = new ConcurrentHashMap<>();
+         *
+         * getEntryName() 就是 this.entryName = id + ":" + name
+         * 			而 this.id = commandExecutor.getConnectionManager().getId()
+         *
+         * putIfAbsent() key未有value值则进行关联，相当于：
+         *		 if (!map.containsKey(key))
+         *			return map.put(key, value);
+         *		 else
+         *			return map.get(key);
+         */
+        ExpirationEntry oldEntry = EXPIRATION_RENEWAL_MAP.putIfAbsent(getEntryName(), entry);
+        if (oldEntry != null) {
+            oldEntry.addThreadId(threadId);
+        } else {
+            entry.addThreadId(threadId);
+            // 续订到期		续约逻辑就在这里面
+            renewExpiration();
+        }
+    }
+    
+    
+    
+    /**
+     * 续约
+     */
+	private void renewExpiration() {
+        ExpirationEntry ee = EXPIRATION_RENEWAL_MAP.get(getEntryName());
+        if (ee == null) {
+            return;
+        }
+        
+        /*
+         * 这里 newTimeout(new TimerTask(), 参数2, 参数3) 指的是：参数2，参数3去描述什么时候去做参数1的事情
+         * 这里的参数2：internalLockLeaseTime / 3 就是前面的 lockWatchdogTimeout = (30 * 1000) / 3 = 1000ms = 10s
+         * 
+         * 锁的失效时间是30s，当10s之后，此时这个timeTask 就触发了，它就去进行续约，把当前这把锁续约成30s，
+         * 如果操作成功，那么此时就会递归调用自己，再重新设置一个timeTask()，于是再过10s后又再设置一个timerTask，
+         * 完成不停的续约
+         */
+        Timeout task = commandExecutor.getConnectionManager().newTimeout(new TimerTask() {
+            @Override
+            public void run(Timeout timeout) throws Exception {
+                ExpirationEntry ent = EXPIRATION_RENEWAL_MAP.get(getEntryName());
+                if (ent == null) {
+                    return;
+                }
+                Long threadId = ent.getFirstThreadId();
+                if (threadId == null) {
+                    return;
+                }
+                
+                // renewExpirationAsync() 里面就是一个lua脚本，脚本中使用 pexpire 指令重置失效时间，
+                // pexpire 此指令是以 毫秒 进行，expire是以 秒 进行
+                RFuture<Boolean> future = renewExpirationAsync(threadId);
+                future.onComplete((res, e) -> {
+                    if (e != null) {
+                        log.error("Can't update lock " + getName() + " expiration", e);
+                        return;
+                    }
+                    
+                    if (res) {
+                        // reschedule itself	递归此方法，从而完成不停的续约
+                        renewExpiration();
+                    }
+                });
+            }
+        }, internalLockLeaseTime / 3, TimeUnit.MILLISECONDS);
+        
+        ee.setTimeout(task);
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
