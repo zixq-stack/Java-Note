@@ -23,7 +23,7 @@
 
 [前端开发手册](https://github.com/zixq-stack/Java-Note/blob/master/%E5%8D%8F%E5%90%8C%E5%BC%80%E5%8F%91%26%E9%83%A8%E7%BD%B2%26%E5%B7%A5%E5%85%B7/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C%5B%E5%86%85%E9%83%A8%5D.pdf)
 
-
+[git教程：廖雪峰](https://www.liaoxuefeng.com/wiki/896043488029600)
 
 # 微服务 & 分布式
 [FastDFS文件系统](https://github.com/zixq-stack/Java-Note/blob/master/%E5%BE%AE%E6%9C%8D%E5%8A%A1%26%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/FastDFS.md)
