@@ -10412,7 +10412,7 @@ public class o10Suggest {
 
 
 
-3. **监听MySQL的binlog文件：**
+3. **监听MySQL的binlog文件：**canel是阿里巴巴的，它是将自己伪装成MySQL的slave((即：canel要基于MySQL主从实现)。canel监听MySQL的binlog文件，此文件发生改变canel就会让另外存储地也发生改变(如：MQ、ES、Redis......)
 
 - 优点：完全解除服务间耦合
 - 缺点：开启binlog增加数据库负担、实现复杂度高
@@ -10423,7 +10423,9 @@ public class o10Suggest {
 
 
 
+MySQL主从同步：
 
+![image-20210821115914748](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230827220155641-494759712.png)
 
 
 

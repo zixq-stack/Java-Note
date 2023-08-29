@@ -205,9 +205,9 @@ Vue开发工具：vscode
 
     <div id="app">
         <!-- 单向绑定：绑的是属性 -->
-        单向绑定：<input type="text" :value="name">  <br/>
+        单向绑定：<input type="text" :value="name">  
         <!-- 双向绑定：绑的是值 -->
-        双向绑定：<input type="text" :myName="name" v-model:value="username">   <br/>
+        双向绑定：<input type="text" :myName="name" v-model:value="username">   
         <!-- 双向绑定的简写 因为：model绑的就是值，因此：value可以省掉 -->
         双向绑定：<input type="text" :myName="name" v-model="username">
     </div>
@@ -600,7 +600,7 @@ Vue开发工具：vscode
         <!-- vue中事件绑定的简单写法 -->
         <button v-on:click="showInfo()">点我显示提示信息</button>
 
-        <br/>
+        
 
         <!-- vue中事件绑定的简写 还可以传递参数 -->
         <button @click="showInfo2($event, 66)">点我获取带参的事件信息</button>
@@ -665,7 +665,7 @@ Vue开发工具：vscode
   <body>
     <!-- 被 vm 实例所控制的区域 -->
     <div id="app">
-        姓名: <input type="text" v-model="name"> <br/>
+        姓名: <input type="text" v-model="name"> 
         性别: <input type="text" v-model="sex">
         <hr>
         信息: <span>{{info}}</span>
@@ -1071,7 +1071,7 @@ Vue开发工具：vscode
   <body>
     <!-- 被 vm 实例所控制的区域 -->
     <div id="app">
-        姓: <input type="text" v-model="firstname"> <br/>
+        姓: <input type="text" v-model="firstname"> 
         名: <input type="text" v-model="lastname">
 
         <hr/>
@@ -1139,7 +1139,7 @@ Vue开发工具：vscode
 	  <body>
 		<!-- 被 vm 实例所控制的区域 -->
 		<div id="app">
-			姓: <input type="text" v-model = "firstname">   <br/>
+			姓: <input type="text" v-model = "firstname">   
 			名: <input type="text" v-model = "lastname">
 
 			<hr/>
@@ -1194,7 +1194,7 @@ Vue开发工具：vscode
   <body>
     <!-- 被 vm 实例所控制的区域 -->
     <div id="app">
-        姓: <input type="text" v-model = "firstname"> <br/>
+        姓: <input type="text" v-model = "firstname"> 
         名: <input type="text" v-model = "lastname">
 
         <hr/>
@@ -2557,7 +2557,7 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
   <body>
     <!-- 被 vm 实例所控制的区域 -->
     <div id="app">
-        <h2> 姓名: {{person.name}} </h2>  <br/>
+        <h2> 姓名: {{person.name}} </h2>  
         <h2> 性别: {{person.sex}} </h2>
     </div>
 
@@ -2676,9 +2676,9 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
   <body>
     <!-- 被 vm 实例所控制的区域 -->
     <div id="app">
-        <h2> 姓名: {{person.name}} </h2> <br/>
+        <h2> 姓名: {{person.name}} </h2> 
 
-        <h2> 性别: {{person.sex}} </h2> <br/>
+        <h2> 性别: {{person.sex}} </h2> 
     </div>
 
     <script>
@@ -2743,8 +2743,8 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
   <body>
     <!-- 被 vm 实例所控制的区域 -->
     <div id="app">
-        <h2> 姓名: {{name}}</h2> <br/>
-        <h2> 性别: {{sex}}</h2> <br/>
+        <h2> 姓名: {{name}}</h2> 
+        <h2> 性别: {{sex}}</h2> 
 
         <h2 v-if = "age"> 年龄: {{age}}</h2>
         <button @click = "addAge">添加年龄属性</button>
@@ -3756,7 +3756,7 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
       Vue.directive('指令名', function(){
       	配置
       })
-      ```
+    ```
     
   - 配置中常用的3个回调
   
@@ -4213,23 +4213,33 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 #### 2.1、认识组件概念
 
-- 对于学Java的人来说的话，这个词所要表达的意思再熟悉不过了，**所谓组件就是：面向对象中的抽象、封装思想**，而所谓的**组件化就是：把功能用多组件的方式搭配起来编写（ 有一个根组件，旗下有N多微型组件 ，粗暴理解就是：SpringCloud中的main()方法可以搭配很多不同功能的注解，main()方法就是根组件，不同功能的注解就是微型组件 ），那这些功能组成的应用程序就是一个组件化应用**，因此：这样做之后，**好处就是利于维护和提高代码的复用性了**
-- 但是对于前端的人来说，这个东西就需要特别解释一下：直接下定义就是  **实现应用中局部功能代码和资源的集合**
-  - 瞄一下官网，它里面有一个图
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120120217690-1152831316.png)
-  - 所以：现在就可以理解前面下的定义为什么是局部功能代码和资源的集合了，局部功能就是某一个模块，是针对这个模块内部的，而这个模块内部的编写不就是CSS、HTML片段、JS代码吗，同时png、mp3等等这些就是资源咯
+对于学Java的人来说的话，这个词所要表达的意思再熟悉不过了，**所谓组件就是：面向对象中的抽象、封装思想**，而所谓的**组件化就是：把功能用多组件的方式搭配起来编写（ 有一个根组件，旗下有N多微型组件 ，粗暴理解就是：SpringCloud中的main()方法可以搭配很多不同功能的注解，main()方法就是根组件，不同功能的注解就是微型组件 ），那这些功能组成的应用程序就是一个组件化应用**，因此：这样做之后，**好处就是利于维护和提高代码的复用性了**
 
 
 
-- **至于为什么要学组件化开发？**
-  - 一是因为做的应用页面都是很复杂的，如果使用传统的CSS+HTML+JS，那么就会出现很多的js文件，不利于维护和 编写很费力的
-  - 二是因为组件化开发可以极好的复用代码、简化项目代码、所以也就提高了运行效率
+但是对于前端的人来说，这个东西就需要特别解释一下，直接下定义就是：  **实现应用中局部功能代码和资源的集合**
+
+瞄一下官网，它里面有一个图
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120120217690-1152831316.png)
 
 
 
-- **同时组件又有单文件组件（ 真实开发玩的 ） 和 非单文件组件**
-  - **单文件组件：**就是指只有一个组件组成（ 即：是一个.vue的文件 ）
-  - **非单文件组件：**就是有N多个组件组成
+所以：现在就可以理解前面下的定义为什么是局部功能代码和资源的集合了，局部功能就是某一个模块，是针对这个模块内部的，而这个模块内部的编写不就是CSS、HTML片段、JS代码吗，同时png、mp3等等这些就是资源咯
+
+
+
+**至于为什么要学组件化开发？**
+
+- 一是因为做的应用页面都是很复杂的，如果使用传统的CSS+HTML+JS，那么就会出现很多的js文件，不利于维护和 编写很费力的
+- 二是因为组件化开发可以极好的复用代码、简化项目代码、所以也就提高了运行效率
+
+
+
+**同时组件又有单文件组件（ 真实开发玩的 ） 和 非单文件组件**
+
+- **单文件组件：**就是指只有一个组件组成（ 即：是一个.vue的文件 ）
+- **非单文件组件：**就是有N多个组件组成
 
 
 
@@ -4240,7 +4250,6 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 ##### 2.2.1、使用组件
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -4337,10 +4346,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
     </script>
   </body>
 </html>
-
 ```
-
-
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120225806501-1073652484.png)
 
@@ -4348,33 +4354,41 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 
 
-**组件小结**
+**组件小结：**
 
-- Vue中使用组件的三板斧
+1. Vue中使用组件的三板斧
+   - 创建组件
+   - 注册组件
+   - 使用组件（ 写组件标签即可 ）
 
-  - 1、创建组件
-  - 2、注册组件
-  - 3、使用组件（ 写组件标签即可 ）
 
-- 如何定义一个组件？
 
-  - 使用Vue.extend( { options } )创建，其中options 和 new Vue（ { options } ）时传入的哪些option“几乎一样”，区别就是：
-    - 1、el不要写 ——— 因为最终所有的组件都要经过一个vm的管理（ 根组件 ），由vm中的el决定服务哪个容器
-    - 2、data必须写成函数式 ———— 因为可以避免组件被复用时，数据存在引用关系
-    - 另外：template选项可以配置组件结构
+2. 如何定义一个组件？
+   - 使用Vue.extend( { options } )创建，其中options 和 new Vue（ { options } ）时传入的哪些option“几乎一样”，区别就是：
+     - 1、el不要写 ——— 因为最终所有的组件都要经过一个vm的管理（ 根组件 ），由vm中的el决定服务哪个容器
+     - 2、data必须写成函数式 ———— 因为可以避免组件被复用时，数据存在引用关系
+     - 另外：template选项可以配置组件结构
 
-- 如何注册组件？
 
-  - 1、局部注册： 靠new Vue的时候传入components选项
-  - 2、全局注册：靠Vue。component（ '组件名' , 组件 ）
 
-  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120231514412-750022953.png)
+3. 如何注册组件？
 
-  - 真实开发中一般都是用前面玩的局部组件，局部变全局都是一样的套路，去掉s，然后使用Vue来调，最后加入相应的名字和配置即可
+   - 1、局部注册： 靠new Vue的时候传入components选项
+
+   - 2、全局注册：靠Vue。component（ '组件名' , 组件 ）
+
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120231514412-750022953.png)
+
+
+
+- 真实开发中一般都是用前面玩的局部组件，局部变全局都是一样的套路，去掉s，然后使用Vue来调，最后加入相应的名字和配置即可
 
 - 编写组件标签
-  
-  - <person></person>
+
+```vue
+<person></person>
+```
 
 
 
@@ -4386,12 +4400,14 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 
 
-##### 2.2,2、使用组件的注意点
+
+
+##### 2.2.2、使用组件的注意点
 
 **1、创建组件时的简写问题**
 
-- ```html
-  // 1、创建局部组件( 完整写法 )
+- ```vue
+  	  // 1、创建局部组件( 完整写法 )
         const person = Vue.extend({
             template: `
               <div>
@@ -4422,17 +4438,21 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
                 }
             }
         }
-  
   ```
+  
+  上面两种都可以。但是：简写形式在底层其实也调用了 `Vue.extend()`
+  
+  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154253541-2078088171.png)
+  
+  
+  
+  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154355417-1533975363.png)
+  
+  
+  
+  验证完了，记得把源码的断点去掉
 
-- 上面两种都可以
 
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121153330355-1000598035.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121153403288-1258314802.png)
-  - 但是：简写形式在底层其实也调用了Vue.extend()
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154253541-2078088171.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154355417-1533975363.png)
-  - 验证完了，记得把源码的断点去掉
 
 
 
@@ -4440,20 +4460,41 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 **2、组件名的问题**
 
-- **（1）、组件名为一个单词时**
-  - **使用全小写字母 / 首字母大小都没问题**
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154927392-1387731804.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154949858-689025921.png)
-- **（2）、组件名为多个单词组成时**
-  - **全部用小写  / 使用 - 进行分割都没问题**
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155704043-33456825.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155945371-1807008390.png)
-  - 还有一种就是上图中的效果：驼峰命名
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160632609-67278161.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160715764-1078760791.png)
-    - 但是：这种驼峰命名需要注意，有些人就不可以（ 因为：严格来说这种命名是后续的技术使用脚手架玩时的方式 ），但是：有些人就可以，比如我上图中的效果，因为这是Vue版本的问题，要看源码的话，从下图这里往后看即可
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121161752001-541215883.png)
-  - （3）、注意组件名别和HTML中的原生标签名一致，会冲突报错，HTML的限制就是上图中看源码中的哪些，如果非要用HTML标签名，让人见名知意，那就在原生HTML标签名前加一些特定的词，如;my-input这种，千万别用：input、h2....此类名字来命名组件名
+**（1）、组件名为一个单词时，使用全小写字母 / 首字母大小都没问题**
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154927392-1387731804.png)
+
+- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154949858-689025921.png)
+
+
+
+**（2）、组件名为多个单词组成时，全部用小写  / 使用 - 进行分割都没问题**
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155704043-33456825.png)
+
+
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155945371-1807008390.png)
+
+
+
+还有一种就是上图中的效果：驼峰命名
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160632609-67278161.png)
+
+
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160715764-1078760791.png)
+
+
+
+但是：这种驼峰命名需要注意，有些人就不可以（ 因为：严格来说这种命名是后续的技术使用脚手架玩时的方式 ），但是：有些人就可以，比如我上图中的效果，因为这是Vue版本的问题，要看源码的话，从下图这里往后看即可
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121161752001-541215883.png)
+
+
+
+（3）、注意组件名别和HTML中的原生标签名一致，会冲突报错，HTML的限制就是上图中看源码中的哪些，如果非要用HTML标签名，让人见名知意，那就在原生HTML标签名前加一些特定的词，如;my-input这种，千万别用：input、h2....此类名字来命名组件名
 
 
 
@@ -4461,10 +4502,15 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 **3、关于组件在使用时的注意项**
 
-- （1）、可以使用双标签，如：`<my-info></my-info>`，这种肯定没任何问题
-- （2）、也可以使用自闭合标签，如：`<my-info/>`，但是这种有坑，这种使用方式需要脚手架支持，否则s数据渲染会出问题
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162701519-1847482790.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162814905-1531092152.png)
+（1）、可以使用双标签，如：`<my-info></my-info>`，这种肯定没任何问题
+
+（2）、也可以使用自闭合标签，如：`<my-info/>`，但是这种有坑，这种使用方式需要脚手架支持，否则s数据渲染会出问题
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162701519-1847482790.png)
+
+
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162814905-1531092152.png)
 
 
 
@@ -4476,24 +4522,32 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 ###### 2.2.2.1、使用组件注意点总结
 
-- **1、关于组件名**
-  - 一个单词组成时
-    - （1）、全小写，如：person
-    - （2）、首字母大写，如：Person
-  - 多个单词组成时
-    - （1）、全小写，如：myinfo
-    - （2）、使用 - 分割，如：my-info
-    - （3）、驼峰命名，如：MyInfo，但注意：目前没用脚手架之前最好别用，是因为指不定一会好使，一会不好使
-  - 注意事项：
-    - （1）、组件名最好别和HTML的标签名一致，从而造成冲突（ 非要用，可以采用加词 / 使用 - 分割 ）
-    - （2）、可以在创建组件时，在里面配置name选项，从而指定组件在Vue开发者工具中呈现的名字
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163732203-293464250.png)
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163832192-903888280.png)
-      - 此种形式在第三方组件时会见到
+**1、关于组件名**
+
+- 一个单词组成时
+  - （1）、全小写，如：person
+  - （2）、首字母大写，如：Person
+- 多个单词组成时
+  - （1）、全小写，如：myinfo
+  - （2）、使用 - 分割，如：my-info
+  - （3）、驼峰命名，如：MyInfo，但注意：目前没用脚手架之前最好别用，是因为指不定一会好使，一会不好使
+- 注意事项：
+  - （1）、组件名最好别和HTML的标签名一致，从而造成冲突（ 非要用，可以采用加词 / 使用 - 分割 ）
+  - （2）、可以在创建组件时，在里面配置name选项，从而指定组件在Vue开发者工具中呈现的名字
+    
+    ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163732203-293464250.png)
+    
+    
+    
+    ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163832192-903888280.png)
+    
+    
+    
+    - 此种形式在第三方组件时会见到
+
 - **2、关于组件标签（ 使用组件 ）**
   - （1）、使用双闭合标签也行，如：`<my-info></my-info>`
-  - （2）、使用自闭合标签也行，如：`<my-info/>`
-    - 但是：此种方式目前有坑，会出现后续组件不能渲染的问题，所以需要等到后续使用脚手架时才可以
+  - （2）、使用自闭合标签也行，如：`<my-info/>` 。但是：此种方式目前有坑，会出现后续组件不能渲染的问题，所以需要等到后续使用脚手架时才可以
 - **3、创建组件的简写形式**
   - const person = Vue.extend( { 配置选项 } ) 可以简写为 const person = { 配置选项 }
 
@@ -4505,8 +4559,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 ##### 2.2.3、组件的嵌套
 
-```hrml
-
+```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -4586,10 +4639,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
     </script>
   </body>
 </html>
-
 ```
-
-
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121215640110-1765447723.png)
 
@@ -4599,107 +4649,107 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 **另一种嵌套：开发中玩的，我对那个div容器起的id值为app，是有用的**
 
-- 在开发中的嵌套是一个vm管理独一无二的app（ 就是application 应用的意思 ），然后由app管理众多小弟
+在开发中的嵌套是一个vm管理独一无二的app（ 就是application 应用的意思 ），然后由app管理众多小弟
 
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221514791-383429444.png)
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221514791-383429444.png)
 
-- 所以，现在来玩一下这种组件嵌套
 
-  - ```html
-    
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>vm管app，app管众多组件</title>
-    
-        <script src="../../js/vue.js"></script>
-      </head>
-    
-      <body>
-        <!-- 被 vm 实例所控制的区域 -->
-        <div id="app"></div>
-    
-        <script>
-           // 去除浏览器控制台中的警告提示信息
-          Vue.config.productionTip = false;
-    
-    
-          // 1、定义组件
-          const person = {
-              template: `
-                <div>
-                    <h2>{{name}}</h2>    
-                    <h2>{{sex}}</h2>
-                </div>
-              `,
-              data(){
-                  return {
-                      name: '紫邪情',
-                      sex: '女'
-                  }
-              }
-          }
-    
-          const info = Vue.extend({
-              template: `
-                <div>
-                    <h2>{{address}}</h2>    
-                    <h2>{{job}}</h2>
-                    <!-- 这个组件中使用被嵌套的组件 -->
-                    <person></person>
-                </div>
-              `,
-              data(){
-                  return {
-                      address: '浙江杭州',
-                      job: 'java'
-                  }
-              },
-             components: {
-                 person,
-             }
-          })
-    
-          // 再定义一个app组件，用来管理其他组件
-          const app = {
-            //   这个app组件没有其他的东西，就是注册和使用被管理组件而已
-              components: {
-                //   有其他组件也可以注册在这里面，这里由于info管理了person，所以只注册info即可
-                  info
-              },
-              template: `
-                <div>
-                    <info></info>   
-                </div>
-              `,
-          }
-    
-          // 创建 vm 实例对象
-          const vm = new Vue({
-            // 指定控制的区域
-            el:'#app',
-            data:{},
-    
-            // 由于组件被app管理，所以：只注册app组件即可
-            components: { app },
-    
-            // 使用组件
+
+所以，现在来玩一下这种组件嵌套
+
+- ```html
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>vm管app，app管众多组件</title>
+  
+      <script src="../../js/vue.js"></script>
+    </head>
+  
+    <body>
+      <!-- 被 vm 实例所控制的区域 -->
+      <div id="app"></div>
+  
+      <script>
+         // 去除浏览器控制台中的警告提示信息
+        Vue.config.productionTip = false;
+  
+  
+        // 1、定义组件
+        const person = {
             template: `
-                <div>
-                    <app></app> 
-                </div>
+              <div>
+                  <h2>{{name}}</h2>    
+                  <h2>{{sex}}</h2>
+              </div>
             `,
-           });
-        </script>
-      </body>
-    </html>
-    
-    ```
-
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221241435-1900676993.png)
+            data(){
+                return {
+                    name: '紫邪情',
+                    sex: '女'
+                }
+            }
+        }
+  
+        const info = Vue.extend({
+            template: `
+              <div>
+                  <h2>{{address}}</h2>    
+                  <h2>{{job}}</h2>
+                  <!-- 这个组件中使用被嵌套的组件 -->
+                  <person></person>
+              </div>
+            `,
+            data(){
+                return {
+                    address: '浙江杭州',
+                    job: 'java'
+                }
+            },
+           components: {
+               person,
+           }
+        })
+  
+        // 再定义一个app组件，用来管理其他组件
+        const app = {
+          //   这个app组件没有其他的东西，就是注册和使用被管理组件而已
+            components: {
+              //   有其他组件也可以注册在这里面，这里由于info管理了person，所以只注册info即可
+                info
+            },
+            template: `
+              <div>
+                  <info></info>   
+              </div>
+            `,
+        }
+  
+        // 创建 vm 实例对象
+        const vm = new Vue({
+          // 指定控制的区域
+          el:'#app',
+          data:{},
+  
+          // 由于组件被app管理，所以：只注册app组件即可
+          components: { app },
+  
+          // 使用组件
+          template: `
+              <div>
+                  <app></app> 
+              </div>
+          `,
+         });
+      </script>
+    </body>
+  </html>
+  ```
+  
+  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221241435-1900676993.png)
 
 
 
@@ -4713,115 +4763,132 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 **1、来看一下组件到底是谁？**
 
-- 基础代码
+基础代码
 
-  - ```html
-    
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>认识VueComponent</title>
-    
-        <script src="../../js/vue.js"></script>
-      </head>
-    
-      <body>
-        <!-- 被 vm 实例所控制的区域 -->
-        <div id="app"></div>
-    
-        <script>
-           // 去除浏览器控制台中的警告提示信息
-          Vue.config.productionTip = false;
-    
-          // 1、定义组件
-          const person = Vue.extend({
-              template: `
-                <div>
-                    <h2>{{name}}</h2>    
-                    <h2>{{job}}</h2>
-                    <h2>{{address}}</h2>
-                </div>
-              `,
-              data(){
-                  return {
-                      name: '紫邪情',
-                      job: 'java',
-                      address: '浙江杭州'
-                  }
-              }
-          })
-    
-          const app = {
-              components: {person},
-              template: `
-                <div>
-                    <person></person>    
-                </div>
-              `,
-    
-          }
-    
-          // 创建 vm 实例对象
-          const vm = new Vue({
-            // 指定控制的区域
-            el:'#app',
-            data:{},
-            components: {app},
+- ```html
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>认识VueComponent</title>
+  
+      <script src="../../js/vue.js"></script>
+    </head>
+  
+    <body>
+      <!-- 被 vm 实例所控制的区域 -->
+      <div id="app"></div>
+  
+      <script>
+         // 去除浏览器控制台中的警告提示信息
+        Vue.config.productionTip = false;
+  
+        // 1、定义组件
+        const person = Vue.extend({
             template: `
-                <div>
-                    <app></app>    
-                </div>
+              <div>
+                  <h2>{{name}}</h2>    
+                  <h2>{{job}}</h2>
+                  <h2>{{address}}</h2>
+              </div>
             `,
-           });
-        </script>
-      </body>
-    </html>
-    
-    ```
+            data(){
+                return {
+                    name: '紫邪情',
+                    job: 'java',
+                    address: '浙江杭州'
+                }
+            }
+        })
+  
+        const app = {
+            components: {person},
+            template: `
+              <div>
+                  <person></person>    
+              </div>
+            `,
+  
+        }
+  
+        // 创建 vm 实例对象
+        const vm = new Vue({
+          // 指定控制的区域
+          el:'#app',
+          data:{},
+          components: {app},
+          template: `
+              <div>
+                  <app></app>    
+              </div>
+          `,
+         });
+      </script>
+    </body>
+  </html>
+  ```
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122151801071-44017481.png" alt="image" style="zoom:50%;" />
 
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122151801071-44017481.png)
+
+
+现在就来见一下组件的真身（ 在前面玩this的时候说过，this指向的是：Vue实例 / 组件实例对象 ），因此：用this就可以知道组件的真身
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122152200147-1501001304.png" alt="image" style="zoom:50%;" />
 
 
 
-- 现在就来见一下组件的真身（ 在前面玩this的时候说过，this指向的是：Vue实例 / 组件实例对象 ），因此：用this就可以知道组件的真身
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122152200147-1501001304.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122152322794-1312940761.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122152322794-1312940761.png" alt="image" style="zoom:50%;" />
 
 
 
-- 既然知道了组件真身是VueComponent()，那么先去源码中看一下它
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122152642129-165711524.png)
+既然知道了组件真身是VueComponent()，那么先去源码中看一下它
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122152642129-165711524.png" alt="image" style="zoom:50%;" />
 
 
 
-- 源码提取出来就是下面的样子
+源码提取出来就是下面的样子
 
-  - ```html
-    
-     var Sub = function VueComponent (options) {
-            this._init(options);  <!--里面的重要逻辑封装在了_init()中了，目前不要去看-->
-          };
-      
-          return Sub
+- ```vue
+  var Sub = function VueComponent (options) {
+          this._init(options);  <!--里面的重要逻辑封装在了_init()中了，目前不要去看-->
         };
-      
-    ```
+    
+        return Sub
+      };
+   ```
+   
+  **经过前面的分析和查看源码得出两个结论：**
 
-  - **经过前面的分析和查看源码得出两个结论：**
-
-    - 1、所有的组件指的都是VueComponent()
-    - 2、每一个组件都调用了VueComponent()，但是：它们都不一样（ 源码中有嘛，每次都是创建了一个全新的sub，sub就是VueComponent()，最后把这个sub返回去了，验证一下嘛
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122154717139-2147436929.png)
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122154819826-759080284.png)
-      - 但是：这里有一个有意思的东西，不了解原因的人很容易弄错，也是第一条说的组件就是指VueComponent()，从而会出现不了解的人认为：每个组件都是调了同一个VueComponent()，来看一下
-        - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122155255489-880385657.png)
-        - 这两个长得一模一样，所以就会让人误会，玩java的人看到这个肯定熟悉得不得了，这就是一个构造函数嘛，所以理解起来也更容易，构造函数，那就是Vue每次解析模板时（ div容器使用的组件标签 ），就会去帮忙创建对应的组件，调用了构造函数，怎么调用的？new出来的嘛，所以：这两个组件对象肯定不一样（ 前面先验证是否一样就是为了注意这点，看起来一样，实质不一样 ，两个组件创建的是不同的VueComponent() ）
-        - **同时上面说到，Vue解析模板时，会帮忙去创建VueComponent()，那么是谁去帮忙创建的？**
-          - 答案就是创建组件时，里面的Vue.extend()去帮忙创建的，这不是我们程序员自己整出来的，看一下源码
-          - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122160042483-504526350.png)
+  1. 所有的组件指的都是VueComponent()
+  2. 每一个组件都调用了VueComponent()，但是：它们都不一样（ 源码中有嘛，每次都是创建了一个全新的sub，sub就是VueComponent()，最后把这个sub返回去了，验证一下嘛
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122154717139-2147436929.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122154819826-759080284.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  但是：这里有一个有意思的东西，不了解原因的人很容易弄错，也是第一条说的组件就是指VueComponent()，从而会出现不了解的人认为：每个组件都是调了同一个VueComponent()，来看一下
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122155255489-880385657.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  这两个长得一模一样，所以就会让人误会，玩java的人看到这个肯定熟悉得不得了，这就是一个构造函数嘛，所以理解起来也更容易，构造函数，那就是Vue每次解析模板时（ div容器使用的组件标签 ），就会去帮忙创建对应的组件，调用了构造函数，怎么调用的？new出来的嘛，所以：这两个组件对象肯定不一样（ 前面先验证是否一样就是为了注意这点，看起来一样，实质不一样 ，两个组件创建的是不同的VueComponent() ）
+  
+  **同时上面说到，Vue解析模板时，会帮忙去创建VueComponent()，那么是谁去帮忙创建的？**
+  
+  - 答案就是创建组件时，里面的Vue.extend()去帮忙创建的，这不是我们程序员自己整出来的，看一下源码
+  
+    
+  
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122160042483-504526350.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4845,17 +4912,33 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 
 - 但是：vm和vc也有一个坑
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122214949207-1560586309.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122215202295-1679001352.png)
-  - 观察结构会发现：vm和vc如出一辙，什么数据代理、数据监测等等，vm有的，vc都有，所以vm中的配置项在vc中都可以配置，但是：**vm和vc不能画等号，它们两个不一样**
-    - vm是Vue实例对象，vc是组件实例对象
-    - vm中可以使用el选项，而vc中不可以（ 只要用el就报错 ）
-    - 在vm中，data可以用函数式和对象式，但是在vc中data只能用函数式
-    - vm是大哥，vc是小弟，vc是vm的组件（ 或者说：算上app，那么vc就是vm的后代 ），或者直接说：组件实例对象vc是小型的Vue实例对象
-    - vm和vc之间很多东西只是复用了而已（ **这里说的复用，里面有大门道，vm和vc之间是有关系的，这里需要原型对象知识 —— 就一句话：函数肯定有ProtoType（ 显示原型属性 ），而实例（ 如：const person = vue.extend()中的person ）肯定有 _ _proto _ _ （ 隐式原型属性 ），而这二者指向的是同一个对象：即，该实例的原型对象**，而vc和vm之间就是通过这二者关联起来的
-    - **vm和vc之间的内置关系是：VueComponent.prototype._ _proto _ _ === Vue.prototype**
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122232340126-1982785462.png)
-      - 图中：VueComponent的原型对象通过 _ _proto _ _理论上应该直接指向object的原型对象，但是：Vue做了巧妙的事情：就是让VueComponent的原型对象通过 _ _proto _ _指向了Vue的原型对象，这样做的好处就是：**让组件实例对象 可以访问到 Vue原型上的属性、方法**
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122214949207-1560586309.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122215202295-1679001352.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  观察结构会发现：vm和vc如出一辙，什么数据代理、数据监测等等，vm有的，vc都有，所以vm中的配置项在vc中都可以配置，但是：**vm和vc不能画等号，它们两个不一样**
+  
+  - vm是Vue实例对象，vc是组件实例对象
+  - vm中可以使用el选项，而vc中不可以（ 只要用el就报错 ）
+  - 在vm中，data可以用函数式和对象式，但是在vc中data只能用函数式
+  - vm是大哥，vc是小弟，vc是vm的组件（ 或者说：算上app，那么vc就是vm的后代 ），或者直接说：组件实例对象vc是小型的Vue实例对象
+  - vm和vc之间很多东西只是复用了而已（ **这里说的复用，里面有大门道，vm和vc之间是有关系的，这里需要原型对象知识 —— 就一句话：函数肯定有ProtoType（ 显示原型属性 ），而实例（ 如：const person = vue.extend()中的person ）肯定有 _ _proto _ _ （ 隐式原型属性 ），而这二者指向的是同一个对象：即，该实例的原型对象**，而vc和vm之间就是通过这二者关联起来的
+  - **vm和vc之间的内置关系是：VueComponent.prototype._ _proto _ _ === Vue.prototype**
+    
+    
+    
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220122232340126-1982785462.png" alt="image" style="zoom:50%;" />
+    
+    
+    
+    图中：VueComponent的原型对象通过 _ _proto _ _理论上应该直接指向object的原型对象，但是：Vue做了巧妙的事情：就是让VueComponent的原型对象通过 _ _proto _ _指向了Vue的原型对象，这样做的好处就是：**让组件实例对象 可以访问到 Vue原型上的属性、方法**
 
 
 
@@ -4865,30 +4948,32 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 #### 2.3、单文件组件
 
-- 就是只有一个文件嘛，xxxx.vue
-- 而xxxx就是前面说过的组件命名
-  - 单个单词：全小写、首字母大写
-  - 多个单词：用 - 进行分割、大驼峰命名
-  - 而开发中最常用的就是：首字母大写和大驼峰命名
+单文件组件：就是只有一个文件嘛，xxxx.vue
+
+而xxxx就是前面说过的组件命名
+- 单个单词：全小写、首字母大写
+- 多个单词：用 - 进行分割、大驼峰命名
+- 而开发中最常用的就是：首字母大写和大驼峰命名
+
+
 
 
 
 ##### 2.3.1、疏通单文件组件的编写流程
 
-- 前提：如果自己的编辑器是vscode，那么就给编辑器安装vetur插件，然后重启vscode，这个插件就是为了能够识别xxxx.vue文件的；如果自己是用的IDEA编辑器来写的vue，那么安装了vue.js插件之后，不用安装其他的插件都可以的
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123140501758-678436950.png)
+前提：如果自己的编辑器是vscode，那么就给编辑器安装vetur插件，然后重启vscode，这个插件就是为了能够识别xxxx.vue文件的；如果自己是用的IDEA编辑器来写的vue，那么安装了vue.js插件就可以了
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123140501758-678436950.png" alt="image" style="zoom:50%;" />
 
 
 
 ###### 2.3.1.1、创建xxxx.vue文件
 
-- 这个创建的就是单文件组件，前面玩非单文件组件，不是有三板斧吗，对照来看
-- 创建了xxx.vue之后，是一个空文件，里面要写的东西就三样（模板template、交互script、样式style ），里面内容也对照非单文件组件来看
+这个创建的就是单文件组件，前面玩非单文件组件，不是有三板斧吗，对照来看
 
-
+创建了xxx.vue之后，是一个空文件，里面要写的东西就三样（模板template、交互script、样式style ），里面内容也对照非单文件组件来看
 
 ```html
-
 <template>
   <div class="temp">
       <!-- 这里面就是模板 以前在非单文件组件中用的template选项是怎么写的，这里面就是怎么写的-->
@@ -4950,12 +5035,15 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
         color: purple;
     }
 </style>
-
 ```
 
-- **xxx.vue文件，如果使用的是vscode+vetur，那么上面的模板有快捷键可以用 ：就是输入 <v  然后回车就可以生成了**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123151616416-922728028.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123151651555-1600377609.png)
+**xxx.vue文件，如果使用的是vscode+vetur，那么上面的模板有快捷键可以用 ：就是输入 `<v`  然后回车就可以生成了**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123151616416-922728028.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123151651555-1600377609.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4963,10 +5051,9 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 ###### 2.3.1.2、注册组件到app中
 
-- 前面玩过，vm管app，app管其他的小弟，所以需要一个app组件，创建一个app.vue
+前面玩过，vm管app，app管其他的小弟，所以需要一个app组件，创建一个app.vue
 
 ```html
-
 <template>
   <div>
       <!-- 使用app管理的组件 -->
@@ -4989,17 +5076,19 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 <style>
 /* app是为了管理其他所有的组件，所以这个style其实不写也行（ 按需要来吧 ） */
 </style>
-
 ```
+
+
+
+
 
 
 
 ###### 2.3.1.3、将app和vm绑定起来
 
-- 新建一个main.js文件，创建这个文件的目的：一是让app和vm绑定，二是浏览器并不能识别.vue文件，所以根本展示不了，因此：需要将.vue文件转成js文件，这样浏览器就能解析了
+新建一个main.js文件，创建这个文件的目的：一是让app和vm绑定，二是浏览器并不能识别.vue文件，所以根本展示不了，因此：需要将.vue文件转成js文件，这样浏览器就能解析了
 
-```html
-
+```javascript
 // 1、引入app组件
 import App from "./2App.vue"
 
@@ -5009,14 +5098,13 @@ new Vue({
     el: '#App',
     components: {App}
 })
-
 ```
 
 
 
 ###### 2.3.1.4、创建容器
 
-- 前面app组件和vm绑定了，但是vm中指定的el值，它绑定的容器还没有啊，因此：创建index.html
+前面app组件和vm绑定了，但是vm中指定的el值，它绑定的容器还没有啊，因此：创建index.html
 
 ```html
 <!DOCTYPE html>
@@ -5055,32 +5143,51 @@ new Vue({
 </html>
 ```
 
+经过上面的操作之后，玩Vue单文件组件的流程也就完了，整体结构就是如下所示
 
-
-- 经过上面的操作之后，玩Vue单文件组件的流程也就完了，整体结构就是如下所示
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161054714-740929296.png)
-
-
-
-
-
-- 而整个流程按照解析的逻辑来看就是如下流程
-  - 1、进入index.html，创建了div id = "App"容器，然后引入vue.js，再引入main.js
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161409322-1213574856.png)
-  - 2、但是：引入main.js，去main.js里面开始解析时，发现：需要引入App.vue，所以：接着引入App.vue
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161552112-2142762492.png)
-  - 3、进入App.vue，又发现需要引入Person.vue
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161700474-501141588.png)
-  - 4、将所有东西都引入完了之后，就可以依次进行渲染了（ 逻辑就不说明了 ），而经过上面的逻辑梳理之后会发现：**main.js就是入口，是从main.js开始引入，从而把其他的东西也给引入进来了**
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161054714-740929296.png)
 
 
 
 
 
-**当然：以上的东西弄完之后，还启动不了，一启动就会报错**
+而整个流程按照解析的逻辑来看就是如下流程
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123162126603-891348612.png)
-- 这是因为：浏览器不能解析ES6语法，这需要使用另外一个技术，脚手架来支持
+1. 进入index.html，创建了div id = "App"容器，然后引入vue.js，再引入main.js
+
+s
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161409322-1213574856.png" alt="image" style="zoom:50%;" />
+
+
+
+2. 但是：引入main.js，去main.js里面开始解析时，发现：需要引入App.vue，所以：接着引入App.vue
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161552112-2142762492.png" alt="image" style="zoom:67%;" />
+
+
+
+3. 进入App.vue，又发现需要引入Person.vue
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123161700474-501141588.png" alt="image" style="zoom:50%;" />
+
+
+
+4. 将所有东西都引入完了之后，就可以依次进行渲染了（ 逻辑就不说明了 ），而经过上面的逻辑梳理之后会发现：**main.js就是入口，是从main.js开始引入，从而把其他的东西也给引入进来了**
+
+
+
+
+
+当然：以上的东西弄完之后，还启动不了，一启动就会报错。这是因为：浏览器不能解析ES6语法，这需要使用另外一个技术，脚手架来支持
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123162126603-891348612.png" alt="image" style="zoom:67%;" />
+
+
 
 
 
@@ -5094,10 +5201,13 @@ new Vue({
 
 ##### 2.3.2、认识脚手架 vue cli
 
-- cli全称： command line interface  即：命令行接口工具，但是：一般说的都是脚手架，正规名字说起来太官方、绕口
+cli全称： command line interface  即：命令行接口工具，但是：一般说的都是脚手架，正规名字说起来太官方、绕口
 
-- 在vue官网有这个脚手架生态
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123165415132-1175644696.png)
+在vue官网有这个脚手架生态
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123165415132-1175644696.png" alt="image" style="zoom:50%;" />
+
+
 
 
 
@@ -5105,147 +5215,120 @@ new Vue({
 
 ###### 2.3.2.1、使用nodejs配置脚手架
 
-- 前提：保证自己的电脑有nodejs，玩后端的人要是不了解nodejs的话，就把它理解为服务器，低配版的tomcat，
-- nodejs的配置很简单，官网进行下载、一直next、最后修改环境变量
-  - **有个注意点：选择安装目录时，别把nodejs安装到系统C盘了，不然很大可能出现权限不足，无法操作的问题，特别是：如果自己的电脑没升级，还是家庭版的而不是专业版的，这种问题更常见**
-    - **出现这种问题就需要切换到管理员身份运行cmd才可以进行安装vue-cli了，甚至有时会奇葩点：需要在管理员身份下运行npm clean cache –force** 
-    - **然后再进入到C盘的用户目录下的appdata/roaming下把一个叫做nom-cache这个缓存文件删了，最后再用管理员身份运行npm clean cache –force清除缓存，搞完这些才可以安装vue cli脚手架**
-  - nodejs官网：https://nodejs.org/en/download/
+==前提：保证自己的电脑有nodejs==
+
+nodejs的配置很简单，[官网](https://nodejs.org/en/download/) 进行下载、一直next、最后修改环境变量。LTS就是稳定版，而CURRENT就是更新版（ 新特性就丢在这里面的，可能会出现bug，所以不推荐下载 ）
+
+**有个注意点：选择安装目录时，别把nodejs安装到系统C盘了，不然很大可能出现权限不足，无法操作的问题，特别是：如果自己的电脑没升级，还是家庭版的而不是专业版的，这种问题更常见**
+
+- 出现这种问题就需要切换到管理员身份运行cmd才可以进行安装vue-cli了，甚至有时会奇葩点：需要在管理员身份下运行npm clean cache –force
+- 然后再进入到C盘的用户目录下的appdata/roaming下把一个叫做nom-cache这个缓存文件删了，最后再用管理员身份运行npm clean cache –force清除缓存，搞完这些才可以安装vue cli脚手架
+
+
+
+安装成功之后是如下效果
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124203603494-173365100.png" alt="image" style="zoom:50%;" />
+
+
+
+查看一下是否成功？
+
+- 进入dos窗口（ win+r，输入cmd回车 ），以下内容表明成功
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230816013905231-1921984768.png" alt="image" style="zoom:67%;" />
+
+
+
+但是：现在npm的配置和缓存文件都在 C/user/appdata/roaming/npm 和 appdata/local/npm-cache 中的
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230816014021609-1894023860.png" alt="image" style="zoom:67%;" />
+
+
+
+因此：我们需要去改动这两个地方（ 知道了这两个目录，不用改也可以，后面什么事都可以不做了，对后续的操作没影响的 ，嫌麻烦就可以改）
+
+1. **在安装的nodejs中新建 node_globa l和 node_cache 两个文件夹**（ 前为全局配置路径，后为npm缓存路径 ）
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124204421306-719446743.png" alt="image" style="zoom:80%;" />
+
+
+
+2. 执行如下命令（ 路径记得复制成自己的 ），**另外记得用管理员权限打开命令行窗口**
+
+- ```shell
+  全局设置
+  C:\WINDOWS\system32>npm config set prefix "D:\install\Nodejs\node_global"
   
-  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125151458261-1796353557.png)
+  C:\WINDOWS\system32>npm config set cache "D:\install\Nodejs\node_cache"
   
-  - LTS就是稳定版，而CURRENT就是更新版（ 新特性就丢在这里面的，可能会出现bug，所以不推荐下载 ）
   
-  - 其中下载msi和zip都可以，区别就是msi是直接帮你把环境变量配好了的，当然：也有其他的区别，而zip就是解压之后，自己进到目录下复制路径，然后配置在“系统环境变量”的path目录中即可，这些操作玩java的第一天就弄了jdk的环境变量，所以再熟悉不过了，而如果是前端人员，下载的是zip，那就百度配置环境变量吧。安装成功之后是如下效果
-    
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124203603494-173365100.png)
-    
-    - 查看一下是否成功？
-    
-      - 进入dos窗口（ win+r，输入cmd ）
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124203818260-330076470.png)
-      - 表明成功
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      - 但是：现在npm的配置和缓存文件都在C盘用户目录/appdata/roaming/npm 和 appdata/local/npm-cache中的
-    
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124204113498-1964375258.png)
-    
-      - 因此：我们需要去改动这两个地方（ 知道了这两个目录，不用改也可以，后面什么事都可以不做了，对后续的操作没影响的 ，嫌麻烦就可以改）
-    
-        - **1、在安装的nodejs中新建node_global和node_cache两个文件夹**（ 前为全局配置路径，后为npm缓存路径 ）
-    
-          - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124204421306-719446743.png)
-    
-        - **2、执行如下命令**（ 路径记得复制成自己的 ），**另外记得用管理员权限打开命令行窗口**
-    
-          - ```html
-            
-            全局设置
-            C:\WINDOWS\system32>npm config set prefix "D:\install\Nodejs\node_global"
-            
-            C:\WINDOWS\system32>npm config set cache "D:\install\Nodejs\node_cache"
-            
-            检查是否成功
-            C:\WINDOWS\system32>npm config get prefix
-            D:\install\Nodejs\node_global
-            
-            C:\WINDOWS\system32>npm config get cache
-            D:\install\Nodejs\node_cache
-            
-            ```
-    
-          - 可见成功修改，但是：还需要做最后一步，去改环境变量（ 使用msi安装是默认配好了的 ）
-    
-            - 在改环境变量之前，在刚刚新建的node_global目录下，再新建一个node_modules目录
-              - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124210635877-365488382.png)
-    
-        - **3、修改环境变量**（ 后端人员再熟悉不过，如果前端人员不明白的，直接计算机右键，选择属性，选择高级系统设置，选择环境变量就可以了【家庭版和专业版、win10和win7不一样，自行查找】 ）
-    
-          - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124210530991-2024766786.png)
-          - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124210844612-739405396.png)
-          - 最后一路点OK即可，测试是否成功，可以选择安装一个vue包来测试
-          - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124234248888-1021672162.png)
-          - 此时可能出现报一堆的ERROR，最后一行的大概意思就是让使用 root/ admin...用户（ 也就是让用管理员运行dos窗口，再执行命令 ）
-    
-          
-    
-          
-    
-          **报一堆ERROR错误的解决办法：**
-    
-          - 此时：做一个操作即可，回到nodejs安装的根目录
-    
-            - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124233823266-2136979460.png)
-            - 右键选择属性、安全、高级
-            - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124234130066-2124034218.png)
-            - 当然：要是自己的电脑在这个安全界面中，直接编辑权限，然后把“写入权限”√上是可以的，那就直接√上，要是不行就接着往后看
-            - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124235210650-1112764189.png)
-            - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124235340948-1947998348.png)
-            - 然后再使用npm install -g xxx就可以了
-    
-            
-    
-            
-    
-            
-    
-            
-    
-            
-    
-            - 安装之后，在刚刚新建的node_global和node_cache中是有东西的
-            - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124211415181-31111214.png)
-            - **如果想要把全局配置恢复为初始化配置的话，也很简单，系统C盘用户目录/.npmrc的文件，删了就可以了**
-              - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125120314537-124024968.png)
+  检查是否成功
+  C:\WINDOWS\system32>npm config get prefix
+  D:\install\Nodejs\node_global
+  
+  C:\WINDOWS\system32>npm config get cache
+  D:\install\Nodejs\node_cache
+  
+  ```
+
+  可见成功修改，但是：还需要做最后一步，去改环境变量（ 使用msi安装是默认配好了的 ）
+  
+  在改环境变量之前，在刚刚新建的 node_global 目录下，再新建一个 node_modules 目录
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124210635877-365488382.png" alt="image" style="zoom:80%;" />
+
+
+
+3. **修改环境变量**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124210530991-2024766786.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124210844612-739405396.png" alt="image" style="zoom:50%;" />
+
+
+
+最后一路点OK即可，测试是否成功，可以选择安装一个vue包来测试
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124234248888-1021672162.png" alt="image" style="zoom:80%;" />
+
+
+
+此时可能出现报一堆的ERROR，最后一行的大概意思就是让使用 root/ admin...用户（ 也就是让用管理员运行dos窗口，再执行命令 ）
 
 
 
 
 
+**报一堆ERROR错误的解决办法：**
 
+此时：做一个操作即可，回到nodejs安装的根目录
 
-- 配置成功了nodejs之后，就可以使用npm指令了
-- 但是：npm是国外的，我们拉取东西时就犹如隔了一道墙，很慢，因此：拉取淘宝的镜像，从而使用cnpm来代替npm指令，拉取淘宝镜像链接：`npm install -g cnpm --registry=https://registry.npm.taobao.org` 或 `npm config set registry http://registry.npm.taobao.org` 这两个都可以，如果因为自己电脑原因出现卡顿，进度条走得很慢、或不走了，那直接敲一下回车就可以了
-  - 这两个淘宝镜像，建议用前者，另外：从拉取镜像这里开始就一定要保证自己的网络流畅、电脑性能稍微好一点，不然很容易导致一是淘宝镜像拉取失败（ 看起来成功了，但是一用就报cnpm不是内部命名 ，这种情况要么权限不够，需要管理员身份打开dos窗口；要么cnpm没拉完整），二是后面安装脚手架时，要是网络和电脑不好，也很容易出现看起来成功了，但是：一用就发现vue不是内部指令
-  - 下图是我重新拉取一遍的效果
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123201331716-1148811536.png)
-
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124233823266-2136979460.png" alt="image" style="zoom:67%;" />
 
 
 
+右键选择属性、安全、高级
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124234130066-2124034218.png" alt="image" style="zoom:50%;" />
 
 
 
-- **1、全局安装@vue/cli，指令：npm install -g @vue/cli**
-  - npm 是nodejs的指令 拉取了淘宝镜像之后，就可以使用cnpm代替了 
-  - install 就是安装的意思
-  - -g 是全局安装
-  - @vue/cli  是安装的东西
-  - 有个注意点：要是有人知道可以使用npm install -g vue-cli这样安装脚手架的话，可以用，没错的，但是：目前别这么安装（ 它安装的脚手架是2.x的，用这种方式安装的不能保证vue（ 目前版本是1 — 3 ）和vue-cli（ 目前版本是1 — 4 ）的版本很适合，所以后续使用一些命令时可能会出现版本不足的问题，让把版本升级，而使用@vue/cli安装的是最新版本
-  - 对于后端人员来说，这些指令太简单了，所以后续不说明了，下图是我重新安装了一次的结果
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124114711647-128821750.png)
+当然：要是自己的电脑在这个安全界面中，直接编辑权限，然后把“写入权限”√上是可以的，那就直接√上，要是不行就接着往后看
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124235210650-1112764189.png" alt="image" style="zoom:50%;" />
 
 
 
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124235340948-1947998348.png" alt="image" style="zoom:50%;" />
 
 
-- **2、创建一个文件夹，并进入目录中，使用指令：vue create xxxx**
-  - vue create  是cli3.x的命令，要是前面安装脚手架时是乱整的，就会发现：这个命令用不了，要是出现这样的话，那么执行一遍这个命令，会提示你：卸载以前的cli，然后执行什么命令安装cli
-  - xxx 就是要创建的项目名
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124115347252-1595446195.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124115640959-1213435605.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124120847991-770527317.png)
-    - 出现如上图就说明在开始拉取依赖了
+
+然后再使用npm install -g xxx就可以了
 
 
 
@@ -5257,18 +5340,15 @@ new Vue({
 
 
 
+安装之后，在刚刚新建的 node_global 和 node_cache 中是有东西的
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124211415181-31111214.png" alt="image" style="zoom:67%;" />
 
 
-- **3、启动项目**
 
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124121652987-1193057104.png)
+**如果想要把全局配置恢复为初始化配置的话，也很简单，系统C盘用户目录/.npmrc的文件，删了就可以了**
 
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124123522782-524045639.png)
-
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124123654310-967872506.png)
-
-    想要退出启动的程序，一是直接点窗口右上角的×，二是按两次ctrl+c即可
-
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125120314537-124024968.png" alt="image" style="zoom:80%;" />
 
 
 
@@ -5276,83 +5356,165 @@ new Vue({
 
 
 
+配置成功了nodejs之后，就可以使用npm指令了
+
+但是：npm是国外的，我们拉取东西时就犹如隔了一道墙，很慢
+
+因此：拉取淘宝的镜像，从而使用cnpm来代替npm指令，拉取淘宝镜像链接：`npm install -g cnpm --registry=https://registry.npm.taobao.org` 或 `npm config set registry http://registry.npm.taobao.org` 
+
+这两个淘宝镜像，建议用前者，拉取镜像这里开始就一定要保证自己的网络流畅，不然很容易导致一是淘宝镜像拉取失败（ 看起来成功了，但是一用就报cnpm不是内部命名 ，这种情况要么权限不够，需要管理员身份打开dos窗口；要么cnpm没拉完整），二是后面安装脚手架时，要是网络不好，也很容易出现看起来成功了，但是：一用就发现vue不是内部指令
 
 
 
-**以下内容是以前使用vue init webpack xxx来安装的vue-cli**
+下图是我重新拉取一遍的效果
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123201331716-1148811536.png" alt="image" style="zoom:80%;" />
+
+
+
+
+
+
+
+1. **全局安装@vue/cli**。指令： ``
+
+- npm 是nodejs的指令 拉取了淘宝镜像之后，就可以使用cnpm代替了 
+- install 就是安装的意思
+- -g 是全局安装
+- @vue/cli  是安装的东西
+
+有个注意点：要是有人知道可以使用 `npm install -g vue-cli` 这样安装脚手架的话，可以用，没错的，但是：目前别这么安装。它安装的脚手架是2.x的，用这种方式安装的不能保证vue（ 目前版本是1-3 ）和vue-cli（ 目前版本是1-4 ）的版本很适合，所以后续使用一些命令时可能会出现版本不足的问题，让把版本升级，而使用@vue/cli安装的是最新版本
+
+
+
+2. **创建一个文件夹，并进入目录中。** 使用指令：`vue create xxxx`
+
+- vue create  是cli3.x的命令，要是前面安装脚手架时是乱整的，就会发现：这个命令用不了，要是出现这样的话，那么执行一遍这个命令，会提示你：卸载以前的cli，然后执行什么命令安装cli
+- xxx 就是要创建的项目名
+  
+  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124115347252-1595446195.png)
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124115640959-1213435605.png" alt="image" style="zoom:67%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124120847991-770527317.png" alt="image" style="zoom:80%;" />
+  
+  
+  
+  出现如上图就说明在开始拉取依赖了
+
+
+
+
+
+3. **启动项目**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124121652987-1193057104.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124123522782-524045639.png" alt="image" style="zoom:67%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124123654310-967872506.png" alt="image" style="zoom:50%;" />
+
+
+
+想要退出启动的程序，一是直接点窗口右上角的×，二是按两次ctrl+c即可
+
+
+
+
+
+
+
+
+
+
+
+**以下内容是以前使用 vue init webpack xxx 来安装的vue-cli**
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123224456196-511773944.png)
 
-- 查看一下自己的vue-cli安装成功没有，指令： vue list
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123224709173-1717680453.png)
-  - vue-cli安装成功之后，想找它就在 用户目录/appdata/roaming/npm/node_modules中可以看到
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123233314203-131102479.png)
-- 当然：有可能有些不听劝的人在安装nodejs时，搞了一些不必要的操作，导致有些文件需要管理员权限才可以，因此：就会出现这里安装vue-cli时失败，报的错就是什么node_glob.....爪子之类的，总之：就是权限不够，然后使用管理员身份做前面的操作就发现突然吃鸡了，这就是典型的权限不够导致的（ 这样的话，以后：你使用vue相关的东西时，就都得使用管理员权限才可以进行操作 ）
+
+
+查看一下自己的vue-cli安装成功没有，指令： `vue list`
+
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123224709173-1717680453.png)
+
+
+
+vue-cli安装成功之后，想找它就在 C/user/appdata/roaming/npm/node_modules中可以看到
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123233314203-131102479.png" alt="image" style="zoom:80%;" />
+
+
+
+当然：有可能有些不听劝的人在安装nodejs时，搞了一些不必要的操作，导致有些文件需要管理员权限才可以
+
+因此：就会出现这里安装vue-cli时失败，报的错就是什么node_glob.....爪子之类的，总之：就是权限不够，然后使用管理员身份做前面的操作就发现突然吃鸡了，这就是典型的权限不够导致的。这样的话，以后：你使用vue相关的东西时，就都得使用管理员权限才可以进行操作
 
 
 
 
 
+2. 创建一个文件夹，然后进入文件夹，使用指令：`vue init webpack xxxx`，进去之后会做一些操作
 
-
-
-
-
-
-
-
-- 2、创建一个文件夹，然后进入文件夹，使用指令：vue init webpack xxxx，进去之后会做一些操作
-  - init 就是初始化嘛
-  - webpack 就是骨架，就像建楼一样建好的地基
-  - xxxx 就是要创建的项目名
+- init 就是初始化嘛
+- webpack 就是骨架，就像建楼一样建好的地基
+- xxxx 就是要创建的项目名
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123230913100-1500270612.png)
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123231358449-740612857.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123231358449-740612857.png" alt="image" style="zoom:80%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123231547815-1518469652.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123231547815-1518469652.png" alt="image" style="zoom:80%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123231828958-535144602.png)
-
-- 当然：上面的那个单词可能是错的，我记不清了^ _ ^ 反正单词大概是那个
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123231828958-535144602.png" alt="image" style="zoom:80%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123232242209-1195281782.png)
+当然：上图中的那个babale单词可能是错的，我记不清了^ _ ^ 。反正单词大概是那个
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123232242209-1195281782.png" alt="image" style="zoom:80%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123232442821-786002566.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123232442821-786002566.png" alt="image" style="zoom:80%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123232528562-387534918.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220123232528562-387534918.png" alt="image" style="zoom:80%;" />
 
 
 
-**上面这些记不住没关系，在没选择安路由之前一路回车，然后开始选择时一路no，最后选择use npm即可（后续把东西学完了，那就可以把对应的东西装上了）**
+上面这些记不住没关系，在没选择安路由之前一路回车，然后开始选择时一路no，最后选择use npm即可。后续把东西学完了，那就可以把对应的东西装上了
+
+拉取完了之后，就是下面的样子
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124000435774-1577274690.png" alt="image" style="zoom:50%;" />
 
 
 
-- 拉取完了之后，就是下面的样子
+然后进到创建的项目中，使用 `npm run dev` ，会得到一个网址，浏览器访问就可以了
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124000435774-1577274690.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124000634231-347325800.png" alt="image" style="zoom:80%;" />
 
 
 
-- 然后进到创建的项目中，使用npm run dev ，会得到一个网址，浏览器访问就可以了
+上面这个窗口别关了啊，不然使用地址访问不了的
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124000634231-347325800.png)
-
-- 上面这个窗口别关了啊，不然使用地址访问不了的
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124000820652-1925980113.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124000820652-1925980113.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5368,45 +5530,72 @@ new Vue({
 
 ###### 2.3.2.2、分析cli构建的项目
 
-- 使用vscode打开刚刚编译的项目
+使用vscode打开刚刚编译的项目
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124131334491-1962512195.png)
-
-
-
-**1、package-lock.json**
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124131821267-1341027372.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124131334491-1962512195.png" alt="image" style="zoom:50%;" />
 
 
 
+1. **package-lock.json**
 
 
 
-
-**2、package.json**
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124132435622-353885971.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124131821267-1341027372.png" alt="image" style="zoom:50%;" />
 
 
 
 
 
-- 以上就是基础的东西，接下来就对照前面手写的单文件组件思路来分析接下来的东西，那时说过：main.js是入口，所以cli脚手架程序就从main.js入手（ 在cli中为什么它是入口？脚手架底层做的处理 ）
-  - **1、main.js**
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124133345173-115160960.png)
-  - **2、引入了App.vue组件，那就接着分析App.vue组件**
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124133732427-1649975600.png)
-    - **注意：**
-      - **assets目录是专门用来放静态资源的，如：png、mp3...（ 后端的人就把这个目录当做是SpringBoot中的那个static目录 ）**
-      - **components目录是专门用来放组件的（ App.vue是一人之下【vm】万人之上【其他任何组件】，所以不在这里面 ）**
-  - **3、上面引入了helloword组件，而那里面就是一堆正常的组件写法**
-  - **4、分析的差不多了，但是：还少了一个重要的东西，容器在哪里？**
-    - 就在index.html中，而这个东西有一个专门的public目录来放
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124140454984-928687964.png)
-  - 经过前面的分析之后，再结合上次写的单文件组件，就知道对应的东西写在哪里了
-  - 顺便说一下：vscode中启动vue程序，按ctrl + 飘字符（ esc下面、tab上面的那个按键 ）唤出控制台，后面的就知道怎么做了（ 做了修改之后，按ctril+s保存时会自动重新编译 ）
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124142110157-246393884.png)
+2. **package.json**
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124132435622-353885971.png" alt="image" style="zoom:50%;" />
+
+
+
+
+
+以上就是基础的东西，接下来就对照前面手写的单文件组件思路来分析接下来的东西，那时说过：main.js是入口，所以cli脚手架程序就从main.js入手（ 在cli中为什么它是入口？脚手架底层做的处理 ）
+
+1. **main.js**
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124133345173-115160960.png" alt="image" style="zoom:50%;" />
+
+
+
+2. **引入了App.vue组件，那就接着分析App.vue组件**
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124133732427-1649975600.png" alt="image" style="zoom:50%;" />
+
+
+
+**注意：**
+
+- assets目录是专门用来放静态资源的，如：png、mp3...（ 后端的人就把这个目录当做是SpringBoot中的那个static目录 ）
+- components目录是专门用来放组件的（ App.vue是一人之下【vm】万人之上【其他任何组件】，所以不在这里面 ）
+
+
+
+3. 上面引入了helloword组件，而那里面就是一堆正常的组件写法
+
+4. **分析的差不多了，但是：还少了一个重要的东西，容器在哪里？**
+
+就在index.html中，而这个东西有一个专门的public目录来放
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124140454984-928687964.png" alt="image" style="zoom:50%;" />
+
+
+
+经过前面的分析之后，再结合上次写的单文件组件，就知道对应的东西写在哪里了
+
+顺便说一下：vscode中启动vue程序，按ctrl + 飘字符（ esc下面、tab上面的那个按键 ）唤出控制台，后面的就知道怎么做了（ 做了修改之后，按ctril+s保存时会自动重新编译 ）
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124142110157-246393884.png" alt="image" style="zoom:80%;" />
 
 
 
@@ -5416,56 +5605,102 @@ new Vue({
 
 ###### 2.3.2.3、认识render()函数
 
-- 把前面编译好的例子改一下（ 我的是把前面疏通流程的代码拷贝进来的 ）
+把前面编译好的例子改一下（ 我的是把前面疏通流程的代码拷贝进来的 ）
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124145334881-365075270.png)
-
-
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124145755184-654511578.png)
-
-- 原因就是：代码中的一句话
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124150003003-191714192.png)
-  - 那就去看一下vue到底有哪些版本？按住ctrl+鼠标点引入的vue哪里，点vue就进去了
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124154747939-803537596.png)
-    - 点开它的包说明：就发现引入的是dist/vue.runtime.esm.js
-      - ![1643010690677](C:\Users\ZiXieQing\AppData\Roaming\Typora\typora-user-images\1643010690677.png)
-    - 随便选择一个右键在资源管理器中显示，就可以看到文件大小（ 可以和vue.js对比，就少了100kb作用而已，少的就是模板解析器，但是：少的这部分用处很大 ）
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124155500562-183094492.png)
-    - **vue为什么要搞出这么多版本？**
-      - 这是因为vue其实就是将webpack进行了封装，然后添加了一些技术，从而搞出来的，所以webpack在进行打包时会将.vue转成.js从而实现渲染（ 后端人员不懂webpack的，就粗暴的把它当做是maven中的install打包，当然：compile编译等等这些指令功能也在vue中有相同的效果的实现机制 ）
-      - 而程序编写完了之后，webpack本身就支持将.vue转成.js，那使用webpack打包时，模板解析器就不应该出现了（ 模板解析器就是编写时解析而已 ），所以真实打包时如果出现了模板解析器出现一个骚气的事情，举个例子：去做某事
-        - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124160713487-160747400.png)
-        - 整出那么多版本的原因就知道了呗，减少程序体积、提高性能嘛
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124145334881-365075270.png" alt="image" style="zoom:50%;" />
 
 
 
-
-
-- **回到前面报的错，怎么解决？控制台已经把答案给的很明确了**
-  - 1、使用包含模板解析器的vue就可以了
-  - 2、使用render()函数实现模板解析器的效果
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124145755184-654511578.png" alt="image" style="zoom:50%;" />
 
 
 
-- **1、使用包含模板解析器的vue最简单**
-  - 引入的vue有问题，那就改一下嘛
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124161743678-1801269679.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124161831837-805823150.png)
+原因就是：代码中的一句代码
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124150003003-191714192.png" alt="image" style="zoom:50%;" />
+
+
+
+那就去看一下vue到底有哪些版本？按住ctrl+鼠标点引入的vue哪里，点vue就进去了
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124154747939-803537596.png" alt="image" style="zoom:50%;" />
+
+
+
+点开它的包说明：就发现引入的是 dist/vue.runtime.esm.js
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230816020553150-1481614038.png" alt="image" style="zoom:80%;" />
+
+
+
+随便选择一个右键在资源管理器中显示，就可以看到文件大小（ 可以和vue.js对比，就少了100kb作用而已，少的就是模板解析器，但是：少的这部分用处很大 ）
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124155500562-183094492.png" alt="image" style="zoom:80%;" />
 
 
 
 
 
-- **2、使用render()函数来实现解析template的功能**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124162434252-160461777.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124162540580-913715600.png)
-  - 知道了render()的结构，那就去实现解析template的功能
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124162919511-179701005.png)
-    - 然后兰姆达表达式简写不就成原来的样子了吗
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124163347741-264128374.png)
-      - App就是h2，因为：App是一个组件，使用时就是<App/> 或 <App><App>
-      - 这个render()函数也就在vm绑定容器时会用到，其他地方见都见不到的
+**vue为什么要搞出这么多版本？**
+
+- 这是因为vue其实就是将webpack进行了封装，然后添加了一些技术，从而搞出来的，所以webpack在进行打包时会将.vue转成.js从而实现渲染（ 后端人员不懂webpack的，就粗暴的把它当做是maven中的install打包，当然：compile编译等等这些指令功能也在vue中有相同的效果的实现机制 ）
+- 而程序编写完了之后，webpack本身就支持将.vue转成.js，那使用webpack打包时，模板解析器就不应该出现了（ 模板解析器就是编写时解析而已 ），所以真实打包时如果出现了模板解析器出现一个骚气的事情，举个例子：去做某事
+
+![image](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230816020656844-1054643759.png)
+
+- 整出那么多版本的原因就知道了呗，减少程序体积、提高性能嘛
+
+
+
+
+
+**回到前面报的错，怎么解决？控制台已经把答案给的很明确了**
+
+1. 使用包含模板解析器的vue就可以了
+2. 使用render()函数实现模板解析器的效果
+
+
+
+
+
+1. **使用包含模板解析器的vue最简单**。引入的vue有问题，那就改一下嘛
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124161743678-1801269679.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124161831837-805823150.png" alt="image" style="zoom:50%;" />
+
+
+
+
+
+2. **使用render()函数来实现解析template的功能**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124162434252-160461777.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124162540580-913715600.png" alt="image" style="zoom:50%;" />
+
+
+
+知道了render()的结构，那就去实现解析template的功能
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124162919511-179701005.png" alt="image" style="zoom:50%;" />
+
+
+
+然后兰姆达表达式简写不就成原来的样子了吗
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124163347741-264128374.png" alt="image" style="zoom:67%;" />
+
+
+
+- App就是h2，因为：App是一个组件，使用时就是<App/> 或 <App><App>
+- 这个render()函数也就在vm绑定容器时会用到，其他地方见都见不到的
+
+
 
 
 
@@ -5475,37 +5710,46 @@ new Vue({
 
 ###### 2.3.2.4、关闭语法检测
 
-- 官网中有，改cli的全局配置也是一样的套路
+官网中有，改cli的全局配置也是一样的套路
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124191719808-1461663237.png)
-
-
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124191719808-1461663237.png" alt="image" style="zoom:50%;" />
 
 
 
-- **官网里面就是说新建一个vue.config.js的文件，这个文件必须和package.json是同级目录，然后要配置东西时，找对应的配置项，然后复制粘贴对应的内容（ 或改动一点自己要的配置项即可 ）**
+**官网里面就是说新建一个 vue.config.j s的文件，这个文件必须和package.json是同级目录，然后要配置东西时，找对应的配置项，然后复制粘贴对应的内容（ 或改动一点自己要的配置项即可 ）**
 
 
 
-- 关闭语法监测，就是名为lintOnSave的配置项罢了
-  - 创建vue.config.js文件
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124192225417-1234711484.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124193229516-1767731080.png)
+关闭语法监测，就是名为lintOnSave的配置项罢了
+
+创建vue.config.js文件
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124192225417-1234711484.png" alt="image" style="zoom:67%;" />
 
 
 
-- 经过上面的操作之后，就算定义一个变量，然后后面一直没用这个变量也不会导致项目启动不了了，否则：使用npm run serve时，就会报错，导致启动不了
-- 而创建这个vue.config.js文件能够修改cli的配置是因为：cli是在webpack的基础上做出来的，而webpack是在nodejs的基础上整出来的，因此：程序最后是将自己写的vue.config.js去和webpack中的进行了合并，从而就成功了
-- **另外：注意点**
-  - cli中不是什么都可以修改的
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124194042469-586304610.png)
-  - 想要重新改动，就在刚刚新建的vue.config.js中配置即可，但是注意：
-    - vue.config.js每一次更新都要使用npm run serve重新启动项目，否则不生效
-    - vue.config.js中不可以说：不用了加个注释，然后等后面用的时候再解开注释，这种是不行的，要么就配置，要么就不配置，否则：启动不了项目
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124193229516-1767731080.png" alt="image" style="zoom:67%;" />
 
 
 
-- 最后：vue隐藏了webpack的配置，要想查看默认配置的话，那就使用 ctrl+飘字符 唤出控制台后，输入：`vue inspect > output.js`，然后就会在项目中生成一个output.js文件，里面就有默认配置
+经过上面的操作之后，就算定义一个变量，然后后面一直没用这个变量也不会导致项目启动不了了，否则：使用npm run serve时，就会报错，导致启动不了
+
+而创建这个vue.config.js文件能够修改cli的配置是因为：cli是在webpack的基础上做出来的，而webpack是在nodejs的基础上整出来的，因此：程序最后是将自己写的vue.config.js去和webpack中的进行了合并，从而就成功了
+
+**注意点：cli中不是什么都可以修改的**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220124194042469-586304610.png" alt="image" style="zoom:67%;" />
+
+
+
+想要重新改动，就在刚刚新建的vue.config.js中配置即可，但是注意：
+
+- vue.config.js每一次更新都要使用npm run serve重新启动项目，否则不生效
+- vue.config.js中不可以说：不用了加个注释，然后等后面用的时候再解开注释，这种是不行的，要么就配置，要么就不配置，否则：启动不了项目
+
+
+
+最后：vue隐藏了webpack的配置，要想查看默认配置的话，那就使用 ctrl+飘字符 唤出控制台后，输入：`vue inspect > output.js`，然后就会在项目中生成一个output.js文件，里面就有默认配置
 
 
 
@@ -5521,21 +5765,21 @@ new Vue({
 
 ##### 2.3.3、认识ref属性
 
-- **这个属性是用来给“元素”或“子组件“注册引用信息（ 也就是id属性的替代者 ）**，这个小东西很重要，关系到后续组件与组件之间的通信
+> **这个属性是用来给“元素”或“子组件“注册引用信息（ 也就是id属性的替代者 ）**，这个小东西很重要，关系到后续组件与组件之间的通信
 
 
 
-我重新复制了一份src文件夹，用的时候把名字改回来就可以了（ 需要哪一个就把哪一个改为src，然后执行`npm run serve`就行了 ）
+重新复制一份src文件夹，用的时候把名字改回来就可以了（ 需要哪一个就把哪一个改为src，然后执行`npm run serve`就行了 ）
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125165515006-1461581243.png)
-
-
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125165515006-1461581243.png)
 
 
 
-**运行效果如下：**
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125170229428-212463198.png)
+
+运行效果如下：
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125170229428-212463198.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5545,17 +5789,37 @@ new Vue({
 
 **现在有一个需求：获取下图中的DOM结构**
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125170146624-1513069445.png)
-- 使用传统js来操作的话，就是`document.getElementById`进行获取，但是：Vue中提供得很ref属性来进行操作：**ref属性用来给“元素”或“子组件“注册引用信息（ 也就是id属性的替代者 ）**，所以**来见识第一个“元素”注册引用信息（ 在HTML元素中这个ref属性就和id属性是一样的效果 ）**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125174725543-1263064583.png)
-- **第二种：ref属性是在子组件上的**
-- **这种很重要，后面组件与组件之间交互的基础**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125175255026-1281822861.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125175520825-1375854787.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125175810510-1297581874.png)
-- **但是：这种和id就不同了，id是直接获得了子组件的DOM结构，而ref是获得了组件本身VueComponent**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125180337682-1244459103.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125180406421-130158996.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125170146624-1513069445.png" alt="image" style="zoom:50%;" />
+
+
+
+使用传统js来操作的话，就是`document.getElementById`进行获取，但是：Vue中提供得很ref属性来进行操作：**ref属性用来给“元素”或“子组件“注册引用信息（ 也就是id属性的替代者 ）**，所以**来见识第一个“元素”注册引用信息（ 在HTML元素中这个ref属性就和id属性是一样的效果 ）**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125174725543-1263064583.png" alt="image" style="zoom:50%;" />
+
+
+
+**第二种：ref属性是在子组件上的**。这种很重要，后面组件与组件之间交互的基础
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125175255026-1281822861.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125175520825-1375854787.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125175810510-1297581874.png" alt="image" style="zoom:50%;" />
+
+
+
+**但是：这种和id就不同了，id是直接获得了子组件的DOM结构，而ref是获得了组件本身VueComponent**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125180337682-1244459103.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125180406421-130158996.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5585,12 +5849,11 @@ new Vue({
 
 ##### 2.3.4、props配置-获取外传数据
 
-- 组件中的props配置就是为了获取从外部传到组件中的数据
-- **这个东西很有用，后续玩子传父、父传子就需要这个东西，而且开发中这个东西会经常看到**
+组件中的props配置就是为了获取从外部传到组件中的数据
 
+**这个东西很有用，后续玩子传父、父传子就需要这个东西，而且开发中这个东西会经常看到**
 
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125205905948-774319091.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125205905948-774319091.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5598,10 +5861,9 @@ new Vue({
 
 ###### 2.3.4.1、只接收数据
 
-**Person.vue组件编写内容**
+1. **Person.vue组件编写内容**
 
-```vue
-
+```javascript
 <template>
   <div>
       <h2>{{name}}</h2>
@@ -5621,15 +5883,11 @@ new Vue({
         props: ['name','sex','age','job','address']
     }
 </script>
-
 ```
 
+2. **App.vue组件编写内容**
 
-
-**App.vue组件编写内容**
-
-```vue
-
+```javascript
 <template>
   <div>
       <h1 ref="content">欢迎来到对抗路，对手信息如下</h1>
@@ -5646,22 +5904,17 @@ new Vue({
         components: {Person},
     }
 </script>
-
 ```
 
+3. **ctrl+s重新编译**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125223949591-688189741.png" alt="image" style="zoom:67%;" />
 
 
 
+效果如下
 
-**ctrl+s重新编译**
-
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125223949591-688189741.png)
-
-
-
-**效果如下**
-
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125211331501-394623151.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125211331501-394623151.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -5671,34 +5924,17 @@ new Vue({
 
 ###### 2.3.4.2、接收数据 + 数据类型限定
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125211750516-2033053660.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125211750516-2033053660.png" alt="image" style="zoom:50%;" />
 
 
 
-
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125212150003-399623477.png)
-
-- 至于限定类型有哪些？ 可以是下列原生构造函数中的一种 
-  -  `String`、`Number`、`Boolean`、`Array`、`Object`、`Date`、`Function`、`Symbol`、任何自定义构造函数、或上述内容组成的数组 
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125212150003-399623477.png" alt="image" style="zoom:50%;" />
 
 
 
+至于限定类型有哪些？ 可以是下列原生构造函数中的一种 
 
-
-
-
-
-
-
-
-###### 2.3.4.3、接收数据+限定类型+数据有无接收的必要+数据默认值
-
-- 这个东西，玩java的人看起来很熟悉，和ElasticSearch中的mapping映射很像
-
-
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213211929-312932137.png)
+-  `String`、`Number`、`Boolean`、`Array`、`Object`、`Date`、`Function`、`Symbol`、任何自定义构造函数、或上述内容组成的数组 
 
 
 
@@ -5706,7 +5942,19 @@ new Vue({
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213345579-104959398.png)
+
+
+
+
+###### 2.3.4.3、接收数据 + 限定类型 + 数据有无接收的必要 + 数据默认值
+
+这个东西，玩java的人看起来很熟悉，和ElasticSearch中的mapping映射很像
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213211929-312932137.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213345579-104959398.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5714,13 +5962,15 @@ new Vue({
 
 ###### 2.3.4.4、处理外部传入数据类型问题
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213836752-388137275.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213836752-388137275.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213900039-515003699.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125213900039-515003699.png" alt="image" style="zoom:50%;" />
 
-- 问题就轻轻松松解决了
+
+
+问题就轻轻松松解决了
 
 
 
@@ -5732,27 +5982,21 @@ new Vue({
 
 ###### 2.3.4.5、解决props接收数据之后，修改它的值
 
-- props配置中不是什么属性名的值都可以接收的，如：key、ref
+props配置中不是什么属性名的值都可以接收的，如：key、ref
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125215039684-1832642613.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125215039684-1832642613.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125215222367-2013917148.png" alt="image" style="zoom:50%;" />
 
 
 
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125215248952-1662209313.png" alt="image" style="zoom:50%;" />
 
 
 
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125215222367-2013917148.png)
-
-
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125215248952-1662209313.png)
-
-
-
-- 意思就是：key不能作为props接收的数据，原因就是因为：key这个属性被Vue给征用了，Vue底层需要使用diff算法嘛，它用了这个key关键字，所以我们不可以用它
+意思就是：key不能作为props接收的数据，原因就是因为：key这个属性被Vue给征用了，Vue底层需要使用diff算法嘛，它用了这个key关键字，所以我们不可以用它
 
 
 
@@ -5762,12 +6006,12 @@ new Vue({
 
 - 首先要知道，props被底层监视了的，所以它的东西只可以接收，不可以修改，想要接收了数据，再修改它，我们就需要借助data，中转一下
 
-
-
 - **先来看不中转，然后修改props中数据的下场**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125221526306-1840441672.png)
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125221526306-1840441672.png" alt="image" style="zoom:50%;" />
 - **使用data中转，从而修改数据**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125222448248-372621466.png)
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125222448248-372621466.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5823,28 +6067,41 @@ new Vue({
 
 ##### 2.3.5、mixin混入 / 混合
 
-- 这个东西就是把多个组件中共同的配置给抽取出来，然后单独弄成一个js文件，使用一个对象把相同配置给封装起来，然后在需要的组件中引入、使用mixins配置进行使用即可
-- 这种思想后端的人再熟悉不过了，工具类的编写不就是这么回事吗
+这个东西就是把多个组件中共同的配置给抽取出来，然后单独弄成一个js文件，使用一个对象把相同配置给封装起来，然后在需要的组件中引入、使用mixins配置进行使用即可
+
+这种思想后端的人再熟悉不过了，工具类的编写不就是这么回事吗
+
+
 
 
 
 ###### 2.3.5.1、使用
 
-**基础代码**
+基础代码
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125234214737-1481998040.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125234256448-796833478.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125234214737-1481998040.png" alt="image" style="zoom:50%;" />
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125234256448-796833478.png" alt="image" style="zoom:67%;" />
 
 
 
-**在上面的代码中，methods中的代码是相同的，因此：使用mixin混入来进行简化，也是三板斧而已**
+在上面的代码中，methods中的代码是相同的，因此：使用mixin混入来进行简化，也是三板斧而已
 
-- **1、新建js文件( 名字根据需要取即可 )**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125234948226-761121737.png)
-- **2、在需要的组件中引入抽取的代码和利用mixins配置进行使用**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125235844650-1906525931.png)
-- **3、运行效果**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125235922284-570346451.png)
+1. **新建js文件( 名字根据需要取即可 )**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125234948226-761121737.png" alt="image" style="zoom:67%;" />
+
+
+
+2. **在需要的组件中引入抽取的代码和利用mixins配置进行使用**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125235844650-1906525931.png" alt="image" style="zoom:50%;" />
+
+
+
+3. 运行效果
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220125235922284-570346451.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5854,14 +6111,29 @@ new Vue({
 
 **但是：mixin混入有一些注意点**
 
-- 1、除了生命周期，如果其他配置是在mixin中定义了，同时在组件中也定义了，那么：优先使用的是组件中自己定义的（ 无论二者相同与否都一样 ）
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126000605092-1366648685.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126000658310-1096365650.png)
-- 2、如果在mixin中定义了生命周期钩子函数，那么：优先使用mixin中的钩子函数
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126001042814-1082990613.png)
-  - 如果二者不同，那么就会造成二者中定义的都会被调用
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126001342232-448333417.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126001316150-975655428.png)
+1. 除了生命周期，如果其他配置是在mixin中定义了，同时在组件中也定义了，那么：优先使用的是组件中自己定义的（ 无论二者相同与否都一样 ）
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126000605092-1366648685.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126000658310-1096365650.png" alt="image" style="zoom:50%;" />
+
+
+
+2. 如果在mixin中定义了生命周期钩子函数，那么：优先使用mixin中的钩子函数
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126001042814-1082990613.png" alt="image" style="zoom:50%;" />
+
+
+
+如果二者不同，那么就会造成二者中定义的都会被调用
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126001342232-448333417.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126001316150-975655428.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -5873,9 +6145,10 @@ new Vue({
 
 **另外：mixin混入是支持全局配置的，不过这种操作不当会出现问题，因此：目前不建议用，需要时再玩吧，思路如下：**
 
-- 1、一样的创建js文件
-- 2、在App.vue中引入
-- 3、在App.vue中使用vue.mixin( 暴露对象1 ) 、vue.mixin( 暴露对象2 ).......
+1. 一样的创建js文件
+2. 在App.vue中引入
+3. 在App.vue中使用vue.mixin( 暴露对象1 ) 、vue.mixin( 暴露对象2 ).......
+
 - 使用了这三板斧之后，就可以实现全局配置了
 
 
@@ -5888,27 +6161,26 @@ new Vue({
 
 ###### 2.3.5.2、mixin混入总结
 
-- 功能：把多个组件共同的配置提取成一个混入对象
+功能：把多个组件共同的配置提取成一个混入对象
 
-- 使用方法：
+使用方法：
 
-  - 1、定义混入，如：
+1. 定义混入，如：
 
-    - ```js
-      
-      	暴露方式 const 对象名 {
-        		data(){......},
-               methods:{........},
-               ........
-          }
-      ```
+- ```js
+  	暴露方式 const 对象名 {
+    		data(){......},
+           methods:{........},
+           ........
+      }
+  ```
 
-  - 2、在需要的组件中引入混入
+2. 在需要的组件中引入混入
 
-  - 3、使用混入，如：
+3. 使用混入，如：
 
-    - 1）、局部混入：mixins: [ xxxxxx , ......... ]   ， 注意：这里必须用数组
-    - 2）、全局混入：Vue.mixin( xxxxx )
+- 1）、局部混入：mixins: [ xxxxxx , ......... ]   ， 注意：这里必须用数组
+- 2）、全局混入：Vue.mixin( xxxxx )
 
 
 
@@ -5926,49 +6198,53 @@ new Vue({
 
 ##### 2.3.6、插件
 
-- 这个东西的作用很大，它可以合理的增强Vue
+这个东西的作用很大，它可以合理的增强Vue
 
 
 
 **使用，也简单，还是三板斧**
 
-- 1、创建js文件（ 包含install()方法的一个对象 ）
-- 2、引入插件
-- 3、使用插件
+1. 创建js文件（ 包含install()方法的一个对象 ）
+
+2. 引入插件
+3. 使用插件
 
 
 
 ###### 2.3.6.1、玩一下插件
 
-**基础代码效果**
+基础代码效果
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126165956728-1132781743.png)
-
-
-
-**1、创建一个包含install()方法的对象的js文件**
-
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126170031243-574448295.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126165956728-1132781743.png" alt="image" style="zoom:50%;" />
 
 
 
+1. **创建一个包含 install() 方法的对象的js文件**
 
-
-**2、在main.js中引入、使用插件**
-
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126170251288-2089624736.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126170031243-574448295.png" alt="image" style="zoom:50%;" />
 
 
 
-**3、效果如下**
+2. **在main.js中引入、使用插件**
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126170406161-883176753.png)
-- 可以得知：**创建的插件中传递的那个参数Vue就是vm( Vue实例对象 ）的缔造者 —— vue构造函数**
-- 得到上面哪那个结果就很重要了，试想：我们使用这个构造函数做过什么事？
-  - 自定义全局指令 Vue.directive
-  - 定义全局过滤器 Vue.filter
-  - 定义全局混入 Vue.mixin
-  - ........
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126170251288-2089624736.png" alt="image" style="zoom:50%;" />
+
+
+
+3. 效果如下
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126170406161-883176753.png" alt="image" style="zoom:50%;" />
+
+
+
+可以得知：**创建的插件中传递的那个参数Vue就是vm( Vue实例对象 ）的缔造者 —— vue构造函数**
+
+得到上面哪那个结果就很重要了，试想：我们使用这个构造函数做过什么事？
+- 自定义全局指令 Vue.directive
+- 定义全局过滤器 Vue.filter
+- 定义全局混入 Vue.mixin
+- ........
+
 - 把这些东西放到创建插件的install()中可行？它接受的参数就是Vue嘛
 
 
@@ -5979,24 +6255,43 @@ new Vue({
 
 
 
-**正宗玩法**
+正宗玩法
 
-- 1、创建包含install()方法的对象的js文件
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126190907159-439134576.png)
-- 2、在main.js中引入插件、应用组件
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191141701-220958625.png)
-- 3、使用插件中的东西
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191252611-967272338.png)
-- 4、效果如下：
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191346550-1361854856.png)
+1. 创建包含install()方法的对象的js文件
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126190907159-439134576.png" alt="image" style="zoom:50%;" />
 
 
 
-**当然：我们也可以给插件中传东西进去**
+2. 在main.js中引入插件、应用组件
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191906110-73038836.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126192143010-1266926236.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126192230618-824451287.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191141701-220958625.png" alt="image" style="zoom:50%;" />
+
+
+
+3. 使用插件中的东西
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191252611-967272338.png" alt="image" style="zoom:50%;" />
+
+
+
+4. 效果如下：
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191346550-1361854856.png" alt="image" style="zoom:67%;" />
+
+
+
+当然：我们也可以给插件中传东西进去
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126191906110-73038836.png" alt="image" style="zoom:67%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126192143010-1266926236.png" alt="image" style="zoom:67%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126192230618-824451287.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -6012,48 +6307,47 @@ new Vue({
 
 ###### 2.3.6.2、插件总结
 
-- 功能：用于增强Vue
+功能：用于增强Vue
 
-- 本质：是包含install()方法的一个对象的js文件，install的第一个参数是Vue，第二个以后的参数是插件使用者传递的数据
+本质：是包含install()方法的一个对象的js文件，install的第一个参数是Vue，第二个以后的参数是插件使用者传递的数据
 
-- 插件的玩法：
+插件的玩法：
 
-  - 1、定义插件：
+1. 定义插件：
 
-    - ```js
-      
-      // 1、创建插件  export default 是自己选择的暴露方式
-      export default {
-          install(Vue,[ other params ]){
+- ```js
+  
+  // 1、创建插件  export default 是自己选择的暴露方式
+  export default {
+      install(Vue,[ other params ]){
+          
+          // 定义全局过滤器
+          Vue.filter( ..... ),
               
-              // 定义全局过滤器
-              Vue.filter( ..... ),
-                  
-              Vue.directive( ...... ),
-                         
-              Vue.mixin( ....... )
-              .........
-          }
+          Vue.directive( ...... ),
+                     
+          Vue.mixin( ....... )
+          .........
       }
+  }
+  
+  ```
+
+2. 在main.js中引入插件
+
+3. 在main.js中向Vue应用插件  Vue.use( 插件名 )
+
+4. [ 使用插件中定义的东西 ] ———— 可有可无，看自己的代码情况
+
+- 这里注意一个东西：定义插件中的install()第一个参数是Vue，即：vm的缔造者，Vue构造函数（ 这里可以联想原型对象，也就是前面说的vm和vc的内置关系：`VueComponent.prototype._ _proto _ _ === Vue.prototype`，这也就是说在Vue身上加点东西，那么：vm和vc都可以拿到，如：
+
+  - ```javascript
+    	Vue.prototype.$myMethod = function(){ ...... }
+      	Vue.prototype.$myProperty = xxxx
       
-      ```
-
-  - 2、在main.js中引入插件
-
-  - 3、在main.js中向Vue应用插件  Vue.use( 插件名 )
-
-  - [ 4、使用插件中定义的东西 ] ———— 可有可没有，看自己的代码情况
-
-  - 这里注意一个东西：定义插件中的install()第一个参数是Vue，即：vm的缔造者，Vue构造函数（ 这里可以联想原型对象，也就是前面说的vm和vc的内置关系：`VueComponent.prototype._ _proto _ _ === Vue.prototype`，这也就是说在Vue身上加点东西，那么：vm和vc都可以拿到，如：
-
-    - ```vue
-      
-      	Vue.prototype.$myMethod = function(){ ...... }
-        	Vue.prototype.$myProperty = xxxx
-        
-      prototype路线是加东西
-      _ _proto_ _路线是取东西
-      ```
+    prototype 路线是加东西
+    _ _proto_ _ 路线是取东西
+    ```
 
 
 
@@ -6065,38 +6359,21 @@ new Vue({
 
 ##### 2.3.7、scoped局部样式
 
-- 作用：让样式在局部生效，防止冲突
-- 写法：`<style scoped>`
+作用：让样式在局部生效，防止冲突
+
+写法：`<style scoped>`
 
 
 
 
 
-**假如有两个组件，里面都用了同一个class类名，但是做的style却是不一样的**
+假如有两个组件，里面都用了同一个class类名，但是做的style却是不一样的
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205305947-257242726.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205423582-767394005.png)
-
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205305947-257242726.png" alt="image" style="zoom:50%;" />
 
 
 
-
-
-
-**此时如果把两个class名字改成一样呢？开发中样式多了这种事情是在所难免的**
-
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205549405-1022484063.png)
-
-
-
-
-
-**凭什么就是Person2.vue组件中的样式优先？**
-
-- 这和App.vue中引入组件的顺序有关
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205807434-728000752.png)
-- 不然：把组件引入的顺序换一下就发现变了
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205900959-449829121.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205423582-767394005.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -6104,26 +6381,67 @@ new Vue({
 
 
 
-**那上述样式冲突了怎么解决？**
+此时如果把两个class名字改成一样呢？开发中样式多了这种事情是在所难免的
 
-- 答案就是使用scoped限制作用域（ 后端人员，这个东西熟悉得很，maven中依赖的作用域，是一样的效果 ）
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126210306871-1906773058.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126210342684-1545689669.png)
-- 这个小技巧在开发中会经常见到
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205549405-1022484063.png" alt="image" style="zoom:67%;" />
 
 
 
 
 
-**当然：style标签不止支持scoped属性，还可以用其他的**
+凭什么就是Person2.vue组件中的样式优先？这和App.vue中引入组件的顺序有关
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126210911888-1716479900.png)
-- 另外：**less需要less-loader支持**，所以需要安装less-loader，但是：有坑（ 版本的问题 ）
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126213953329-1734729918.png)
-- **cli中的webpack版本**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126212122785-901884173.png)
-- **安装适合cli的webpack的less-loader版本**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126212502617-2105336263.png)
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205807434-728000752.png)
+
+
+
+不然：把组件引入的顺序换一下就发现变了
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126205900959-449829121.png" alt="image" style="zoom:67%;" />
+
+
+
+
+
+
+
+那上述样式冲突了怎么解决？答案就是使用scoped限制作用域（ 后端人员，这个东西熟悉得很，maven中依赖的作用域，是一样的效果 ）
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126210306871-1906773058.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126210342684-1545689669.png" alt="image" style="zoom:50%;" />
+
+
+
+这个小技巧在开发中会经常见到
+
+
+
+
+
+当然：style标签不止支持scoped属性，还可以用其他的
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126210911888-1716479900.png" alt="image" style="zoom:50%;" />
+
+
+
+另外：**less需要less-loader支持**，所以需要安装less-loader，但是：有坑（ 版本的问题 ）
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126213953329-1734729918.png" alt="image" style="zoom:67%;" />
+
+
+
+**cli中的webpack版本**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126212122785-901884173.png" alt="image" style="zoom:67%;" />
+
+
+
+**安装适合cli的webpack的less-loader版本**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220126212502617-2105336263.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -6151,13 +6469,11 @@ new Vue({
 
 **实例：实现如下的效果（ 就是一个人名录入，然后可以对名字做一点操作罢了 ）**
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127151054273-1318980545.png)
+![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127151054273-1318980545.png)
 
 
 
-
-
-- **组件编写流程（ 基本上都是一样的套路 ），接下来按照套路去弄就可以了**
+组件编写流程（ 基本上都是一样的套路 ），接下来按照套路去弄就可以了
 
 
 
@@ -6167,11 +6483,12 @@ new Vue({
 
 **根据页面结构来看，可以拆分成如下的结构：**
 
-- 1、外面大的框就是一个组件 —— 也就是App.vue父组件，而App组件中又包含的如下组件：
-  - 1.1、输入框是一个组件（ 子 ）
-  - 1.2、人名的展示框是一个组件（ 子 ，却是下面两个的“父” ）
-    - 1.2.1、然后发现展示框里面又有每一个人名组件（ 子 ）
-    - 1.2.2、还有一个全选 / 显示已选人数的组件（ 子 ）
+1. 外面大的框就是一个组件 —— 也就是App.vue父组件，而App组件中又包含的如下组件：
+
+- 1.1、输入框是一个组件（ 子 ）
+- 1.2、人名的展示框是一个组件（ 子 ，却是下面两个的“父” ）
+  - 1.2.1、然后发现展示框里面又有每一个人名组件（ 子 ）
+  - 1.2.2、还有一个全选 / 显示已选人数的组件（ 子 ）
 
 
 
@@ -6187,8 +6504,7 @@ new Vue({
 
   - （1）、HTML结构
 
-    - ```html
-      
+    - ```javascript
       <template>
         <div id="root">
             <div class="name-container">
@@ -6213,9 +6529,8 @@ new Vue({
               components: {NameHeader,NameList,NameFooter}
           }
       </script>
-      
       ```
-
+    
   - （2）、CSS样式 + 后续需要的通用样式
 
     - ```css
@@ -6274,17 +6589,15 @@ new Vue({
   - （1）、HTML结构
 
     - ```html
-      
       <div class="name-footer">
-              <label>
-                  <input type="checkbox">
-              </label>
-              <span>
-                  <span>已选择0</span> / 共计2
-              </span>
-              <button class="btn btn-danger">清除已选人员</button>
-          </div>
-      
+          <label>
+              <input type="checkbox">
+          </label>
+          <span>
+              <span>已选择0</span> / 共计2
+          </span>
+          <button class="btn btn-danger">清除已选人员</button>
+      </div>
       ```
 
 
@@ -6295,8 +6608,7 @@ new Vue({
 
   - （1）、HTML结构
 
-    - ```html
-      
+    - ```javascript
       <template>
           <NameObj></NameObj>
       </template>
@@ -6309,13 +6621,11 @@ new Vue({
               components: {NameObj}
           }
       </script>
-      
       ```
-
+    
   - （2）、CSS样式
 
     - ```css
-      
       /* #region list */
         .name-main {
             margin-left: 0px;
@@ -6334,7 +6644,6 @@ new Vue({
         }
       
       /* #endregion */
-      
       ```
 
 
@@ -6345,8 +6654,7 @@ new Vue({
 
   - （1）、HTML结构
 
-    - ```html
-      
+    - ```javascript
       <template>
           <ul class="name-main">
               <li>
@@ -6364,13 +6672,11 @@ new Vue({
               name: 'NameObj',
           }
       </script>
-      
       ```
-
+    
   - （2）、CSS样式
 
     - ```css
-      
       /* #region item */
         li {
           list-style: none;
@@ -6407,20 +6713,27 @@ new Vue({
         }
       
       /* #endregion */
-      
       ```
 
 
 
-**运行效果如下：**
+运行效果如下：
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127205816624-189722342.png)
-- 自此：静态组件编程就搞定，后续就可以做数据的动态绑定和交互这些了
-- **将纯HTML + CSS + JS转成组件化开发也是一样的套路，流程如下：**
-  - 1、把整个HTML结构放到App.vue组件的template模板中
-  - 2、把所有的CSS放到App.vue组件的style中
-  - 3、有JS的话，那么把js文件创好，然后引入到App.vue组件中
-  - 4、开始去分析结构，然后拆分成组件，之后把对应的内容放到对应组件中，最后做后续的动态数据绑定、交互即可
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127205816624-189722342.png" alt="image" style="zoom:67%;" />
+
+
+
+自此：静态组件编程就搞定，后续就可以做数据的动态绑定和交互这些了
+
+**将纯HTML + CSS + JS转成组件化开发也是一样的套路，流程如下：**
+
+1. 把整个HTML结构放到App.vue组件的template模板中
+
+2. 把所有的CSS放到App.vue组件的style中
+
+3. 有JS的话，那么把js文件创好，然后引入到App.vue组件中
+
+4. 开始去分析结构，然后拆分成组件，之后把对应的内容放到对应组件中，最后做后续的动态数据绑定、交互即可
 
 
 
@@ -6434,55 +6747,93 @@ new Vue({
 
 按照分析，要展示的数据是一堆数据，而数据显示的地方是NameList，所以：data数据就放到NameList中去。**本实例中数据放到这里有坑啊，但是：先这么放，后续遇到坑了再调整**，所以改一下源码
 
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127195833422-1340012636.png" alt="image" style="zoom:50%;" />
 
-
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127195833422-1340012636.png)
-- **数据是弄好了，但是：真正展示数据的是NameObj组件来显示出来的，而NameObj是NamelList的子组件（ 这就是：父传子 ），这种就需要借助props配置项（ 从外向内传嘛 ）**，所以：开始操作
-
-
-
-**1、父传子**
-
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127200738531-1552759242.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127200854053-368920431.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127205941956-1688018460.png)
+**数据是弄好了，但是：真正展示数据的是NameObj组件来显示出来的，而NameObj是NamelList的子组件（ 这就是：父传子 ），这种就需要借助props配置项（ 从外向内传嘛 ）**，所以：开始操作
 
 
 
+1. **父传子**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127200738531-1552759242.png" alt="image" style="zoom:50%;" />
 
 
-**2、获取输入的内容并添加到显示的顶部 —— 和后续知识挂钩的重点来了**
 
-- 输入框组件是App组件的子组件，而数据展示是NameList组件中的NameObj组件，即：现在关系就是如下的样子
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127202448353-1636141295.png)
-  - **上面这种就是不同组件之间的通信情况，现在来了解原生的解决办法**
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127200854053-368920431.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127205941956-1688018460.png" alt="image" style="zoom:50%;" />
 
 
 
 
 
-**3、原生的不同组件通讯**
+2. **获取输入的内容并添加到显示的顶部 —— 和后续知识挂钩的重点来了**
+
+输入框组件是App组件的子组件，而数据展示是NameList组件中的NameObj组件，即：现在关系就是如下的样子
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127202448353-1636141295.png" alt="image" style="zoom:67%;" />
+
+**上面这种就是不同组件之间的通信情况，现在来了解原生的解决办法**
+
+
+
+
+
+3. **原生的不同组件通讯**
 
 - App.vue是大哥，用它做文章，这样就变成了App这个父组件和输入框以及Namelist这两个子组件之间的关系了
 
-
-
 - **第一步：将data搬到App组件中去并传给NameList数据展示组件**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127211729839-657203027.png)
-  - **然后NameList数据显示区再传给数据显示组件**
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127211910732-823764014.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127212445324-2065618402.png)
-  - 这样父传子、子传孙....这样就串通一条路了（ 即：下图右边部分 ）
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127212257578-1329439964.png)
-- **第二步：将输入框组件中的数据收集起来，并传给父组件（ 这就是子传父 ）**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127204228819-347115837.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127210128464-581619569.png)
-  - **将数据传给父组件 —— 开始子传父**
-  - **子传父的技巧就是：父组件传给子组件一个函数（ props的变样版，传的不是对象、key-value，而是整一个函数传过去 ）、然后子组件利用props接收到函数之后调用一下（ 把传递数据当做参数 ），那么父组件中的函数的参数就是要传递的数据了**
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127214017548-1274186829.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127221625004-1248940030.png)
-    - 上图id是使用random()生成的随机数啊，这有弊端的，数字有穷尽的时候，所以：严格来说用uuid、身份证号、电话号码......作为id最好
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127214850492-2014684179.png)
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127211729839-657203027.png" alt="image" style="zoom:50%;" />
+
+
+
+**然后NameList数据显示区再传给数据显示组件**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127211910732-823764014.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127212445324-2065618402.png" alt="image" style="zoom:50%;" />
+
+
+
+这样父传子、子传孙....这样就串通一条路了（ 即：下图右边部分 ）
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127212257578-1329439964.png" alt="image" style="zoom:67%;" />
+
+
+
+**第二步：将输入框组件中的数据收集起来，并传给父组件（ 这就是子传父 ）**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127204228819-347115837.png" alt="image" style="zoom:67%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127210128464-581619569.png" alt="image" style="zoom:67%;" />
+
+
+
+**将数据传给父组件 —— 开始子传父**
+
+**子传父的技巧就是：父组件传给子组件一个函数（ props的变样版，传的不是对象、key-value，而是整一个函数传过去 ）、然后子组件利用props接收到函数之后调用一下（ 把传递数据当做参数 ），那么父组件中的函数的参数就是要传递的数据了**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127214017548-1274186829.png" alt="image" style="zoom: 50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127221625004-1248940030.png" alt="image" style="zoom:50%;" />
+
+
+
+上图id是使用random()生成的随机数啊，这有弊端的，数字有穷尽的时候，所以：严格来说用uuid、身份证号、电话号码......作为id最好
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127214850492-2014684179.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -6492,10 +6843,13 @@ new Vue({
 
 
 
-**4、将子组件传递的数据添加到数据栏的顶部去**
+4. **将子组件传递的数据添加到数据栏的顶部去**
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127215255999-1103295638.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127215325829-807978443.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127215255999-1103295638.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127215325829-807978443.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -6511,25 +6865,33 @@ new Vue({
 
 
 
-**1、实现选择和数据的改变**
+1. **实现选择和数据的改变**
 
 
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234355353-1787062224.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234355353-1787062224.png" alt="image" style="zoom:50%;" />
 
 
 
 - **1）、最简单粗暴的方式 —— 但是：不建议用**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234720067-1402567927.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234804237-538216818.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234851041-160331759.png)
-  - **成功是成功了，但是：说了不建议用，因为：这种方式违背了Vue的设计（ 但是：开发中又喜欢用，简单实用嘛 ）**
-    - 违背了Vue的设计是因为：props在底层是被检测了的，Vue不支持去修改它的东西，但是：按上述的方式做了之后，却会发现：并不会报错，这是因为：修改的是值和对象的区别
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128000020796-1073366447.png)
-
-
-
-
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234720067-1402567927.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234804237-538216818.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220127234851041-160331759.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  **成功是成功了，但是：说了不建议用，因为：这种方式违背了Vue的设计（ 但是：开发中又喜欢用，简单实用嘛 ）**
+  
+  - 违背了Vue的设计是因为：props在底层是被检测了的，Vue不支持去修改它的东西，但是：按上述的方式做了之后，却会发现：并不会报错，这是因为：修改的是值和对象的区别
+  
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128000020796-1073366447.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -6537,12 +6899,24 @@ new Vue({
 
 - **2）、按照逻辑老实编写**
   - 这种实现方式的思路就是：在页面中点击 / 改变选择框时，拿到这条数据的id，然后利用id去所有的数据中遍历，找到对应的这条数据，最后改变这条数据isCheck的值即可
-  - **下面的操作也是一个父传子的使用过程**
-    - **这里有一句话：数据在哪里，对数据的操作（ methods ）就在哪里**
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003321685-39176417.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003445925-1471538691.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003658152-239266697.png)
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003848093-1766884282.png)
+  
+  - **下面的操作也是一个父传子的使用过程：这里有一句话：数据在哪里，对数据的操作（ methods ）就在哪里**
+    
+    
+    
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003321685-39176417.png" alt="image" style="zoom:50%;" />
+    
+    
+    
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003445925-1471538691.png" alt="image" style="zoom: 50%;" />
+    
+    
+    
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003658152-239266697.png" alt="image" style="zoom:50%;" />
+    
+    
+    
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128003848093-1766884282.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -6555,14 +6929,29 @@ new Vue({
 ​      **2、实现每条数据的删除功能**
 
 - **1）、先把样式解开，让鼠标悬浮时删除按钮可见**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128115000710-561305152.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128115039676-871870857.png)
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128115000710-561305152.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128115039676-871870857.png" alt="image" style="zoom:50%;" />
 - **2）、实现数据与删除按钮交互（ 还是子传父的套路 ）**
-  - 实现逻辑简单：拿到要删除数据的id，然后去众多数据中把要删除数据给过滤掉不显示即可（ 逻辑删除 ）
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128120904104-1545725197.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128121017928-188064026.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128121052613-1183138405.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128121140987-1276587346.png)
+  
+  实现逻辑简单：拿到要删除数据的id，然后去众多数据中把要删除数据给过滤掉不显示即可（ 逻辑删除 ）
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128120904104-1545725197.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128121017928-188064026.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128121052613-1183138405.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128121140987-1276587346.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -6577,8 +6966,12 @@ new Vue({
 **3.1、最原生的方式**
 
 - **1）、父传子 —— 传递persons这个数据**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128150407096-1185064235.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128150535976-538387020.png)
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128150407096-1185064235.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128150535976-538387020.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -6587,16 +6980,25 @@ new Vue({
 **3.2、使用数组的reduce()这个API，这个API专做数据统计的**
 
 - **认识一下reduce()**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128151708693-844375256.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128151908860-1003725536.png)
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128151708693-844375256.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128151908860-1003725536.png" alt="image" style="zoom:50%;" />
+  
   - **reduce()最终的返回值是：程序执行的最后一次的nextValue值**
 - **使用reduce()实现功能**
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128152729041-1930724157.png)
-  - ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128152822215-1661230446.png)
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128152729041-1930724157.png" alt="image" style="zoom:50%;" />
+  
+  
+  
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128152822215-1661230446.png" alt="image" style="zoom:50%;" />
 
 
 
-**接下来就只剩下底部的全选和清除已选这两个功能了**
+接下来就只剩下底部的全选和清除已选这两个功能了
 
 
 
@@ -6606,12 +7008,27 @@ new Vue({
 
 **4.1、实现全选交互（ 子传父 + 计算属性使用技巧 ）**
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182346665-1668663782.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182503969-725756059.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182700635-754395647.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182805469-1429706630.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182846190-616125125.png)
-- 上面这个全选使用分步利用子传父实现每一步也是可以的，只是有点复杂罢了
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182346665-1668663782.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182503969-725756059.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182700635-754395647.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182805469-1429706630.png" alt="image" style="zoom:50%;" />
+
+
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128182846190-616125125.png" alt="image" style="zoom:50%;" />
+
+
+
+上面这个全选使用分步利用子传父实现每一步也是可以的，只是有点复杂罢了
 
 
 
@@ -6620,16 +7037,20 @@ new Vue({
 **4.2、清除已选人员**
 
 - 这个的思路更简单了，就是查看页面中的数据哪些的isCheck为true，然后过滤掉这些数据即可（ 实现方式一样简单，也是子传父 ）
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128192746278-1272087066.png)
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128192841734-1525904826.png)
+
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128192746278-1272087066.png" alt="image" style="zoom:50%;" />
+
+  
+
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220128192841734-1525904826.png" alt="image" style="zoom:50%;" />
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6637,38 +7058,30 @@ new Vue({
 
 **组件化编写流程**
 
-- 1、拆分静态组件：组件要按照功能点拆分，命名不要和HTML元素名冲突
-- 2、实现动态组件：考虑好数据的存放位置，数据是一个组件在用，还是一些组件在用
-  - 一个组件在用：把数据放到组件自身即可
-  - 一些组件在用：把数据放到它们共同的父组件上【 这也叫状态提升 】
+1. 拆分静态组件：组件要按照功能点拆分，命名不要和HTML元素名冲突
+
+2. 实现动态组件：考虑好数据的存放位置，数据是一个组件在用，还是一些组件在用
+
+- 一个组件在用：把数据放到组件自身即可
+- 一些组件在用：把数据放到它们共同的父组件上【 这也叫状态提升 】
+
 - 3、实现交互：从绑定事件开始
 
 
 
-<br/>
+**props配置总结：适用于以下过程**
 
-<br/>
+1. 父组件 ——> 子组件  通信
 
-
-
-**props配置总结**
-
-- 适用于以下过程
-  - 1、父组件 ——> 子组件  通信
-  - 2、子组件 ——> 父组件 通信
-
-
-
-<br/>
-
-<br/>
+2. 子组件 ——> 父组件 通信
 
 
 
 **v-model总结**
 
 - 使用v-model时要切记：v-model绑定的是值，但是：这个值不能是props中传递过来的值，因为：props底层被Vue监测了的，不允许修改
-  - 注：props中传过来的若是对象类型的值时，虽然修改"对象中的属性"时Vue不会报错，但是：不建议用
+  
+  注：props中传过来的若是对象类型的值时，虽然修改"对象中的属性"时Vue不会报错，但是：不建议用
 
 
 
@@ -6676,11 +7089,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6701,11 +7114,7 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
-
-<br/>
 
 
 
@@ -6716,11 +7125,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6741,11 +7150,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 ###### 3.3.1.1、v-on搭配emit实现
 
@@ -6769,11 +7178,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6795,11 +7204,11 @@ new Vue({
   - 在v-on中，这三者和以前一样的玩法，都是加在事件名后面即可，如：@zixeiqing.once = "xxxxx"
   - 在ref中，是用在`this.$refs.person.$on('zixieqing',this.demo )`中的$on这里的，once就是使用$once，替换掉原来的$on
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6825,9 +7234,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -6861,11 +7270,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6877,9 +7286,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -6898,9 +7307,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -6917,11 +7326,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6967,11 +7376,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -6986,9 +7395,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7004,9 +7413,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7017,9 +7426,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7036,11 +7445,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -7052,9 +7461,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7070,11 +7479,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -7147,9 +7556,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7164,9 +7573,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7178,9 +7587,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 **2、消息发布方**
 
@@ -7192,9 +7601,9 @@ new Vue({
 
     
 
-<br/>
 
-<br/>
+
+
 
 **3、消息接收方**
 
@@ -7205,9 +7614,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7679,11 +8088,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -7755,11 +8164,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -7770,9 +8179,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7786,11 +8195,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -7800,9 +8209,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7814,11 +8223,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -7832,9 +8241,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7857,9 +8266,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -7879,9 +8288,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 **另外：父组件接收数据时的scope还有一种写法，就是使用slot-scope**
 
@@ -7893,11 +8302,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -8064,11 +8473,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -8100,9 +8509,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -8114,9 +8523,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -8128,11 +8537,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
@@ -8223,9 +8632,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -8239,9 +8648,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -8257,9 +8666,9 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
+
+
 
 
 
@@ -8319,11 +8728,11 @@ new Vue({
 
 
 
-<br/>
 
-<br/>
 
-<br/>
+
+
+
 
 
 
