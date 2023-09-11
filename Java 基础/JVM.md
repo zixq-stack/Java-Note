@@ -4,7 +4,7 @@
 
 **原作者：**pdai
 
-**原文链接：**https://www.pdai.tech/md/java/jvm/java-jvm-x-overview.html
+**原文链接：**https://www.pdai.tech/md/Java/JVM/Java-JVM-x-overview.html
 
 **额外说明：**若要用于牟利，请联系原作者
 
@@ -20,9 +20,9 @@
 
 ##  多语言编译为字节码在JVM运行
 
-计算机是不能直接运行java代码的，必须要先运行java虚拟机，再由java虚拟机运行编译后的java代码这个编译后的java代码，就是本文要介绍的java字节码
+计算机是不能直接运行Java代码的，必须要先运行Java虚拟机，再由Java虚拟机运行编译后的Java代码，这个编译后的Java代码，就是本文要介绍的Java字节码
 
-为什么jvm不能直接运行java代码呢，这是因为在cpu层面看来计算机中所有的操作都是一个个指令的运行汇集而成的，java是高级语言，只有人类才能理解其逻辑，计算机是无法识别的，所以java代码必须要先编译成字节码文件，jvm才能正确识别代码转换后的指令并将其运行
+为什么JVM不能直接运行Java代码呢，这是因为在CPU层面看来计算机中所有的操作都是一个个指令的运行汇集而成的，Java是高级语言，只有人类才能理解其逻辑，计算机是无法识别的，所以Java代码必须要先编译成字节码文件，JVM才能正确识别代码转换后的指令并将其运行
 
 - Java代码间接翻译成字节码，储存字节码的文件再交由运行于不同平台上的JVM虚拟机去读取执行，从而实现一次编写，到处运行的目的
 - JVM也不再只支持Java，由此衍生出了许多基于JVM的编程语言，如Groovy, Scala, Koltin等等
@@ -31,15 +31,15 @@
 
 ## Java字节码文件
 
-class文件本质上是一个以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在class文件中jvm根据其特定的规则解析该二进制数据，从而得到相关信息
+Class文件本质上是一个以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件中，JVM根据其特定的规则解析该二进制数据，从而得到相关信息
 
-Class文件采用一种伪结构来存储数据，它有两种类型：无符号数和表这里暂不详细的讲
+Class文件采用一种伪结构来存储数据，它有两种类型：无符号数和表，这里暂不详细的讲
 
-本文将通过简单的java例子编译后的文件来理解
+本文将通过简单的Java例子编译后的文件来理解
 
 ### Class文件的结构属性
 
-在理解之前先从整体看下java字节码文件包含了哪些类型的数据：
+在理解之前先从整体看下Java字节码文件包含了哪些类型的数据：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511122605009-2000862489.png)
 
@@ -48,8 +48,8 @@ Class文件采用一种伪结构来存储数据，它有两种类型：无符号
 下面以一个简单的例子来逐步讲解字节码
 
 ```java
-//Main.java
-public class Main {
+// Main.Java
+public Class Main {
     
     private int m;
     
@@ -59,13 +59,13 @@ public class Main {
 }
 ```
 
-通过以下命令, 可以在当前所在路径下生成一个Main.class文件
+通过以下命令, 可以在当前所在路径下生成一个Main.Class文件
 
 ```bash
-javac Main.java
+Javac Main.Java
 ```
 
-以文本的形式打开生成的class文件，内容如下:
+以文本的形式打开生成的Class文件，内容如下:
 
 ```bash
 cafe babe 0000 0034 0013 0a00 0400 0f09
@@ -88,10 +88,10 @@ cafe babe 0000 0034 0013 0a00 0400 0f09
 0000 0200 0e
 ```
 
-- 文件开头的4个字节("cafe babe")称之为 `魔数`，唯有以"cafe babe"开头的class文件方可被虚拟机所接受，这4个字节就是字节码文件的身份识别
-- 0000是编译器jdk版本的次版本号0，0034转化为十进制是52,是主版本号，java的版本号从45开始，除1.0和1.1都是使用45.x外,以后每升一个大版本，版本号加一也就是说，编译生成该class文件的jdk版本为1.8.0
+- 文件开头的4个字节("cafe babe")称之为 `魔数`，唯有以"cafe babe"开头的Class文件方可被虚拟机所接受，这4个字节就是字节码文件的身份识别
+- 0000是编译器JDK版本的次版本号0，0034转化为十进制是52，是主版本号，Java的版本号从45开始，除1.0和1.1都是使用45.x外,以后每升一个大版本，版本号加一，也就是说，编译生成该Class文件的JDK版本为1.8.0
 
-通过java -version命令稍加验证, 可得结果
+通过Java -version命令稍加验证, 可得结果
 
 ```java
 Java(TM) SE Runtime Environment (build 1.8.0_131-b11)
@@ -102,46 +102,44 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.131-b11, mixed mode)
 
 ### 反编译字节码文件
 
-> 使用到java内置的一个反编译工具javap可以反编译字节码文件, 用法: `javap <options> <classes>`
+> 使用Java内置的一个反编译工具Javap可以反编译字节码文件, 用法: `Javap <options> <Classes>`
 
 其中`<options>`选项包括:
 
 ```bash
-  -help  --help  -?        输出此用法消息
-  -version                 版本信息
-  -v  -verbose             输出附加信息
-  -l                       输出行号和本地变量表
-  -public                  仅显示公共类和成员
-  -protected               显示受保护的/公共类和成员
-  -package                 显示程序包/受保护的/公共类
-                           和成员 (默认)
-  -p  -private             显示所有类和成员
-  -c                       对代码进行反汇编
-  -s                       输出内部类型签名
-  -sysinfo                 显示正在处理的类的
-                           系统信息 (路径, 大小, 日期, MD5 散列)
-  -constants               显示最终常量
-  -classpath <path>        指定查找用户类文件的位置
-  -cp <path>               指定查找用户类文件的位置
-  -bootclasspath <path>    覆盖引导类文件的位置
+-help  --help  -?        输出此用法消息
+-version                 版本信息
+-v  -verbose             输出附加信息
+-l                       输出行号和本地变量表
+-public                  仅显示公共类和成员
+-protected               显示受保护的/公共类和成员
+-package                 显示程序包/受保护的/公共类和成员 (默认)
+-p  -private             显示所有类和成员
+-c                       对代码进行反汇编
+-s                       输出内部类型签名
+-sysinfo                 显示正在处理的类的系统信息 (路径, 大小, 日期, MD5 散列)
+-constants               显示最终常量
+-Classpath <path>        指定查找用户类文件的位置
+-cp <path>               指定查找用户类文件的位置
+-bootClasspath <path>    覆盖引导类文件的位置
 ```
 
-输入命令`javap -verbose -p Main.class`查看输出内容:
+输入命令`Javap -verbose -p Main.Class`查看输出内容:
 
 ```java
-Classfile /E:/JavaCode/TestProj/out/production/TestProj/com/rhythm7/Main.class
+Classfile /E:/JavaCode/TestProj/out/production/TestProj/com/rhythm7/Main.Class
   Last modified 2018-4-7; size 362 bytes
   MD5 checksum 4aed8540b098992663b7ba08c65312de
-  Compiled from "Main.java"
-public class com.rhythm7.Main
+  Compiled from "Main.Java"
+public Class com.rhythm7.Main
   minor version: 0
   major version: 52
   flags: ACC_PUBLIC, ACC_SUPER
 Constant pool:
-   #1 = Methodref          #4.#18         // java/lang/Object."<init>":()V
+   #1 = Methodref          #4.#18         // Java/lang/Object."<init>":()V
    #2 = Fieldref           #3.#19         // com/rhythm7/Main.m:I
    #3 = Class              #20            // com/rhythm7/Main
-   #4 = Class              #21            // java/lang/Object
+   #4 = Class              #21            // Java/lang/Object
    #5 = Utf8               m
    #6 = Utf8               I
    #7 = Utf8               <init>
@@ -154,11 +152,11 @@ Constant pool:
   #14 = Utf8               inc
   #15 = Utf8               ()I
   #16 = Utf8               SourceFile
-  #17 = Utf8               Main.java
+  #17 = Utf8               Main.Java
   #18 = NameAndType        #7:#8          // "<init>":()V
   #19 = NameAndType        #5:#6          // m:I
   #20 = Utf8               com/rhythm7/Main
-  #21 = Utf8               java/lang/Object
+  #21 = Utf8               Java/lang/Object
 {
   private int m;
     descriptor: I
@@ -170,7 +168,7 @@ Constant pool:
     Code:
       stack=1, locals=1, args_size=1
          0: aload_0
-         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         1: invokespecial #1                  // Method Java/lang/Object."<init>":()V
          4: return
       LineNumberTable:
         line 3: 0
@@ -194,12 +192,12 @@ Constant pool:
         Start  Length  Slot  Name   Signature
             0       7     0  this   Lcom/rhythm7/Main;
 }
-SourceFile: "Main.java"
+SourceFile: "Main.Java"
 ```
 
 ### 字节码文件信息
 
-开头的7行信息包括:Class文件当前所在位置，最后修改时间，文件大小，MD5值，编译自哪个文件，类的全限定名，jdk次版本号，主版本号
+开头的7行信息包括：Class文件当前所在位置，最后修改时间，文件大小，MD5值，编译自哪个文件，类的全限定名，JDK次版本号，主版本号
 
 然后紧接着的是该类的访问标志：ACC_PUBLIC, ACC_SUPER，访问标志的含义如下:
 
@@ -218,30 +216,30 @@ SourceFile: "Main.java"
 
 `Constant pool`意为常量池
 
-常量池可以理解成Class文件中的资源仓库主要存放的是两大类常量：字面量(Literal)和符号引用(Symbolic References)字面量类似于java中的常量概念，如文本字符串，final常量等，而符号引用则属于编译原理方面的概念，包括以下三种:
+常量池可以理解成Class文件中的资源仓库，主要存放的是两大类常量：字面量(Literal)和符号引用(Symbolic References)，字面量类似于Java中的常量概念，如文本字符串，final常量等，而符号引用则属于编译原理方面的概念，包括以下三种:
 
 - 类和接口的全限定名(Fully Qualified Name)
 - 字段的名称和描述符号(Descriptor)
 - 方法的名称和描述符
 
-不同于C/C++, JVM是在加载Class文件的时候才进行的动态链接，也就是说这些字段和方法符号引用只有在运行期转换后才能获得真正的内存入口地址当虚拟机运行时，需要从常量池获得对应的符号引用，再在类创建或运行时解析并翻译到具体的内存地址中 直接通过反编译文件来查看字节码内容：
+不同于C/C++,，JVM是在加载Class文件的时候才进行的动态链接，也就是说这些字段和方法符号引用只有在运行期转换后才能获得真正的内存入口地址，当虚拟机运行时，需要从常量池获得对应的符号引用，再在类创建或运行时解析并翻译到具体的内存地址中，直接通过反编译文件来查看字节码内容：
 
 ```java
-#1 = Methodref          #4.#18         // java/lang/Object."<init>":()V
-#4 = Class              #21            // java/lang/Object
+#1 = Methodref          #4.#18         // Java/lang/Object."<init>":()V
+#4 = Class              #21            // Java/lang/Object
 #7 = Utf8               <init>
 #8 = Utf8               ()V
 #18 = NameAndType        #7:#8          // "<init>":()V
-#21 = Utf8               java/lang/Object
+#21 = Utf8               Java/lang/Object
 ```
 
-**第一个常量**是一个方法定义，指向了第4和第18个常量以此类推查看第4和第18个常量最后可以拼接成第一个常量右侧的注释内容:
+**第一个常量**是一个方法定义，指向了第4和第18个常量。以此类推查看第4和第18个常量最后可以拼接成第一个常量右侧的注释内容:
 
 ```java
-java/lang/Object."<init>":()V
+Java/lang/Object."<init>":()V
 ```
 
-这段可以理解为该类的实例构造器的声明，由于Main类没有重写构造方法，所以调用的是父类的构造方法此处也说明了Main类的直接父类是Object 该方法默认返回值是V, 也就是void，无返回值
+这段可以理解为该类的实例构造器的声明，由于Main类没有重写构造方法，所以调用的是父类的构造方法。此处也说明了Main类的直接父类是Object，该方法默认返回值是V, 也就是void，无返回值
 
 **第二个常量**同理可得:
 
@@ -254,7 +252,7 @@ java/lang/Object."<init>":()V
 #20 = Utf8               com/rhythm7/Main
 ```
 
-复制代码此处声明了一个字段m，类型为I, I即是int类型关于字节码的类型对应如下：
+复制代码此处声明了一个字段m，类型为I, I即是int类型。关于字节码的类型对应如下：
 
 | 标识字符 | 含义                                       |
 | -------- | ------------------------------------------ |
@@ -267,9 +265,9 @@ java/lang/Object."<init>":()V
 | S        | 基本类型short                              |
 | Z        | 基本类型boolean                            |
 | V        | 特殊类型void                               |
-| L        | 对象类型，以分号结尾，如Ljava/lang/Object; |
+| L        | 对象类型，以分号结尾，如LJava/lang/Object; |
 
-对于数组类型，每一位使用一个前置的`[`字符来描述，如定义一个`java.lang.String[][]`类型的维数组，将被记录为`[[Ljava/lang/String;`
+对于数组类型，每一位使用一个前置的`[`字符来描述，如定义一个`Java.lang.String[][]`类型的二维数组，将被记录为`[[LJava/lang/String;`
 
 ### 方法表集合
 
@@ -290,7 +288,7 @@ public com.rhythm7.Main();
    Code:
      stack=1, locals=1, args_size=1
         0: aload_0
-        1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+        1: invokespecial #1                  // Method Java/lang/Object."<init>":()V
         4: return
      LineNumberTable:
        line 3: 0
@@ -303,12 +301,20 @@ public com.rhythm7.Main();
 
 code内的主要属性为:
 
-- **stack**: 最大操作数栈，JVM运行时会根据这个值来分配栈帧(Frame)中的操作栈深度,此处为1
-- **locals**: 局部变量所需的存储空间，单位为Slot, Slot是虚拟机为局部变量分配内存时所使用的最小单位，为4个字节大小方法参数(包括实例方法中的隐藏参数this)，显示异常处理器的参数(try catch中的catch块所定义的异常)，方法体中定义的局部变量都需要使用局部变量表来存放值得一提的是，locals的大小并不一定等于所有局部变量所占的Slot之和，因为局部变量中的Slot是可以重用的
-- **args_size**: 方法参数的个数，这里是1，因为每个实例方法都会有一个隐藏参数this
-- **attribute_info**: 方法体内容，0,1,4为字节码"行号"，该段代码的意思是将第一个引用类型本地变量推送至栈顶，然后执行该类型的实例方法，也就是常量池存放的第一个变量，也就是注释里的`java/lang/Object."":()V`, 然后执行返回语句，结束方法
-- **LineNumberTable**: 该属性的作用是描述源码行号与字节码行号(字节码偏移量)之间的对应关系可以使用 -g:none 或-g:lines选项来取消或要求生成这项信息，如果选择不生成LineNumberTable，当程序运行异常时将无法获取到发生异常的源码行号，也无法按照源码的行数来调试程序
-- **LocalVariableTable**: 该属性的作用是描述帧栈中局部变量与源码中定义的变量之间的关系可以使用 -g:none 或 -g:vars来取消或生成这项信息，如果没有生成这项信息，那么当别人引用这个方法时，将无法获取到参数名称，取而代之的是arg0, arg1这样的占位符 start 表示该局部变量在哪一行开始可见，length表示可见行数，Slot代表所在帧栈位置，Name是变量名称，然后是类型签名
+- **stack**:：最大操作数栈，JVM运行时会根据这个值来分配栈帧(Frame)中的操作栈深度,此处为1
+- **locals**:：局部变量所需的存储空间，单位为Slot, Slot是虚拟机为局部变量分配内存时所使用的最小单位，为4个字节大小，方法参数(包括实例方法中的隐藏参数this)，显示异常处理器的参数(try catch中的catch块所定义的异常)，方法体中定义的局部变量都需要使用局部变量表来存放。值得一提的是，locals的大小并不一定等于所有局部变量所占的Slot之和，因为局部变量中的Slot是可以重用的
+- **args_size**:：方法参数的个数，这里是1，因为每个实例方法都会有一个隐藏参数this
+- **attribute_info**:：方法体内容，0,1,4为字节码"行号"，该段代码的意思是将第一个引用类型本地变量推送至栈顶，然后执行该类型的实例方法，也就是常量池存放的第一个变量，也就是注释里的`Java/lang/Object."":()V`, 然后执行返回语句，结束方法
+- **LineNumberTable**:：该属性的作用是描述源码行号与字节码行号(字节码偏移量)之间的对应关系。可以使用 `-g:none` 或`-g:lines` 选项来取消或要求生成这项信息，如果选择不生成LineNumberTable，当程序运行异常时将无法获取到发生异常的源码行号，也无法按照源码的行数来调试程序
+- **LocalVariableTable**：该属性的作用是描述帧栈中局部变量与源码中定义的变量之间的关系。可以使用 `-g:none` 或` -g:vars` 来取消或生成这项信息，如果没有生成这项信息，那么当别人引用这个方法时，将无法获取到参数名称，取而代之的是arg0, arg1这样的占位符 
+
+```txt
+start		    表示该局部变量在哪一行开始可见
+length		    表示可见行数	start和length也可以称之为变量的作用域。从字节码的start 到 length行这个作用域里该变量一直有效/可见
+Slot		    代表所在帧栈位置/变量槽的索引
+Name		    变量名称
+Signature		类型签名/变量类型		就是前面“常量池”中说的字节码的类型
+```
 
 同理可以分析Main类中的另一个方法"inc()":
 
@@ -319,17 +325,17 @@ code内的主要属性为:
 最后很显然是源码文件：
 
 ```java
-SourceFile: "Main.java"
+SourceFile: "Main.Java"
 ```
 
 ## 再看两个示例
 
 ### 分析try-catch-finally
 
-通过以上一个最简单的例子，可以大致了解源码被编译成字节码后是什么样子的 下面利用所学的知识点来分析一些Java问题:
+通过以上一个最简单的例子，可以大致了解源码被编译成字节码后是什么样子。下面利用所学的知识点来分析一些Java问题:
 
 ```java
-public class TestCode {
+public Class TestCode {
     public int foo() {
         int x;
         try {
@@ -348,8 +354,8 @@ public class TestCode {
 试问当不发生异常和发生异常的情况下，foo()的返回值分别是多少
 
 ```java
-javac TestCode.java
-javap -verbose TestCode.class
+Javac TestCode.Java
+Javap -verbose TestCode.Class
 ```
 
 查看字节码的foo方法内容:
@@ -360,41 +366,41 @@ public int foo();
     flags: ACC_PUBLIC
     Code:
       stack=1, locals=5, args_size=1
-         0: iconst_1 //int型1入栈 ->栈顶=1
-         1: istore_1 //将栈顶的int型数值存入第二个局部变量 ->局部2=1
-         2: iload_1 //将第二个int型局部变量推送至栈顶 ->栈顶=1
-         3: istore_2 //!!将栈顶int型数值存入第三个局部变量 ->局部3=1
-         
-         4: iconst_3 //int型3入栈 ->栈顶=3
-         5: istore_1 //将栈顶的int型数值存入第二个局部变量 ->局部2=3
-         6: iload_2 //!!将第三个int型局部变量推送至栈顶 ->栈顶=1
-         7: ireturn //从当前方法返回栈顶int数值 ->1
-         
+         0: iconst_1 // int型1入栈 ->栈顶=1
+         1: istore_1 // 将栈顶的int型数值存入第二个局部变量 ->局部2=1
+         2: iload_1 // 将第二个int型局部变量推送至栈顶 ->栈顶=1
+         3: istore_2 // !!将栈顶int型数值存入第三个局部变量 ->局部3=1
+
+         4: iconst_3 // int型3入栈 ->栈顶=3
+         5: istore_1 // 将栈顶的int型数值存入第二个局部变量 ->局部2=3
+         6: iload_2 // !!将第三个int型局部变量推送至栈顶 ->栈顶=1
+         7: ireturn // 从当前方法返回栈顶int数值 ->1
+
          8: astore_2 // ->局部3=Exception
          9: iconst_2 // ->栈顶=2
         10: istore_1 // ->局部2=2
         11: iload_1 //->栈顶=2
         12: istore_3 //!! ->局部4=2
-        
+
         13: iconst_3 // ->栈顶=3
         14: istore_1 // ->局部1=3
         15: iload_3 //!! ->栈顶=2
         16: ireturn // -> 2
-        
-        17: astore        4 //将栈顶引用型数值存入第五个局部变量=any
-        19: iconst_3 //将int型数值3入栈 -> 栈顶3
-        20: istore_1 //将栈顶第一个int数值存入第二个局部变量 -> 局部2=3
-        21: aload         4 //将局部第五个局部变量(引用型)推送至栈顶
-        23: athrow //将栈顶的异常抛出
+
+        17: astore        4 // 将栈顶引用型数值存入第五个局部变量=any
+        19: iconst_3 // 将int型数值3入栈 -> 栈顶3
+        20: istore_1 // 将栈顶第一个int数值存入第二个局部变量 -> 局部2=3
+        21: aload         4 // 将局部第五个局部变量(引用型)推送至栈顶
+        23: athrow // 将栈顶的异常抛出
       Exception table:
          from    to  target type
-             0     4     8   Class java/lang/Exception //0到4行对应的异常，对应#8中储存的异常
-             0     4    17   any //Exeption之外的其他异常
+             0     4     8   Class Java/lang/Exception // 0到4行对应的异常，对应#8中储存的异常
+             0     4    17   any // Exeption之外的其他异常
              8    13    17   any
             17    19    17   any
 ```
 
-在字节码的4,5，以及13,14中执行的是同一个操作，就是将int型的3入操作数栈顶，并存入第二个局部变量这正是我们源码在finally语句块中内容也就是说，JVM在处理异常时，会在每个可能的分支都将finally语句重复执行一遍
+在字节码的4,5，以及13,14中执行的是同一个操作，就是将int型的3入操作数栈顶，并存入第二个局部变量，这正是我们源码在finally语句块中内容。也就是说，JVM在处理异常时，会在每个可能的分支都将finally语句重复执行一遍
 
 通过一步步分析字节码，可以得出最后的运行结果是：
 
@@ -411,7 +417,7 @@ kotlin提供了扩展函数的语言特性，借助这个特性，我们可以�
 以下示例为Object添加"sayHello"方法
 
 ```java
-//SayHello.kt
+// SayHello.kt
 package com.rhythm7
 
 fun Any.sayHello() {
@@ -419,37 +425,37 @@ fun Any.sayHello() {
 }
 ```
 
-编译后，使用javap查看生成SayHelloKt.class文件的字节码
+编译后，使用Javap查看生成SayHelloKt.Class文件的字节码
 
 ```java
-Classfile /E:/JavaCode/TestProj/out/production/TestProj/com/rhythm7/SayHelloKt.class
+Classfile /E:/JavaCode/TestProj/out/production/TestProj/com/rhythm7/SayHelloKt.Class
 Last modified 2018-4-8; size 958 bytes
  MD5 checksum 780a04b75a91be7605cac4655b499f19
  Compiled from "SayHello.kt"
-public final class com.rhythm7.SayHelloKt
+public final Class com.rhythm7.SayHelloKt
  minor version: 0
  major version: 52
  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
 Constant pool:
     //省略常量池部分字节码
 {
- public static final void sayHello(java.lang.Object);
-   descriptor: (Ljava/lang/Object;)V
+ public static final void sayHello(Java.lang.Object);
+   descriptor: (LJava/lang/Object;)V
    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
    Code:
      stack=2, locals=2, args_size=1
         0: aload_0
         1: ldc           #9                  // String $receiver
-        3: invokestatic  #15                 // Method kotlin/jvm/internal/Intrinsics.checkParameterIsNotNull:(Ljava/lang/Object;Ljava/lang/String;)V
+        3: invokestatic  #15                 // Method kotlin/JVM/internal/Intrinsics.checkParameterIsNotNull:(LJava/lang/Object;LJava/lang/String;)V
         6: ldc           #17                 // String Hello
         8: astore_1
-        9: getstatic     #23                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        9: getstatic     #23                 // Field Java/lang/System.out:LJava/io/PrintStream;
        12: aload_1
-       13: invokevirtual #28                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+       13: invokevirtual #28                 // Method Java/io/PrintStream.println:(LJava/lang/Object;)V
        16: return
      LocalVariableTable:
        Start  Length  Slot  Name   Signature
-           0      17     0 $receiver   Ljava/lang/Object;
+           0      17     0 $receiver   LJava/lang/Object;
      LineNumberTable:
        line 4: 6
        line 5: 16
@@ -467,12 +473,12 @@ SourceFile: "SayHello.kt"
 再观察唯一的一个方法：发现Any.sayHello()的具体实现是静态不可变方法的形式:
 
 ```java
-public static final void sayHello(java.lang.Object);
+public static final void sayHello(Java.lang.Object);
 ```
 
-所以当我们在其他地方使用Any.sayHello()时，事实上等同于调用java的SayHelloKt.sayHello(Object)方法
+所以当我们在其他地方使用Any.sayHello()时，事实上等同于调用Java的SayHelloKt.sayHello(Object)方法
 
-顺便一提的是，当扩展的方法为Any时，意味着Any是non-null的，这时，编译器会在方法体的开头检查参数的非空，即调用 `kotlin.jvm.internal.Intrinsics.checkParameterIsNotNull(Object value, String paramName)` 方法来检查传入的Any类型对象是否为空如果我们扩展的函数为`Any?.sayHello()`，那么在编译后的文件中则不会有这段字节码的出现
+顺便一提的是，当扩展的方法为Any时，意味着Any是non-null的，这时，编译器会在方法体的开头检查参数的非空，即调用 `kotlin.JVM.internal.Intrinsics.checkParameterIsNotNull(Object value, String paramName)` 方法来检查传入的Any类型对象是否为空如果我们扩展的函数为`Any?.sayHello()`，那么在编译后的文件中则不会有这段字节码的出现
 
 ## 参考文章
 
@@ -492,17 +498,15 @@ public static final void sayHello(java.lang.Object);
 
 # JVM 基础 - 字节码的增强技术
 
-> 在上文中，着重介绍了字节码的结构，这为我们了解字节码增强技术的实现打下了基础字节码增强技术就是一类对现有字节码进行修改或者动态生成全新字节码文件的技术接下来，我们将从最直接操纵字节码的实现方式开始深入进行剖析
-
 ## 字节码增强技术
 
-在上文中，着重介绍了字节码的结构，这为我们了解字节码增强技术的实现打下了基础字节码增强技术就是一类对现有字节码进行修改或者动态生成全新字节码文件的技术接下来，我们将从最直接操纵字节码的实现方式开始深入进行剖析
+在上文中，着重介绍了字节码的结构，这为我们了解字节码增强技术的实现打下了基础。字节码增强技术就是一类对现有字节码进行修改或者动态生成全新字节码文件的技术。接下来，我们将从最直接操纵字节码的实现方式开始深入进行剖析
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511122938700-1810862780.png)
 
 ### ASM
 
-对于需要手动操纵字节码的需求，可以使用ASM，它可以直接生产 .class字节码文件，也可以在类被加载入JVM之前动态修改类行为（如下图17所示）ASM的应用场景有AOP（Cglib就是基于ASM）、热部署、修改其他jar包中的类等当然，涉及到如此底层的步骤，实现起来也比较麻烦接下来，本文将介绍ASM的两种API，并用ASM来实现一个比较粗糙的AOP但在此之前，为了让大家更快地理解ASM的处理流程，强烈建议读者先对访问者模式进行了解简单来说，访问者模式主要用于修改或操作一些数据结构比较稳定的数据，而通过第一章，我们知道字节码文件的结构是由JVM固定的，所以很适合利用访问者模式对字节码文件进行修改
+对于需要手动操纵字节码的需求，可以使用ASM，它可以直接生产 .Class字节码文件，也可以在类被加载入JVM之前动态修改类行为（如下图所示）ASM的应用场景有AOP（Cglib就是基于ASM）、热部署、修改其他jar包中的类等。当然，涉及到如此底层的步骤，实现起来也比较麻烦。接下来，本文将介绍ASM的两种API，并用ASM来实现一个比较粗糙的AOP。但在此之前，为了让大家更快地理解ASM的处理流程，强烈建议读者先对访问者模式进行了解。简单来说，访问者模式主要用于修改或操作一些数据结构比较稳定的数据，而通过第一章，我们知道字节码文件的结构是由JVM固定的，所以很适合利用访问者模式对字节码文件进行修改
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511122953285-894496650.png)
 
@@ -510,48 +514,48 @@ public static final void sayHello(java.lang.Object);
 
 ##### 核心API
 
-ASM Core API可以类比解析XML文件中的SAX方式，不需要把这个类的整个结构读取进来，就可以用流式的方法来处理字节码文件好处是非常节约内存，但是编程难度较大然而出于性能考虑，一般情况下编程都使用Core API在Core API中有以下几个关键类：
+ASM Core API可以类比解析XML文件中的SAX方式，不需要把这个类的整个结构读取进来，就可以用流式的方法来处理字节码文件，好处是非常节约内存，但是编程难度较大。然而出于性能考虑，一般情况下编程都使用Core AP。I在Core API中有以下几个关键类：
 
-- ClassReader：用于读取已经编译好的.class文件
+- ClassReader：用于读取已经编译好的.Class文件
 - ClassWriter：用于重新构建编译后的类，如修改类名、属性以及方法，也可以生成新的类的字节码文件
-- 各种Visitor类：如上所述，CoreAPI根据字节码从上到下依次处理，对于字节码文件中不同的区域有不同的Visitor，比如用于访问方法的MethodVisitor、用于访问类变量的FieldVisitor、用于访问注解的AnnotationVisitor等为了实现AOP，重点要使用的是MethodVisitor
+- 各种Visitor类：如上所述，Core API根据字节码从上到下依次处理，对于字节码文件中不同的区域有不同的Visitor，比如用于访问方法的MethodVisitor、用于访问类变量的FieldVisitor、用于访问注解的AnnotationVisitor等。为了实现AOP，重点要使用的是MethodVisitor
 
 
 
 ##### 树形API
 
-ASM Tree API可以类比解析XML文件中的DOM方式，把整个类的结构读取到内存中，缺点是消耗内存多，但是编程比较简单TreeApi不同于CoreAPI，TreeAPI通过各种Node类来映射字节码的各个区域，类比DOM节点，就可以很好地理解这种编程方式
+ASM Tree API可以类比解析XML文件中的DOM方式，把整个类的结构读取到内存中，缺点是消耗内存多，但是编程比较简单。Tree Api不同于Core API，Tree API通过各种Node类来映射字节码的各个区域，类比DOM节点，就可以很好地理解这种编程方式
 
 #### 直接利用ASM实现AOP
 
-利用ASM的CoreAPI来增强类这里不纠结于AOP的专业名词如切片、通知，只实现在方法调用前、后增加逻辑，通俗易懂且方便理解首先定义需要被增强的Base类：其中只包含一个process()方法，方法内输出一行“process”增强后，我们期望的是，方法执行前输出“start”，之后输出”end”
+利用ASM的Core API来增强类，这里不纠结于AOP的专业名词如切片、通知，只实现在方法调用前、后增加逻辑，通俗易懂且方便理解，首先定义需要被增强的Base类：其中只包含一个process()方法，方法内输出一行“process”。增强后，我们期望的是，方法执行前输出“start”，之后输出”end”
 
 ```java
-public class Base {
+public Class Base {
     public void process(){
         System.out.println("process");
     }
 }
 ```
 
-为了利用ASM实现AOP，需要定义两个类：一个是MyClassVisitor类，用于对字节码的visit以及修改；另一个是Generator类，在这个类中定义ClassReader和ClassWriter，其中的逻辑是，classReader读取字节码，然后交给MyClassVisitor类处理，处理完成后由ClassWriter写字节码并将旧的字节码替换掉Generator类较简单，我们先看一下它的实现，如下所示，然后重点解释MyClassVisitor类
+为了利用ASM实现AOP，需要定义两个类：一个是MyClassVisitor类，用于对字节码的visit以及修改；另一个是Generator类，在这个类中定义ClassReader和ClassWriter，其中的逻辑是，ClassReader读取字节码，然后交给MyClassVisitor类处理，处理完成后由ClassWriter写字节码并将旧的字节码替换掉，Generator类较简单，我们先看一下它的实现，如下所示，然后重点解释MyClassVisitor类
 
 ```java
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
-public class Generator {
+public Class Generator {
     public static void main(String[] args) throws Exception {
-		//读取
-        ClassReader classReader = new ClassReader("meituan/bytecode/asm/Base");
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        //处理
-        ClassVisitor classVisitor = new MyClassVisitor(classWriter);
-        classReader.accept(classVisitor, ClassReader.SKIP_DEBUG);
-        byte[] data = classWriter.toByteArray();
-        //输出
-        File f = new File("operation-server/target/classes/meituan/bytecode/asm/Base.class");
+		// 读取
+        ClassReader ClassReader = new ClassReader("meituan/bytecode/asm/Base");
+        ClassWriter ClassWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        // 处理
+        ClassVisitor ClassVisitor = new MyClassVisitor(ClassWriter);
+        ClassReader.accept(ClassVisitor, ClassReader.SKIP_DEBUG);
+        byte[] data = ClassWriter.toByteArray();
+        // 输出
+        File f = new File("operation-server/target/Classes/meituan/bytecode/asm/Base.Class");
         FileOutputStream fout = new FileOutputStream(f);
         fout.write(data);
         fout.close();
@@ -560,33 +564,37 @@ public class Generator {
 }
 ```
 
-MyClassVisitor继承自ClassVisitor，用于对字节码的观察它还包含一个内部类MyMethodVisitor，继承自MethodVisitor用于对类内方法的观察，它的整体代码如下：
+MyClassVisitor继承自ClassVisitor，用于对字节码的观察，它还包含一个内部类MyMethodVisitor，继承自MethodVisitor，用于对类内方法的观察，它的整体代码如下：
 
 ```java
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class MyClassVisitor extends ClassVisitor implements Opcodes {
+public Class MyClassVisitor extends ClassVisitor implements Opcodes {
+    
     public MyClassVisitor(ClassVisitor cv) {
         super(ASM5, cv);
     }
+    
     @Override
     public void visit(int version, int access, String name, String signature,
                       String superName, String[] interfaces) {
         cv.visit(version, access, name, signature, superName, interfaces);
     }
+    
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        MethodVisitor mv = cv.visitMethod(access, name, desc, signature,
-                exceptions);
-        //Base类中有两个方法：无参构造以及process方法，这里不增强构造方法
+        
+        MethodVisitor mv = cv.visitMethod(access, name, desc, signature,exceptions);
+        // Base类中有两个方法：无参构造以及process方法，这里不增强构造方法
         if (!name.equals("<init>") && mv != null) {
             mv = new MyMethodVisitor(mv);
         }
         return mv;
     }
-    class MyMethodVisitor extends MethodVisitor implements Opcodes {
+    
+    Class MyMethodVisitor extends MethodVisitor implements Opcodes {
         public MyMethodVisitor(MethodVisitor mv) {
             super(Opcodes.ASM5, mv);
         }
@@ -594,18 +602,18 @@ public class MyClassVisitor extends ClassVisitor implements Opcodes {
         @Override
         public void visitCode() {
             super.visitCode();
-            mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv.visitFieldInsn(GETSTATIC, "Java/lang/System", "out", "LJava/io/PrintStream;");
             mv.visitLdcInsn("start");
-            mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "Java/io/PrintStream", "println", "(LJava/lang/String;)V", false);
         }
         @Override
         public void visitInsn(int opcode) {
             if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
                     || opcode == Opcodes.ATHROW) {
-                //方法在返回之前，打印"end"
-                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                // 方法在返回之前，打印"end"
+                mv.visitFieldInsn(GETSTATIC, "Java/lang/System", "out", "LJava/io/PrintStream;");
                 mv.visitLdcInsn("end");
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "Java/io/PrintStream", "println", "(LJava/lang/String;)V", false);
             }
             mv.visitInsn(opcode);
         }
@@ -616,38 +624,38 @@ public class MyClassVisitor extends ClassVisitor implements Opcodes {
 利用这个类就可以实现对字节码的修改详细解读其中的代码，对字节码做修改的步骤是：
 
 - 首先通过MyClassVisitor类中的visitMethod方法，判断当前字节码读到哪一个方法了跳过构造方法 `<init>` 后，将需要被增强的方法交给内部类MyMethodVisitor来进行处理
-- 接下来，进入内部类MyMethodVisitor中的visitCode方法，它会在ASM开始访问某一个方法的Code区时被调用，重写visitCode方法，将AOP中的前置逻辑就放在这里 MyMethodVisitor继续读取字节码指令，每当ASM访问到无参数指令时，都会调用MyMethodVisitor中的visitInsn方法我们判断了当前指令是否为无参数的“return”指令，如果是就在它的前面添加一些指令，也就是将AOP的后置逻辑放在该方法中
-- 综上，重写MyMethodVisitor中的两个方法，就可以实现AOP了，而重写方法时就需要用ASM的写法，手动写入或者修改字节码通过调用methodVisitor的visitXXXXInsn()方法就可以实现字节码的插入，XXXX对应相应的操作码助记符类型，比如mv.visitLdcInsn(“end”)对应的操作码就是ldc “end”，即将字符串“end”压入栈 完成这两个visitor类后，运行Generator中的main方法完成对Base类的字节码增强，增强后的结果可以在编译后的target文件夹中找到Base.class文件进行查看，可以看到反编译后的代码已经改变了然后写一个测试类MyTest，在其中new Base()，并调用base.process()方法，可以看到下图右侧所示的AOP实现效果：
+- 接下来，进入内部类MyMethodVisitor中的visitCode方法，它会在ASM开始访问某一个方法的Code区时被调用，重写visitCode方法，将AOP中的前置逻辑就放在这里，MyMethodVisitor继续读取字节码指令，每当ASM访问到无参数指令时，都会调用MyMethodVisitor中的visitInsn方法，我们判断了当前指令是否为无参数的“return”指令，如果是就在它的前面添加一些指令，也就是将AOP的后置逻辑放在该方法中
+- 综上，重写MyMethodVisitor中的两个方法，就可以实现AOP了，而重写方法时就需要用ASM的写法，手动写入或者修改字节码，通过调用methodVisitor的visitXXXXInsn()方法就可以实现字节码的插入，XXXX对应相应的操作码助记符类型，比如mv.visitLdcInsn(“end”)对应的操作码就是ldc “end”，即将字符串“end”压入栈 完成这两个visitor类后，运行Generator中的main方法完成对Base类的字节码增强，增强后的结果可以在编译后的target文件夹中找到Base.Class文件进行查看，可以看到反编译后的代码已经改变了然后写一个测试类MyTest，在其中new Base()，并调用base.process()方法，可以看到下图右侧所示的AOP实现效果：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123049539-1608513746.png)
 
 #### ASM工具
 
-利用ASM手写字节码时，需要利用一系列visitXXXXInsn()方法来写对应的助记符，所以需要先将每一行源代码转化为一个个的助记符，然后通过ASM的语法转换为visitXXXXInsn()这种写法第一步将源码转化为助记符就已经够麻烦了，不熟悉字节码操作集合的话，需要我们将代码编译后再反编译，才能得到源代码对应的助记符第二步利用ASM写字节码时，如何传参也很令人头疼ASM社区也知道这两个问题，所以提供了工具[ASM ByteCode Outline](https://plugins.jetbrains.com/plugin/5918-asm-bytecode-outline)
+利用ASM手写字节码时，需要利用一系列visitXXXXInsn()方法来写对应的助记符，所以需要先将每一行源代码转化为一个个的助记符，然后通过ASM的语法转换为visitXXXXInsn()，这种写法第一步将源码转化为助记符就已经够麻烦了，不熟悉字节码操作集合的话，需要我们将代码编译后再反编译，才能得到源代码对应的助记符；第二步利用ASM写字节码时，如何传参也很令人头疼，ASM社区也知道这两个问题，所以提供了工具[ASM Byte Code Outline](https://plugins.jetbrains.com/plugin/5918-asm-bytecode-outline)
 
-安装后，右键选择“Show Bytecode Outline”，在新标签页中选择“ASMified”这个tab，如图19所示，就可以看到这个类中的代码对应的ASM写法了图中上下两个红框分别对应AOP中的前置逻辑于后置逻辑，将这两块直接复制到visitor中的visitMethod()以及visitInsn()方法中，就可以了
+安装后，右键选择“Show Bytecode Outline”，在新标签页中选择“ASMified”这个tab，如下图所示，就可以看到这个类中的代码对应的ASM写法了，图中上下两个红框分别对应AOP中的前置逻辑与后置逻辑，将这两块直接复制到visitor中的visitMethod()以及visitInsn()方法中，就可以了
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123110707-1707923633.png)
 
 ### Javassist
 
-ASM是在指令层次上操作字节码的，阅读上文后，我们的直观感受是在指令层次上操作字节码的框架实现起来比较晦涩故除此之外，我们再简单介绍另外一类框架：强调源代码层次操作字节码的框架Javassist
+ASM是在指令层次上操作字节码的，阅读上文后，我们的直观感受是在指令层次上操作字节码的框架实现起来比较晦涩，故除此之外，我们再简单介绍另外一类框架：强调源代码层次操作字节码的框架Javassist
 
-利用Javassist实现字节码增强时，可以无须关注字节码刻板的结构，其优点就在于编程简单直接使用java编码的形式，而不需要了解虚拟机指令，就能动态改变类的结构或者动态生成类其中最重要的是ClassPool、CtClass、CtMethod、CtField这四个类：
+利用Javassist实现字节码增强时，可以无须关注字节码刻板的结构，其优点就在于编程简单直接使用Java编码的形式，而不需要了解虚拟机指令，就能动态改变类的结构或者动态生成类，其中最重要的是ClassPool、CtClass、CtMethod、CtField这四个类：
 
-- CtClass（compile-time class）：编译时类信息，它是一个class文件在代码中的抽象表现形式，可以通过一个类的全限定名来获取一个CtClass对象，用来表示这个类文件
-- ClassPool：从开发视角来看，ClassPool是一张保存CtClass信息的HashTable，key为类名，value为类名对应的CtClass对象当我们需要对某个类进行修改时，就是通过pool.getCtClass(“className”)方法从pool中获取到相应的CtClass
+- CtClass（compile-time Class）：编译时类信息，它是一个Class文件在代码中的抽象表现形式，可以通过一个类的全限定名来获取一个CtClass对象，用来表示这个类文件
+- ClassPool：从开发视角来看，ClassPool是一张保存CtClass信息的HashTable，key为类名，value为类名对应的CtClass对象，当我们需要对某个类进行修改时，就是通过pool.getCtClass(“ClassName”)方法从pool中获取到相应的CtClass
 - CtMethod、CtField：这两个比较好理解，对应的是类中的方法和属性
 
-了解这四个类后，我们可以写一个小Demo来展示Javassist简单、快速的特点我们依然是对Base中的process()方法做增强，在方法调用前后分别输出”start”和”end”，实现代码如下我们需要做的就是从pool中获取到相应的CtClass对象和其中的方法，然后执行method.insertBefore和insertAfter方法，参数为要插入的Java代码，再以字符串的形式传入即可，实现起来也极为简单
+了解这四个类后，我们可以写一个小Demo来展示Javassist简单、快速的特点，我们依然是对Base中的process()方法做增强，在方法调用前后分别输出”start”和”end”，实现代码如下，我们需要做的就是从pool中获取到相应的CtClass对象和其中的方法，然后执行method.insertBefore和insertAfter方法，参数为要插入的Java代码，再以字符串的形式传入即可，实现起来也极为简单
 
 ```java
-import com.meituan.mtrace.agent.javassist.*;
+import com.meituan.mtrace.agent.Javassist.*;
 
-public class JavassistTest {
+public Class JavassistTest {
     public static void main(String[] args) throws NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException, IOException {
         ClassPool cp = ClassPool.getDefault();
-        CtClass cc = cp.get("meituan.bytecode.javassist.Base");
+        CtClass cc = cp.get("meituan.bytecode.Javassist.Base");
         CtMethod m = cc.getDeclaredMethod("process");
         m.insertBefore("{ System.out.println(\"start\"); }");
         m.insertAfter("{ System.out.println(\"end\"); }");
@@ -663,24 +671,24 @@ public class JavassistTest {
 
 ### 问题引出
 
-上一章重点介绍了两种不同类型的字节码操作框架，且都利用它们实现了较为粗糙的AOP其实，为了方便大家理解字节码增强技术，在上文中我们避重就轻将ASM实现AOP的过程分为了两个main方法：第一个是利用MyClassVisitor对已编译好的class文件进行修改，第二个是new对象并调用这期间并不涉及到JVM运行时对类的重加载，而是在第一个main方法中，通过ASM对已编译类的字节码进行替换，在第二个main方法中，直接使用已替换好的新类信息另外在Javassist的实现中，我们也只加载了一次Base类，也不涉及到运行时重加载类
+上一章重点介绍了两种不同类型的字节码操作框架，且都利用它们实现了较为粗糙的AOP。其实，为了方便大家理解字节码增强技术，在上文中我们避重就轻将ASM实现AOP的过程分为了两个main方法：第一个是利用MyClassVisitor对已编译好的Class文件进行修改，第二个是new对象并调用，这期间并不涉及到JVM运行时对类的重加载，而是在第一个main方法中，通过ASM对已编译类的字节码进行替换，在第二个main方法中，直接使用已替换好的新类信息，另外在Javassist的实现中，我们也只加载了一次Base类，也不涉及到运行时重加载类
 
-如果我们在一个JVM中，先加载了一个类，然后又对其进行字节码增强并重新加载会发生什么呢？模拟这种情况，只需要我们在上文中Javassist的Demo中main()方法的第一行添加Base b=new Base()，即在增强前就先让JVM加载Base类，然后在执行到c.toClass()方法时会抛出错误，如下图20所示跟进c.toClass()方法中，我们会发现它是在最后调用了ClassLoader的native方法defineClass()时报错也就是说，JVM是不允许在运行时动态重载一个类的
+如果我们在一个JVM中，先加载了一个类，然后又对其进行字节码增强并重新加载会发生什么呢？模拟这种情况，只需要我们在上文中Javassist的Demo中main()方法的第一行添加Base b=new Base()，即在增强前就先让JVM加载Base类，然后在执行到c.toClass()方法时会抛出错误，如下图20所示跟进c.toClass()方法中，我们会发现它是在最后调用了ClassLoader的native方法defineClass()时报错，也就是说，JVM是不允许在运行时动态重载一个类的
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123143951-474784759.png)
 
-显然，如果只能在类加载前对类进行强化，那字节码增强技术的使用场景就变得很窄了我们期望的效果是：在一个持续运行并已经加载了所有类的JVM中，还能利用字节码增强技术对其中的类行为做替换并重新加载为了模拟这种情况，我们将Base类做改写，在其中编写main方法，每五秒调用一次process()方法，在process()方法中输出一行“process”
+显然，如果只能在类加载前对类进行强化，那字节码增强技术的使用场景就变得很窄了。我们期望的效果是：在一个持续运行并已经加载了所有类的JVM中，还能利用字节码增强技术对其中的类行为做替换并重新加载，为了模拟这种情况，我们将Base类做改写，在其中编写main方法，每五秒调用一次process()方法，在process()方法中输出一行“process”
 
-我们的目的就是，在JVM运行中的时候，将process()方法做替换，在其前后分别打印“start”和“end”也就是在运行中时，每五秒打印的内容由”process”变为打印”start process end”那如何解决JVM不允许运行时重加载类信息的问题呢？为了达到这个目的，我们接下来一一来介绍需要借助的Java类库
+我们的目的就是，在JVM运行中的时候，将process()方法做替换，在其前后分别打印“start”和“end”，也就是在运行中时，每五秒打印的内容由”process”变为打印”start process end”。那如何解决JVM不允许运行时重加载类信息的问题呢？为了达到这个目的，我们接下来一一来介绍需要借助的Java类库
 
 ```java
-import java.lang.management.ManagementFactory;
+import Java.lang.management.ManagementFactory;
 
-public class Base {
+public Class Base {
     public static void main(String[] args) {
         String name = ManagementFactory.getRuntimeMXBean().getName();
         String s = name.split("@")[0];
-        //打印当前Pid
+        // 打印当前Pid
         System.out.println("pid:"+s);
         while (true) {
             try {
@@ -700,20 +708,20 @@ public class Base {
 
 ### Instrument
 
-instrument是JVM提供的一个可以修改已加载类的类库，专门为Java语言编写的插桩服务提供支持它需要依赖JVMTI的Attach API机制实现，JVMTI这一部分，我们将在下一小节进行介绍在JDK 1.6以前，instrument只能在JVM刚启动开始加载类时生效，而在JDK 1.6之后，instrument支持了在运行时对类定义的修改要使用instrument的类修改功能，我们需要实现它提供的ClassFileTransformer接口，定义一个类文件转换器接口中的transform()方法会在类文件被加载时调用，而在transform方法里，我们可以利用上文中的ASM或Javassist对传入的字节码进行改写或替换，生成新的字节码数组后返回
+instrument是JVM提供的一个可以修改已加载类的类库，专门为Java语言编写的插桩服务，提供支持它需要依赖JVMTI的Attach API机制实现，JVMTI这一部分，我们将在下一小节进行介绍，在JDK 1.6以前，instrument只能在JVM刚启动开始加载类时生效，而在JDK 1.6之后，instrument支持了在运行时对类定义的修改，要使用instrument的类修改功能，我们需要实现它提供的ClassFileTransformer接口，定义一个类文件转换器，接口中的transform()方法会在类文件被加载时调用，而在transform方法里，我们可以利用上文中的ASM或Javassist对传入的字节码进行改写或替换，生成新的字节码数组后返回
 
 我们定义一个实现了ClassFileTransformer接口的类TestTransformer，依然在其中利用Javassist对Base类中的process()方法进行增强，在前后分别打印“start”和“end”，代码如下：
 
 ```java
-import java.lang.instrument.ClassFileTransformer;
+import Java.lang.instrument.ClassFileTransformer;
 
-public class TestTransformer implements ClassFileTransformer {
+public Class TestTransformer implements ClassFileTransformer {
     @Override
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-        System.out.println("Transforming " + className);
+    public byte[] transform(ClassLoader loader, String ClassName, Class<?> ClassBeingRedefined, ProtectionDomain protectionDomain, byte[] ClassfileBuffer) {
+        System.out.println("Transforming " + ClassName);
         try {
             ClassPool cp = ClassPool.getDefault();
-            CtClass cc = cp.get("meituan.bytecode.jvmti.Base");
+            CtClass cc = cp.get("meituan.bytecode.JVMti.Base");
             CtMethod m = cc.getDeclaredMethod("process");
             m.insertBefore("{ System.out.println(\"start\"); }");
             m.insertAfter("{ System.out.println(\"end\"); }");
@@ -726,18 +734,18 @@ public class TestTransformer implements ClassFileTransformer {
 }
 ```
 
-现在有了Transformer，那么它要如何注入到正在运行的JVM呢？还需要定义一个Agent，借助Agent的能力将Instrument注入到JVM中我们将在下一小节介绍Agent，现在要介绍的是Agent中用到的另一个类Instrumentation在JDK 1.6之后，Instrumentation可以做启动后的Instrument、本地代码（Native Code）的Instrument，以及动态改变Classpath等等我们可以向Instrumentation中添加上文中定义的Transformer，并指定要被重加载的类，代码如下所示这样，当Agent被Attach到一个JVM中时，就会执行类字节码替换并重载入JVM的操作
+现在有了Transformer，那么它要如何注入到正在运行的JVM呢？还需要定义一个Agent，借助Agent的能力将Instrument注入到JVM中，我们将在下一小节介绍Agent，现在要介绍的是Agent中用到的另一个类Instrumentation，在JDK 1.6之后，Instrumentation可以做启动后的Instrument、本地代码（Native Code）的Instrument，以及动态改变Classpath等等。我们可以向Instrumentation中添加上文中定义的Transformer，并指定要被重加载的类，代码如下所示这样，当Agent被Attach到一个JVM中时，就会执行类字节码替换并重载入JVM的操作
 
 ```java
-import java.lang.instrument.Instrumentation;
+import Java.lang.instrument.Instrumentation;
 
-public class TestAgent {
+public Class TestAgent {
     public static void agentmain(String args, Instrumentation inst) {
         //指定我们自己定义的Transformer，在其中利用Javassist做字节码替换
         inst.addTransformer(new TestTransformer(), true);
         try {
             //重定义类并载入新的字节码
-            inst.retransformClasses(Base.class);
+            inst.retransformClasses(Base.Class);
             System.out.println("Agent Load Done.");
         } catch (Exception e) {
             System.out.println("agent load failed!");
@@ -748,15 +756,15 @@ public class TestAgent {
 
 ### JVMTI & Agent & Attach API
 
-上一小节中，我们给出了Agent类的代码，追根溯源需要先介绍JPDA（Java Platform Debugger Architecture）如果JVM启动时开启了JPDA，那么类是允许被重新加载的在这种情况下，已被加载的旧版本类信息可以被卸载，然后重新加载新版本的类正如JDPA名称中的Debugger，JDPA其实是一套用于调试Java程序的标准，任何JDK都必须实现该标准
+上一小节中，我们给出了Agent类的代码，追根溯源需要先介绍JPDA（Java Platform Debugger Architecture）如果JVM启动时开启了JPDA，那么类是允许被重新加载的，在这种情况下，已被加载的旧版本类信息可以被卸载，然后重新加载新版本的类。正如JDPA名称中的Debugger，JDPA其实是一套用于调试Java程序的标准，任何JDK都必须实现该标准
 
-JPDA定义了一整套完整的体系，它将调试体系分为三部分，并规定了三者之间的通信接口三部分由低到高分别是Java 虚拟机工具接口（JVMTI），Java 调试协议（JDWP）以及 Java 调试接口（JDI），三者之间的关系如下图所示：
+JPDA定义了一整套完整的体系，它将调试体系分为三部分，并规定了三者之间的通信接口，三部分由低到高分别是Java 虚拟机工具接口（JVMTI），Java 调试协议（JDWP）以及 Java 调试接口（JDI），三者之间的关系如下图所示：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123211335-980002630.png)
 
 现在回到正题，我们可以借助JVMTI的一部分能力，帮助动态重载类信息JVM TI（JVM TOOL INTERFACE，JVM工具接口）是JVM提供的一套对JVM进行操作的工具接口通过JVMTI，可以实现对JVM的多种操作，它通过接口注册各种事件勾子，在JVM事件触发时，同时触发预定义的勾子，以实现对各个JVM事件的响应，事件包括类文件加载、异常产生与捕获、线程启动和结束、进入和退出临界区、成员变量修改、GC开始和结束、方法调用进入和退出、临界区竞争与等待、VM启动与退出等等
 
-而Agent就是JVMTI的一种实现，Agent有两种启动方式，一是随Java进程启动而启动，经常见到的java -agentlib就是这种方式；二是运行时载入，通过attach API，将模块（jar包）动态地Attach到指定进程id的Java进程内
+而Agent就是JVMTI的一种实现，Agent有两种启动方式，一是随Java进程启动而启动，经常见到的Java -agentlib就是这种方式；二是运行时载入，通过attach API，将模块（jar包）动态地Attach到指定进程id的Java进程内
 
 Attach API 的作用是提供JVM进程间通信的能力，比如说我们为了让另外一个JVM进程把线上服务的线程Dump出来，会运行jstack或jmap的进程，并传递pid的参数，告诉它要对哪个进程进行线程Dump，这就是Attach API做的事情在下面，我们将通过Attach API的loadAgent()方法，将打包好的Agent jar包动态Attach到目标JVM上具体实现起来的步骤如下：
 
@@ -770,7 +778,7 @@ Attach API 的作用是提供JVM进程间通信的能力，比如说我们为了
 ```java
 import com.sun.tools.attach.VirtualMachine;
 
-public class Attacher {
+public Class Attacher {
     public static void main(String[] args) throws AttachNotSupportedException, IOException, AgentLoadException, AgentInitializationException {
         // 传入目标 JVM pid
         VirtualMachine vm = VirtualMachine.attach("39333");
@@ -779,7 +787,7 @@ public class Attacher {
 }
 ```
 
-- 由于在MANIFEST.MF中指定了Agent-Class，所以在Attach后，目标JVM在运行时会走到TestAgent类中定义的agentmain()方法，而在这个方法中，我们利用Instrumentation，将指定类的字节码通过定义的类转化器TestTransformer做了Base类的字节码替换（通过javassist），并完成了类的重新加载由此，我们达成了“在JVM运行时，改变类的字节码并重新载入类信息”的目的
+- 由于在MANIFEST.MF中指定了Agent-Class，所以在Attach后，目标JVM在运行时会走到TestAgent类中定义的agentmain()方法，而在这个方法中，我们利用Instrumentation，将指定类的字节码通过定义的类转化器TestTransformer做了Base类的字节码替换（通过Javassist），并完成了类的重新加载由此，我们达成了“在JVM运行时，改变类的字节码并重新载入类信息”的目的
 
 以下为运行时重新载入类的效果：先运行Base中的main()方法，启动一个JVM，可以在控制台看到每隔五秒输出一次”process”接着执行Attacher中的main()方法，并将上一个JVM的pid传入此时回到上一个main()方法的控制台，可以看到现在每隔五秒输出”process”前后会分别输出”start”和”end”，也就是说完成了运行时的字节码增强，并重新载入了这个类
 
@@ -787,7 +795,7 @@ public class Attacher {
 
 ### 使用场景
 
-至此，字节码增强技术的可使用范围就不再局限于JVM加载类前了通过上述几个类库，我们可以在运行时对JVM中的类进行修改并重载了通过这种手段，可以做的事情就变得很多了：
+至此，字节码增强技术的可使用范围就不再局限于JVM加载类前了。通过上述几个类库，我们可以在运行时对JVM中的类进行修改并重载了。通过这种手段，可以做的事情就变得很多了：
 
 - 热部署：不部署服务而对线上服务做修改，可以做打点、增加日志等操作
 - Mock：测试时候对某些服务做Mock
@@ -795,14 +803,14 @@ public class Attacher {
 
 ## 总结
 
-字节码增强技术相当于是一把打开运行时JVM的钥匙，利用它可以动态地对运行中的程序做修改，也可以跟踪JVM运行中程序的状态此外，我们平时使用的动态代理、AOP也与字节码增强密切相关，它们实质上还是利用各种手段生成符合规范的字节码文件综上所述，掌握字节码增强后可以高效地定位并快速修复一些棘手的问题（如线上性能问题、方法出现不可控的出入参需要紧急加日志等问题），也可以在开发中减少冗余代码，大大提高开发效率
+字节码增强技术相当于是一把打开运行时JVM的钥匙，利用它可以动态地对运行中的程序做修改，也可以跟踪JVM运行中程序的状态。此外，我们平时使用的动态代理、AOP也与字节码增强密切相关，它们实质上还是利用各种手段生成符合规范的字节码文件。综上所述，掌握字节码增强后可以高效地定位并快速修复一些棘手的问题（如线上性能问题、方法出现不可控的出入参需要紧急加日志等问题），也可以在开发中减少冗余代码，大大提高开发效率
 
 ## 参考文献
 
 - 《ASM4-Guide》
-- Oracle:The class File Format
+- Oracle:The Class File Format
 - Oracle:The Java Virtual Machine Instruction Set
-- javassist tutorial
+- Javassist tutorial
 - JVM Tool Interface - Version 1.2
 
 
@@ -812,8 +820,6 @@ public class Attacher {
 
 
 # JVM 基础 - Java 类加载机制
-
-> 这篇文章将带你深入理解Java 类加载机制
 
 ## 类的生命周期
 
@@ -827,23 +833,23 @@ public class Attacher {
 
 - 通过一个类的全限定名来获取其定义的二进制字节流
 - 将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构
-- 在Java堆中生成一个代表这个类的java.lang.Class对象，作为对方法区中这些数据的访问入口
+- 在Java堆中生成一个代表这个类的Java.lang.Class对象，作为对方法区中这些数据的访问入口
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123418694-159018568.png)
 
 相对于类加载的其他阶段而言，*加载阶段(准确地说，是加载阶段获取类的二进制字节流的动作)是可控性最强的阶段*，因为开发人员既可以使用系统提供的类加载器来完成加载，也可以自定义自己的类加载器来完成加载
 
-加载阶段完成后，虚拟机外部的 二进制字节流就按照虚拟机所需的格式存储在方法区之中，而且在Java堆中也创建一个`java.lang.Class`类的对象，这样便可以通过该对象访问方法区中的这些数据
+加载阶段完成后，虚拟机外部的 二进制字节流就按照虚拟机所需的格式存储在方法区之中，而且在Java堆中也创建一个`Java.lang.Class`类的对象，这样便可以通过该对象访问方法区中的这些数据
 
-类加载器并不需要等到某个类被“首次主动使用”时再加载它，JVM规范允许类加载器在预料某个类将要被使用时就预先加载它，如果在预先加载的过程中遇到了.class文件缺失或存在错误，类加载器必须在程序首次主动使用该类时才报告错误(LinkageError错误)如果这个类一直没有被程序主动使用，那么类加载器就不会报告错误
+类加载器并不需要等到某个类被“首次主动使用”时再加载它，JVM规范允许类加载器在预料某个类将要被使用时就预先加载它，如果在预先加载的过程中遇到了.Class文件缺失或存在错误，类加载器必须在程序首次主动使用该类时才报告错误(LinkageError错误)如果这个类一直没有被程序主动使用，那么类加载器就不会报告错误
 
-> 加载.class文件的方式
+> 加载.Class文件的方式
 
 - 从本地系统中直接加载
-- 通过网络下载.class文件
-- 从zip，jar等归档文件中加载.class文件
-- 从专有数据库中提取.class文件
-- 将Java源文件动态编译为.class文件
+- 通过网络下载.Class文件
+- 从zip，jar等归档文件中加载.Class文件
+- 从专有数据库中提取.Class文件
+- 将Java源文件动态编译为.Class文件
 
 ### 连接
 
@@ -852,7 +858,7 @@ public class Attacher {
 验证是连接阶段的第一步，这一阶段的目的是为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全验证阶段大致会完成4个阶段的检验动作:
 
 - `文件格式验证`: 验证字节流是否符合Class文件格式的规范；例如: 是否以`0xCAFEBABE`开头、主次版本号是否在当前虚拟机的处理范围之内、常量池中的常量是否有不被支持的类型
-- `元数据验证`: 对字节码描述的信息进行语义分析(注意: 对比`javac`编译阶段的语义分析)，以保证其描述的信息符合Java语言规范的要求；例如: 这个类是否有父类，除了`java.lang.Object`之外
+- `元数据验证`: 对字节码描述的信息进行语义分析(注意: 对比`Javac`编译阶段的语义分析)，以保证其描述的信息符合Java语言规范的要求；例如: 这个类是否有父类，除了`Java.lang.Object`之外
 - `字节码验证`: 通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的
 - `符号引用验证`: 确保解析动作能正确执行
 
@@ -900,9 +906,9 @@ public class Attacher {
 - 创建类的实例，也就是new的方式
 - 访问某个类或接口的静态变量，或者对该静态变量赋值
 - 调用类的静态方法
-- 反射(如Class.forName("com.pdai.jvm.Test"))
+- 反射(如Class.forName("com.pdai.JVM.Test"))
 - 初始化某个类的子类，则其父类也会被初始化
-- Java虚拟机启动时被标明为启动类的类(Java Test)，直接使用java.exe命令来运行某个主类
+- Java虚拟机启动时被标明为启动类的类(Java Test)，直接使用Java.exe命令来运行某个主类
 
 ### 使用
 
@@ -925,29 +931,29 @@ public class Attacher {
 
 > 注意: 这里父类加载器并不是通过继承关系来实现的，而是采用组合实现的
 
-> 站在Java虚拟机的角度来讲，只存在两种不同的类加载器: 启动类加载器: 它使用C++实现(这里仅限于`Hotspot`，也就是JDK1.5之后默认的虚拟机，有很多其他的虚拟机是用Java语言实现的)，是虚拟机自身的一部分；所有其他的类加载器: 这些类加载器都由Java语言实现，独立于虚拟机之外，并且全部继承自抽象类`java.lang.ClassLoader`，这些类加载器需要由启动类加载器加载到内存中之后才能去加载其他的类
+> 站在Java虚拟机的角度来讲，只存在两种不同的类加载器: 启动类加载器: 它使用C++实现(这里仅限于`Hotspot`，也就是JDK1.5之后默认的虚拟机，有很多其他的虚拟机是用Java语言实现的)，是虚拟机自身的一部分；所有其他的类加载器: 这些类加载器都由Java语言实现，独立于虚拟机之外，并且全部继承自抽象类`Java.lang.ClassLoader`，这些类加载器需要由启动类加载器加载到内存中之后才能去加载其他的类
 
 **站在Java开发人员的角度来看，类加载器可以大致划分为以下三类** :
 
-`启动类加载器`: Bootstrap ClassLoader，负责加载存放在JDK\jre\lib(JDK代表JDK的安装目录，下同)下，或被-Xbootclasspath参数指定的路径中的，并且能被虚拟机识别的类库(如rt.jar，所有的java.*开头的类均被Bootstrap ClassLoader加载)启动类加载器是无法被Java程序直接引用的
+`启动类加载器`: Bootstrap ClassLoader，负责加载存放在JDK\jre\lib(JDK代表JDK的安装目录，下同)下，或被-XbootClasspath参数指定的路径中的，并且能被虚拟机识别的类库(如rt.jar，所有的Java.*开头的类均被Bootstrap ClassLoader加载)启动类加载器是无法被Java程序直接引用的
 
-`扩展类加载器`: Extension ClassLoader，该加载器由`sun.misc.Launcher$ExtClassLoader`实现，它负责加载JDK\jre\lib\ext目录中，或者由java.ext.dirs系统变量指定的路径中的所有类库(如javax.*开头的类)，开发者可以直接使用扩展类加载器
+`扩展类加载器`: Extension ClassLoader，该加载器由`sun.misc.Launcher$ExtClassLoader`实现，它负责加载JDK\jre\lib\ext目录中，或者由Java.ext.dirs系统变量指定的路径中的所有类库(如Javax.*开头的类)，开发者可以直接使用扩展类加载器
 
 `应用程序类加载器`: Application ClassLoader，该类加载器由`sun.misc.Launcher$AppClassLoader`来实现，它负责加载用户类路径(ClassPath)所指定的类，开发者可以直接使用该类加载器，如果应用程序中没有自定义过自己的类加载器，一般情况下这个就是程序中默认的类加载器
 
-应用程序都是由这三种类加载器互相配合进行加载的，如果有必要，我们还可以加入自定义的类加载器因为JVM自带的ClassLoader只是懂得从本地文件系统加载标准的java class文件，因此如果编写了自己的ClassLoader，便可以做到如下几点:
+应用程序都是由这三种类加载器互相配合进行加载的，如果有必要，我们还可以加入自定义的类加载器因为JVM自带的ClassLoader只是懂得从本地文件系统加载标准的Java Class文件，因此如果编写了自己的ClassLoader，便可以做到如下几点:
 
 - 在执行非置信代码之前，自动验证数字签名
 - 动态地创建符合用户特定需要的定制化构建类
-- 从特定的场所取得java class，例如数据库中和网络中
+- 从特定的场所取得Java Class，例如数据库中和网络中
 
 ### 寻找类加载器
 
 寻找类加载器小例子如下:
 
 ```java
-package com.pdai.jvm.classloader;
-public class ClassLoaderTest {
+package com.pdai.JVM.Classloader;
+public Class ClassLoaderTest {
      public static void main(String[] args) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         System.out.println(loader);
@@ -978,10 +984,10 @@ null
 3、通过ClassLoader.loadClass()方法动态加载
 
 ```java
-package com.pdai.jvm.classloader;
-public class loaderTest { 
+package com.pdai.JVM.Classloader;
+public Class loaderTest { 
         public static void main(String[] args) throws ClassNotFoundException { 
-                ClassLoader loader = HelloWorld.class.getClassLoader(); 
+                ClassLoader loader = HelloWorld.Class.getClassLoader(); 
                 System.out.println(loader); 
                 //使用ClassLoader.loadClass()来加载类，不会执行初始化块 
                 loader.loadClass("Test2"); 
@@ -992,7 +998,7 @@ public class loaderTest {
         } 
 }
 
-public class Test2 { 
+public Class Test2 { 
         static { 
                 System.out.println("静态初始化块执行了！"); 
         } 
@@ -1003,8 +1009,8 @@ public class Test2 {
 
 > Class.forName()和ClassLoader.loadClass()区别?
 
-- Class.forName(): 将类的.class文件加载到jvm中之外，还会对类进行解释，执行类中的static块；
-- ClassLoader.loadClass(): 只干一件事情，就是将.class文件加载到jvm中，不会执行static中的内容,只有在newInstance才会去执行static块
+- Class.forName(): 将类的.Class文件加载到JVM中之外，还会对类进行解释，执行类中的static块；
+- ClassLoader.loadClass(): 只干一件事情，就是将.Class文件加载到JVM中，不会执行static中的内容,只有在newInstance才会去执行static块
 - Class.forName(name, initialize, loader)带参函数也可控制是否加载static块并且只有调用了newInstance()方法采用调用构造函数，创建类的对象 
 
 ## JVM类加载机制
@@ -1016,9 +1022,9 @@ public class Test2 {
 
 **双亲委派机制过程？**
 
-1. 当AppClassLoader加载一个class时，它首先不会自己去尝试加载这个类，而是把类加载请求委派给父类加载器ExtClassLoader去完成
-2. 当ExtClassLoader加载一个class时，它首先也不会自己去尝试加载这个类，而是把类加载请求委派给BootStrapClassLoader去完成
-3. 如果BootStrapClassLoader加载失败(例如在$JAVA_HOME/jre/lib里未查找到该class)，会使用ExtClassLoader来尝试加载；
+1. 当AppClassLoader加载一个Class时，它首先不会自己去尝试加载这个类，而是把类加载请求委派给父类加载器ExtClassLoader去完成
+2. 当ExtClassLoader加载一个Class时，它首先也不会自己去尝试加载这个类，而是把类加载请求委派给BootStrapClassLoader去完成
+3. 如果BootStrapClassLoader加载失败(例如在$Java_HOME/jre/lib里未查找到该Class)，会使用ExtClassLoader来尝试加载；
 4. 若ExtClassLoader也加载失败，则会使用AppClassLoader来加载，如果AppClassLoader也加载失败，则会报出异常ClassNotFoundException
 
 **双亲委派代码实现**
@@ -1062,25 +1068,25 @@ public Class<?> loadClass(String name)throws ClassNotFoundException {
 通常情况下，我们都是直接使用系统类加载器但是，有的时候，我们也需要自定义类加载器比如应用是通过网络来传输 Java 类的字节码，为保证安全性，这些字节码经过了加密处理，这时系统类加载器就无法对其进行加载，这样则需要自定义类加载器来实现自定义类加载器一般都是继承自 ClassLoader 类，从上面对 loadClass 方法来分析来看，我们只需要重写 findClass 方法即可下面我们通过一个示例来演示自定义类加载器的流程:
 
 ```java
-package com.pdai.jvm.classloader;
-import java.io.*;
+package com.pdai.JVM.Classloader;
+import Java.io.*;
 
-public class MyClassLoader extends ClassLoader {
+public Class MyClassLoader extends ClassLoader {
 
     private String root;
 
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        byte[] classData = loadClassData(name);
-        if (classData == null) {
+        byte[] ClassData = loadClassData(name);
+        if (ClassData == null) {
             throw new ClassNotFoundException();
         } else {
-            return defineClass(name, classData, 0, classData.length);
+            return defineClass(name, ClassData, 0, ClassData.length);
         }
     }
 
-    private byte[] loadClassData(String className) {
+    private byte[] loadClassData(String ClassName) {
         String fileName = root + File.separatorChar
-                + className.replace('.', File.separatorChar) + ".class";
+                + ClassName.replace('.', File.separatorChar) + ".Class";
         try {
             InputStream ins = new FileInputStream(fileName);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1107,12 +1113,12 @@ public class MyClassLoader extends ClassLoader {
 
     public static void main(String[] args)  {
 
-        MyClassLoader classLoader = new MyClassLoader();
-        classLoader.setRoot("D:\\temp");
+        MyClassLoader ClassLoader = new MyClassLoader();
+        ClassLoader.setRoot("D:\\temp");
 
         Class<?> testClass = null;
         try {
-            testClass = classLoader.loadClass("com.pdai.jvm.classloader.Test2");
+            testClass = ClassLoader.loadClass("com.pdai.JVM.Classloader.Test2");
             Object object = testClass.newInstance();
             System.out.println(object.getClass().getClassLoader());
         } catch (ClassNotFoundException e) {
@@ -1126,15 +1132,15 @@ public class MyClassLoader extends ClassLoader {
 }
 ```
 
-自定义类加载器的核心在于对字节码文件的获取，如果是加密的字节码则需要在该类中对文件进行解密由于这里只是演示，我并未对class文件进行加密，因此没有解密的过程
+自定义类加载器的核心在于对字节码文件的获取，如果是加密的字节码则需要在该类中对文件进行解密由于这里只是演示，我并未对Class文件进行加密，因此没有解密的过程
 
 **这里有几点需要注意** :
 
-1、这里传递的文件名需要是类的全限定性名称，即`com.pdai.jvm.classloader.Test2`格式的，因为 defineClass 方法是按这种格式进行处理的
+1、这里传递的文件名需要是类的全限定性名称，即`com.pdai.JVM.Classloader.Test2`格式的，因为 defineClass 方法是按这种格式进行处理的
 
 2、最好不要重写loadClass方法，因为这样容易破坏双亲委托模式
 
-3、这类Test 类本身可以被 AppClassLoader 类加载，因此我们不能把com/pdai/jvm/classloader/Test2.class 放在类路径下否则，由于双亲委托机制的存在，会直接导致该类由 AppClassLoader 加载，而不会通过我们自定义类加载器来加载
+3、这类Test 类本身可以被 AppClassLoader 类加载，因此我们不能把com/pdai/JVM/Classloader/Test2.Class 放在类路径下否则，由于双亲委托机制的存在，会直接导致该类由 AppClassLoader 加载，而不会通过我们自定义类加载器来加载
 
 ## 参考文章
 
@@ -1143,7 +1149,7 @@ public class MyClassLoader extends ClassLoader {
 - https://segmentfault.com/a/1190000005608960
 - http://www.importnew.com/18548.html
 - http://zyjustin9.iteye.com/blog/2092131
-- http://www.codeceo.com/article/java-class-loader-learn.html
+- http://www.codeceo.com/article/Java-Class-loader-learn.html
 
 
 
@@ -1155,7 +1161,7 @@ public class MyClassLoader extends ClassLoader {
 
 # JVM 基础 - JVM 内存结构
 
-> 本文主要对JVM 内存结构进行讲解，注意不要和Java内存模型混淆了原先这里放了一篇我自己整理的文章，最近看到**海星的javakeeper公众号**整理的文章，整理的很好所以替换为他的文章，以方便你构筑JVM内存结构的知识体系
+> 本文主要对JVM 内存结构进行讲解，注意不要和Java内存模型混淆了原先这里放了一篇我自己整理的文章，最近看到**海星的Javakeeper公众号**整理的文章，整理的很好所以替换为他的文章，以方便你构筑JVM内存结构的知识体系
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123624719-788813842.jpg)
 
@@ -1167,7 +1173,7 @@ public class MyClassLoader extends ClassLoader {
 
 下图是 JVM 整体架构，中间部分就是 Java 虚拟机定义的各种运行时数据区域
 
-![jvm-framework](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123647387-1705367970.jpg)
+![JVM-framework](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123647387-1705367970.jpg)
 
 Java 虚拟机定义了若干种程序运行期间会使用到的运行时数据区，其中有一些会随着虚拟机启动而创建，随着虚拟机退出而销毁另外一些则是与线程一一对应的，这些与线程一一对应的数据区域会随着线程开始和结束而创建和销毁
 
@@ -1188,9 +1194,9 @@ Java 虚拟机定义了若干种程序运行期间会使用到的运行时数据
 
 PC 寄存器用来存储指向下一条指令的地址，即将要执行的指令代码由执行引擎读取下一条指令
 
-![jvm-pc-counter](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123710481-1114142040.jpg)
+![JVM-pc-counter](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123710481-1114142040.jpg)
 
-（分析：进入class文件所在目录，执行 `javap -v xx.class` 反解析（或者通过 IDEA 插件 `Jclasslib` 直接查看，上图），可以看到当前类对应的Code区（汇编指令）、本地变量表、异常表和代码行偏移量映射表、常量池等信息）
+（分析：进入Class文件所在目录，执行 `Javap -v xx.Class` 反解析（或者通过 IDEA 插件 `JClasslib` 直接查看，上图），可以看到当前类对应的Code区（汇编指令）、本地变量表、异常表和代码行偏移量映射表、常量池等信息）
 
 关于类的字节码相关可以看：JVM基础 - 类字节码详解
 
@@ -1240,7 +1246,7 @@ PC 寄存器用来存储指向下一条指令的地址，即将要执行的指�
 
 可以通过参数`-Xss`来设置线程的最大栈空间，栈的大小直接决定了函数调用的最大可达深度
 
-官方提供的参考工具，可查一些参数和操作：https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html#BGBCIEFC
+官方提供的参考工具，可查一些参数和操作：https://docs.oracle.com/Javase/8/docs/technotes/tools/windows/Java.html#BGBCIEFC
 
 
 
@@ -1282,7 +1288,7 @@ IDEA 在 debug 时候，可以在 debug 窗口看到 Frames 中各种方法的�
 - 方法返回地址（Return Address）：方法正常退出或异常退出的地址
 - 一些附加信息
 
-![jvm-stack-frame](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123815916-1384080329.jpg)
+![JVM-stack-frame](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123815916-1384080329.jpg)
 
 继续深抛栈帧中的五部分~~
 
@@ -1355,7 +1361,7 @@ HotSpot 的执行引擎采用的并非是基于寄存器的架构，但这并不
 - **每一个栈帧内部都包含一个指向运行时常量池中该栈帧所属方法的引用**包含这个引用的目的就是为了支持当前方法的代码能够实现动态链接(Dynamic Linking)
 - 在 Java 源文件被编译到字节码文件中时，所有的变量和方法引用都作为**符号引用**（Symbolic Reference）保存在 Class 文件的常量池中比如：描述一个方法调用了另外的其他方法时，就是通过常量池中指向方法的符号引用来表示的，那么**动态链接的作用就是为了将这些符号引用转换为调用方法的直接引用**
 
-![jvm-dynamic-linking](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123915085-674734910.jpg)
+![JVM-dynamic-linking](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123915085-674734910.jpg)
 
 
 
@@ -1443,7 +1449,7 @@ Java 使用起来非常方便，然而有些层次的任务用 Java 实现起来
 
 - 与 Java 环境外交互：有时 Java 应用需要与 Java 外面的环境交互，这就是本地方法存在的原因
 - 与操作系统交互：JVM 支持 Java 语言本身和运行时库，但是有时仍需要依赖一些底层系统的支持通过本地方法，我们可以实现用 Java 与实现了 jre 的底层系统交互， JVM 的一些部分就是 C 语言写的
-- Sun's Java：Sun的解释器就是C实现的，这使得它能像一些普通的C一样与外部交互jre大部分都是用 Java 实现的，它也通过一些本地方法与外界交互比如，类 `java.lang.Thread` 的 `setPriority()` 的方法是用Java 实现的，但它实现调用的是该类的本地方法 `setPrioruty()`，该方法是C实现的，并被植入 JVM 内部
+- Sun's Java：Sun的解释器就是C实现的，这使得它能像一些普通的C一样与外部交互jre大部分都是用 Java 实现的，它也通过一些本地方法与外界交互比如，类 `Java.lang.Thread` 的 `setPriority()` 的方法是用Java 实现的，但它实现调用的是该类的本地方法 `setPrioruty()`，该方法是C实现的，并被植入 JVM 内部
 
 
 
@@ -1570,13 +1576,13 @@ public static void main(String[] args) {
 计算依据是**GC过程**中统计的**GC时间**、**吞吐量**、**内存占用量**
 
 ```text
-java -XX:+PrintFlagsFinal -version | grep HeapSize
+Java -XX:+PrintFlagsFinal -version | grep HeapSize
     uintx ErgoHeapSizeLimit                         = 0                                   {product}
     uintx HeapSizePerGCThread                       = 87241520                            {product}
     uintx InitialHeapSize                          := 134217728                           {product}
     uintx LargePageHeapSizeThreshold                = 134217728                           {product}
     uintx MaxHeapSize                              := 2147483648                          {product}
-java version "1.8.0_211"
+Java version "1.8.0_211"
 Java(TM) SE Runtime Environment (build 1.8.0_211-b12)
 Java HotSpot(TM) 64-Bit Server VM (build 25.211-b12, mixed mode)
 $ jmap -heap 进程号
@@ -1761,7 +1767,7 @@ private static void alloc() {
    Point point = new Point（1,2）;
    System.out.println("point.x="+point.x+"; point.y="+point.y);
 }
-class Point{
+Class Point{
     private int x;
     private int y;
 }
@@ -1781,7 +1787,7 @@ private static void alloc() {
 
 ##### 代码优化之栈上分配
 
-我们通过 JVM 内存分配可以知道 JAVA 中的对象都是在堆上进行分配，当对象没有被引用的时候，需要依靠 GC 进行回收内存，如果对象数量较多的时候，会给 GC 带来较大压力，也间接影响了应用的性能为了减少临时对象在堆内分配的数量，JVM 通过逃逸分析确定该对象不会被外部访问那就通过标量替换将该对象分解在栈上分配内存，这样该对象所占用的内存空间就可以随栈帧出栈而销毁，就减轻了垃圾回收的压力
+我们通过 JVM 内存分配可以知道 Java 中的对象都是在堆上进行分配，当对象没有被引用的时候，需要依靠 GC 进行回收内存，如果对象数量较多的时候，会给 GC 带来较大压力，也间接影响了应用的性能为了减少临时对象在堆内分配的数量，JVM 通过逃逸分析确定该对象不会被外部访问那就通过标量替换将该对象分解在栈上分配内存，这样该对象所占用的内存空间就可以随栈帧出栈而销毁，就减轻了垃圾回收的压力
 
 
 
@@ -1821,8 +1827,8 @@ private static void alloc() {
 所以对于方法区，Java8 之后的变化：
 
 - 移除了永久代（PermGen），替换为元空间（Metaspace）；
-- 永久代中的 class metadata 转移到了 native memory（本地内存，而不是虚拟机）；
-- 永久代中的 interned Strings 和 class static variables 转移到了 Java heap；
+- 永久代中的 Class metadata 转移到了 native memory（本地内存，而不是虚拟机）；
+- 永久代中的 interned Strings 和 Class static variables 转移到了 Java heap；
 - 永久代参数 （PermSize MaxPermSize） -> 元空间参数（MetaspaceSize MaxMetaspaceSize）
 
 
@@ -1847,10 +1853,10 @@ JDK8 及以后：
 
 #### 类型信息
 
-对每个加载的类型（类 class、接口 interface、枚举 enum、注解 annotation），JVM 必须在方法区中存储以下类型信息
+对每个加载的类型（类 Class、接口 interface、枚举 enum、注解 annotation），JVM 必须在方法区中存储以下类型信息
 
 - 这个类型的完整有效名称（全名=包名.类名）
-- 这个类型直接父类的完整有效名（对于 interface或是 java.lang.Object，都没有父类）
+- 这个类型直接父类的完整有效名（对于 interface或是 Java.lang.Object，都没有父类）
 - 这个类型的修饰符（public，abstract，final 的某个子集）
 - 这个类型直接接口的一个有序列表
 
@@ -1903,7 +1909,7 @@ JVM 必须保存所有方法的
 
 一个 Java 源文件中的类、接口，编译后产生一个字节码文件而 Java 中的字节码需要数据支持，通常这种数据会很大以至于不能直接存到字节码里，换另一种方式，可以存到常量池，这个字节码包含了指向常量池的引用在动态链接的时候用到的就是运行时常量池
 
-如下，我们通过 jclasslib 查看一个只有 Main 方法的简单类，字节码中的 #2 指向的就是 Constant Pool
+如下，我们通过 jClasslib 查看一个只有 Main 方法的简单类，字节码中的 #2 指向的就是 Constant Pool
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511125242307-1032086854.jpg)
 
@@ -1926,26 +1932,26 @@ JVM 必须保存所有方法的
 
 只有 HotSpot 才有永久代的概念
 
-| jdk1.6及之前 | 有永久代，静态变量存放在永久代上                             |
+| JDK1.6及之前 | 有永久代，静态变量存放在永久代上                             |
 | ------------ | ------------------------------------------------------------ |
-| jdk1.7       | 有永久代，但已经逐步“去永久代”，字符串常量池、静态变量移除，保存在堆中 |
-| jdk1.8及之后 | 取消永久代，类型信息、字段、方法、常量保存在本地内存的元空间，但字符串常量池、静态变量仍在堆中 |
+| JDK1.7       | 有永久代，但已经逐步“去永久代”，字符串常量池、静态变量移除，保存在堆中 |
+| JDK1.8及之后 | 取消永久代，类型信息、字段、方法、常量保存在本地内存的元空间，但字符串常量池、静态变量仍在堆中 |
 
 - **@pdai: HotSpot中字符串常量池保存哪里？永久代？方法区还是堆区**？
 
 1. 运行时常量池（Runtime Constant Pool）是虚拟机规范中是方法区的一部分，在加载类和结构到虚拟机后，就会创建对应的运行时常量池；而字符串常量池是这个过程中常量字符串的存放位置所以从这个角度，字符串常量池属于虚拟机规范中的方法区，它是一个**逻辑上的概念**；而堆区，永久代以及元空间是实际的存放位置
 2. 不同的虚拟机对虚拟机的规范（比如方法区）是不一样的，只有 HotSpot 才有永久代的概念
-3. HotSpot也是发展的，由于[一些问题](http://openjdk.java.net/jeps/122)的存在，HotSpot考虑逐渐去永久代，对于不同版本的JDK，**实际的存储位置**是有差异的，具体看如下表格：
+3. HotSpot也是发展的，由于[一些问题](http://openJDK.Java.net/jeps/122)的存在，HotSpot考虑逐渐去永久代，对于不同版本的JDK，**实际的存储位置**是有差异的，具体看如下表格：
 
 | JDK版本      | 是否有永久代，字符串常量池放在哪里？                         | 方法区逻辑上规范，由哪些实际的部分实现的？                   |
 | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| jdk1.6及之前 | 有永久代，运行时常量池（包括字符串常量池），静态变量存放在永久代上 | 这个时期方法区在HotSpot中是由永久代来实现的，以至于**这个时期说方法区就是指永久代** |
-| jdk1.7       | 有永久代，但已经逐步“去永久代”，字符串常量池、静态变量移除，保存在堆中； | 这个时期方法区在HotSpot中由**永久代**（类型信息、字段、方法、常量）和**堆**（字符串常量池、静态变量）共同实现 |
-| jdk1.8及之后 | 取消永久代，类型信息、字段、方法、常量保存在本地内存的元空间，但字符串常量池、静态变量仍在堆中 | 这个时期方法区在HotSpot中由本地内存的**元空间**（类型信息、字段、方法、常量）和**堆**（字符串常量池、静态变量）共同实现 |
+| JDK1.6及之前 | 有永久代，运行时常量池（包括字符串常量池），静态变量存放在永久代上 | 这个时期方法区在HotSpot中是由永久代来实现的，以至于**这个时期说方法区就是指永久代** |
+| JDK1.7       | 有永久代，但已经逐步“去永久代”，字符串常量池、静态变量移除，保存在堆中； | 这个时期方法区在HotSpot中由**永久代**（类型信息、字段、方法、常量）和**堆**（字符串常量池、静态变量）共同实现 |
+| JDK1.8及之后 | 取消永久代，类型信息、字段、方法、常量保存在本地内存的元空间，但字符串常量池、静态变量仍在堆中 | 这个时期方法区在HotSpot中由本地内存的**元空间**（类型信息、字段、方法、常量）和**堆**（字符串常量池、静态变量）共同实现 |
 
 #### 移除永久代原因
 
-http://openjdk.java.net/jeps/122
+http://openJDK.Java.net/jeps/122
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511125311289-861847999.jpg)
 
@@ -1975,9 +1981,9 @@ HotSpot 虚拟机对常量池的回收策略是很明确的，只要常量池中
 
 - 该类所有的实例都已经被回收，也就是 Java 堆中不存在该类及其任何派生子类的实例
 - 加载该类的类加载器已经被回收，这个条件除非是经过精心设计的可替换类加载器的场景，如 OSGi、JSP 的重加载等，否则通常很难达成
-- 该类对应的 java.lang.Class 对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法
+- 该类对应的 Java.lang.Class 对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法
 
-Java 虚拟机被允许堆满足上述三个条件的无用类进行回收，这里说的仅仅是“被允许”，而并不是和对象一样，不使用了就必然会回收是否对类进行回收，HotSpot 虚拟机提供了 `-Xnoclassgc` 参数进行控制，还可以使用 `-verbose:class` 以及 `-XX:+TraceClassLoading` 、`-XX:+TraceClassUnLoading` 查看类加载和卸载信息
+Java 虚拟机被允许堆满足上述三个条件的无用类进行回收，这里说的仅仅是“被允许”，而并不是和对象一样，不使用了就必然会回收是否对类进行回收，HotSpot 虚拟机提供了 `-XnoClassgc` 参数进行控制，还可以使用 `-verbose:Class` 以及 `-XX:+TraceClassLoading` 、`-XX:+TraceClassUnLoading` 查看类加载和卸载信息
 
 在大量使用反射、动态代理、CGLib 等 ByteCode 框架、动态生成 JSP 以及 OSGi 这类频繁自定义 ClassLoader 的场景都需要虚拟机具备类卸载的功能，以保证永久代不会溢出
 
@@ -1998,7 +2004,7 @@ Java 虚拟机被允许堆满足上述三个条件的无用类进行回收，这
 
 宋红康老师的 JVM 教程
 
-https://docs.oracle.com/javase/specs/index.html
+https://docs.oracle.com/Javase/specs/index.html
 
 https://www.cnblogs.com/wicfhwffg/p/9382677.html
 
@@ -2057,7 +2063,7 @@ JVM内部使用的Java内存模型在线程栈和堆之间划分内存 此图从
 那么，什么样的Java代码可以导致上面的内存图? 好吧，代码就像下面的代码一样简单：
 
 ```java
-public class MyRunnable implements Runnable() {
+public Class MyRunnable implements Runnable() {
 
     public void run() {
         methodOne();
@@ -2081,7 +2087,7 @@ public class MyRunnable implements Runnable() {
     }
 }
 
-public class MySharedObject {
+public Class MySharedObject {
 
     //static variable pointing to instance of MySharedObject
 
@@ -2174,7 +2180,7 @@ methodOne()声明一个局部基本类型变量(类型为int的localVariable1)�
 
 ## 参考文章
 
-- http://tutorials.jenkov.com/java-concurrency/java-memory-model.html
+- http://tutorials.jenkov.com/Java-concurrency/Java-memory-model.html
 - https://blog.csdn.net/weixin_39596082/article/details/88093274
 
 
@@ -2185,7 +2191,7 @@ methodOne()声明一个局部基本类型变量(类型为int的localVariable1)�
 
 # JVM 基础 - Java 内存模型详解
 
-> 本文主要转载自 Info 上[深入理解Java内存模型](https://www.infoq.cn/article/java_memory_model/), 作者程晓明这篇文章对JMM讲的很清楚了，大致分三部分：重排序与顺序一致性；三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现；java 内存模型的设计，及其与处理器内存模型和顺序一致性内存模型的关系
+> 本文主要转载自 Info 上[深入理解Java内存模型](https://www.infoq.cn/article/Java_memory_model/), 作者程晓明这篇文章对JMM讲的很清楚了，大致分三部分：重排序与顺序一致性；三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现；Java 内存模型的设计，及其与处理器内存模型和顺序一致性内存模型的关系
 
 
 
@@ -2203,7 +2209,7 @@ Java 的并发采用的是共享内存模型，Java 线程之间的通信总是�
 
 ### Java 内存模型的抽象
 
-在 java 中，所有实例域、静态域和数组元素存储在堆内存中，堆内存在线程之间共享（本文使用“共享变量”这个术语代指实例域，静态域和数组元素）局部变量（Local variables），方法定义参数（java 语言规范称之为 formal method parameters）和异常处理器参数（exception handler parameters）不会在线程之间共享，它们不会有内存可见性问题，也不受内存模型的影响
+在 Java 中，所有实例域、静态域和数组元素存储在堆内存中，堆内存在线程之间共享（本文使用“共享变量”这个术语代指实例域，静态域和数组元素）局部变量（Local variables），方法定义参数（Java 语言规范称之为 formal method parameters）和异常处理器参数（exception handler parameters）不会在线程之间共享，它们不会有内存可见性问题，也不受内存模型的影响
 
 Java 线程之间的通信由 Java 内存模型（本文简称为 JMM）控制，JMM 决定一个线程对共享变量的写入何时对另一个线程可见从抽象的角度来看，JMM 定义了线程和主内存之间的抽象关系：线程之间的共享变量存储在主内存（main memory）中，每个线程都有一个私有的本地内存（local memory），本地内存中存储了该线程以读 / 写共享变量的副本本地内存是 JMM 的一个抽象概念，并不真实存在它涵盖了缓存，写缓冲区，寄存器以及其他的硬件和编译器优化Java 内存模型的抽象示意图如下：
 
@@ -2220,7 +2226,7 @@ Java 线程之间的通信由 Java 内存模型（本文简称为 JMM）控制�
 
 如上图所示，本地内存 A 和 B 有主内存中共享变量 x 的副本假设初始时，这三个内存中的 x 值都为 0线程 A 在执行时，把更新后的 x 值（假设值为 1）临时存放在自己的本地内存 A 中当线程 A 和线程 B 需要通信时，线程 A 首先会把自己本地内存中修改后的 x 值刷新到主内存中，此时主内存中的 x 值变为了 1随后，线程 B 到主内存中去读取线程 A 更新后的 x 值，此时线程 B 的本地内存的 x 值也变为了 1
 
-从整体来看，这两个步骤实质上是线程 A 在向线程 B 发送消息，而且这个通信过程必须要经过主内存JMM 通过控制主内存与每个线程的本地内存之间的交互，来为 java 程序员提供内存可见性保证
+从整体来看，这两个步骤实质上是线程 A 在向线程 B 发送消息，而且这个通信过程必须要经过主内存JMM 通过控制主内存与每个线程的本地内存之间的交互，来为 Java 程序员提供内存可见性保证
 
 ### 重排序
 
@@ -2230,11 +2236,11 @@ Java 线程之间的通信由 Java 内存模型（本文简称为 JMM）控制�
 - 指令级并行的重排序现代处理器采用了指令级并行技术（Instruction-Level Parallelism， ILP）来将多条指令重叠执行如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序
 - 内存系统的重排序由于处理器使用缓存和读 / 写缓冲区，这使得加载和存储操作看上去可能是在乱序执行
 
-从 java 源代码到最终实际执行的指令序列，会分别经历下面三种重排序：
+从 Java 源代码到最终实际执行的指令序列，会分别经历下面三种重排序：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511125915303-1975089555.png)
 
-上述的 1 属于编译器重排序，2 和 3 属于处理器重排序这些重排序都可能会导致多线程程序出现内存可见性问题对于编译器，JMM 的编译器重排序规则会禁止特定类型的编译器重排序（不是所有的编译器重排序都要禁止）对于处理器重排序，JMM 的处理器重排序规则会要求 java 编译器在生成指令序列时，插入特定类型的内存屏障（memory barriers，intel 称之为 memory fence）指令，通过内存屏障指令来禁止特定类型的处理器重排序（不是所有的处理器重排序都要禁止）
+上述的 1 属于编译器重排序，2 和 3 属于处理器重排序这些重排序都可能会导致多线程程序出现内存可见性问题对于编译器，JMM 的编译器重排序规则会禁止特定类型的编译器重排序（不是所有的编译器重排序都要禁止）对于处理器重排序，JMM 的处理器重排序规则会要求 Java 编译器在生成指令序列时，插入特定类型的内存屏障（memory barriers，intel 称之为 memory fence）指令，通过内存屏障指令来禁止特定类型的处理器重排序（不是所有的处理器重排序都要禁止）
 
 JMM 属于语言级的内存模型，它确保在不同的编译器和不同的处理器平台之上，通过禁止特定类型的编译器重排序和处理器重排序，为程序员提供一致的内存可见性保证
 
@@ -2282,7 +2288,7 @@ y = a; //B2
 - ※注 3：由于 ARM 处理器的内存模型与 PowerPC 处理器的内存模型非常类似，本文将忽略它
 - ※注 4：数据依赖性后文会专门说明
 
-为了保证内存可见性，java 编译器在生成指令序列的适当位置会插入内存屏障指令来禁止特定类型的处理器重排序JMM 把内存屏障指令分为下列四类：
+为了保证内存可见性，Java 编译器在生成指令序列的适当位置会插入内存屏障指令来禁止特定类型的处理器重排序JMM 把内存屏障指令分为下列四类：
 
 | 屏障类型            | 指令示例                   | 说明                                                         |
 | ------------------- | -------------------------- | ------------------------------------------------------------ |
@@ -2297,7 +2303,7 @@ StoreLoad Barriers 是一个“全能型”的屏障，它同时具有其他三�
 
 ### happens-before
 
-从 JDK5 开始，java 使用新的 JSR -133 内存模型（本文除非特别说明，针对的都是 JSR- 133 内存模型）JSR-133 提出了 happens-before 的概念，通过这个概念来阐述操作之间的内存可见性如果一个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须存在 happens-before 关系这里提到的两个操作既可以是在一个线程之内，也可以是在不同线程之间 与程序员密切相关的 happens-before 规则如下：
+从 JDK5 开始，Java 使用新的 JSR -133 内存模型（本文除非特别说明，针对的都是 JSR- 133 内存模型）JSR-133 提出了 happens-before 的概念，通过这个概念来阐述操作之间的内存可见性如果一个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须存在 happens-before 关系这里提到的两个操作既可以是在一个线程之内，也可以是在不同线程之间 与程序员密切相关的 happens-before 规则如下：
 
 - 程序顺序规则：一个线程中的每个操作，happens- before 于该线程中的任意后续操作
 - 监视器锁规则：对一个监视器锁的解锁，happens- before 于随后对这个监视器锁的加锁
@@ -2310,7 +2316,7 @@ happens-before 与 JMM 的关系如下图所示：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511125957018-1988889757.png)
 
-如上图所示，一个 happens-before 规则通常对应于多个编译器重排序规则和处理器重排序规则对于 java 程序员来说，happens-before 规则简单易懂，它避免程序员为了理解 JMM 提供的内存可见性保证而去学习复杂的重排序规则以及这些规则的具体实现
+如上图所示，一个 happens-before 规则通常对应于多个编译器重排序规则和处理器重排序规则对于 Java 程序员来说，happens-before 规则简单易懂，它避免程序员为了理解 JMM 提供的内存可见性保证而去学习复杂的重排序规则以及这些规则的具体实现
 
 ## 重排序
 
@@ -2371,7 +2377,7 @@ as-if-serial 语义把单线程程序保护了起来，遵守 as-if-serial 语�
 现在让我们来看看，重排序是否会改变多线程程序的执行结果请看下面的示例代码：
 
 ```java
-class ReorderExample {
+Class ReorderExample {
     int a = 0;
     boolean flag = false;
 
@@ -2415,7 +2421,7 @@ flag 变量是个标记，用来标识变量 a 是否已被写入这里假设有
 
 ### 数据竞争与顺序一致性保证
 
-当程序未正确同步时，就会存在数据竞争java 内存模型规范对数据竞争的定义如下：
+当程序未正确同步时，就会存在数据竞争Java 内存模型规范对数据竞争的定义如下：
 
 - 在一个线程中写一个变量，
 - 在另一个线程读同一个变量，
@@ -2460,7 +2466,7 @@ JMM 对正确同步的多线程程序的内存一致性做了如下保证：
 请看下面的示例代码：
 
 ```java
-class SynchronizedExample {
+Class SynchronizedExample {
     int a = 0;
     boolean flag = false;
 
@@ -2506,7 +2512,7 @@ JMM 不保证未同步程序的执行结果与该程序在顺序一致性模型�
 
 总线的这些工作机制可以把所有处理器对内存的访问以串行化的方式来执行；在任意时间点，最多只能有一个处理器能访问内存这个特性确保了单个总线事务之中的内存读 / 写操作具有原子性
 
-在一些 32 位的处理器上，如果要求对 64 位数据的读 / 写操作具有原子性，会有比较大的开销为了照顾这种处理器，java 语言规范鼓励但不强求 JVM 对 64 位的 long 型变量和 double 型变量的读 / 写具有原子性当 JVM 在这种处理器上运行时，会把一个 64 位 long/ double 型变量的读 / 写操作拆分为两个 32 位的读 / 写操作来执行这两个 32 位的读 / 写操作可能会被分配到不同的总线事务中执行，此时对这个 64 位变量的读 / 写将不具有原子性
+在一些 32 位的处理器上，如果要求对 64 位数据的读 / 写操作具有原子性，会有比较大的开销为了照顾这种处理器，Java 语言规范鼓励但不强求 JVM 对 64 位的 long 型变量和 double 型变量的读 / 写具有原子性当 JVM 在这种处理器上运行时，会把一个 64 位 long/ double 型变量的读 / 写操作拆分为两个 32 位的读 / 写操作来执行这两个 32 位的读 / 写操作可能会被分配到不同的总线事务中执行，此时对这个 64 位变量的读 / 写将不具有原子性
 
 当单个内存操作不具有原子性，将可能会产生意想不到后果请看下面示意图：
 
@@ -2541,11 +2547,11 @@ JMM 不保证未同步程序的执行结果与该程序在顺序一致性模型�
 
 上面表格中的各种处理器内存模型，从上到下，模型由强变弱越是追求性能的处理器，内存模型设计的会越弱因为这些处理器希望内存模型对它们的束缚越少越好，这样它们就可以做尽可能多的优化来提高性能
 
-由于常见的处理器内存模型比 JMM 要弱，java 编译器在生成字节码时，会在执行指令序列的适当位置插入内存屏障来限制处理器的重排序同时，由于各种处理器内存模型的强弱并不相同，为了在不同的处理器平台向程序员展示一个一致的内存模型，JMM 在不同的处理器中需要插入的内存屏障的数量和种类也不相同下图展示了 JMM 在不同处理器内存模型中需要插入的内存屏障的示意图：
+由于常见的处理器内存模型比 JMM 要弱，Java 编译器在生成字节码时，会在执行指令序列的适当位置插入内存屏障来限制处理器的重排序同时，由于各种处理器内存模型的强弱并不相同，为了在不同的处理器平台向程序员展示一个一致的内存模型，JMM 在不同的处理器中需要插入的内存屏障的数量和种类也不相同下图展示了 JMM 在不同处理器内存模型中需要插入的内存屏障的示意图：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511130338500-1250170003.png)
 
-如上图所示，JMM 屏蔽了不同处理器内存模型的差异，它在不同的处理器平台之上为 java 程序员呈现了一个一致的内存模型
+如上图所示，JMM 屏蔽了不同处理器内存模型的差异，它在不同的处理器平台之上为 Java 程序员呈现了一个一致的内存模型
 
 ### JMM，处理器内存模型与顺序一致性内存模型之间的关系
 
@@ -2641,7 +2647,7 @@ JSR-133 对 JDK5 之前的旧内存模型的修补主要有两个：
 正因为循环引用的存在，因此 Java 虚拟机不使用引用计数算法
 
 ```java
-public class ReferenceCountingGC {
+public Class ReferenceCountingGC {
 
     public Object instance = null;
 
@@ -2681,7 +2687,7 @@ Java 虚拟机使用该算法来判断对象是否可被回收，在 Java 中 GC
 - 加载该类的 ClassLoader 已经被回收
 - 该类对应的 Class 对象没有在任何地方被引用，也就无法在任何地方通过反射访问该类方法
 
-可以通过 -Xnoclassgc 参数来控制是否对类进行卸载
+可以通过 -XnoClassgc 参数来控制是否对类进行卸载
 
 ### 4. finalize()
 
@@ -2894,7 +2900,7 @@ G1 把堆划分成多个大小相等的独立区域(Region)，新生代和老年
 - 空间整合: 整体来看是基于“标记 - 整理”算法实现的收集器，从局部(两个 Region 之间)上来看是基于“复制”算法实现的，这意味着运行期间不会产生内存空间碎片
 - 可预测的停顿: 能让使用者明确指定在一个长度为 M 毫秒的时间片段内，消耗在 GC 上的时间不得超过 N 毫秒
 
-更详细内容请参考: [Getting Started with the G1 Garbage Collector](http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/G1GettingStarted/index.html)
+更详细内容请参考: [Getting Started with the G1 Garbage Collector](http://www.oracle.com/webfolder/technetwork/tutorials/obe/Java/G1GettingStarted/index.html)
 
 ## 内存分配与回收策略
 
@@ -2965,7 +2971,7 @@ JVM 在进行 GC 时，并非每次都对堆内存（新生代、老年代；方
 
 在 JDK 1.7 及以前，HotSpot 虚拟机中的方法区是用永久代实现的，永久代中存放的为一些 Class 的信息、常量、静态变量等数据
 
-当系统中要加载的类、反射的类和调用的方法较多时，永久代可能会被占满，在未配置为采用 CMS GC 的情况下也会执行 Full GC如果经过 Full GC 仍然回收不了，那么虚拟机会抛出 java.lang.OutOfMemoryError
+当系统中要加载的类、反射的类和调用的方法较多时，永久代可能会被占满，在未配置为采用 CMS GC 的情况下也会执行 Full GC如果经过 Full GC 仍然回收不了，那么虚拟机会抛出 Java.lang.OutOfMemoryError
 
 为避免以上原因引起的 Full GC，可采用的方法为增大永久代空间或转为使用 CMS GC
 
@@ -3430,7 +3436,7 @@ ZGC中读屏障的代码作用：在对象标记和转移过程中，用于确�
 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=6 
 -XX:ZCollectionInterval=120 -XX:ZAllocationSpikeTolerance=5 
 -XX:+UnlockDiagnosticVMOptions -XX:-ZProactive 
--Xlog:safepoint,classhisto*=trace,age*,gc*=info:file=/opt/logs/logs/gc-%t.log:time,tid,tags:filecount=5,filesize=50m 
+-Xlog:safepoint,Classhisto*=trace,age*,gc*=info:file=/opt/logs/logs/gc-%t.log:time,tid,tags:filecount=5,filesize=50m 
 ```
 
 - `-Xms -Xmx`：堆的最大内存和最小内存，这里都设置为10G，程序的堆内存将保持10G不变
@@ -3572,9 +3578,9 @@ Zeus在升级JDK 11+ZGC中，通过将风险和问题分类，然后各个击破
 
 ## 参考文献
 
-- [ZGC官网](https://wiki.openjdk.java.net/display/zgc/Main)
+- [ZGC官网](https://wiki.openJDK.Java.net/display/zgc/Main)
 - 彭成寒.《新一代垃圾回收器ZGC设计与实现》. 机械工业出版社, 2019.
-- [从实际案例聊聊Java应用的GC优化](https://tech.meituan.com/2017/12/29/jvm-optimize.html)
+- [从实际案例聊聊Java应用的GC优化](https://tech.meituan.com/2017/12/29/JVM-optimize.html)
 - [Java Hotspot G1 GC的一些关键技术](https://tech.meituan.com/2016/09/23/g1.html)
 
 作者简介
@@ -3601,7 +3607,7 @@ Zeus在升级JDK 11+ZGC中，通过将风险和问题分类，然后各个击破
 > 本文对JVM涉及的常见的调优参数和垃圾回收参数进行阐述
 
 - 调试排错 - JVM 调优参数
-  - jvm参数
+  - JVM参数
   - 垃圾回收
 
 
@@ -3626,7 +3632,7 @@ Zeus在升级JDK 11+ZGC中，通过将风险和问题分类，然后各个击破
 
 - -Xss
 
-每个线程池的堆栈大小在jdk5以上的版本，每个线程堆栈大小为1m，jdk5以前的版本是每个线程池大小为256k一般在相同物理内存下，如果减少－xss值会产生更大的线程数，但不同的操作系统对进程内线程数是有限制的，是不能无限生成
+每个线程池的堆栈大小在JDK5以上的版本，每个线程堆栈大小为1m，JDK5以前的版本是每个线程池大小为256k一般在相同物理内存下，如果减少－xss值会产生更大的线程数，但不同的操作系统对进程内线程数是有限制的，是不能无限生成
 
 - -XX:NewRatio
 
@@ -3663,7 +3669,7 @@ Eden区与Subrvivor区大小的比值，如果设置为8，两个Subrvivor区与
 ```text
 说明: 
 整个堆大小的计算公式: JVM 堆大小 ＝ 年轻代大小＋年老代大小＋持久代大小
-增大新生代大小就会减少对应的年老代大小，设置-Xmn值对系统性能影响较大，所以如果设置新生代大小的调整，则需要严格的测试调整而新生代是用来存放新创建的对象，大小是随着堆大小增大和减少而有相应的变化，默认值是保持堆大小的十五分之一，-Xmn参数就是设置新生代的大小，也可以通过-XX:NewRatio来设置新生代与年老代的比例，java 官方推荐配置为3:8
+增大新生代大小就会减少对应的年老代大小，设置-Xmn值对系统性能影响较大，所以如果设置新生代大小的调整，则需要严格的测试调整而新生代是用来存放新创建的对象，大小是随着堆大小增大和减少而有相应的变化，默认值是保持堆大小的十五分之一，-Xmn参数就是设置新生代的大小，也可以通过-XX:NewRatio来设置新生代与年老代的比例，Java 官方推荐配置为3:8
 
 新生代的特点就是内存中的对象更新速度快，在短时间内容易产生大量的无用对象，如果在这个参数时就需要考虑垃圾回收器设置参数也需要调整推荐使用: 复制清除算法和并行收集器进行垃圾回收，而新生代的垃圾回收叫做初级回收
 StackOverflowError和OutOfMemoryException当线程中的请求的栈的深度大于最大可用深度，就会抛出前者；若内存空间不够，无法创建新的线程，则会抛出后者栈的大小直接决定了函数的调用最大深度，栈越大，函数嵌套可调用次数就越多
@@ -3837,24 +3843,24 @@ public static void main(String[] args) {
 当出现 OOM 时可以通过工具来分析 `GC-Roots` [引用链](https://github.com/crossoverJie/Java-Interview/blob/master/MD/GarbageCollection.md#可达性分析算法) ，查看对象和 `GC-Roots` 是如何进行关联的，是否存在对象的生命周期过长，或者是这些对象确实改存在的，那就要考虑将堆内存调大了
 
 ```text
-Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
-	at java.util.Arrays.copyOf(Arrays.java:3210)
-	at java.util.Arrays.copyOf(Arrays.java:3181)
-	at java.util.ArrayList.grow(ArrayList.java:261)
-	at java.util.ArrayList.ensureExplicitCapacity(ArrayList.java:235)
-	at java.util.ArrayList.ensureCapacityInternal(ArrayList.java:227)
-	at java.util.ArrayList.add(ArrayList.java:458)
-	at com.crossoverjie.oom.HeapOOM.main(HeapOOM.java:18)
+Exception in thread "main" Java.lang.OutOfMemoryError: Java heap space
+	at Java.util.Arrays.copyOf(Arrays.Java:3210)
+	at Java.util.Arrays.copyOf(Arrays.Java:3181)
+	at Java.util.ArrayList.grow(ArrayList.Java:261)
+	at Java.util.ArrayList.ensureExplicitCapacity(ArrayList.Java:235)
+	at Java.util.ArrayList.ensureCapacityInternal(ArrayList.Java:227)
+	at Java.util.ArrayList.add(ArrayList.Java:458)
+	at com.crossoverjie.oom.HeapOOM.main(HeapOOM.Java:18)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:147)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.Java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.Java:43)
+	at Java.lang.reflect.Method.invoke(Method.Java:498)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.Java:147)
 
 Process finished with exit code 1
 ```
 
-`java.lang.OutOfMemoryError: Java heap space`表示堆内存溢出
+`Java.lang.OutOfMemoryError: Java heap space`表示堆内存溢出
 
 
 
@@ -3884,44 +3890,44 @@ public void testOom1() {
 上述的代码执行会：old区占用过多导致频繁Full GC，最终导致GC overhead limit exceed
 
 ```java
-java.lang.OutOfMemoryError: GC overhead limit exceeded
-	at java.util.HashMap.newNode(HashMap.java:1747) ~[na:1.8.0_181]
-	at java.util.HashMap.putVal(HashMap.java:642) ~[na:1.8.0_181]
-	at java.util.HashMap.put(HashMap.java:612) ~[na:1.8.0_181]
-	at tech.pdai.test.oom.controller.TestOomController.testOom1(TestOomController.java:33) ~[classes/:na]
+Java.lang.OutOfMemoryError: GC overhead limit exceeded
+	at Java.util.HashMap.newNode(HashMap.Java:1747) ~[na:1.8.0_181]
+	at Java.util.HashMap.putVal(HashMap.Java:642) ~[na:1.8.0_181]
+	at Java.util.HashMap.put(HashMap.Java:612) ~[na:1.8.0_181]
+	at tech.pdai.test.oom.controller.TestOomController.testOom1(TestOomController.Java:33) ~[Classes/:na]
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_181]
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_181]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_181]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[na:1.8.0_181]
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:197) ~[spring-web-5.3.9.jar:5.3.9]
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:141) ~[spring-web-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:106) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1064) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655) ~[tomcat-embed-core-9.0.50.jar:4.0.FR]
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883) ~[spring-webmvc-5.3.9.jar:5.3.9]
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764) ~[tomcat-embed-core-9.0.50.jar:4.0.FR]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:228) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53) ~[tomcat-embed-websocket-9.0.50.jar:9.0.50]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-5.3.9.jar:5.3.9]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) ~[spring-web-5.3.9.jar:5.3.9]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-5.3.9.jar:5.3.9]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) ~[spring-web-5.3.9.jar:5.3.9]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.Java:62) ~[na:1.8.0_181]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.Java:43) ~[na:1.8.0_181]
+	at Java.lang.reflect.Method.invoke(Method.Java:498) ~[na:1.8.0_181]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.Java:197) ~[spring-web-5.3.9.jar:5.3.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.Java:141) ~[spring-web-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.Java:106) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.Java:895) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.Java:808) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.Java:87) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.Java:1064) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.Java:963) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.Java:1006) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.Java:898) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at Javax.servlet.http.HttpServlet.service(HttpServlet.Java:655) ~[tomcat-embed-core-9.0.50.jar:4.0.FR]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.Java:883) ~[spring-webmvc-5.3.9.jar:5.3.9]
+	at Javax.servlet.http.HttpServlet.service(HttpServlet.Java:764) ~[tomcat-embed-core-9.0.50.jar:4.0.FR]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.Java:228) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.Java:163) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.Java:53) ~[tomcat-embed-websocket-9.0.50.jar:9.0.50]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.Java:190) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.Java:163) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.Java:100) ~[spring-web-5.3.9.jar:5.3.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.Java:119) ~[spring-web-5.3.9.jar:5.3.9]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.Java:190) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.Java:163) ~[tomcat-embed-core-9.0.50.jar:9.0.50]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.Java:93) ~[spring-web-5.3.9.jar:5.3.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.Java:119) ~[spring-web-5.3.9.jar:5.3.9]
 ```
 
 还可以使用 `-XX:+HeapDumpOutofMemoryErorr` 当发生 OOM 时会自动 dump 堆栈到文件中
 
-JVM还有这样一个参数：`-XX:-UseGCOverheadLimit` 设置为false可以禁用这个检查其实这个参数解决不了内存问题，只是把错误的信息延后，替换成 java.lang.OutOfMemoryError: Java heap space
+JVM还有这样一个参数：`-XX:-UseGCOverheadLimit` 设置为false可以禁用这个检查其实这个参数解决不了内存问题，只是把错误的信息延后，替换成 Java.lang.OutOfMemoryError: Java heap space
 
 
 
@@ -3943,7 +3949,7 @@ JDK 8 中将类信息移到到了本地堆内存(Native Heap)中，将原有的�
 public static void main(String[] args) {
 	while (true){
 		Enhancer  enhancer = new Enhancer() ;
-		enhancer.setSuperclass(HeapOOM.class);
+		enhancer.setSuperClass(HeapOOM.Class);
 		enhancer.setUseCache(false) ;
 		enhancer.setCallback(new MethodInterceptor() {
 			@Override
@@ -3960,20 +3966,20 @@ public static void main(String[] args) {
 使用 `cglib` 不停的创建新类，最终会抛出:
 
 ```text
-Caused by: java.lang.reflect.InvocationTargetException
+Caused by: Java.lang.reflect.InvocationTargetException
 	at sun.reflect.GeneratedMethodAccessor1.invoke(Unknown Source)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at net.sf.cglib.core.ReflectUtils.defineClass(ReflectUtils.java:459)
-	at net.sf.cglib.core.AbstractClassGenerator.generate(AbstractClassGenerator.java:336)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.Java:43)
+	at Java.lang.reflect.Method.invoke(Method.Java:498)
+	at net.sf.cglib.core.ReflectUtils.defineClass(ReflectUtils.Java:459)
+	at net.sf.cglib.core.AbstractClassGenerator.generate(AbstractClassGenerator.Java:336)
 	... 11 more
-Caused by: java.lang.OutOfMemoryError: Metaspace
-	at java.lang.ClassLoader.defineClass1(Native Method)
-	at java.lang.ClassLoader.defineClass(ClassLoader.java:763)
+Caused by: Java.lang.OutOfMemoryError: Metaspace
+	at Java.lang.ClassLoader.defineClass1(Native Method)
+	at Java.lang.ClassLoader.defineClass(ClassLoader.Java:763)
 	... 16 more
 ```
 
-注意: 这里的 OOM 伴随的是 `java.lang.OutOfMemoryError: Metaspace` 也就是元数据溢出
+注意: 这里的 OOM 伴随的是 `Java.lang.OutOfMemoryError: Metaspace` 也就是元数据溢出
 
 
 
@@ -3995,7 +4001,7 @@ Caused by: java.lang.OutOfMemoryError: Metaspace
 
 1. **通过OOM获取**
 
-即在OutOfMemoryError后获取一份HPROF二进制Heap Dump文件，在jvm中添加参数：
+即在OutOfMemoryError后获取一份HPROF二进制Heap Dump文件，在JVM中添加参数：
 
 ```bash
 -XX:+HeapDumpOnOutOfMemoryError
@@ -4182,7 +4188,7 @@ gperftools的使用方法可以参考gperftools，gperftools的监控如下：
 - 为什么内存大小都是64M，JAR大小不可能这么大，而且都是一样大？
 - 为什么gperftools最终显示使用的的内存大小是700M左右，解压包真的没有使用malloc申请内存吗？
 
-带着疑问，笔者直接看了一下[Spring Boot Loader](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader)那一块的源码发现Spring Boot对Java JDK的InflaterInputStream进行了包装并且使用了Inflater，而Inflater本身用于解压JAR包的需要用到堆外内存而包装之后的类ZipInflaterInputStream没有释放Inflater持有的堆外内存于是笔者以为找到了原因，立马向Spring Boot社区反馈了[这个bug](https://github.com/spring-projects/spring-boot/issues/13935)但是反馈之后，笔者就发现Inflater这个对象本身实现了finalize方法，在这个方法中有调用释放堆外内存的逻辑也就是说Spring Boot依赖于GC释放堆外内存
+带着疑问，笔者直接看了一下[Spring Boot Loader](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/Java/org/springframework/boot/loader)那一块的源码发现Spring Boot对Java JDK的InflaterInputStream进行了包装并且使用了Inflater，而Inflater本身用于解压JAR包的需要用到堆外内存而包装之后的类ZipInflaterInputStream没有释放Inflater持有的堆外内存于是笔者以为找到了原因，立马向Spring Boot社区反馈了[这个bug](https://github.com/spring-projects/spring-boot/issues/13935)但是反馈之后，笔者就发现Inflater这个对象本身实现了finalize方法，在这个方法中有调用释放堆外内存的逻辑也就是说Spring Boot依赖于GC释放堆外内存
 
 笔者使用jmap查看堆内对象时，发现已经基本上没有Inflater这个对象了于是就怀疑GC的时候，没有调用finalize带着这样的怀疑，笔者把Inflater进行包装在Spring Boot Loader里面替换成自己包装的Inflater，在finalize进行打点监控，结果finalize方法确实被调用了于是笔者又去看了Inflater对应的C代码，发现初始化的使用了malloc申请内存，end的时候也调用了free去释放内存
 
@@ -4294,7 +4300,7 @@ void free (void* ptr )
 ## 参考资料
 
 - GNU C Library (glibc)
-- [Native Memory Tracking](https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html)
+- [Native Memory Tracking](https://docs.oracle.com/Javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html)
 - [gperftools](https://github.com/gperftools/gperftools)
 - [Btrace](https://github.com/btraceio/btrace)
 
@@ -4342,7 +4348,7 @@ Thread Dump是非常有用的诊断Java应用问题的工具每一个Java虚拟�
 - 操作系统命令获取ThreadDump
 
 ```bash
-ps –ef | grep java
+ps –ef | grep Java
 kill -3 <pid>
 ```
 
@@ -4353,7 +4359,7 @@ kill -3 <pid>
 - JVM 自带的工具获取线程堆栈
 
 ```bash
-jps 或 ps –ef | grep java （获取PID）
+jps 或 ps –ef | grep Java （获取PID）
 jstack [-l ] <pid> | tee -a jstack.log（获取ThreadDump）
 ```
 
@@ -4375,16 +4381,16 @@ Full thread dump Java HotSpot(TM) Server VM (16.3-b01 mixed mode):
 ```bash
 1. "Timer-0" daemon prio=10 tid=0xac190c00 nid=0xaef in Object.wait() [0xae77d000] 
 # 线程名称：Timer-0；线程类型：daemon；优先级: 10，默认是5；
-# JVM线程id：tid=0xac190c00，JVM内部线程的唯一标识（通过java.lang.Thread.getId()获取，通常用自增方式实现）
+# JVM线程id：tid=0xac190c00，JVM内部线程的唯一标识（通过Java.lang.Thread.getId()获取，通常用自增方式实现）
 # 对应系统线程id（NativeThread ID）：nid=0xaef，和top命令查看的线程pid对应，不过一个是10进制，一个是16进制（通过命令：top -H -p pid，可以查看该进程的所有线程信息）
 # 线程状态：in Object.wait()；
 # 起始栈地址：[0xae77d000]，对象的内存地址，通过JVM内存查看工具，能够看出线程是在哪儿个对象上等待；
-2.  java.lang.Thread.State: TIMED_WAITING (on object monitor)
-3.  at java.lang.Object.wait(Native Method)
-4.  -waiting on <0xb3885f60> (a java.util.TaskQueue)     # 继续wait 
-5.  at java.util.TimerThread.mainLoop(Timer.java:509)
-6.  -locked <0xb3885f60> (a java.util.TaskQueue)         # 已经locked
-7.  at java.util.TimerThread.run(Timer.java:462)
+2.  Java.lang.Thread.State: TIMED_WAITING (on object monitor)
+3.  at Java.lang.Object.wait(Native Method)
+4.  -waiting on <0xb3885f60> (a Java.util.TaskQueue)     # 继续wait 
+5.  at Java.util.TimerThread.mainLoop(Timer.Java:509)
+6.  -locked <0xb3885f60> (a Java.util.TaskQueue)         # 已经locked
+7.  at Java.util.TimerThread.run(Timer.Java:462)
 Java thread statck trace：是上面2-7行的信息到目前为止这是最重要的数据，Java stack trace提供了大部分信息来精确定位问题根源
 ```
 
@@ -4393,11 +4399,11 @@ Java thread statck trace：是上面2-7行的信息到目前为止这是最重�
 **堆栈信息应该逆向解读**：程序先执行的是第7行，然后是第6行，依次类推
 
 ```bash
-- locked <0xb3885f60> (a java.util.ArrayList)
-- waiting on <0xb3885f60> (a java.util.ArrayList) 
+- locked <0xb3885f60> (a Java.util.ArrayList)
+- waiting on <0xb3885f60> (a Java.util.ArrayList) 
 ```
 
-**也就是说对象先上锁，锁住对象0xb3885f60，然后释放该对象锁，进入waiting状态**为啥会出现这样的情况呢？看看下面的java代码示例，就会明白：
+**也就是说对象先上锁，锁住对象0xb3885f60，然后释放该对象锁，进入waiting状态**为啥会出现这样的情况呢？看看下面的Java代码示例，就会明白：
 
 ```java
 synchronized(obj) {  
@@ -4412,7 +4418,7 @@ synchronized(obj) {
 **在堆栈的第一行信息中，进一步标明了线程在代码级的状态**，例如：
 
 ```bash
-java.lang.Thread.State: TIMED_WAITING (parking)
+Java.lang.Thread.State: TIMED_WAITING (parking)
 ```
 
 解释如下：
@@ -4432,15 +4438,15 @@ java.lang.Thread.State: TIMED_WAITING (parking)
 
 |sleeping|
 
-> This thread calledjava.lang.Thread.sleep().
+> This thread calledJava.lang.Thread.sleep().
 
 |parked|
 
-> This thread calledjava.util.concurrent.locks.LockSupport.park().
+> This thread calledJava.util.concurrent.locks.LockSupport.park().
 
 |suspended|
 
-> The thread's execution wassuspended by java.lang.Thread.suspend() or a JVMTI agent call.
+> The thread's execution wassuspended by Java.lang.Thread.suspend() or a JVMTI agent call.
 ```
 
 
@@ -4521,7 +4527,7 @@ public enum State
 
 - NEW：
 
-每一个线程，在堆内存中都有一个对应的Thread对象Thread t = new Thread();当刚刚在堆内存中创建Thread对象，还没有调用t.start()方法之前，线程就处在NEW状态在这个状态上，线程与普通的java对象没有什么区别，就仅仅是一个堆内存中的对象
+每一个线程，在堆内存中都有一个对应的Thread对象Thread t = new Thread();当刚刚在堆内存中创建Thread对象，还没有调用t.start()方法之前，线程就处在NEW状态在这个状态上，线程与普通的Java对象没有什么区别，就仅仅是一个堆内存中的对象
 
 - RUNNABLE：
 
@@ -4529,7 +4535,7 @@ public enum State
 
 - BLOCKED：
 
-线程正在等待获取java对象的监视器(也叫内置锁)，即线程正在等待进入由synchronized保护的方法或者代码块synchronized用来保证原子性，任意时刻最多只能由一个线程进入该临界区域，其他线程只能排队等待
+线程正在等待获取Java对象的监视器(也叫内置锁)，即线程正在等待进入由synchronized保护的方法或者代码块synchronized用来保证原子性，任意时刻最多只能由一个线程进入该临界区域，其他线程只能排队等待
 
 - WAITING：
 
@@ -4556,13 +4562,13 @@ J.U.C中很多与线程相关类，都提供了限时版本和不限时版本的
 此时线程状态大致为以下几种：
 
 ```bash
-java.lang.Thread.State: WAITING (parking)：一直等那个条件发生；
-java.lang.Thread.State: TIMED_WAITING (parking或sleeping)：定时的，那个条件不到来，也将定时唤醒自己
+Java.lang.Thread.State: WAITING (parking)：一直等那个条件发生；
+Java.lang.Thread.State: TIMED_WAITING (parking或sleeping)：定时的，那个条件不到来，也将定时唤醒自己
 ```
 
 - **Waiting for Monitor Entry 和 in Object.wait()**：The thread is waiting to get the lock for an object (some other thread may be holding the lock). This happens if two or more threads try to execute synchronized code. Note that the lock is always for an object and not for individual methods.
 
-在多线程的JAVA程序中，实现线程之间的同步，就要说说 Monitor**Monitor是Java中用以实现线程之间的互斥与协作的主要手段，它可以看成是对象或者Class的锁每一个对象都有，也仅有一个 Monitor** 下面这个图，描述了线程和 Monitor之间关系，以及线程的状态转换图：
+在多线程的Java程序中，实现线程之间的同步，就要说说 Monitor**Monitor是Java中用以实现线程之间的互斥与协作的主要手段，它可以看成是对象或者Class的锁每一个对象都有，也仅有一个 Monitor** 下面这个图，描述了线程和 Monitor之间关系，以及线程的状态转换图：
 
 ![image](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230808095633290-196184083.png)
 
@@ -4585,10 +4591,10 @@ synchronized(obj) {
 
 ```bash
 "Thread-0" prio=10 tid=0x08222eb0 nid=0x9 waiting for monitor entry [0xf927b000..0xf927bdb8] 
-at testthread.WaitThread.run(WaitThread.java:39) 
-- waiting to lock <0xef63bf08> (a java.lang.Object) 
-- locked <0xef63beb8> (a java.util.ArrayList) 
-at java.lang.Thread.run(Thread.java:595) 
+at testthread.WaitThread.run(WaitThread.Java:39) 
+- waiting to lock <0xef63bf08> (a Java.lang.Object) 
+- locked <0xef63beb8> (a Java.util.ArrayList) 
+at Java.lang.Thread.run(Thread.Java:595) 
 ```
 
 **临界区的设置，是为了保证其内部的代码执行的原子性和完整性**但是因为临界区在任何时间只允许线程串行通过，这和我们多线程的程序的初衷是相反的**如果在多线程的程序中，大量使用 synchronized，或者不适当的使用了它，会造成大量线程在临界区的入口等待，造成系统的性能大幅下降**如果在线程 DUMP中发现了这个情况，应该审查源码，改进程序
@@ -4597,12 +4603,12 @@ at java.lang.Thread.run(Thread.java:595)
 
 ```bash
 "Thread-1" prio=10 tid=0x08223250 nid=0xa in Object.wait() [0xef47a000..0xef47aa38] 
- at java.lang.Object.wait(Native Method) 
- - waiting on <0xef63beb8> (a java.util.ArrayList) 
- at java.lang.Object.wait(Object.java:474) 
- at testthread.MyWaitThread.run(MyWaitThread.java:40) 
- - locked <0xef63beb8> (a java.util.ArrayList) 
- at java.lang.Thread.run(Thread.java:595) 
+ at Java.lang.Object.wait(Native Method) 
+ - waiting on <0xef63beb8> (a Java.util.ArrayList) 
+ at Java.lang.Object.wait(Object.Java:474) 
+ at testthread.MyWaitThread.run(MyWaitThread.Java:40) 
+ - locked <0xef63beb8> (a Java.util.ArrayList) 
+ at Java.lang.Thread.run(Thread.Java:595) 
 综上，一般CPU很忙时，则关注runnable的线程，CPU很闲时，则关注waiting for monitor entry的线程
 ```
 
@@ -4621,7 +4627,7 @@ at java.lang.Thread.run(Thread.java:595)
 ```java
 package jstack;  
 
-public class BlockedState  
+public Class BlockedState  
 {  
     private static Object object = new Object();  
     
@@ -4659,19 +4665,19 @@ public class BlockedState
 Full thread dump Java HotSpot(TM) Server VM (20.12-b01 mixed mode):  
   
 "DestroyJavaVM" prio=6 tid=0x00856c00 nid=0x1314 waiting on condition [0x00000000]  
-java.lang.Thread.State: RUNNABLE  
+Java.lang.Thread.State: RUNNABLE  
 
 "t2" prio=6 tid=0x27d7a800 nid=0x1350 waiting for monitor entry [0x2833f000]  
-java.lang.Thread.State: BLOCKED (on object monitor)  
-     at jstack.BlockedState$1.run(BlockedState.java:17)  
-     - waiting to lock <0x1cfcdc00> (a java.lang.Object)  
-     at java.lang.Thread.run(Thread.java:662)  
+Java.lang.Thread.State: BLOCKED (on object monitor)  
+     at jstack.BlockedState$1.run(BlockedState.Java:17)  
+     - waiting to lock <0x1cfcdc00> (a Java.lang.Object)  
+     at Java.lang.Thread.run(Thread.Java:662)  
 
 "t1" prio=6 tid=0x27d79400 nid=0x1338 runnable [0x282ef000]  
- java.lang.Thread.State: RUNNABLE  
-     at jstack.BlockedState$1.run(BlockedState.java:22)  
-     - locked <0x1cfcdc00> (a java.lang.Object)  
-     at java.lang.Thread.run(Thread.java:662)
+ Java.lang.Thread.State: RUNNABLE  
+     at jstack.BlockedState$1.run(BlockedState.Java:22)  
+     - locked <0x1cfcdc00> (a Java.lang.Object)  
+     at Java.lang.Thread.run(Thread.Java:662)
 ```
 
 通过thread dump可以看到：**t2线程确实处在BLOCKED (on object monitor)waiting for monitor entry 等待进入synchronized保护的区域**
@@ -4681,7 +4687,7 @@ java.lang.Thread.State: BLOCKED (on object monitor)
 ```java
 package jstack;  
   
-public class WaitingState  
+public Class WaitingState  
 {  
     private static Object object = new Object();  
 
@@ -4720,25 +4726,25 @@ public class WaitingState
 Full thread dump Java HotSpot(TM) Server VM (20.12-b01 mixed mode):  
 
 "DestroyJavaVM" prio=6 tid=0x00856c00 nid=0x1734 waiting on condition [0x00000000]  
-java.lang.Thread.State: RUNNABLE  
+Java.lang.Thread.State: RUNNABLE  
 
 "t2" prio=6 tid=0x27d7e000 nid=0x17f4 in Object.wait() [0x2833f000]  
-java.lang.Thread.State: WAITING (on object monitor)  
-     at java.lang.Object.wait(Native Method)  
-     - waiting on <0x1cfcdc00> (a java.lang.Object)  
-     at java.lang.Object.wait(Object.java:485)  
-     at jstack.WaitingState$1.run(WaitingState.java:26)  
-     - locked <0x1cfcdc00> (a java.lang.Object)  
-     at java.lang.Thread.run(Thread.java:662)  
+Java.lang.Thread.State: WAITING (on object monitor)  
+     at Java.lang.Object.wait(Native Method)  
+     - waiting on <0x1cfcdc00> (a Java.lang.Object)  
+     at Java.lang.Object.wait(Object.Java:485)  
+     at jstack.WaitingState$1.run(WaitingState.Java:26)  
+     - locked <0x1cfcdc00> (a Java.lang.Object)  
+     at Java.lang.Thread.run(Thread.Java:662)  
 
 "t1" prio=6 tid=0x27d7d400 nid=0x17f0 in Object.wait() [0x282ef000]  
-java.lang.Thread.State: WAITING (on object monitor)  
-     at java.lang.Object.wait(Native Method)  
-     - waiting on <0x1cfcdc00> (a java.lang.Object)  
-     at java.lang.Object.wait(Object.java:485)  
-     at jstack.WaitingState$1.run(WaitingState.java:26)  
-     - locked <0x1cfcdc00> (a java.lang.Object)  
-     at java.lang.Thread.run(Thread.java:662)  
+Java.lang.Thread.State: WAITING (on object monitor)  
+     at Java.lang.Object.wait(Native Method)  
+     - waiting on <0x1cfcdc00> (a Java.lang.Object)  
+     at Java.lang.Object.wait(Object.Java:485)  
+     at jstack.WaitingState$1.run(WaitingState.Java:26)  
+     - locked <0x1cfcdc00> (a Java.lang.Object)  
+     at Java.lang.Thread.run(Thread.Java:662)  
 ```
 
 可以发现t1和t2都处在WAITING (on object monitor)，进入等待状态的原因是调用了in Object.wait()通过J.U.C包下的锁和条件队列，也是这个效果，大家可以自己实践下
@@ -4748,14 +4754,14 @@ java.lang.Thread.State: WAITING (on object monitor)
 ```java
 package jstack;  
 
-import java.util.concurrent.TimeUnit;  
-import java.util.concurrent.locks.Condition;  
-import java.util.concurrent.locks.Lock;  
-import java.util.concurrent.locks.ReentrantLock;  
+import Java.util.concurrent.TimeUnit;  
+import Java.util.concurrent.locks.Condition;  
+import Java.util.concurrent.locks.Lock;  
+import Java.util.concurrent.locks.ReentrantLock;  
   
-public class TimedWaitingState  
+public Class TimedWaitingState  
 {  
-    // java的显示锁,类似java对象内置的监视器  
+    // Java的显示锁,类似Java对象内置的监视器  
     private static Lock lock = new ReentrantLock();  
   
     // 锁关联的条件队列(类似于object.wait)  
@@ -4791,28 +4797,28 @@ public class TimedWaitingState
 Full thread dump Java HotSpot(TM) Server VM (20.12-b01 mixed mode):  
 
 "DestroyJavaVM" prio=6 tid=0x00856c00 nid=0x169c waiting on condition [0x00000000]  
-java.lang.Thread.State: RUNNABLE  
+Java.lang.Thread.State: RUNNABLE  
 
 "t2" prio=6 tid=0x27d7d800 nid=0xc30 waiting on condition [0x2833f000]  
-java.lang.Thread.State: TIMED_WAITING (parking)  
+Java.lang.Thread.State: TIMED_WAITING (parking)  
      at sun.misc.Unsafe.park(Native Method)  
-     - parking to wait for  <0x1cfce5b8> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)  
-     at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:196)  
-     at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2116)  
-     at jstack.TimedWaitingState$1.run(TimedWaitingState.java:28)  
-     at java.lang.Thread.run(Thread.java:662)  
+     - parking to wait for  <0x1cfce5b8> (a Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)  
+     at Java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.Java:196)  
+     at Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.Java:2116)  
+     at jstack.TimedWaitingState$1.run(TimedWaitingState.Java:28)  
+     at Java.lang.Thread.run(Thread.Java:662)  
 
 "t1" prio=6 tid=0x280d0c00 nid=0x16e0 waiting on condition [0x282ef000]  
-java.lang.Thread.State: TIMED_WAITING (parking)  
+Java.lang.Thread.State: TIMED_WAITING (parking)  
      at sun.misc.Unsafe.park(Native Method)  
-     - parking to wait for  <0x1cfce5b8> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)  
-     at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:196)  
-     at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2116)  
-     at jstack.TimedWaitingState$1.run(TimedWaitingState.java:28)  
-     at java.lang.Thread.run(Thread.java:662)  
+     - parking to wait for  <0x1cfce5b8> (a Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)  
+     at Java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.Java:196)  
+     at Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.Java:2116)  
+     at jstack.TimedWaitingState$1.run(TimedWaitingState.Java:28)  
+     at Java.lang.Thread.run(Thread.Java:662)  
 ```
 
-可以看到t1和t2线程都处在java.lang.Thread.State: TIMED_WAITING (parking)，这个parking代表是调用的JUC下的工具类，而不是java默认的监视器
+可以看到t1和t2线程都处在Java.lang.Thread.State: TIMED_WAITING (parking)，这个parking代表是调用的JUC下的工具类，而不是Java默认的监视器
 
 
 
@@ -4861,28 +4867,28 @@ java.lang.Thread.State: TIMED_WAITING (parking)
 ```java
 "Thread-1" prio=5 tid=0x00acc490 nid=0xe50 waiting for monitor entry [0x02d3f000 
 ..0x02d3fd68] 
-at deadlockthreads.TestThread.run(TestThread.java:31) 
-- waiting to lock <0x22c19f18> (a java.lang.Object) 
-- locked <0x22c19f20> (a java.lang.Object) 
+at deadlockthreads.TestThread.run(TestThread.Java:31) 
+- waiting to lock <0x22c19f18> (a Java.lang.Object) 
+- locked <0x22c19f20> (a Java.lang.Object) 
 
 "Thread-0" prio=5 tid=0x00accdb0 nid=0xdec waiting for monitor entry [0x02cff000 
 ..0x02cff9e8] 
-at deadlockthreads.TestThread.run(TestThread.java:31) 
-- waiting to lock <0x22c19f20> (a java.lang.Object) 
-- locked <0x22c19f18> (a java.lang.Object) 
+at deadlockthreads.TestThread.run(TestThread.Java:31) 
+- waiting to lock <0x22c19f20> (a Java.lang.Object) 
+- locked <0x22c19f18> (a Java.lang.Object) 
 ```
 
-在 JAVA 5中加强了对死锁的检测**线程 Dump中可以直接报告出 Java级别的死锁**，如下所示：
+在 Java 5中加强了对死锁的检测**线程 Dump中可以直接报告出 Java级别的死锁**，如下所示：
 
 ```java
 Found one Java-level deadlock: 
 ============================= 
 "Thread-1": 
-waiting to lock monitor 0x0003f334 (object 0x22c19f18, a java.lang.Object), 
+waiting to lock monitor 0x0003f334 (object 0x22c19f18, a Java.lang.Object), 
 which is held by "Thread-0" 
 
 "Thread-0": 
-waiting to lock monitor 0x0003f314 (object 0x22c19f20, a java.lang.Object), 
+waiting to lock monitor 0x0003f314 (object 0x22c19f20, a Java.lang.Object), 
 which is held by "Thread-1"
 ```
 
@@ -4917,9 +4923,9 @@ JVM运行过程中产生的一些比较重要的线程罗列如下：
 
 | 线程名称                        | 解释说明                                                     |
 | ------------------------------- | ------------------------------------------------------------ |
-| Attach Listener                 | Attach Listener 线程是负责接收到外部的命令，而对该命令进行执行的并把结果返回给发送者通常我们会用一些命令去要求JVM给我们一些反馈信息，如：java -version、jmap、jstack等等 如果该线程在JVM启动的时候没有初始化，那么，则会在用户第一次执行JVM命令时，得到启动 |
+| Attach Listener                 | Attach Listener 线程是负责接收到外部的命令，而对该命令进行执行的并把结果返回给发送者通常我们会用一些命令去要求JVM给我们一些反馈信息，如：Java -version、jmap、jstack等等 如果该线程在JVM启动的时候没有初始化，那么，则会在用户第一次执行JVM命令时，得到启动 |
 | Signal Dispatcher               | 前面提到Attach Listener线程的职责是接收外部JVM命令，当命令接收成功后，会交给signal dispather线程去进行分发到各个不同的模块处理命令，并且返回处理结果signal dispather线程也是在第一次接收外部JVM命令时，进行初始化工作 |
-| CompilerThread0                 | 用来调用JITing，实时编译装卸class  通常，JVM会启动多个线程来处理这部分工作，线程名称后面的数字也会累加，例如：CompilerThread1 |
+| CompilerThread0                 | 用来调用JITing，实时编译装卸Class  通常，JVM会启动多个线程来处理这部分工作，线程名称后面的数字也会累加，例如：CompilerThread1 |
 | Concurrent Mark-Sweep GC Thread | 并发标记清除垃圾回收器（就是通常所说的CMS GC）线程， 该线程主要针对于老年代垃圾回收ps：启用该垃圾回收器，需要在JVM启动参数中加上：-XX:+UseConcMarkSweepGC |
 | DestroyJavaVM                   | 执行main()的线程，在main执行完后调用JNI中的 jni_DestroyJavaVM() 方法唤起DestroyJavaVM 线程，处于等待状态，等待其它线程（Java线程和Native线程）退出时通知它卸载JVM每个线程退出时，都会判断自己当前是否是整个JVM中最后一个非deamon线程，如果是，则通知DestroyJavaVM 线程卸载JVM |
 | Finalizer Thread                | 这个线程也是在main线程之后创建的，其优先级为10，主要用于在垃圾收集前，调用对象的finalize()方法；关于Finalizer线程的几点：1) 只有当开始一轮垃圾收集时，才会开始调用finalize()方法；因此并不是所有对象的finalize()方法都会被执行；2) 该线程也是daemon线程，因此如果虚拟机中没有其他非daemon线程，不管该线程有没有执行完finalize()方法，JVM也会退出；3) JVM在垃圾收集时会将失去引用的对象包装成Finalizer对象（Reference的实现），并放入ReferenceQueue，由Finalizer线程来处理；最后将该Finalizer对象的引用置为null，由垃圾收集器来回收；4) JVM为什么要单独用一个线程来执行finalize()方法呢？如果JVM的垃圾收集线程自己来做，很有可能由于在finalize()方法中误操作导致GC线程停止或不可控，这对GC线程来说是一种灾难； |
@@ -4964,8 +4970,8 @@ grep yoursearchkeyword f.txt     #文件查找
 grep 'KeyWord otherKeyWord' f.txt cpf.txt #多文件查找, 含空格加引号
 grep 'KeyWord' /home/admin -r -n #目录下查找所有符合关键字的文件
 grep 'keyword' /home/admin -r -n -i # -i 忽略大小写
-grep 'KeyWord' /home/admin -r -n --include *.{vm,java} #指定文件后缀
-grep 'KeyWord' /home/admin -r -n --exclude *.{vm,java} #反匹配
+grep 'KeyWord' /home/admin -r -n --include *.{vm,Java} #指定文件后缀
+grep 'KeyWord' /home/admin -r -n --exclude *.{vm,Java} #反匹配
 
 # cat + grep
 cat f.txt | grep -i keyword # 查找所有keyword且不分大小写  
@@ -5208,7 +5214,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name  
 tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      970/nginx: master p
-tcp        0      0 0.0.0.0:9999            0.0.0.0:*               LISTEN      1249/java         
+tcp        0      0 0.0.0.0:9999            0.0.0.0:*               LISTEN      1249/Java         
 tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      970/nginx: master p
 tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1547/sshd         
 tcp6       0      0 :::3306                 :::*                    LISTEN      1894/mysqld       
@@ -5221,7 +5227,7 @@ tcp6       0      0 :::3306                 :::*                    LISTEN      
 Active Internet connections (servers and established)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
 tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      970/nginx: master p
-tcp        0      0 0.0.0.0:9999            0.0.0.0:*               LISTEN      1249/java
+tcp        0      0 0.0.0.0:9999            0.0.0.0:*               LISTEN      1249/Java
 tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      970/nginx: master p
 tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1547/sshd
 tcp        0      0 172.31.165.194:53874    100.100.30.25:80        ESTABLISHED 18041/AliYunDun
@@ -5289,9 +5295,9 @@ netstat 请参考这篇文章: [Linux netstat命令详解](https://www.cnblogs.c
 ### 查看所有进程
 
 ```bash
-[root@pdai.tech ~]# ps -ef | grep java
-root      1249     1  0 Nov04 ?        00:58:05 java -jar /opt/tech_doc/bin/tech_arch-0.0.1-RELEASE.jar --server.port=9999
-root     32718 32518  0 08:36 pts/0    00:00:00 grep --color=auto java
+[root@pdai.tech ~]# ps -ef | grep Java
+root      1249     1  0 Nov04 ?        00:58:05 Java -jar /opt/tech_doc/bin/tech_arch-0.0.1-RELEASE.jar --server.port=9999
+root     32718 32518  0 08:36 pts/0    00:00:00 grep --color=auto Java
 ```
 
 
@@ -5310,8 +5316,8 @@ KiB Swap:  2097148 total,  1835392 free,   261756 used.  1502036 avail Mem
 
   PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
  1347 root      20   0 2553808 113752   1024 S  0.3  6.0  48:46.74 VM Periodic Tas
- 1249 root      20   0 2553808 113752   1024 S  0.0  6.0   0:00.00 java
- 1289 root      20   0 2553808 113752   1024 S  0.0  6.0   0:03.74 java
+ 1249 root      20   0 2553808 113752   1024 S  0.0  6.0   0:00.00 Java
+ 1289 root      20   0 2553808 113752   1024 S  0.0  6.0   0:03.74 Java
 ...
 ```
 
@@ -5572,7 +5578,7 @@ tsar --cpu ##当然这个也可以和-d参数配合来查询某天的单个指�
 
 # 调试排错 - Java 问题排查之工具单
 
-> Java 在线问题排查主要分两篇：本文是第二篇，通过java调试/排查工具进行问题定位
+> Java 在线问题排查主要分两篇：本文是第二篇，通过Java调试/排查工具进行问题定位
 
 
 
@@ -5582,15 +5588,15 @@ tsar --cpu ##当然这个也可以和-d参数配合来查询某天的单个指�
 
 ### jps
 
-> jps是jdk提供的一个查看当前java进程的小工具， 可以看做是JavaVirtual Machine Process Status Tool的缩写
+> jps是JDK提供的一个查看当前Java进程的小工具， 可以看做是JavaVirtual Machine Process Status Tool的缩写
 
 jps常用命令
 
 ```bash
 jps # 显示进程的ID 和 类的名称
 jps –l # 输出输出完全的包名，应用主类名，jar的完全路径名 
-jps –v # 输出jvm参数
-jps –q # 显示java进程号
+jps –v # 输出JVM参数
+jps –q # 显示Java进程号
 jps -m # main 方法
 jps -l xxx.xxx.xx.xx # 远程查看 
 ```
@@ -5598,19 +5604,19 @@ jps -l xxx.xxx.xx.xx # 远程查看
 jps参数
 
 ```bash
--q：仅输出VM标识符，不包括classname,jar name,arguments in main method 
+-q：仅输出VM标识符，不包括Classname,jar name,arguments in main method 
 -m：输出main method的参数 
 -l：输出完全的包名，应用主类名，jar的完全路径名 
--v：输出jvm参数 
+-v：输出JVM参数 
 -V：输出通过flag文件传递到JVM中的参数(.hotspotrc文件或-XX:Flags=所指定的文件 
 -Joption：传递参数到vm,例如:-J-Xms512m
 ```
 
 jps原理
 
-> java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata_{userName}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已 至于系统的参数什么，就可以解析这几个文件获得
+> Java程序在启动以后，会在Java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata_{userName}/），有几个文件，名字就是Java进程的pid，因此列出当前运行的Java进程，只是把这个目录里的文件名列一下而已 至于系统的参数什么，就可以解析这几个文件获得
 
-更多请参考 [jps - Java Virtual Machine Process Status Tool](https://docs.oracle.com/javase/1.5.0/docs/tooldocs/share/jps.html)
+更多请参考 [jps - Java Virtual Machine Process Status Tool](https://docs.oracle.com/Javase/1.5.0/docs/tooldocs/share/jps.html)
 
 
 
@@ -5618,7 +5624,7 @@ jps原理
 
 ### jstack
 
-> jstack是jdk自带的线程堆栈分析工具，使用该命令可以查看或导出 Java 应用程序中线程堆栈信息
+> jstack是JDK自带的线程堆栈分析工具，使用该命令可以查看或导出 Java 应用程序中线程堆栈信息
 
 jstack常用命令:
 
@@ -5626,7 +5632,7 @@ jstack常用命令:
 # 基本
 jstack 2815
 
-# java和native c/c++框架的所有栈信息
+# Java和native c/c++框架的所有栈信息
 jstack -m 2815
 
 # 额外的锁信息列表，查看是否死锁
@@ -5636,31 +5642,31 @@ jstack -l 2815
 jstack参数：
 
 ```bash
--l 长列表. 打印关于锁的附加信息,例如属于java.util.concurrent 的 ownable synchronizers列表.
+-l 长列表. 打印关于锁的附加信息,例如属于Java.util.concurrent 的 ownable synchronizers列表.
 
 -F 当’jstack [-l] pid’没有相应的时候强制打印栈信息
 
--m 打印java和native c/c++框架的所有栈信息.
+-m 打印Java和native c/c++框架的所有栈信息.
 
 -h | -help 打印帮助信息
 ```
 
-更多请参考: [jvm 性能调优工具之 jstack](https://www.jianshu.com/p/025cb069cb69)
+更多请参考: [JVM 性能调优工具之 jstack](https://www.jianshu.com/p/025cb069cb69)
 
 ### [#](#jinfo) jinfo
 
-> jinfo 是 JDK 自带的命令，可以用来查看正在运行的 java 应用程序的扩展参数，包括Java System属性和JVM命令行参数；也可以动态的修改正在运行的 JVM 一些参数当系统崩溃时，jinfo可以从core文件里面知道崩溃的Java应用程序的配置信息
+> jinfo 是 JDK 自带的命令，可以用来查看正在运行的 Java 应用程序的扩展参数，包括Java System属性和JVM命令行参数；也可以动态的修改正在运行的 JVM 一些参数当系统崩溃时，jinfo可以从core文件里面知道崩溃的Java应用程序的配置信息
 
 jinfo常用命令:
 
 ```bash
-# 输出当前 jvm 进程的全部参数和系统属性
+# 输出当前 JVM 进程的全部参数和系统属性
 jinfo 2815
 
 # 输出所有的参数
 jinfo -flags 2815
 
-# 查看指定的 jvm 参数的值
+# 查看指定的 JVM 参数的值
 jinfo -flag PrintGC 2815
 
 # 开启/关闭指定的JVM参数
@@ -5669,7 +5675,7 @@ jinfo -flag +PrintGC 2815
 # 设置flag的参数
 jinfo -flag name=value 2815
 
-# 输出当前 jvm 进行的全部的系统属性
+# 输出当前 JVM 进行的全部的系统属性
 jinfo -sysprops 2815
 ```
 
@@ -5684,7 +5690,7 @@ no option 输出全部的参数和系统属性
 -sysprops 输出系统属性
 ```
 
-更多请参考：[jvm 性能调优工具之 jinfo](https://www.jianshu.com/p/8d8aef212b25)
+更多请参考：[JVM 性能调优工具之 jinfo](https://www.jianshu.com/p/8d8aef212b25)
 
 
 
@@ -5692,7 +5698,7 @@ no option 输出全部的参数和系统属性
 
 ### jmap
 
-> 命令jmap是一个多功能的命令它可以生成 java 程序的 dump 文件， 也可以查看堆内对象示例的统计信息、查看 ClassLoader 的信息以及 finalizer 队列
+> 命令jmap是一个多功能的命令它可以生成 Java 程序的 dump 文件， 也可以查看堆内对象示例的统计信息、查看 ClassLoader 的信息以及 finalizer 队列
 
 两个用途
 
@@ -5724,8 +5730,8 @@ J<flag>：指定传递给运行jmap的JVM的参数
 
 更多请参考：
 
-1. [jvm 性能调优工具之 jmap](https://www.jianshu.com/p/a4ad53179df3) 
-2. [jmap - Memory Map](https://docs.oracle.com/javase/1.5.0/docs/tooldocs/share/jmap.html)
+1. [JVM 性能调优工具之 jmap](https://www.jianshu.com/p/a4ad53179df3) 
+2. [jmap - Memory Map](https://docs.oracle.com/Javase/1.5.0/docs/tooldocs/share/jmap.html)
 
 
 
@@ -5745,7 +5751,7 @@ jstat -gcutil 2815 1000
 
 ### jdb
 
-jdb可以用来预发debug,假设你预发的java_home是/opt/java/，远程调试端口是8000.那么
+jdb可以用来预发debug,假设你预发的Java_home是/opt/Java/，远程调试端口是8000.那么
 
 ```bash
 jdb -attach 8000
@@ -5753,7 +5759,7 @@ jdb -attach 8000
 
 出现以上代表jdb启动成功后续可以进行设置断点进行调试
 
-具体参数可见oracle官方说明[jdb - The Java Debugger](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/jdb.html)
+具体参数可见oracle官方说明[jdb - The Java Debugger](http://docs.oracle.com/Javase/7/docs/technotes/tools/windows/jdb.html)
 
 
 
@@ -5764,7 +5770,7 @@ jdb -attach 8000
 CHLSDB感觉很多情况下可以看到更好玩的东西，不详细叙述了 查询资料听说jstack和jmap等工具就是基于它的
 
 ```bash
-java -classpath /opt/taobao/java/lib/sa-jdi.jar sun.jvm.hotspot.CLHSDB
+Java -Classpath /opt/taobao/Java/lib/sa-jdi.jar sun.JVM.hotspot.CLHSDB
 ```
 
 更详细的可见R大此贴 http://rednaxelafx.iteye.com/blog/1847971
@@ -5782,11 +5788,11 @@ java -classpath /opt/taobao/java/lib/sa-jdi.jar sun.jvm.hotspot.CLHSDB
 - 查看当前谁调用了ArrayList的add方法，同时只打印当前ArrayList的size大于500的线程调用栈
 
 ```java
-@OnMethod(clazz = "java.util.ArrayList", method="add", location = @Location(value = Kind.CALL, clazz = "/./", method = "/./"))
+@OnMethod(clazz = "Java.util.ArrayList", method="add", location = @Location(value = Kind.CALL, clazz = "/./", method = "/./"))
 public static void m(@ProbeClassName String probeClass, @ProbeMethodName String probeMethod, @TargetInstance Object instance, @TargetMethodOrField String method) {
 
-    if(getInt(field("java.util.ArrayList", "size"), instance) > 479){
-        println("check who ArrayList.add method:" + probeClass + "#" + probeMethod  + ", method:" + method + ", size:" + getInt(field("java.util.ArrayList", "size"), instance));
+    if(getInt(field("Java.util.ArrayList", "size"), instance) > 479){
+        println("check who ArrayList.add method:" + probeClass + "#" + probeMethod  + ", method:" + method + ", size:" + getInt(field("Java.util.ArrayList", "size"), instance));
         jstack();
         println();
         println("===========================");
@@ -5821,8 +5827,8 @@ btrace 具体可以参考这里：https://github.com/btraceio/btrace
 
 Greys是@杜琨的大作吧说几个挺棒的功能(部分功能和btrace重合):
 
-- `sc -df xxx`: 输出当前类的详情,包括源码位置和classloader结构
-- `trace class method`: 打印出当前方法调用的耗时情况，细分到每个方法, 对排查方法性能时很有帮助
+- `sc -df xxx`: 输出当前类的详情,包括源码位置和Classloader结构
+- `trace Class method`: 打印出当前方法调用的耗时情况，细分到每个方法, 对排查方法性能时很有帮助
 
 
 
@@ -5842,7 +5848,7 @@ Greys是@杜琨的大作吧说几个挺棒的功能(部分功能和btrace重合)
 
 就说一个功能:
 
-- `classes`：通过修改了字节码，改变了类的内容，即时生效 所以可以做到快速的在某个地方打个日志看看输出，缺点是对代码的侵入性太大但是如果自己知道自己在干嘛，的确是不错的玩意儿
+- `Classes`：通过修改了字节码，改变了类的内容，即时生效 所以可以做到快速的在某个地方打个日志看看输出，缺点是对代码的侵入性太大但是如果自己知道自己在干嘛，的确是不错的玩意儿
 
 其他功能Greys和btrace都能很轻易做的到，不说了
 
@@ -5866,19 +5872,19 @@ Greys是@杜琨的大作吧说几个挺棒的功能(部分功能和btrace重合)
 
 ### dmesg
 
-如果发现自己的java进程悄无声息的消失了，几乎没有留下任何线索，那么dmesg一发，很有可能有你想要的
+如果发现自己的Java进程悄无声息的消失了，几乎没有留下任何线索，那么dmesg一发，很有可能有你想要的
 
 sudo dmesg|grep -i kill|less 去找关键字oom_killer找到的结果类似如下:
 
 ```bash
-[6710782.021013] java invoked oom-killer: gfp_mask=0xd0, order=0, oom_adj=0, oom_scoe_adj=0
+[6710782.021013] Java invoked oom-killer: gfp_mask=0xd0, order=0, oom_adj=0, oom_scoe_adj=0
 [6710782.070639] [<ffffffff81118898>] ? oom_kill_process+0x68/0x140 
 [6710782.257588] Task in /LXC011175068174 killed as a result of limit of /LXC011175068174 
-[6710784.698347] Memory cgroup out of memory: Kill process 215701 (java) score 854 or sacrifice child 
-[6710784.707978] Killed process 215701, UID 679, (java) total-vm:11017300kB, anon-rss:7152432kB, file-rss:1232kB
+[6710784.698347] Memory cgroup out of memory: Kill process 215701 (Java) score 854 or sacrifice child 
+[6710784.707978] Killed process 215701, UID 679, (Java) total-vm:11017300kB, anon-rss:7152432kB, file-rss:1232kB
 ```
 
-以上表明，对应的java进程被系统的OOM Killer给干掉了，得分为854. 解释一下OOM killer（Out-Of-Memory killer），该机制会监控机器的内存资源消耗当机器内存耗尽前，该机制会扫描所有的进程（按照一定规则计算，内存占用，时间等），挑选出得分最高的进程，然后杀死，从而保护机器
+以上表明，对应的Java进程被系统的OOM Killer给干掉了，得分为854. 解释一下OOM killer（Out-Of-Memory killer），该机制会监控机器的内存资源消耗当机器内存耗尽前，该机制会扫描所有的进程（按照一定规则计算，内存占用，时间等），挑选出得分最高的进程，然后杀死，从而保护机器
 
 dmesg日志时间转换公式: log实际时间=格林威治1970-01-01+(当前时间秒数-系统启动至今的秒数+dmesg打印的log时间)秒数：
 
@@ -5915,7 +5921,7 @@ date -d "1970-01-01 UTC `echo "$(date +%s)-$(cat /proc/uptime|cut -f 1 -d' ')+12
 
 ## JConsole
 
-> Jconsole （Java Monitoring and Management Console），JDK自带的基于JMX的可视化监视、管理工具 官方文档可以参考[这里](https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.html)
+> Jconsole （Java Monitoring and Management Console），JDK自带的基于JMX的可视化监视、管理工具 官方文档可以参考[这里](https://docs.oracle.com/Javase/8/docs/technotes/guides/management/jconsole.html)
 
 - **找到jconsole工具**
 
@@ -5924,10 +5930,10 @@ pdai@MacBook-Pro bin % ls
 jaotc		jcmd		jinfo		jshell		rmid
 jar		jconsole(这里)	jjs		jstack		rmiregistry
 jarsigner	jdb		jlink		jstat		serialver
-java		jdeprscan	jmap		jstatd		unpack200
-javac		jdeps		jmod		keytool
-javadoc		jhsdb		jps		pack200
-javap		jimage		jrunscript	rmic
+Java		jdeprscan	jmap		jstatd		unpack200
+Javac		jdeps		jmod		keytool
+Javadoc		jhsdb		jps		pack200
+Javap		jimage		jrunscript	rmic
 ```
 
 - **打开jconsole**
@@ -5996,7 +6002,7 @@ Sampler
 
 ## Visual GC
 
-> visual gc 是 visualvm 中的图形化查看 gc 状况的插件官方文档可以参考[这里](https://www.oracle.com/java/technologies/visual-garbage-collection-monitoring-tool.html)
+> visual gc 是 visualvm 中的图形化查看 gc 状况的插件官方文档可以参考[这里](https://www.oracle.com/Java/technologies/visual-garbage-collection-monitoring-tool.html)
 
 比如我在IDEA中使用visual GC 插件来看GC状况
 
@@ -6024,7 +6030,7 @@ JProfiler 包含用于采集目标 JVM 分析数据的 JProfiler agent、用于�
 
 - **JProfiler agent**
 
-JProfiler agent 是一个本地库，它可以在 JVM 启动时通过参数`-agentpath:<path to native library>`进行加载或者在程序运行时通过[JVM Attach 机制](http://lovestblog.cn/blog/2014/06/18/jvm-attach/)进行加载Agent 被成功加载后，会设置 JVMTI 环境，监听虚拟机产生的事件，如类加载、线程创建等例如，当它监听到类加载事件后，会给这些类注入用于执行度量操作的字节码
+JProfiler agent 是一个本地库，它可以在 JVM 启动时通过参数`-agentpath:<path to native library>`进行加载或者在程序运行时通过[JVM Attach 机制](http://lovestblog.cn/blog/2014/06/18/JVM-attach/)进行加载Agent 被成功加载后，会设置 JVMTI 环境，监听虚拟机产生的事件，如类加载、线程创建等例如，当它监听到类加载事件后，会给这些类注入用于执行度量操作的字节码
 
 - **JProfiler UI**
 
@@ -6221,7 +6227,7 @@ MBeans
 - [greys-anatomy](https://github.com/oldmanpushcart/greys-anatomy): Arthas代码基于Greys二次开发而来，非常感谢Greys之前所有的工作，以及Greys原作者对Arthas提出的意见和建议！
 - [termd](https://github.com/termd/termd): Arthas的命令行实现基于termd开发，是一款优秀的命令行程序开发框架，感谢termd提供了优秀的框架
 - [crash](https://github.com/crashub/crash): Arthas的文本渲染功能基于crash中的文本渲染功能开发，可以从[这里](https://github.com/crashub/crash/tree/1.3.2/shell)看到源码，感谢crash在这方面所做的优秀工作
-- [cli](https://github.com/eclipse-vertx/vert.x/tree/master/src/main/java/io/vertx/core/cli): Arthas的命令行界面基于vert.x提供的cli库进行开发，感谢vert.x在这方面做的优秀工作
+- [cli](https://github.com/eclipse-vertx/vert.x/tree/master/src/main/Java/io/vertx/core/cli): Arthas的命令行界面基于vert.x提供的cli库进行开发，感谢vert.x在这方面做的优秀工作
 - [compiler](https://github.com/skalogs/SkaETL/tree/master/compiler) Arthas里的内存编绎器代码来源
 - [Apache Commons Net](https://commons.apache.org/proper/commons-net/) Arthas里的Telnet Client代码来源
 - `JavaAgent`：运行在 main方法之前的拦截器，它内定的方法名叫 premain ，也就是说先执行 premain 方法然后再执行 main 方法
@@ -6254,11 +6260,11 @@ MBeans
 
 ### Arthas 安装
 
-下载`arthas-boot.jar`，然后用`java -jar`的方式启动：
+下载`arthas-boot.jar`，然后用`Java -jar`的方式启动：
 
 ```bash
 curl -O https://alibaba.github.io/arthas/arthas-boot.jar
-java -jar arthas-boot.jar
+Java -jar arthas-boot.jar
 ```
 
 
@@ -6283,27 +6289,27 @@ java -jar arthas-boot.jar
 $ thread -n 3
 "as-command-execute-daemon" Id=29 cpuUsage=75% RUNNABLE
     at sun.management.ThreadImpl.dumpThreads0(Native Method)
-    at sun.management.ThreadImpl.getThreadInfo(ThreadImpl.java:440)
-    at com.taobao.arthas.core.command.monitor200.ThreadCommand$1.action(ThreadCommand.java:58)
-    at com.taobao.arthas.core.command.handler.AbstractCommandHandler.execute(AbstractCommandHandler.java:238)
-    at com.taobao.arthas.core.command.handler.DefaultCommandHandler.handleCommand(DefaultCommandHandler.java:67)
-    at com.taobao.arthas.core.server.ArthasServer$4.run(ArthasServer.java:276)
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
-    at java.lang.Thread.run(Thread.java:745)
+    at sun.management.ThreadImpl.getThreadInfo(ThreadImpl.Java:440)
+    at com.taobao.arthas.core.command.monitor200.ThreadCommand$1.action(ThreadCommand.Java:58)
+    at com.taobao.arthas.core.command.handler.AbstractCommandHandler.execute(AbstractCommandHandler.Java:238)
+    at com.taobao.arthas.core.command.handler.DefaultCommandHandler.handleCommand(DefaultCommandHandler.Java:67)
+    at com.taobao.arthas.core.server.ArthasServer$4.run(ArthasServer.Java:276)
+    at Java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.Java:1145)
+    at Java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.Java:615)
+    at Java.lang.Thread.run(Thread.Java:745)
 
     Number of locked synchronizers = 1
-    - java.util.concurrent.ThreadPoolExecutor$Worker@6cd0b6f8
+    - Java.util.concurrent.ThreadPoolExecutor$Worker@6cd0b6f8
 
 "as-session-expire-daemon" Id=25 cpuUsage=24% TIMED_WAITING
-    at java.lang.Thread.sleep(Native Method)
-    at com.taobao.arthas.core.server.DefaultSessionManager$2.run(DefaultSessionManager.java:85)
+    at Java.lang.Thread.sleep(Native Method)
+    at com.taobao.arthas.core.server.DefaultSessionManager$2.run(DefaultSessionManager.Java:85)
 
-"Reference Handler" Id=2 cpuUsage=0% WAITING on java.lang.ref.Reference$Lock@69ba0f27
-    at java.lang.Object.wait(Native Method)
-    -  waiting on java.lang.ref.Reference$Lock@69ba0f27
-    at java.lang.Object.wait(Object.java:503)
-    at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:133)
+"Reference Handler" Id=2 cpuUsage=0% WAITING on Java.lang.ref.Reference$Lock@69ba0f27
+    at Java.lang.Object.wait(Native Method)
+    -  waiting on Java.lang.ref.Reference$Lock@69ba0f27
+    at Java.lang.Object.wait(Object.Java:503)
+    at Java.lang.ref.Reference$ReferenceHandler.run(Reference.Java:133)
 ```
 
 
@@ -6315,10 +6321,10 @@ $ thread -n 3
 对类进行反编译:
 
 ```java
-$ jad javax.servlet.Servlet
+$ jad Javax.servlet.Servlet
 
 ClassLoader:
-+-java.net.URLClassLoader@6108b2d7
++-Java.net.URLClassLoader@6108b2d7
   +-sun.misc.Launcher$AppClassLoader@18b4aac2
     +-sun.misc.Launcher$ExtClassLoader@1ddf84b8
 
@@ -6328,13 +6334,13 @@ Location:
 /*
  * Decompiled with CFR 0_122.
  */
-package javax.servlet;
+package Javax.servlet;
 
-import java.io.IOException;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import Java.io.IOException;
+import Javax.servlet.ServletConfig;
+import Javax.servlet.ServletException;
+import Javax.servlet.ServletRequest;
+import Javax.servlet.ServletResponse;
 
 public interface Servlet {
     public void init(ServletConfig var1) throws ServletException;
@@ -6355,10 +6361,10 @@ public interface Servlet {
 
 #### mc
 
-Memory Compiler/内存编译器，编译`.java`文件生成`.class`
+Memory Compiler/内存编译器，编译`.Java`文件生成`.Class`
 
 ```bash
-mc /tmp/Test.java
+mc /tmp/Test.Java
 ```
 
 
@@ -6367,11 +6373,11 @@ mc /tmp/Test.java
 
 #### redefine
 
-加载外部的`.class`文件，redefine jvm已加载的类
+加载外部的`.Class`文件，redefine JVM已加载的类
 
 ```bash
-redefine /tmp/Test.class
-redefine -c 327a647b /tmp/Test.class /tmp/Test\$Inner.class
+redefine /tmp/Test.Class
+redefine -c 327a647b /tmp/Test.Class /tmp/Test\$Inner.Class
 ```
 
 
@@ -6384,7 +6390,7 @@ redefine -c 327a647b /tmp/Test.class /tmp/Test\$Inner.class
 
 ```bash
 $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
- class-info        org.springframework.web.context.support.XmlWebApplicationContext
+ Class-info        org.springframework.web.context.support.XmlWebApplicationContext
  code-source       /Users/xxx/work/test/WEB-INF/lib/spring-web-3.2.11.RELEASE.jar
  name              org.springframework.web.context.support.XmlWebApplicationContext
  isInterface       false
@@ -6400,17 +6406,17 @@ $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
  modifier          public
  annotation
  interfaces
- super-class       +-org.springframework.web.context.support.AbstractRefreshableWebApplicationContext
+ super-Class       +-org.springframework.web.context.support.AbstractRefreshableWebApplicationContext
                      +-org.springframework.context.support.AbstractRefreshableConfigApplicationContext
                        +-org.springframework.context.support.AbstractRefreshableApplicationContext
                          +-org.springframework.context.support.AbstractApplicationContext
                            +-org.springframework.core.io.DefaultResourceLoader
-                             +-java.lang.Object
- class-loader      +-org.apache.catalina.loader.ParallelWebappClassLoader
-                     +-java.net.URLClassLoader@6108b2d7
+                             +-Java.lang.Object
+ Class-loader      +-org.apache.catalina.loader.ParallelWebappClassLoader
+                     +-Java.net.URLClassLoader@6108b2d7
                        +-sun.misc.Launcher$AppClassLoader@18b4aac2
                          +-sun.misc.Launcher$ExtClassLoader@1ddf84b8
- classLoaderHash   25131501
+ ClassLoaderHash   25131501
 ```
 
 
@@ -6424,32 +6430,32 @@ $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
 ```bash
 $ stack test.arthas.TestStack doGet
 Press Ctrl+C to abort.
-Affect(class-cnt:1 , method-cnt:1) cost in 286 ms.
+Affect(Class-cnt:1 , method-cnt:1) cost in 286 ms.
 ts=2018-09-18 10:11:45;thread_name=http-bio-8080-exec-10;id=d9;is_daemon=true;priority=5;TCCL=org.apache.catalina.loader.ParallelWebappClassLoader@25131501
     @test.arthas.TestStack.doGet()
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:624)
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:731)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
-        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
-        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:110)
+        at Javax.servlet.http.HttpServlet.service(HttpServlet.Java:624)
+        at Javax.servlet.http.HttpServlet.service(HttpServlet.Java:731)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.Java:303)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.Java:208)
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.Java:52)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.Java:241)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.Java:208)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.Java:241)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.Java:208)
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.Java:220)
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.Java:110)
         ...
-        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
-        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
-        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
-        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:451)
-        at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1121)
-        at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:637)
-        at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)
-        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
-        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
-        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-        at java.lang.Thread.run(Thread.java:745)
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.Java:169)
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.Java:103)
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.Java:116)
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.Java:451)
+        at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.Java:1121)
+        at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.Java:637)
+        at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.Java:316)
+        at Java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.Java:1142)
+        at Java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.Java:617)
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.Java:61)
+        at Java.lang.Thread.run(Thread.Java:745)
 ```
 
 
@@ -6473,10 +6479,10 @@ ts=2018-09-18 10:11:45;thread_name=http-bio-8080-exec-10;id=d9;is_daemon=true;pr
 ```bash
 $ watch test.arthas.TestWatch doGet {params[0], throwExp} -e
 Press Ctrl+C to abort.
-Affect(class-cnt:1 , method-cnt:1) cost in 65 ms.
+Affect(Class-cnt:1 , method-cnt:1) cost in 65 ms.
 ts=2018-09-18 10:26:28;result=@ArrayList[
     @RequestFacade[org.apache.catalina.connector.RequestFacade@79f922b2],
-    @NullPointerException[java.lang.NullPointerException],
+    @NullPointerException[Java.lang.NullPointerException],
 ]
 ```
 
@@ -6491,16 +6497,16 @@ ts=2018-09-18 10:26:28;result=@ArrayList[
 ```bash
 $ monitor -c 5 org.apache.dubbo.demo.provider.DemoServiceImpl sayHello
 Press Ctrl+C to abort.
-Affect(class-cnt:1 , method-cnt:1) cost in 109 ms.
- timestamp            class                                           method    total  success  fail  avg-rt(ms)  fail-rate
+Affect(Class-cnt:1 , method-cnt:1) cost in 109 ms.
+ timestamp            Class                                           method    total  success  fail  avg-rt(ms)  fail-rate
 ----------------------------------------------------------------------------------------------------------------------------
  2018-09-20 09:45:32  org.apache.dubbo.demo.provider.DemoServiceImpl  sayHello  5      5        0     0.67        0.00%
 
- timestamp            class                                           method    total  success  fail  avg-rt(ms)  fail-rate
+ timestamp            Class                                           method    total  success  fail  avg-rt(ms)  fail-rate
 ----------------------------------------------------------------------------------------------------------------------------
  2018-09-20 09:45:37  org.apache.dubbo.demo.provider.DemoServiceImpl  sayHello  5      5        0     1.00        0.00%
 
- timestamp            class                                           method    total  success  fail  avg-rt(ms)  fail-rate
+ timestamp            Class                                           method    total  success  fail  avg-rt(ms)  fail-rate
 ----------------------------------------------------------------------------------------------------------------------------
  2018-09-20 09:45:42  org.apache.dubbo.demo.provider.DemoServiceImpl  sayHello  5      5        0     0.43        0.00%
 ```
@@ -6516,8 +6522,8 @@ Affect(class-cnt:1 , method-cnt:1) cost in 109 ms.
 ```bash
 $ tt -t org.apache.dubbo.demo.provider.DemoServiceImpl sayHello
 Press Ctrl+C to abort.
-Affect(class-cnt:1 , method-cnt:1) cost in 75 ms.
- INDEX   TIMESTAMP            COST(ms)  IS-RET  IS-EXP   OBJECT         CLASS                          METHOD
+Affect(Class-cnt:1 , method-cnt:1) cost in 75 ms.
+ INDEX   TIMESTAMP            COST(ms)  IS-RET  IS-EXP   OBJECT         Class                          METHOD
 -------------------------------------------------------------------------------------------------------------------------------------
  1000    2018-09-20 09:54:10  1.971195  true    false    0x55965cca     DemoServiceImpl                sayHello
  1001    2018-09-20 09:54:11  0.215685  true    false    0x55965cca     DemoServiceImpl                sayHello
@@ -6539,11 +6545,11 @@ Affect(class-cnt:1 , method-cnt:1) cost in 75 ms.
 了解当前系统中有多少类加载器，以及每个加载器加载的类数量，帮助您判断是否有类加载器泄露
 
 ```bash
-$ classloader
+$ Classloader
  name                                                  numberOfInstances  loadedCountTotal
  BootstrapClassLoader                                  1                  3346
  com.taobao.arthas.agent.ArthasClassloader             1                  1262
- java.net.URLClassLoader                               2                  1033
+ Java.net.URLClassLoader                               2                  1033
  org.apache.catalina.loader.ParallelWebappClassLoader  1                  628
  sun.reflect.DelegatingClassLoader                     166                166
  sun.misc.Launcher$AppClassLoader                      1                  31
@@ -6588,11 +6594,11 @@ $ classloader
 
 
 
-#### jvm相关
+#### JVM相关
 
 - [dashboard](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/dashboard.md)——当前系统的实时数据面板
 - [thread](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/thread.md)——查看当前 JVM 的线程堆栈信息
-- [jvm](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/jvm.md)——查看当前 JVM 的信息
+- [JVM](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/JVM.md)——查看当前 JVM 的信息
 - [sysprop](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/sysprop.md)——查看和修改JVM的系统属性
 - [sysenv](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/sysenv.md)——查看JVM的环境变量
 - [vmoption](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/vmoption.md)——查看和修改JVM里诊断相关的option
@@ -6600,21 +6606,21 @@ $ classloader
 - [getstatic](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/getstatic.md)——查看类的静态属性
 - [ognl](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/ognl.md)——执行ognl表达式
 - [mbean](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/mbean.md)——查看 Mbean 的信息
-- [heapdump](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/heapdump.md)——dump java heap, 类似jmap命令的heap dump功能
+- [heapdump](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/heapdump.md)——dump Java heap, 类似jmap命令的heap dump功能
 
 
 
 
 
-#### class/classloader相关
+#### Class/Classloader相关
 
 - [sc](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/sc.md)——查看JVM已加载的类信息
 - [sm](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/sm.md)——查看已加载类的方法信息
 - [jad](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/jad.md)——反编译指定已加载类的源码
-- [mc](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/mc.md)——内存编绎器，内存编绎`.java`文件为`.class`文件
-- [redefine](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/redefine.md)——加载外部的`.class`文件，redefine到JVM里
+- [mc](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/mc.md)——内存编绎器，内存编绎`.Java`文件为`.Class`文件
+- [redefine](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/redefine.md)——加载外部的`.Class`文件，redefine到JVM里
 - [dump](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/dump.md)——dump 已加载类的 byte code 到特定目录
-- [classloader](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/classloader.md)——查看classloader的继承树，urls，类加载信息，使用classloader去getResource
+- [Classloader](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/Classloader.md)——查看Classloader的继承树，urls，类加载信息，使用Classloader去getResource
 
 
 
@@ -6642,7 +6648,7 @@ $ classloader
 
 #### 管道
 
-Arthas支持使用管道对上述命令的结果进行进一步的处理，如`sm java.lang.String * | grep 'index'`
+Arthas支持使用管道对上述命令的结果进行进一步的处理，如`sm Java.lang.String * | grep 'index'`
 
 - grep——搜索满足条件的结果
 - plaintext——将命令的结果去除ANSI颜色
@@ -6678,7 +6684,7 @@ Arthas支持使用管道对上述命令的结果进行进一步的处理，如`s
 
 在tunnel server里有一个示例的回报代码，用户可以自己在服务器上实现
 
-[StatController.java](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/https://github.com/alibaba/arthas/blob/master/tunnel-server/src/main/java/com/alibaba/arthas/tunnel/server/app/web/StatController.java)
+[StatController.Java](https://github.com/alibaba/arthas/blob/master/site/src/site/sphinx/https://github.com/alibaba/arthas/blob/master/tunnel-server/src/main/Java/com/alibaba/arthas/tunnel/server/app/web/StatController.Java)
 
 
 
@@ -6724,12 +6730,12 @@ sm pdai.tech.servlet.TestMyServlet testMethod
 
 
 
-### 如何查看一个class类的源码信息?
+### 如何查看一个Class类的源码信息?
 
 > 场景：我新修改的内容在方法内部，而上一个步骤只能看到方法，这时候可以反编译看下源码
 
 ```bash
-# 直接反编译出java 源代码，包含一此额外信息的
+# 直接反编译出Java 源代码，包含一此额外信息的
 jad pdai.tech.servlet.TestMyServlet
 ```
 
@@ -6778,17 +6784,17 @@ trace pdai.tech.servlet.TestMyServlet testMethod
 > 场景：我找到了问题所在，能否线上直接修改测试，而不需要在本地改了代码后，重新打包部署，然后重启观察效果?
 
 ```bash
-# 先反编译出class源码
-jad --source-only com.example.demo.arthas.user.UserController > /tmp/UserController.java  
+# 先反编译出Class源码
+jad --source-only com.example.demo.arthas.user.UserController > /tmp/UserController.Java  
 
 # 然后使用外部工具编辑内容
-mc /tmp/UserController.java -d /tmp  # 再编译成class
+mc /tmp/UserController.Java -d /tmp  # 再编译成Class
 
 # 最后，重新载入定义的类，就可以实时验证你的猜测了
-redefine /tmp/com/example/demo/arthas/user/UserController.class
+redefine /tmp/com/example/demo/arthas/user/UserController.Class
 ```
 
-如上，是直接更改线上代码的方式，但是一般好像是编译不成功的所以，最好是本地ide编译成 class文件后，再上传替换为好！
+如上，是直接更改线上代码的方式，但是一般好像是编译不成功的所以，最好是本地ide编译成 Class文件后，再上传替换为好！
 
 总之，已经完全不用重启和发布了！这个功能真的很方便，比起重启带来的代价，真的是不可比的比如，重启时可能导致负载重分配，选主等等问题，就不是你能控制的了
 
@@ -6909,7 +6915,7 @@ Debug调试的功能主要对应着图一中4和5两组按钮：
 - `Mute Breakpoints`：哑的断点，选择这个后，所有断点变为灰色，断点失效，按F9则可以直接运行完程序再次点击，断点变为红色，有效如果只想使某一个断点失效，可以在断点上右键取消Enabled，则该行断点失效
 - **更新程序**
 
-`On 'Update' actions`，执行更新操作时所做的事情，一般选择`'Update classes and resources'`，即更新类和资源文件
+`On 'Update' actions`，执行更新操作时所做的事情，一般选择`'Update Classes and resources'`，即更新类和资源文件
 
 一般配合热部署插件会更好用，如JRebel，这样就不用每次更改代码后还要去重新启动服务如何激活JRebel，在最后章节附上
 
@@ -7197,7 +7203,7 @@ Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
 
 # 调试排错 - Java动态调试技术原理
 
-> 本文转载自 美团技术团队胡健的[Java 动态调试技术原理及实践](https://tech.meituan.com/2019/11/07/java-dynamic-debugging-technology.html), 通过学习java agent方式进行动态调试了解目前很多大厂开源的一些基于此的调试工具
+> 本文转载自 美团技术团队胡健的[Java 动态调试技术原理及实践](https://tech.meituan.com/2019/11/07/Java-dynamic-debugging-technology.html), 通过学习Java agent方式进行动态调试了解目前很多大厂开源的一些基于此的调试工具
 
 
 
@@ -7213,7 +7219,7 @@ JVMTI (JVM Tool Interface)是Java虚拟机对外提供的Native编程接口，�
 
 ## Agent的实现模式
 
-JVMTI是一套Native接口，在Java SE 5之前，要实现一个Agent只能通过编写Native代码来实现从Java SE 5开始，可以使用Java的Instrumentation接口(java.lang.instrument)来编写Agent无论是通过Native的方式还是通过Java Instrumentation接口的方式来编写Agent，它们的工作都是借助JVMTI来进行完成，下面介绍通过Java Instrumentation接口编写Agent的方法
+JVMTI是一套Native接口，在Java SE 5之前，要实现一个Agent只能通过编写Native代码来实现从Java SE 5开始，可以使用Java的Instrumentation接口(Java.lang.instrument)来编写Agent无论是通过Native的方式还是通过Java Instrumentation接口的方式来编写Agent，它们的工作都是借助JVMTI来进行完成，下面介绍通过Java Instrumentation接口编写Agent的方法
 
 
 
@@ -7235,20 +7241,20 @@ JVM将首先寻找[1]，如果没有发现[1]，再寻找[2]如果希望在目�
 [2] public static void agentmain(String agentArgs);
 ```
 
-这两组方法的第一个参数AgentArgs是随同 “– javaagent”一起传入的程序参数，如果这个字符串代表了多个参数，就需要自己解析这些参数inst是Instrumentation类型的对象，是JVM自动传入的，我们可以拿这个参数进行类增强等操作
+这两组方法的第一个参数AgentArgs是随同 “– Javaagent”一起传入的程序参数，如果这个字符串代表了多个参数，就需要自己解析这些参数inst是Instrumentation类型的对象，是JVM自动传入的，我们可以拿这个参数进行类增强等操作
 
 - 指定Main-Class
 
 Agent需要打包成一个jar包，在ManiFest属性中指定“Premain-Class”或者“Agent-Class”：
 
 ```java
-Premain-Class: class
-Agent-Class: class
+Premain-Class: Class
+Agent-Class: Class
 ```
 
 - 挂载到目标JVM
 
-将编写的Agent打成jar包后，就可以挂载到目标JVM上去了如果选择在目标JVM启动时加载Agent，则可以使用 “-javaagent:[=]“，具体的使用方法可以使用“Java -Help”来查看如果想要在运行时挂载Agent到目标JVM，就需要做一些额外的开发了
+将编写的Agent打成jar包后，就可以挂载到目标JVM上去了如果选择在目标JVM启动时加载Agent，则可以使用 “-Javaagent:[=]“，具体的使用方法可以使用“Java -Help”来查看如果想要在运行时挂载Agent到目标JVM，就需要做一些额外的开发了
 
 com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通过这个类找到目标JVM，并且将Agent挂载到目标JVM上下面是使用com.sun.tools.attach.VirtualMachine进行动态挂载Agent的一般实现：
 
@@ -7263,7 +7269,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
             }
         }
         if (targetVM == null) {
-            throw new IllegalArgumentException("could not find the target jvm by process id:" + configure.getPid());
+            throw new IllegalArgumentException("could not find the target JVM by process id:" + configure.getPid());
         }
         VirtualMachine virtualMachine = null;
         try {
@@ -7285,7 +7291,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
 
 ### 参数解析
 
-创建JVM时，JVM会进行参数解析，即解析那些用来配置JVM启动的参数，比如堆大小、GC等；本文主要关注解析的参数为-agentlib、 -agentpath、 -javaagent，这几个参数用来指定Agent，JVM会根据这几个参数加载Agent下面来分析一下JVM是如何解析这几个参数的
+创建JVM时，JVM会进行参数解析，即解析那些用来配置JVM启动的参数，比如堆大小、GC等；本文主要关注解析的参数为-agentlib、 -agentpath、 -Javaagent，这几个参数用来指定Agent，JVM会根据这几个参数加载Agent下面来分析一下JVM是如何解析这几个参数的
 
 ```java
   // -agentlib and -agentpath
@@ -7309,8 +7315,8 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
 #endif // !INCLUDE_JVMTI
         add_init_agent(name, options, is_absolute_path);
       }
-    // -javaagent
-    } else if (match_option(option, "-javaagent:", &tail)) {
+    // -Javaagent
+    } else if (match_option(option, "-Javaagent:", &tail)) {
 #if !INCLUDE_JVMTI
       jio_fprintf(defaultStream::error_stream(),
         "Instrumentation agents are not supported in this VM\n");
@@ -7321,8 +7327,8 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
         char *options = NEW_C_HEAP_ARRAY(char, length, mtArguments);
         jio_snprintf(options, length, "%s", tail);
         add_init_agent("instrument", options, false);
-        // java agents need module java.instrument
-        if (!create_numbered_property("jdk.module.addmods", "java.instrument", addmods_count++)) {
+        // Java agents need module Java.instrument
+        if (!create_numbered_property("JDK.module.addmods", "Java.instrument", addmods_count++)) {
           return JNI_ENOMEM;
         }
       }
@@ -7330,7 +7336,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
     }
 ```
 
-上面的代码片段截取自hotspot/src/share/vm/runtime/arguments.cpp中的 Arguments::parse_each_vm_init_arg(const JavaVMInitArgs* args, bool* patch_mod_javabase, Flag::Flags origin) 函数，该函数用来解析一个具体的JVM参数这段代码的主要功能是解析出需要加载的Agent路径，然后调用add_init_agent函数进行解析结果的存储下面先看一下add_init_agent函数的具体实现：
+上面的代码片段截取自hotspot/src/share/vm/runtime/arguments.cpp中的 Arguments::parse_each_vm_init_arg(const JavaVMInitArgs* args, bool* patch_mod_Javabase, Flag::Flags origin) 函数，该函数用来解析一个具体的JVM参数这段代码的主要功能是解析出需要加载的Agent路径，然后调用add_init_agent函数进行解析结果的存储下面先看一下add_init_agent函数的具体实现：
 
 ```java
   // -agentlib and -agentpath arguments
@@ -7341,7 +7347,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
 
 AgentLibraryList是一个简单的链表结构，add_init_agent函数将解析好的、需要加载的Agent添加到这个链表中，等待后续的处理
 
-这里需要注意，解析-javaagent参数有一些特别之处，这个参数用来指定一个我们通过Java Instrumentation API来编写的Agent，Java Instrumentation API底层依赖的是JVMTI，对-JavaAgent的处理也说明了这一点，在调用add_init_agent函数时第一个参数是“instrument”，关于加载Agent这个问题在下一小节进行展开到此，我们知道在启动JVM时指定的Agent已经被JVM解析完存放在了一个链表结构中下面来分析一下JVM是如何加载这些Agent的
+这里需要注意，解析-Javaagent参数有一些特别之处，这个参数用来指定一个我们通过Java Instrumentation API来编写的Agent，Java Instrumentation API底层依赖的是JVMTI，对-JavaAgent的处理也说明了这一点，在调用add_init_agent函数时第一个参数是“instrument”，关于加载Agent这个问题在下一小节进行展开到此，我们知道在启动JVM时指定的Agent已经被JVM解析完存放在了一个链表结构中下面来分析一下JVM是如何加载这些Agent的
 
 
 
@@ -7374,7 +7380,7 @@ void Threads::create_vm_init_agents() {
 }
 ```
 
-create_vm_init_agents这个函数通过遍历Agent链表来逐个加载Agent通过这段代码可以看出，首先通过lookup_agent_on_load来加载Agent并且找到Agent_OnLoad函数，这个函数是Agent的入口函数如果没找到这个函数，则认为是加载了一个不合法的Agent，则什么也不做，否则调用这个函数，这样Agent的代码就开始执行起来了对于使用Java Instrumentation API来编写Agent的方式来说，在解析阶段观察到在add_init_agent函数里面传递进去的是一个叫做”instrument”的字符串，其实这是一个动态链接库在Linux里面，这个库叫做libinstrument.so，在BSD系统中叫做libinstrument.dylib，该动态链接库在{JAVA_HOME}/jre/lib/目录下
+create_vm_init_agents这个函数通过遍历Agent链表来逐个加载Agent通过这段代码可以看出，首先通过lookup_agent_on_load来加载Agent并且找到Agent_OnLoad函数，这个函数是Agent的入口函数如果没找到这个函数，则认为是加载了一个不合法的Agent，则什么也不做，否则调用这个函数，这样Agent的代码就开始执行起来了对于使用Java Instrumentation API来编写Agent的方式来说，在解析阶段观察到在add_init_agent函数里面传递进去的是一个叫做”instrument”的字符串，其实这是一个动态链接库在Linux里面，这个库叫做libinstrument.so，在BSD系统中叫做libinstrument.dylib，该动态链接库在{Java_HOME}/jre/lib/目录下
 
 
 
@@ -7382,7 +7388,7 @@ create_vm_init_agents这个函数通过遍历Agent链表来逐个加载Agent通�
 
 libinstrument用来支持使用Java Instrumentation API来编写Agent，在libinstrument中有一个非常重要的类称为：JPLISAgent(Java Programming Language Instrumentation Services Agent)，它的作用是初始化所有通过Java Instrumentation API编写的Agent，并且也承担着通过JVMTI实现Java Instrumentation中暴露API的责任
 
-我们已经知道，在JVM启动的时候，JVM会通过-javaagent参数加载Agent最开始加载的是libinstrument动态链接库，然后在动态链接库里面找到JVMTI的入口方法：Agent_OnLoad下面就来分析一下在libinstrument动态链接库中，Agent_OnLoad函数是怎么实现的
+我们已经知道，在JVM启动的时候，JVM会通过-Javaagent参数加载Agent最开始加载的是libinstrument动态链接库，然后在动态链接库里面找到JVMTI的入口方法：Agent_OnLoad下面就来分析一下在libinstrument动态链接库中，Agent_OnLoad函数是怎么实现的
 
 ```java
 JNIEXPORT jint JNICALL
@@ -7390,7 +7396,7 @@ DEF_Agent_OnLoad(JavaVM *vm, char *tail, void * reserved) {
     initerror = createNewJPLISAgent(vm, &agent);
     if ( initerror == JPLIS_INIT_ERROR_NONE ) {
         if (parseArgumentTail(tail, &jarfile, &options) != 0) {
-            fprintf(stderr, "-javaagent: memory allocation failure.\n");
+            fprintf(stderr, "-Javaagent: memory allocation failure.\n");
             return JNI_ERR;
         }
         attributes = readAttributes(jarfile);
@@ -7402,7 +7408,7 @@ DEF_Agent_OnLoad(JavaVM *vm, char *tail, void * reserved) {
          */
         convertCapabilityAttributes(attributes, agent);
         /*
-         * Track (record) the agent class name and options data
+         * Track (record) the agent Class name and options data
          */
         initerror = recordCommandLineData(agent, premainClass, options);
     }
@@ -7413,29 +7419,29 @@ DEF_Agent_OnLoad(JavaVM *vm, char *tail, void * reserved) {
 上述代码片段是经过精简的libinstrument中Agent_OnLoad实现的，大概的流程就是：先创建一个JPLISAgent，然后将ManiFest中设定的一些参数解析出来， 比如(Premain-Class)等创建了JPLISAgent之后，调用initializeJPLISAgent对这个Agent进行初始化操作跟进initializeJPLISAgent看一下是如何初始化的：
 
 ```java
-JPLISInitializationError initializeJPLISAgent(JPLISAgent *agent, JavaVM *vm, jvmtiEnv *jvmtienv) {
+JPLISInitializationError initializeJPLISAgent(JPLISAgent *agent, JavaVM *vm, JVMtiEnv *JVMtienv) {
     /* check what capabilities are available */
     checkCapabilities(agent);
     /* check phase - if live phase then we don't need the VMInit event */
-    jvmtierror = (*jvmtienv)->GetPhase(jvmtienv, &phase);
+    JVMtierror = (*JVMtienv)->GetPhase(JVMtienv, &phase);
     /* now turn on the VMInit event */
-    if ( jvmtierror == JVMTI_ERROR_NONE ) {
-        jvmtiEventCallbacks callbacks;
+    if ( JVMtierror == JVMTI_ERROR_NONE ) {
+        JVMtiEventCallbacks callbacks;
         memset(&callbacks, 0, sizeof(callbacks));
         callbacks.VMInit = &eventHandlerVMInit;
-        jvmtierror = (*jvmtienv)->SetEventCallbacks(jvmtienv,&callbacks,sizeof(callbacks));
+        JVMtierror = (*JVMtienv)->SetEventCallbacks(JVMtienv,&callbacks,sizeof(callbacks));
     }
-    if ( jvmtierror == JVMTI_ERROR_NONE ) {
-        jvmtierror = (*jvmtienv)->SetEventNotificationMode(jvmtienv,JVMTI_ENABLE,JVMTI_EVENT_VM_INIT,NULL);
+    if ( JVMtierror == JVMTI_ERROR_NONE ) {
+        JVMtierror = (*JVMtienv)->SetEventNotificationMode(JVMtienv,JVMTI_ENABLE,JVMTI_EVENT_VM_INIT,NULL);
     }
-    return (jvmtierror == JVMTI_ERROR_NONE)? JPLIS_INIT_ERROR_NONE : JPLIS_INIT_ERROR_FAILURE;
+    return (JVMtierror == JVMTI_ERROR_NONE)? JPLIS_INIT_ERROR_NONE : JPLIS_INIT_ERROR_FAILURE;
 }
 ```
 
 这里，我们关注callbacks.VMInit = &eventHandlerVMInit;这行代码，这里设置了一个VMInit事件的回调函数，表示在JVM初始化的时候会回调eventHandlerVMInit函数下面来看一下这个函数的实现细节，猜测就是在这里调用了Premain方法：
 
 ```java
-void JNICALL  eventHandlerVMInit( jvmtiEnv *jvmtienv,JNIEnv *jnienv,jthread thread) {
+void JNICALL  eventHandlerVMInit( JVMtiEnv *JVMtienv,JNIEnv *jnienv,jthread thread) {
    // ...
    success = processJavaStart( environment->mAgent, jnienv);
   // ...
@@ -7450,9 +7456,9 @@ jboolean  processJavaStart(JPLISAgent *agent,JNIEnv *jnienv) {
     }
     return result;
 }
-jboolean startJavaAgent( JPLISAgent *agent,JNIEnv *jnienv,const char *classname,const char *optionsString,jmethodID agentMainMethod) {
+jboolean startJavaAgent( JPLISAgent *agent,JNIEnv *jnienv,const char *Classname,const char *optionsString,jmethodID agentMainMethod) {
   // ...  
-  invokeJavaAgentMainMethod(jnienv,agent->mInstrumentationImpl,agentMainMethod, classNameObject,optionsStringObject);
+  invokeJavaAgentMainMethod(jnienv,agent->mInstrumentationImpl,agentMainMethod, ClassNameObject,optionsStringObject);
   // ...
 }
 ```
@@ -7478,7 +7484,7 @@ Attach机制通过Attach Listener线程来进行相关事务的处理，下面�
 void AttachListener::init() {
   // 创建线程相关部分代码被去掉了
   const char thread_name[] = "Attach Listener";
-  Handle string = java_lang_String::create_from_str(thread_name, THREAD);
+  Handle string = Java_lang_String::create_from_str(thread_name, THREAD);
   { MutexLocker mu(Threads_lock);
     JavaThread* listener_thread = new JavaThread(&attach_listener_thread_entry);
     // ...
@@ -7585,9 +7591,9 @@ void AttachListener::vm_start() {
   char fn[UNIX_PATH_MAX];
   struct stat64 st;
   int ret;
-  int n = snprintf(fn, UNIX_PATH_MAX, "%s/.java_pid%d",
+  int n = snprintf(fn, UNIX_PATH_MAX, "%s/.Java_pid%d",
            os::get_temp_directory(), os::current_process_id());
-  assert(n < (int)UNIX_PATH_MAX, "java_pid file name buffer overflow");
+  assert(n < (int)UNIX_PATH_MAX, "Java_pid file name buffer overflow");
   RESTARTABLE(::stat64(fn, &st), ret);
   if (ret == 0) {
     ret = ::unlink(fn);
@@ -7598,7 +7604,7 @@ void AttachListener::vm_start() {
 }
 ```
 
-这是在Linux上的实现，是将/tmp/目录下的.java_pid{pid}文件删除，后面在创建Attach Listener线程的时候会创建出来这个文件上面说到，AttachListener::init()这行代码不会在create_vm的时候执行，这行代码的实现已经在上文中分析了，就是创建Attach Listener线程，并监听其他JVM的命令请求现在来分析一下这行代码是什么时候被调用的，也就是“懒加载”到底是怎么加载起来的
+这是在Linux上的实现，是将/tmp/目录下的.Java_pid{pid}文件删除，后面在创建Attach Listener线程的时候会创建出来这个文件上面说到，AttachListener::init()这行代码不会在create_vm的时候执行，这行代码的实现已经在上文中分析了，就是创建Attach Listener线程，并监听其他JVM的命令请求现在来分析一下这行代码是什么时候被调用的，也就是“懒加载”到底是怎么加载起来的
 
 ```java
   // Signal Dispatcher needs to be started before VMInit event is posted
@@ -7612,11 +7618,11 @@ void os::signal_init() {
   if (!ReduceSignalUsage) {
     // Setup JavaThread for processing signals
     EXCEPTION_MARK;
-    Klass* k = SystemDictionary::resolve_or_fail(vmSymbols::java_lang_Thread(), true, CHECK);
+    Klass* k = SystemDictionary::resolve_or_fail(vmSymbols::Java_lang_Thread(), true, CHECK);
     instanceKlassHandle klass (THREAD, k);
     instanceHandle thread_oop = klass->allocate_instance_handle(CHECK);
     const char thread_name[] = "Signal Dispatcher";
-    Handle string = java_lang_String::create_from_str(thread_name, CHECK);
+    Handle string = Java_lang_String::create_from_str(thread_name, CHECK);
     // Initialize thread_oop to put it into the system threadGroup
     Handle thread_group (THREAD, Universe::system_thread_group());
     JavaValue result(T_VOID);
@@ -7674,7 +7680,7 @@ bool AttachListener::is_init_trigger() {
 
 ### 运行时加载Agent的实现
 
-我们继续分析，到底是如何将一个Agent挂载到运行着的目标JVM上，在上文中提到了一段代码，用来进行运行时挂载Agent，可以参考上文中展示的关于“attachAgentToTargetJvm”方法的代码这个方法里面的关键是调用VirtualMachine的attach方法进行Agent挂载的功能。下面我们就来分析一下VirtualMachine的attach方法具体是怎么实现的
+我们继续分析，到底是如何将一个Agent挂载到运行着的目标JVM上，在上文中提到了一段代码，用来进行运行时挂载Agent，可以参考上文中展示的关于“attachAgentToTargetJVM”方法的代码这个方法里面的关键是调用VirtualMachine的attach方法进行Agent挂载的功能。下面我们就来分析一下VirtualMachine的attach方法具体是怎么实现的
 
 ```java
 public static VirtualMachine attach(String var0) throws AttachNotSupportedException, IOException {
@@ -7737,13 +7743,13 @@ BsdVirtualMachine(AttachProvider var1, String var2) throws AttachNotSupportedExc
     connect(var24, this.path);
 }
 private String findSocketFile(int var1) {
-    String var2 = ".java_pid" + var1;
+    String var2 = ".Java_pid" + var1;
     File var3 = new File(tmpdir, var2);
     return var3.exists() ? var3.getPath() : null;
 }
 ```
 
-findSocketFile方法用来查询目标JVM上是否已经启动了Attach Listener，它通过检查”tmp/“目录下是否存在java_pid{pid}来进行实现如果已经存在了，则说明Attach机制已经准备就绪，可以接受客户端的命令了，这个时候客户端就可以通过connect连接到目标JVM进行命令的发送，比如可以发送“load”命令来加载Agent如果java_pid{pid}文件还不存在，则需要通过sendQuitTo方法向目标JVM发送一个“SIGBREAK”信号，让它初始化Attach Listener线程并准备接受客户端连接可以看到，发送了信号之后客户端会循环等待java_pid{pid}这个文件，之后再通过connect连接到目标JVM上
+findSocketFile方法用来查询目标JVM上是否已经启动了Attach Listener，它通过检查”tmp/“目录下是否存在Java_pid{pid}来进行实现如果已经存在了，则说明Attach机制已经准备就绪，可以接受客户端的命令了，这个时候客户端就可以通过connect连接到目标JVM进行命令的发送，比如可以发送“load”命令来加载Agent如果Java_pid{pid}文件还不存在，则需要通过sendQuitTo方法向目标JVM发送一个“SIGBREAK”信号，让它初始化Attach Listener线程并准备接受客户端连接可以看到，发送了信号之后客户端会循环等待Java_pid{pid}这个文件，之后再通过connect连接到目标JVM上
 
 
 
@@ -7757,21 +7763,21 @@ static jint load_agent(AttachOperation* op, outputStream* out) {
   const char* agent = op->arg(0);
   const char* absParam = op->arg(1);
   const char* options = op->arg(2);
-  // If loading a java agent then need to ensure that the java.instrument module is loaded
+  // If loading a Java agent then need to ensure that the Java.instrument module is loaded
   if (strcmp(agent, "instrument") == 0) {
     Thread* THREAD = Thread::current();
     ResourceMark rm(THREAD);
     HandleMark hm(THREAD);
     JavaValue result(T_OBJECT);
-    Handle h_module_name = java_lang_String::create_from_str("java.instrument", THREAD);
+    Handle h_module_name = Java_lang_String::create_from_str("Java.instrument", THREAD);
     JavaCalls::call_static(&result,SystemDictionary::module_Modules_klass(),vmSymbols::loadModule_name(),
                            vmSymbols::loadModule_signature(),h_module_name,THREAD);
   }
-  return JvmtiExport::load_agent_library(agent, absParam, options, out);
+  return JVMtiExport::load_agent_library(agent, absParam, options, out);
 }
 ```
 
-这个函数先确保加载了java.instrument模块，之后真正执行Agent加载的函数是 load_agent_library ,这个函数的套路就是加载Agent动态链接库，如果是通过Java instrument API实现的Agent，则加载的是libinstrument动态链接库，然后通过libinstrument里面的代码实现运行agentmain方法的逻辑，这一部分内容和libinstrument实现premain方法运行的逻辑其实差不多，这里不再做分析至此，我们对Java Agent技术已经有了一个全面而细致的了解
+这个函数先确保加载了Java.instrument模块，之后真正执行Agent加载的函数是 load_agent_library ,这个函数的套路就是加载Agent动态链接库，如果是通过Java instrument API实现的Agent，则加载的是libinstrument动态链接库，然后通过libinstrument里面的代码实现运行agentmain方法的逻辑，这一部分内容和libinstrument实现premain方法运行的逻辑其实差不多，这里不再做分析至此，我们对Java Agent技术已经有了一个全面而细致的了解
 
 
 
@@ -7783,7 +7789,7 @@ static jint load_agent(AttachOperation* op, outputStream* out) {
      * The redefinition may change method bodies, the constant pool and attributes.
      * The redefinition must not add, remove or rename fields or methods, change the
      * signatures of methods, or change inheritance.  These restrictions maybe be
-     * lifted in future versions.  The class file bytes are not checked, verified and installed
+     * lifted in future versions.  The Class file bytes are not checked, verified and installed
      * until after the transformations have been applied, if the resultant bytes are in
      * error this method will throw an exception.
 ```
@@ -7822,8 +7828,8 @@ private native void redefineClasses0(long var1, ClassDefinition[] var3) throws C
 
 ```java
 JNIEXPORT void JNICALL Java_sun_instrument_InstrumentationImpl_redefineClasses0
-  (JNIEnv * jnienv, jobject implThis, jlong agent, jobjectArray classDefinitions) {
-    redefineClasses(jnienv, (JPLISAgent*)(intptr_t)agent, classDefinitions);
+  (JNIEnv * jnienv, jobject implThis, jlong agent, jobjectArray ClassDefinitions) {
+    redefineClasses(jnienv, (JPLISAgent*)(intptr_t)agent, ClassDefinitions);
 }
 ```
 
@@ -7834,11 +7840,11 @@ redefineClasses这个函数的实现比较复杂，代码很长下面是一段�
 可以看到，其实是调用了JVMTI的RetransformClasses函数来完成类的重定义细节
 
 ```java
-// class_count - pre-checked to be greater than or equal to 0
-// class_definitions - pre-checked for NULL
-jvmtiError JvmtiEnv::RedefineClasses(jint class_count, const jvmtiClassDefinition* class_definitions) {
+// Class_count - pre-checked to be greater than or equal to 0
+// Class_definitions - pre-checked for NULL
+JVMtiError JVMtiEnv::RedefineClasses(jint Class_count, const JVMtiClassDefinition* Class_definitions) {
 //TODO: add locking
-  VM_RedefineClasses op(class_count, class_definitions, jvmti_class_load_kind_redefine);
+  VM_RedefineClasses op(Class_count, Class_definitions, JVMti_Class_load_kind_redefine);
   VMThread::execute(&op);
   return (op.check_error());
 } /* end RedefineClasses */
@@ -7849,26 +7855,26 @@ jvmtiError JvmtiEnv::RedefineClasses(jint class_count, const jvmtiClassDefinitio
 - 加载新的字节码，合并常量池，并且对新的字节码进行校验工作
 
 ```java
-  // Load the caller's new class definition(s) into _scratch_classes.
+  // Load the caller's new Class definition(s) into _scratch_Classes.
   // Constant pool merging work is done here as needed. Also calls
-  // compare_and_normalize_class_versions() to verify the class
+  // compare_and_normalize_Class_versions() to verify the Class
   // definition(s).
-  jvmtiError load_new_class_versions(TRAPS);
+  JVMtiError load_new_Class_versions(TRAPS);
 ```
 
 - 清除方法上的断点
 
 ```java
-  // Remove all breakpoints in methods of this class
-  JvmtiBreakpoints& jvmti_breakpoints = JvmtiCurrentBreakpoints::get_jvmti_breakpoints();
-  jvmti_breakpoints.clearall_in_class_at_safepoint(the_class());
+  // Remove all breakpoints in methods of this Class
+  JVMtiBreakpoints& JVMti_breakpoints = JVMtiCurrentBreakpoints::get_JVMti_breakpoints();
+  JVMti_breakpoints.clearall_in_Class_at_safepoint(the_Class());
 ```
 
 - JIT逆优化
 
 ```java
-  // Deoptimize all compiled code that depends on this class
-  flush_dependent_code(the_class, THREAD);
+  // Deoptimize all compiled code that depends on this Class
+  flush_dependent_code(the_Class, THREAD);
 ```
 
 - 进行字节码替换工作，需要进行更新类itable/vtable等操作
@@ -7878,7 +7884,7 @@ jvmtiError JvmtiEnv::RedefineClasses(jint class_count, const jvmtiClassDefinitio
   SystemDictionary::notice_modification();
 ```
 
-VM_RedefineClasses实现比较复杂的，详细实现可以参考 [RedefineClasses](https://github.com/pandening/openjdk/blob/0301fc792ffd3c7b506ef78887af250e0e3ae09e/src/hotspot/share/prims/jvmtiEnv.cpp#L456)的实现
+VM_RedefineClasses实现比较复杂的，详细实现可以参考 [RedefineClasses](https://github.com/pandening/openJDK/blob/0301fc792ffd3c7b506ef78887af250e0e3ae09e/src/hotspot/share/prims/JVMtiEnv.cpp#L456)的实现
 
 
 
@@ -8007,10 +8013,10 @@ Java-debug-tool的同类产品主要是greys，其他类似的工具大部分都
 ## 参考文献
 
 - [ASM 4 guide](https://asm.ow2.io/asm4-guide.pdf)
-- [Java Virtual Machine Specification](https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html)
-- [JVM Tool Interface](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html)
+- [Java Virtual Machine Specification](https://docs.oracle.com/Javase/specs/JVMs/se7/html/JVMs-4.html)
+- [JVM Tool Interface](https://docs.oracle.com/Javase/8/docs/platform/JVMti/JVMti.html)
 - [alibaba arthas](https://alibaba.github.io/arthas/)
-- [openjdk](https://github.com/pandening/openjdk)
+- [openJDK](https://github.com/pandening/openJDK)
 
 
 
