@@ -1,12 +1,12 @@
 # 版权声明
 
-**内容说明：**本篇内容不属于原创，只是当做笔记的作用，方便需要时查看而已
+**内容说明：** 本篇内容不属于原创，只是当做笔记的作用，方便需要时查看而已
 
-**原作者：**pdai
+**原作者：** pdai
 
-**原文链接：**https://www.pdai.tech/md/Java/JVM/Java-JVM-x-overview.html
+**原文链接：** https://www.pdai.tech/md/Java/JVM/Java-JVM-x-overview.html
 
-**额外说明：**若要用于牟利，请联系原作者
+**额外说明：** 若要用于谋利，请联系原作者
 
 
 
