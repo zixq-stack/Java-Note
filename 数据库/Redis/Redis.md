@@ -2,7 +2,7 @@
 
 Redis官网：https://redis.io/
 
-Redis诞生于2009年全称是**Re**mote  **D**ictionary **S**erver 远程词典服务器，是一个基于内存的键值型NoSQL数据库
+Redis诞生于2009年全称是**Re**mote  **Di**ctionary **S**erver 远程词典服务器，是一个基于内存的键值型NoSQL数据库
 
 **特征**：
 
@@ -433,7 +433,7 @@ redis-cli [options] [commonds]
 
 ![image-20230724182022549](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230724182023537-593444.png)
 
-![image-20230724182209444](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230724182210498-823892810.png)
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230724182210498-823892810.png" alt="image-20230724182209444" style="zoom:67%;" />
 
 
 
@@ -584,7 +584,7 @@ BigKey通常“以Key的大小和Key中成员的数量来综合判定”，例�
 
 **判定元素大小的方式**：
 
-```she
+```shell
 MEMORY USAGE key	# 查看某个key的内存大小，不建议使用：因为此命令对CPU使用率较高
 
 
@@ -605,7 +605,7 @@ LLEN key		# list集合 某key的值的个数
 
 1. 网络阻塞：对BigKey执行读请求时，少量的QPS就可能导致带宽使用率被占满，导致Redis实例，乃至所在物理机变慢
 2. 数据倾斜：BigKey所在的Redis实例内存使用率远超其他实例，无法使数据分片的内存资源达到均衡
-3. Redis阻塞：对元素较多的hash、list、zset等做运算会耗时较旧，使主线程被阻塞
+3. Redis阻塞：对元素较多的hash、list、zset等做运算会耗时较久，使主线程被阻塞
 4. CPU压力：对BigKey的数据序列化和反序列化会导致CPU的使用率飙升，影响Redis实例和本机其它应用
 
 
@@ -620,7 +620,7 @@ LLEN key		# list集合 某key的值的个数
 
 不足：返回的是内存大小是TOP1的key，而此key不一定是BigKey，同时TOP2、3.......的key也不一定就不是BigKey
 
-2. **scan命令扫描**：]每次会返回2个元素，第一个是下一次迭代的光标(cursor)，第一次光标会设置为0，当最后一次scan 返回的光标等于0时，表示整个scan遍历结束了，第二个返回的是List，一个匹配的key的数组
+2. **scan命令扫描**：每次会返回2个元素，第一个是下一次迭代的光标(cursor)，第一次光标会设置为0，当最后一次scan 返回的光标等于0时，表示整个scan遍历结束了，第二个返回的是List，一个匹配的key的数组
 
 ```shell
 127.0.0.1:7001> help SCAN
@@ -744,7 +744,7 @@ BigKey内存占用较多，即便是删除这样的key也需要耗费很长时�
 
 
 
-2. Redis 4.0以后：使用异步删除的命令 unlink
+2. Redis 4.0以后：使用异步删除命令 unlink
 
 ```shell
 127.0.0.1:7001> help UNLINK
@@ -1090,7 +1090,7 @@ PV：全称Page View，也叫页面访问量或点击量，用户每访问网站
 
 Hyperloglog（HLL）是从Loglog算法派生的概率算法，用于确定非常大的集合的基数，而不需要存储其所有值
 
-相关算法原理大家可以参考：https://juejin.cn/post/6844903785744056333#heading-0
+相关算法原理可以参考：https://juejin.cn/post/6844903785744056333#heading-0
 
 Redis中的HLL是基于string结构实现的，单个HLL的内存**永远小于16kb**。作为代价，其测量结果是概率性的，**有小于0.81％的误差**，同时此结构自带去重
 
@@ -1116,7 +1116,7 @@ Redis中的HLL是基于string结构实现的，单个HLL的内存**永远小于1
 
 ## PubSub 发布订阅
 
-PubSub（发布订阅）是Redis2.0版本引入的消息传递模型。顾名思义，消费者可以订阅一个或多个channel，生产者向对应channel发送消息后，所有订阅者都能收到相关消息
+PubSub（发布订阅）是Redis 2.0版本引入的消息传递模型。顾名思义，消费者可以订阅一个或多个channel，生产者向对应channel发送消息后，所有订阅者都能收到相关消息
 
 -  SUBSCRIBE channel [channel] ：订阅一个或多个频道
 -  PUBLISH channel msg ：向一个频道发送消息
@@ -1293,8 +1293,8 @@ public class JedisConnectionFactory {
         PoolConfig.setMaxWait(Duration.ofSeconds(1));
 
         /*
-            设置链接对象
-            JedisPool(GenericObjectPoolConfig<Jedis> poolConfig, String host, int port, int timeout, String password)
+		 * 设置链接对象
+         * JedisPool(GenericObjectPoolConfig<Jedis> poolConfig, String host, int port, int timeout, String password)
          */
         jedisPool = new JedisPool(PoolConfig, "192.168.46.128", 6379, 1000, "072413");
     }
@@ -1338,31 +1338,9 @@ SpringDataRedis中提供了RedisTemplate工具类，其中封装了各种对Redi
 
 创建SpringBoot项目
 
-1. pom.xml配置
+1. 依赖
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.9.RELEASE</version>
-        <relativePath/>
-    </parent>
-
-    <groupId>com.zixieqing</groupId>
-    <artifactId>02-spring-data-redis</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>02-spring-data-redis</name>
-    <description>Demo project for Spring Boot</description>
-
-    <properties>
-        <java.version>8</java.version>
-    </properties>
-
     <dependencies>
         <!--redis依赖-->
         <dependency>
@@ -1407,7 +1385,6 @@ SpringDataRedis中提供了RedisTemplate工具类，其中封装了各种对Redi
             </plugin>
         </plugins>
     </build>
-</project>
 ```
 
 2. YAML文件配置
@@ -1449,11 +1426,6 @@ class ApplicationTests {
     /**
      * SpringDataRedis操作redis：String类型  其他类型都是同理操作
      *
-     * String：opsForValue
-     * Hash：opsForHash
-     * List：opsForList
-     * Set：opsForSet
-     * SortedSet：opsForZSet
      */
     @Test
     void stringTest() {
@@ -1677,9 +1649,9 @@ class ApplicationTests {
 
 
 
-**内存淘汰：**redis自动进行，当redis内存达到咱们设定的max-memery的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式)
+**内存淘汰：**redis自动进行，当redis内存达到咱们设定的 `max-memery` 的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式，会在本文最后进行说明)
 
-**超时剔除：**当我们给redis设置了过期时间ttl之后，redis会将超时的数据进行删除，方便咱们继续使用缓存
+**超时剔除：**当我们给redis设置了过期时间TTL之后，redis会将超时的数据进行删除，方便咱们继续使用缓存
 
 **主动更新：**我们可以手动调用方法把缓存删掉，通常用于解决缓存和数据库不一致问题
 
@@ -1704,7 +1676,7 @@ class ApplicationTests {
 
 ## 主动更新策略：数据库与缓存不一致问题
 
-由于我们的**缓存的数据源来自于数据库**，而数据库的**数据是会发生变化的**。因此，如果当数据库中**数据发生变化,而缓存却没有同步**，此时就会有**一致性问题存在**，其后果是:
+由于我们**缓存的数据源来自于数据库**，而数据库的**数据是会发生变化的**。因此，如果当数据库中**数据发生变化,而缓存却没有同步**，此时就会有**一致性问题存在**，其后果是:
 
 用户使用缓存中的过时数据,就会产生类似多线程数据安全问题,从而影响业务,产品口碑等;怎么解决呢？有如下几种方案
 
@@ -1929,7 +1901,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
 > 互斥锁：保一致性，会让线程阻塞，有死锁风险
 >
-> 本质：利用了String的setnx指令；key不存在则添加，存在则不操作
+> 本质：利用了String的setnx指令，即key不存在则添加，存在则不操作
 >
 > ![1653328288627](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230805175226036-587427717.png)
 
@@ -1948,7 +1920,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         // 查 redis
         Map<Object, Object> shopMap = stringRedisTemplate.opsForHash().entries(cacheKey);
 
-        // redis 中有责返回
+        // redis 中有则返回
         if (!shopMap.isEmpty()) {
             Shop shop = BeanUtil.fillBeanWithMap(shopMap, new Shop(), false);
             return Result.ok(shop);
@@ -1972,7 +1944,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
             // 获取锁成功则查 redis 此时有没有，从而减少缓存重建
             Map<Object, Object> shopMa = stringRedisTemplate.opsForHash().entries(cacheKey);
 
-            // redis 中有责返回
+            // redis 中有则返回
             if (!shopMa.isEmpty()) {
                 shop = BeanUtil.fillBeanWithMap(shopMa, new Shop(), false);
                 return Result.ok(shop);
@@ -2007,7 +1979,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
             stringRedisTemplate.delete(LOCK_SHOP_KEY + id);
         }
 
-        //返回客户端
+        // 返回客户端
         return Result.ok(shop);
     }
 }
@@ -2049,6 +2021,7 @@ public class RedisData {
 ```java
 @Service
 public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IShopService {
+    
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
@@ -2056,15 +2029,13 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
     @Override
     public Result queryShopById(Long id) {
-        // 使用互斥锁解决 缓存击穿
-        // return cacheBreakDownWithMutex(id);
 
         String cacheKey = CACHE_SHOP_KEY + id;
 
         // 查 redis
         String shopJson = stringRedisTemplate.opsForValue().get(cacheKey);
 
-        // redis 中没有则报错(理论上是一直存在redis中的，逻辑过期而已，所以这一步不用判断都可以)
+        // redis 中没有则报错		理论上是一直存在redis中的，逻辑过期而已，所以这一步不用判断都可以
         if (StrUtil.isBlank(shopJson)) {
             return Result.fail("无此数据");
         }
@@ -2161,7 +2132,7 @@ redis.call('命令名称', 'key', '其它参数', ...)
 如：先执行set name Rose，再执行get name，则脚本如下：
 
 ```lua
-# 先执行 set name jack
+# 先执行 set name Rose
 redis.call('set', 'name', 'Rose')
 # 再执行 get name
 local name = redis.call('get', 'name')
@@ -2195,7 +2166,7 @@ key类型参数会放入KEYS数组，其它参数会放入ARGV数组，在脚本
 
 ## Java+Redis调用Lua脚本
 
-RedisTemplate中，可以利用execute方法去执行lua脚本，参数对应关系就如下图股
+RedisTemplate中，可以利用 execute() 去执行lua脚本，参数对应关系就如下图股
 
 ![1653393304844](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230810165856998-785266953.png)
 
@@ -2264,7 +2235,7 @@ Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Mem
 
 ## 使用Redisson
 
-1. 依赖2
+1. 依赖
 
 ```xml
 <!-- 基本 -->
@@ -2419,7 +2390,7 @@ void testRedisson() throws Exception{
 
 ### 锁重试
 
-这里的 `tryLock(long waitTime, long leaseTime, TimeUnit unit)`选择的是带参的，无参的 `tryLock()`是，默认不会重试的
+这里的 `tryLock(long waitTime, long leaseTime, TimeUnit unit)`选择的是带参的，无参的 `tryLock()`是默认不会重试的
 
 ```java
 public class RedissonLock extends RedissonExpirable implements RLock {
@@ -2656,7 +2627,9 @@ public class RedissonLock extends RedissonExpirable implements RLock {
      * 重新续约到期时间
      */
 	private void scheduleExpirationRenewal(long threadId) {
+        
         ExpirationEntry entry = new ExpirationEntry();
+        
         /*
          * private static final ConcurrentMap<String, ExpirationEntry> EXPIRATION_RENEWAL_MAP = new ConcurrentHashMap<>();
          *
@@ -2685,7 +2658,9 @@ public class RedissonLock extends RedissonExpirable implements RLock {
      * 续约
      */
 	private void renewExpiration() {
+        
         ExpirationEntry ee = EXPIRATION_RENEWAL_MAP.get(getEntryName());
+        
         if (ee == null) {
             return;
         }
@@ -4429,8 +4404,6 @@ PS：随着处理客户端发起的哈希表操作请求数量越多，最终在
 6. 将rehashidx赋值为-1，代表rehash结束
 7. **在rehash过程中，新增操作，则直接写入ht[1]，查询、修改和删除则会在dict.ht[0]和dict.ht[1]依次查找并执行**。这样可以确保ht[0]的数据只减不增，随着rehash最终为空
 
-
-
 上述流程动画图如下：
 
 ![Redis数据结构：Dict的渐进式rehash](https://img2023.cnblogs.com/blog/2421736/202310/2421736-20231017005406035-1142737969.gif)
@@ -4686,7 +4659,7 @@ QuickList的和QuickListNode的结构源码：
 
 ## Redis数据结构：SkipList
 
-SkipList（链表）在查找元素的时候，因为需要逐⼀查找，所以查询效率⾮常低，时间复杂度是O(N)，于是就出现了跳表。跳表是在链表基础上改进过来的，实现了⼀种「多层」的有序链表，这样的好处是能快读定位数据
+链表在查找元素的时候，因为需要逐⼀查找，所以查询效率⾮常低，时间复杂度是O(N)，于是就出现了跳表。跳表是在链表基础上改进过来的，实现了⼀种「多层」的有序链表，这样的好处是能快读定位数据
 
 跳表与传统链表相比有几点差异：
 
@@ -5186,7 +5159,7 @@ Redis支持8种不同策略来选择要删除的key：
 * LRU（Least Recently Used），最少最近使用。用当前时间减去最后一次访问时间，这个值越大则淘汰优先级越高。
 * LFU（Least Frequently Used），最少频率使用。会统计每个key的访问频率，值越小淘汰优先级越高。
 
-edis的数据都会被封装为RedisObject结构：
+Redis的数据都会被封装为RedisObject结构：
 
 ![1653984029506](https://img2023.cnblogs.com/blog/2421736/202310/2421736-20231030222457567-1542071293.png)
 
