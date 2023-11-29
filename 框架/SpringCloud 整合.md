@@ -633,7 +633,7 @@ public class OrderService {
 
 
 
-再将复刻的use-service2也启动即可，启动之后点一下eureka-server的端口就可以在浏览器看到服务qingk
+再将复刻的use-service2也启动即可，启动之后点一下eureka-server的端口就可以在浏览器看到服务情况
 
 ![image-20230523114005087](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523114005904-1151512200.png)
 
@@ -1075,7 +1075,7 @@ Nacos的默认端口是8848，若该端口被占用则关闭该进程 或 修改
 startup.cmd -m standalone
 
 
--m 				modul 模式
+-m 				mode 模式
 standalone		单机
 ```
 
@@ -1335,7 +1335,7 @@ spring:
 
 **非临时实例/永久实例：**由Nacos主动来询问服务是否还健康、活着(此种实例会让服务器压力变大)，若非临时实例挂了，Naocs并不会将其踢掉（亲儿子）
 
-1. 临时实例：Nacos官网https://nacos.io/zh-cn/docs/open-api.html中的“服务发现”的“发送实例心跳”中可以看到源码是在什么地方找
+1. 临时实例：Nacos官网 https://nacos.io/zh-cn/docs/open-api.html 中的“服务发现”的“发送实例心跳”中可以看到源码是在什么地方找
 
    - **适合**：流量激增时使用(高并发故增加更多实例)，后续流量下降了这些实例就可以不要了
    - 采用客户端心跳检测模式，心跳周期5秒
@@ -1382,7 +1382,7 @@ Nacos的服务发现分为两种模式：
 
 1. **C**	即：Consistency **数据一致性**。指的是：**用户访问分布式系统中的任意节点，得到的数据必须一致**
 2. **A**	即：Availability **可用性**。指的是：**用户访问集群中的任意健康节点，必须能得到响应，而不是超时或拒绝**
-3. **P**	即：Partition Tolerance **分区容错性**。指的是：**由于某种原因导致系统中任意信息的丢失或失败都不能不会影响系统的继续独立运作**
+3. **P**	即：Partition Tolerance **分区容错性**。指的是：**由于某种原因导致系统中任意信息的丢失或失败都不能影响系统的继续独立运作**
 
 
 
@@ -1676,7 +1676,7 @@ Java代码中是使用了`Map<String, Map<String, Service>>`：每一个服务�
 
 
 
-## Nacos如何为何能抗住数十万服务注册压力？
+## Nacos为何能抗住数十万服务注册压力？
 
 源码在：nacos-naming/controller/InstanceController#register(HttpServletRequest request)中的serviceManager.registerInstance(namespaceId, serviceName, instance)里面
 
@@ -1698,7 +1698,7 @@ public class DistroConsistencyServiceImpl {
     public void put(String key, Record value) throws NacosException {
 		// 异步服务注册 key是服务唯一id，value就是instances
         onPut(key, value);
-        // 服务更强情况异步更新给集群下的另外节点
+        // 服务更新情况异步更新给集群下的另外节点
         distroProtocol.sync(new DistroKey(key, KeyBuilder.INSTANCE_LIST_KEY_PREFIX), DataOperation.CHANGE,
                 globalConfig.getTaskDispatchPeriod() / 2);
     }
@@ -1815,7 +1815,7 @@ public class DistroConsistencyServiceImpl {
 
                         // 如果是 DELETE 事件
                         if (action == DataOperation.DELETE) {
-                            // 就根据服务ID删除从服务列表中删除服务
+                            // 就根据服务ID从服务列表中删除服务
                             listener.onDelete(datumKey);
                             continue;
                         }
@@ -2506,7 +2506,7 @@ public void addInstance(String namespaceId, String serviceName, boolean ephemera
 }
 ```
 
-这里的ConsistencyService接口，代表集群一致性的接口，有很多中不同实现：
+这里的ConsistencyService接口，代表集群一致性的接口，有很多种不同实现：
 
 ![image-20210922161705573](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714231915065-226812848.png)
 
@@ -3207,7 +3207,7 @@ public JsonNode sendBeat(BeatInfo beatInfo, boolean lightBeatEnabled) throws Nac
 对于临时实例，服务端代码分两部分：
 
 1. InstanceController提供了一个接口，处理客户端的心跳请求
-2. 时检测实例心跳是否按期执行
+2. 定时检测实例心跳是否按期执行
 
 
 
@@ -4418,13 +4418,13 @@ OpenFeign是Feign的增强版，使用时将依赖换一下，然后注意一下
 </dependency>
 ```
 
-**2、启动类假如如下注解：**在“服务消费方”启动类添加
+**2、启动类加入如下注解：**在“服务消费方”启动类添加
 
 ```java
 @EnableFeignClients     /*开启feign客户端功能*/
 ```
 
-**3、创建接口，并使用 `@@org.springframework.cloud.openfeign.FeignClient` 注解：**这种方式相当于 `DAO`
+**3、创建接口，并使用 `@org.springframework.cloud.openfeign.FeignClient` 注解：**这种方式相当于 `DAO`
 
 ```java
 /**
@@ -4514,7 +4514,7 @@ Feign可以支持很多的自定义配置，如下表所示：
 
 | 类型                   | 作用             | 说明                                                         |
 | ---------------------- | ---------------- | ------------------------------------------------------------ |
-| **feign.Logger.Level** | 修改日志级别     | 包含四种不同的级别：NONE、BASIC、HEADERS、FULL<br />1、NONE：默认的，不显示任何日志<br />2、BACK：仅记录请求方法、URL、响应状态码及执行时间<br />3、HEADERS：除了BASIC中定义的信息之外，还有请求和响应的头信息<br />4、FULL：除了HEADERS中定义的信息之外，还有请求和响应的正文及元数据 |
+| **feign.Logger.Level** | 修改日志级别     | 包含四种不同的级别：NONE、BASIC、HEADERS、FULL<br />1、NONE：默认的，不显示任何日志<br />2、BASIC：仅记录请求方法、URL、响应状态码及执行时间<br />3、HEADERS：除了BASIC中定义的信息之外，还有请求和响应的头信息<br />4、FULL：除了HEADERS中定义的信息之外，还有请求和响应的正文及元数据 |
 | feign.codec.Decoder    | 响应结果的解析器 | http远程调用的结果做解析，例如解析json字符串为Java对象       |
 | feign.codec.Encoder    | 请求参数编码     | 将请求参数编码，便于通过http请求发送                         |
 | feign. Contract        | 支持的注解格式   | 默认是SpringMVC的注解                                        |
@@ -4828,7 +4828,7 @@ API 网关就像整个微服务系统的门面一样，是系统对外的唯一�
 
 
 
-## 认识Sprin gCloud Gateway
+## 认识Spring Cloud Gateway
 
 Spring Cloud Gateway 是 Spring Cloud 团队基于 Spring 5.0、Spring Boot 2.0 和 Project Reactor 等技术开发的高性能 API 网关组件
 
@@ -5035,7 +5035,7 @@ Filter是网关中提供的一种过滤器，可以对进入网关的请求和�
 
 
 
-pring Cloud Gateway 提供了以下两种类型的过滤器，可以对请求和响应进行精细化控制
+Spring Cloud Gateway 提供了以下两种类型的过滤器，可以对请求和响应进行精细化控制
 
 | 过滤器类型 | 说明                                                         |
 | ---------- | ------------------------------------------------------------ |
@@ -5127,7 +5127,7 @@ public class UserController {
 
 
 
-> 此种路由一共有37种，它们的用法和上面的差不多，可以多个过滤器共同使用
+> 此种过滤器一共有37种（常用就几种），它们的用法和上面的差不多，可以多个过滤器共同使用
 >
 > 详细去看链接：https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#gatewayfilter-factories
 
@@ -5608,9 +5608,9 @@ docker run -v 宿主机中自己创建的路径:容器内部的路径 镜像id
 
 ## 虚悬镜像
 
-指的是：仓库名、标签都是 `<none>` ，即俗称dangling image
-
-出现的原因：在构建镜像或删除镜像时出现了某些错误，从而导致仓库名和标签都是 `<none>`
+> 虚悬镜像：指的是仓库名、标签都是 `<none>` ，即俗称dangling image
+>
+> 出现的原因：在构建镜像或删除镜像时出现了某些错误，从而导致仓库名和标签都是 `<none>`
 
 
 
@@ -5674,7 +5674,7 @@ docker image prune
 | #          | 注释                                                         | 字面意思                                                     | # 注释内容                                                   |
 | FROM       | 指定当前新镜像是基于哪个基础镜像，即：基于哪个镜像继续升级<br />“必须放在第一行” | 类似于对“某系统”进行升级，添加新功能<br />这里的“某系统”就是基础镜像 | FROM centos:7                                                |
 | MAINTAINER | 镜像的作者和邮箱                                             | 和IDEA中写一个类或方法时留下自己姓名和邮箱类似               | MAINTAINER  zixq<zixq8@qq.com>                               |
-| RUN        | 容器“运行时”需要执行的命令<br />RUN是在进行docker build时执行 | 在进行docker build时会安装一些命令或插件，亦或输出一句话用来提示进行到哪一步了/当前这一步是否成功了 | 有两种格式：<br />1、shell格式：RUN <命令行命令>  如：RUN echo “Successfully built xxxx” 或者是 RUN yum -y imstall vim<br />这种等价于在终端中执行shell命令<br /><br />2、exec格式：RUN {“可执行文件”,”参数1”,”参数2”} 如：RUN {“./startup.cmd”,”-m”,”standalone”} 等价于 startup.cmd -m standalone |
+| RUN        | 容器“运行时”需要执行的命令<br />RUN是在进行docker build时执行 | 在进行docker build时会安装一些命令或插件，亦或输出一句话用来提示进行到哪一步了/当前这一步是否成功了 | 有两种格式：<br />1、shell格式：RUN <命令行命令>  如：RUN echo “Successfully built xxxx” 或者是 RUN yum -y imstall vim<br />这种等价于在终端中执行shell命令<br /><br />2、exec格式：RUN {“可执行文件”,”参数1”,”参数2”} <br />如：RUN {“./startup.cmd”,”-m”,”standalone”} <br />等价于 startup.cmd -m standalone |
 | EXPOSE     | 当前容器对外暴露出的端口                                     | 字面意思。容器自己想设定的端口，docker要做宿主机和容器内端口映射咯 | EXPOSE 80                                                    |
 | WORKDIR    | 指定在容器创建后，终端默认登录进来时的工作目录               | 虚拟机进入时默认不就是 `~` 或者 Redis中使用Redis -cli登录进去之后不是也有默认路径吗 | WORKDIR /usr/local<br /><br />或<br />WORKDIR /              |
 | USER       | 指定该镜像以什么样的用户去执行，若不进行指定，则默认用 root 用户<br /><br />这玩意儿一般都不会特意去设置 | 时空见惯了，略过                                             | USER root                                                    |
@@ -5864,7 +5864,7 @@ services:
 上面的Compose文件就描述一个项目，其中包含两个容器(对照使用 docker run -d -p 映射出来的宿主机端口:容器内暴露的端口 –name 某名字……… 命令跑某个镜像，这文件内容就是多个容器配置都在一起，最后一起跑起来而已)：
 
 - mysql：一个基于`mysql:5.7.25`镜像构建的容器，并且挂载了两个目录
-- web：一个基于`docker build`临时构建的镜像容器，映射端口时8090
+- web：一个基于`docker build`临时构建的镜像容器，映射端口是8090
 
 
 
@@ -5940,7 +5940,7 @@ docker run -d \
 vim docker-compose.yml
 ```
 
-**2、配置Docker信任地址**：Docker私服采用的是http协议，默认不被Docker信任，所以需要做一个配
+**2、配置Docker信任地址**：Docker私服采用的是http协议，默认不被Docker信任，所以需要做一个配置
 
 ```shell
 # 打开要修改的文件
@@ -7430,6 +7430,7 @@ import javax.annotation.PostConstruct;
 @Configuration
 public class PublisherConfirmAndReturnConfig implements RabbitTemplate.ConfirmCallback, 
         RabbitTemplate.ReturnCallback {
+            
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -7596,7 +7597,7 @@ public void listenSimpleQueue(String msg) {
 
 ![image-20230709002843115](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709002845387-819379886.png)
 
-要解决就就得引入下一节的内容
+要解决就得引入下一节的内容
 
 
 
@@ -7633,7 +7634,7 @@ spring:
 
 达到最大重试次数后，消息会被丢弃，这是由Spring内部机制决定的
 
-在开启重试模式后，重试次数耗尽，如果消息依然失败，则需要有MessageRecovery接口来处理，它包含三种不同的实现：
+在开启重试模式后，重试次数耗尽，如果消息依然失败，则需要由MessageRecovery接口来处理，它包含三种不同的实现：
 
 1. RejectAndDontRequeueRecoverer：重试耗尽后，直接reject，丢弃消息。默认就是这种方式
 2. ImmediateRequeueMessageRecoverer：重试耗尽后，返回nack，消息重新入队
@@ -7718,7 +7719,7 @@ public class ErrorMessageConfig {
 
 ![image-20230709230801915](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709230805203-633364493.png)
 
-1. 生产者：给消息设置超时间是
+1. 生产者：给消息设置超时时间
 
 ```java
 package com.zixieqing.publisher;
@@ -7820,8 +7821,8 @@ public void listenDlQueue(String msg) {
 
 分为两种情况：
 
-1. 队列中只能放多少条消息
-2. 队列中只能放多少字节的消息
+1. 队列中只能放“多少条”消息
+2. 队列中只能放“多少字节”的消息
 
 ```java
 @Bean
@@ -8058,8 +8059,8 @@ elasticsearch使用的就是倒排索引
 - 日期：date
 - 对象：object
 - 地图类型：geo_point 和 geo_shape
-  - geo_point：有纬度(latitude) 和经度(longitude)确定的一个点，如：“32.54325453, 120.453254”
-  - geo_shape：有多个geo_point组成的复杂集合图形，如一条直线 “LINESTRING (-77.03653 38.897676, -77.009051 38.889939)”
+  - geo_point：由纬度(latitude) 和经度(longitude)确定的一个点，如：“32.54325453, 120.453254”
+  - geo_shape：由多个geo_point组成的复杂集合图形，如一条直线 “LINESTRING (-77.03653 38.897676, -77.009051 38.889939)”
 - 自动补全类型：completion
 
 
@@ -8071,8 +8072,8 @@ elasticsearch使用的就是倒排索引
     "age": 21,	// Integer类型
     "weight": 52.1,		// float类型
     "isMarried": false,		// boolean类型
-    "info": "这就是一个屌丝女",		// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束时什么
-    "email": "zixq8@slafjkl.com",	// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束时什么
+    "info": "这就是一个屌丝女",		// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束是什么
+    "email": "zixq8@slafjkl.com",	// 字符串类型 可能为test，也可能为keyword 需要看mapping定义时对文档的约束是什么
     "score": [99.1, 99.5, 98.9],	// 类似数组	就是利用了一个类型可以有多个值
     "name": {		// object对象类型
         "firstName": "紫",
@@ -8179,7 +8180,7 @@ POST /{索引库名}/_update/文档id
 
 #### 文档分析
 
-试想：我们在浏览器中，输入一条信息，如：搜索“博客园紫邪情”，为什么连“博客园也搜索出来了？我要的是不是这个结果涩”
+试想：我们在浏览器中，输入一条信息，如：搜索“博客园紫邪情”，为什么连“博客园也搜索出来了？我要的不是这个结果啊
 ![image-20230621160902915](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160903705-933424963.png)
 
 这就是全文检索，就是ES干的事情（ 过滤数据、检索嘛 ），但是：它做了哪些操作呢？
@@ -8188,15 +8189,12 @@ POST /{索引库名}/_update/文档id
 
 1. 将文本拆成适合于倒排索引的独立的词条，然后把这些词条统一变为一个标准格式，从而使文本具有“可搜索性”。
 
-    
 
-   而这个文档分析的过程在ES是由一个叫做“分析器 analyzer”的东西来做的，这个分析器里面做了三个步骤
+而这个文档分析的过程在ES中是由一个叫做“分析器 analyzer”的东西来做的，这个分析器里面做了三个步骤
 
-   1. 字符过滤器：就是用来处理一些字符的嘛，像什么将 & 变为 and 啊、去掉HTML元素啊之类的。它是文本字符串在经过分词之前的一个步骤，文本字符串是按文本顺序经过每个字符串过滤器从而处理字符串
-   2. 分词器：见名知意，就是用来分词的，也就是将字符串拆分成词条（ 字 / 词组 ），这一步和Java中String的split()一样的，通过指定的要求，把内容进行拆分，如：空格、标点符号
-   3. Token过滤器：这个玩意儿的作用就是 词条经过每个Token过滤器，从而对数据再次进行筛选，如：字母大写变小写、去掉一些不重要的词条内容、添加一些词条（如：同义词）
-
-
+1. 字符过滤器：就是用来处理一些字符的嘛，像什么将 & 变为 and 啊、去掉HTML元素啊之类的。它是文本字符串在经过分词之前的一个步骤，文本字符串是按文本顺序经过每个字符串过滤器从而处理字符串
+2. 分词器：见名知意，就是用来分词的，也就是将字符串拆分成词条（ 字 / 词组 ），这一步和Java中String.split()一样的，通过指定的要求，把内容进行拆分，如：空格、标点符号
+3. Token过滤器：这个玩意儿的作用就是 词条经过每个Token过滤器，从而对数据再次进行筛选，如：字母大写变小写、去掉一些不重要的词条内容、添加一些词条（如：同义词）
 
 
 
@@ -8246,7 +8244,7 @@ POST /{索引库名}/_update/文档id
 
 以前的全文检索是将整个文档集合弄成一个倒排索引，然后存入磁盘中，当要建立新的索引时，只要新的索引准备就绪之后，旧的索引就会被替换掉，这样最近的文档数据变化就可以被检索到
 
-而索引一旦被存入到磁盘就是不可变的（ 永远都可以修改 ），而这样做有如下的好处：
+而索引一旦被存入到磁盘就是不可变的，而这样做有如下的好处：
 
 1. 只要索引被读入到内存中了，由于其不变性，所以就会一直留在内存中（ 只要空间足够 ），从而当我们做“读操作”时，请求就会进入内存中去，而不会去磁盘中，这样就减小开销，提高效率了
 2. 索引放到内存中之后，是可以进行压缩的，这样做之后，也就可以节约空间了
@@ -8265,7 +8263,7 @@ POST /{索引库名}/_update/文档id
 
 **又想保留不可变性，又想能够实现倒排索引的更新，咋办？**
 
-- 就搞出了`补充索引`，**所谓的补充索引：有点类似于日志这个玩意儿，就是重建一个索引，然后用来记录最近指定一段时间内的索引中文档数据的更新。**这样更新的索引数据就记录在补充索引中了，然后检索数据时，直接找补充索引即可，这样检索时不再重写整个倒排索引了，这有点类似于关系型中的拆表，大表拆小表嘛，**但是啊：每一份补充索引都是一份单独的索引啊，这又和分片很像，可是：查询时是对这些补充索引进行轮询，然后再对结果进行合并，从而得到最终的结果，这和前面说过的读流程中说明的协调节点挂上钩了**
+- 就搞出了`补充索引`，**所谓的补充索引：有点类似于日志这个玩意儿，就是重建一个索引，然后用来记录最近指定一段时间内的索引中文档数据的更新。**这样更新的索引数据就记录在补充索引中了，然后检索数据时，直接找补充索引即可，这样检索时不再重写整个倒排索引了，这有点类似于关系型中的拆表，大表拆小表嘛，**但是啊：每一份补充索引都是一份单独的索引啊，这又和分片很像，可是：查询时是对这些补充索引进行轮询，然后再对结果进行合并，从而得到最终的结果，这和读流程中说明的协调节点挂上钩了**
 
 **这里还需要了解一个配套的`按段搜索`，玩过 Lucene 的可能听过。按段，每段也就可以理解为：补充索引，它的流程其实也很简单：**
 
@@ -8426,7 +8424,7 @@ PUT /user
 
 当然：也别忘了有一个倒排索引
 
-- 关系型数据库通过增加一个**B+树索引**到指定的列上，以便提升数据检索速度。而ElasticSearch 使用了一个叫做 `倒排索引` 的结构来达到相同的目的
+- 关系型数据库通过增加一个**B+树**索引到指定的列上，以便提升数据检索速度。而ElasticSearch 使用了一个叫做 `倒排索引` 的结构来达到相同的目的
 
 
 
@@ -8440,7 +8438,7 @@ PUT /索引库名称
 http://ip:port/indexName     如：http://127.0.0.1:9200/createIndex    	请求方式：put
 ```
 
-**注：put请求具有幂等性**，幂等性指的是： 不管进行多少次重复操作，都是实现相同的结果。可以采用把下面的请求多执行几次，然后：观察返回的结果
+**注：put请求具有幂等性**，幂等性指的是： 不管进行多少次重复操作，都是得到相同的结果。可以采用把下面的请求多执行几次，然后：观察返回的结果
 
 **具有幂等性的有：put、delete、get**
 
@@ -8535,7 +8533,7 @@ DELETE /索引库名
 此种分词器的分词器类型：
 
 1. **ik_max_word**        是细粒度的分词，就是：穷尽词汇的各种组成。如4个字是一个词，继续看3个字是不是一个词，再看2个字又是不是一个词，以此穷尽..........
-2. **ik_smart**                 是粗粒度的分词。如：那个叼毛也是一个程序员，就先看整句话是不是一个词(length = 11)，不是的话，就看length-1是不是一个词.....，如果某个长度是一个词了，那么这长度内的内容就不看了，继续看其他的是不是一个词，如“那个"是一个词，那就看后面的内容，继续length、length-1、length-2........
+2. **ik_smart**                 是粗粒度的分词。如：那个吊毛也是一个程序员，就先看整句话是不是一个词(length = 11)，不是的话，就看length-1是不是一个词.....，如果某个长度是一个词了，那么这长度内的内容就不看了，继续看其他的是不是一个词，如“那个"是一个词，那就看后面的内容，继续length、length-1、length-2........
 
 
 
@@ -8576,14 +8574,19 @@ DELETE /索引库名
 
 在ES中有一个**文档分析的过程**，文档分析的过程也很简单：
 
-1. **将文本拆成适合于倒排索引的独立的词条，然后把这些词条统一变为一个标准格式，从而使文本具有“可搜索性”。** 而这个文档分析的过程在ES是由一个叫做“分析器 analyzer”的东西来做的，这个分析器里面做了三个步骤
-   1. 字符过滤器(character filters)：就是用来处理一些字符的嘛，像什么将 & 变为 and 啊、去掉HTML元素啊之类的。它是文本字符串在经过分词之前的一个步骤，文本字符串是按文本顺序经过每个字符串过滤器从而处理字符串
-   2. 分词器(tokenizer)：见名知意，就是用来分词的，也就是将字符串拆分成词条（ 字 / 词组 ），这一步和Java中String的split()一样的，通过指定的要求，把内容进行拆分，如：空格、标点符号
-   3. Token过滤器(tokenizer filter)：这个玩意儿的作用就是 词条经过每个Token过滤器，从而对数据再次进行筛选，如：字母大写变小写、去掉一些不重要的词条内容、添加一些词条（ 如：同义词 ）
+1. **将文本拆成适合于倒排索引的独立的词条，然后把这些词条统一变为一个标准格式，从而使文本具有“可搜索性”。** 
+
+而这个文档分析的过程在ES是由一个叫做“分析器 analyzer”的东西来做的，这个分析器里面做了三个步骤
+
+1. 字符过滤器(character filters)：就是用来处理一些字符的嘛，像什么将 & 变为 and 啊、去掉HTML元素啊之类的。它是文本字符串在经过分词之前的一个步骤，文本字符串是按文本顺序经过每个字符串过滤器从而处理字符串
+2. 分词器(tokenizer)：见名知意，就是用来分词的，也就是将字符串拆分成词条（ 字 / 词组 ），这一步和Java中String的split()一样的，通过指定的要求，把内容进行拆分，如：空格、标点符号
+3. Token过滤器(tokenizer filter)：这个玩意儿的作用就是 词条经过每个Token过滤器，从而对数据再次进行筛选，如：字母大写变小写、去掉一些不重要的词条内容、添加一些词条（ 如：同义词 ）
 
 
 
-举例理解：character filters、tokenizer、tokenizer filter)
+
+
+举例理解：character filters、tokenizer、tokenizer filter
 
 ![image-20210723210427878](https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627215749039-764720909.png)
 
@@ -8723,7 +8726,7 @@ import static com.zixieqing.hotel.constant.MappingConstant.mappingContext;
 /**
  * elasticsearch的索引库测试
  * 规律：esClient.indices().xxx(xxxIndexRequest(IndexName), RequestOptions.DEFAULT)
- *      其中 xxx 表示要对索引进行得的操作，如：create、delete、get、flush、exists.............
+ *      其中 xxx 表示要对索引进行的操作，如：create、delete、get、flush、exists.............
  *
  * <p>@author       : ZiXieqing</p>
  */
@@ -9045,7 +9048,7 @@ public class o3BulkDocumentTest {
         // 2、准备request对象
         BulkRequest request = new BulkRequest();
         for (Hotel hotel : hotels) {
-            // 根据批量数据id 批量删除es中的文档
+            // 根据数据id 批量删除es中的文档
             request.add(new DeleteRequest("hotel").id(hotel.getId().toString()));
         }
 
@@ -9170,7 +9173,7 @@ http://ip:port/users/_settings		// 请求方式：put
 }
 ```
 
-另外：不断进行更新就会导致很多的段出现(在内存刷写到磁盘那里，会造成很多的磁盘文件 )，因此：在哪里利用了文档合并的功能(也就是段的能力，合并文档，从而让刷写到磁盘中的文档变成一份)
+另外：不断进行更新就会导致很多的段出现(在内存刷写到磁盘那里，会造成很多的磁盘文件 )，因此：在那里利用了文档合并的功能(也就是段的能力，合并文档，从而让刷写到磁盘中的文档变成一份)
 
 
 
@@ -9190,7 +9193,7 @@ http://ip:port/users/_settings		// 请求方式：put
 shard = hash(routing) % number_of_primary_shards
 
 routing							 是一个任意值，默认是文档的_id，也可以自定义
-number_of_primary_shards 		   表示主分片的数量
+number_of_primary_shards 		 表示主分片的数量
 hash()							 是一个hash函数
 ```
 
@@ -9343,7 +9346,7 @@ number_of_replicas			是指的在索引设置中设定的副本分片数
 
 
 
-其实mget 和 bulk API的模式就类似于单文档模式。区别在于协调节点知道每个文档存在于哪个分片中
+其实mget 和 bulk API的模式就类似于单文档模式。区别在于协调节点知道每个文档存在哪个分片中
 
 
 
@@ -10498,7 +10501,7 @@ Sentinel是阿里巴巴开源的一款微服务流量控制组件。官网地址
 
 
 
-早期比较流行的是Hystrix框架(后面这叼毛不维护、不更新了)，所以目前国内实用最广泛的是阿里巴巴的Sentinel框架
+早期比较流行的是Hystrix框架(后面这吊毛不维护、不更新了)，所以目前国内实用最广泛的是阿里巴巴的Sentinel框架
 
 |                | **Sentinel**                                   | **Hystrix**                   |
 | -------------- | ---------------------------------------------- | ----------------------------- |
@@ -11479,7 +11482,7 @@ spring:
 git clone https://github.com/alibaba/Sentinel.git
 ```
 
-2. 修改nacos依赖。在sentinel-dashboard模块的pom文件中，nacos的依赖默认的scope如果是test，那它只能在测试时使用，所以要去除 scope 标签
+2. 修改nacos依赖。在sentinel-dashboard模块的pom文件中，nacos的依赖默认的scope是test，那它只能在测试时使用，所以要去除 scope 标签
 
 ```xml
 <dependency>
@@ -11812,7 +11815,7 @@ Context又是在何时完成初始化的？
 
 
 
-进入SentinelWebAutoConfiguration这个类：可以直接搜，可以去Sentinel依赖的Spring.factories中找
+进入SentinelWebAutoConfiguration这个类：可以直接搜，也可以去Sentinel依赖的Spring.factories中找
 
 ![image-20210925115824345](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145605631-1703952710.png)
 
@@ -11828,7 +11831,7 @@ WebMvcConfigurer是SpringMVC自定义配置用到的类，可以配置HandlerInt
 
 ![image-20210925120119030](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145729062-533815876.png)
 
-发继承了`AbstractSentinelInterceptor`这个类。
+发现继承了`AbstractSentinelInterceptor`这个类。
 
 ![image-20210925120221883](https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145729524-2075570147.png)
 
@@ -11993,7 +11996,7 @@ Seata是 2019 年 1 月份蚂蚁金服和阿里巴巴共同开源的分布式事
 
 1. **C**	即：Consistency **数据一致性**。指的是：**用户访问分布式系统中的任意节点，得到的数据必须一致**
 2. **A**	即：Availability **可用性**。指的是：**用户访问集群中的任意健康节点，必须能得到响应，而不是超时或拒绝**
-3. **P**	即：Partition Tolerance **分区容错性**。指的是：**由于某种原因导致系统中任意信息的丢失或失败都不能不会影响系统的继续独立运作**
+3. **P**	即：Partition Tolerance **分区容错性**。指的是：**由于某种原因导致系统中任意信息的丢失或失败都不能影响系统的继续独立运作**
 
 
 
@@ -12268,11 +12271,10 @@ XA 规范 是 X/Open 组织定义的分布式事务处理（DTP，Distributed Tr
 1. 事务协调者通知每个事务参与者执行本地事务
 2. 本地事务执行完成后报告事务执行状态给事务协调者，此时事务不提交，继续持有数据库锁
 
-二阶段：
+二阶段：事务协调者基于一阶段的报告来判断下一步操作
 
-- 事务协调者基于一阶段的报告来判断下一步操作
-  1. 如果一阶段都成功，则通知所有事务参与者，提交事务
-  2. 如果一阶段任意一个参与者失败，则通知所有事务参与者回滚事务
+1. 如果一阶段都成功，则通知所有事务参与者，提交事务
+2. 如果一阶段任意一个参与者失败，则通知所有事务参与者回滚事务
 
 
 
@@ -12629,9 +12631,9 @@ public interface AccountTccService {
      * Try逻辑	资源检查和预留，同时需要判断Cancel是否已经执行，是则拒绝执行本次业务
      *
      * "@TwoPhaseBusinessAction" 中
-     * 								name属性要与当前方法名一致，用于指定Try逻辑对应的方法
-     * 								commitMethod属性值就是confirm逻辑的方法
-     * 								rollbackMethod属性值就是cancel逻辑的方法
+     * 								name属性				 要与当前方法名一致，用于指定Try逻辑对应的方法
+     * 								commitMethod属性值		就是confirm逻辑的方法
+     * 								rollbackMethod属性值	就是cancel逻辑的方法
      *
      * "@BusinessActionContextParameter" 将指定的参数传递给confirm和cancel
      *
@@ -12698,9 +12700,9 @@ public class AccountTccServiceImpl implements AccountTccService {
      * Try逻辑	资源检查和预留，同时需要判断Cancel是否已经执行，是则拒绝执行本次业务
      *
      * "@TwoPhaseBusinessAction" 中
-     * 		name属性要与当前方法名一致，用于指定Try逻辑对应的方法
-     * 		commitMethod属性值就是confirm逻辑的方法
-     * 		rollbackMethod属性值就是cancel逻辑的方法
+     * 		name属性要				与当前方法名一致，用于指定Try逻辑对应的方法
+     * 		commitMethod属性值		就是confirm逻辑的方法
+     * 		rollbackMethod属性值	就是cancel逻辑的方法
      *
      * "@BusinessActionContextParameter" 将指定的参数传递给confirm和cancel
      *
@@ -12801,7 +12803,7 @@ Seata官网对于Saga的指南：https://seata.io/zh-cn/docs/user/saga.html
 
 **适用场景：** 
 
-1. 业务流程长、，业务流程多且需要保证事务最终一致性的业务系统
+1. 业务流程长、业务流程多且需要保证事务最终一致性的业务系统
 2. 银行业金融机构
 3. 需要与第三方交互，如：调用支付宝支付接口->出库失败->调用支付宝退款接口
 
