@@ -7,12 +7,10 @@
 ```
 
 
-# Java基础
-[BIO、NIO、AIO](https://github.com/zixq-stack/Java-Note/blob/master/Java%20%E5%9F%BA%E7%A1%80/BIO%E3%80%81NIO%E3%80%81AIO.md)
+# Java
+[BIO、NIO、AIO](https://github.com/zixq-stack/Java-Note/blob/master/Java/BIO%E3%80%81NIO%E3%80%81AIO.md)
 
-[JVM](https://github.com/zixq-stack/Java-Note/blob/master/Java%20%E5%9F%BA%E7%A1%80/JVM.md)
-
-[深入理解Java虚拟机：JVM高级特性与最佳实践_V3.0-周志明.pdf](https://github.com/zixq-stack/Java-Note/blob/master/Java%20%E5%9F%BA%E7%A1%80/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%EF%BC%9AJVM%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5_V3.0-%E5%91%A8%E5%BF%97%E6%98%8E.pdf)
+[JVM](https://github.com/zixq-stack/Java-Note/tree/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA)
 
 [Java日志框架](https://github.com/zixq-stack/Java-Note/blob/master/Java%20%E5%9F%BA%E7%A1%80/Java%20%E6%97%A5%E5%BF%97%E6%A1%86%E6%9E%B6%E6%95%B4%E7%90%86.md)
 
