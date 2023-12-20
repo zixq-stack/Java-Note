@@ -1,3 +1,14 @@
+# 前言
+
+本文主要参考内容说明如下：
+
+> 1. 《深入理解Java虚拟机：JVM高级特性与最佳实践_V3.0_周志明》。PDF文档已放入目录 Java/JVM：Java虚拟机/ 中。
+> 2. @pdai整理的JVM相关内容：https://www.pdai.tech/md/java/jvm/java-jvm-x-overview.html
+
+
+
+
+
 # JVM整体结构
 
 > 本文主要说的是HotSpot虚拟机，
@@ -3419,6 +3430,34 @@ JVM 在进行 GC 时，并非每次都对堆内存（新生代、老年代；方
 - 补充一种情况：由Eden区、survivor space0（From Space）区向survivor space1（To Space）区复制时，对象大小 大于 To Space可用内存，则把该对象转存到老年代，且老年代的可用内存 小于 该对象大小。
 
 3. 方法区空间不足。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

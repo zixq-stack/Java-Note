@@ -3840,7 +3840,7 @@ Java 堆内存（Heap Memory)主要有两种形式的错误：
 
 只要将`-Xms(最小堆)`,`-Xmx(最大堆)` 设置为一样禁止自动扩展堆内存
 
-当使用一个 `while(true)` 循环来不断创建对象就会发生 `OutOfMemory`，还可以使用 `-XX:+HeapDumpOutofMemoryErorr` 当发生 OOM 时会自动 dump 堆栈到文件中
+当使用一个 `while(true)` 循环来不断创建对象就会发生 `OutOfMemory`，还可以使用 `-XX:+HeapDumpOutofMemoryErorr` 。当发生 OOM 时会自动 dump 堆栈到文件中
 
 伪代码:
 
@@ -3853,7 +3853,7 @@ public static void main(String[] args) {
 }
 ```
 
-当出现 OOM 时可以通过工具来分析 `GC-Roots` [引用链](https://github.com/crossoverJie/Java-Interview/blob/master/MD/GarbageCollection.md#可达性分析算法) ，查看对象和 `GC-Roots` 是如何进行关联的，是否存在对象的生命周期过长，或者是这些对象确实改存在的，那就要考虑将堆内存调大了
+当出现 OOM 时可以通过工具来分析 `GC-Roots` [引用链](https://github.com/crossoverJie/Java-Interview/blob/master/MD/GarbageCollection.md#可达性分析算法) ，查看对象和 `GC-Roots` 是如何进行关联的，是否存在对象的生命周期过长，或者是这些对象确实该存在的，那就要考虑将堆内存调大了
 
 ```text
 Exception in thread "main" Java.lang.OutOfMemoryError: Java heap space
@@ -3883,7 +3883,7 @@ Process finished with exit code 1
 
 #### OutOfMemoryError: GC overhead limit exceeded
 
-GC overhead limt exceed检查是Hotspot VM 1.6定义的一个策略，通过统计GC时间来预测是否要OOM了，提前抛出异常，防止OOM发生Sun 官方对此的定义是：“并行/并发回收器在GC回收时间过长时会抛出OutOfMemroyError过长的定义是，超过98%的时间用来做GC并且回收了不到2%的堆内存用来避免内存过小造成应用不能正常工作“
+GC overhead limt exceed检查是Hotspot VM 1.6定义的一个策略，通过统计GC时间来预测是否要OOM了，提前抛出异常，防止OOM发生。Sun 官方对此的定义是：“并行/并发回收器在GC回收时间过长时会抛出OutOfMemroyError。过长的定义是，超过98%的时间用来做GC并且回收了不到2%的堆内存，用来避免内存过小造成应用不能正常工作“
 
 PS：-Xmx最大内存配置2GB
 
@@ -3938,9 +3938,9 @@ Java.lang.OutOfMemoryError: GC overhead limit exceeded
 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.Java:119) ~[spring-web-5.3.9.jar:5.3.9]
 ```
 
-还可以使用 `-XX:+HeapDumpOutofMemoryErorr` 当发生 OOM 时会自动 dump 堆栈到文件中
+还可以使用 `-XX:+HeapDumpOutofMemoryErorr` 。当发生 OOM 时会自动 dump 堆栈到文件中
 
-JVM还有这样一个参数：`-XX:-UseGCOverheadLimit` 设置为false可以禁用这个检查其实这个参数解决不了内存问题，只是把错误的信息延后，替换成 Java.lang.OutOfMemoryError: Java heap space
+JVM还有这样一个参数：`-XX:-UseGCOverheadLimit` 设置为false可以禁用这个检查。其实这个参数解决不了内存问题，只是把错误的信息延后，替换成 Java.lang.OutOfMemoryError: Java heap space
 
 
 
@@ -3956,7 +3956,7 @@ JVM还有这样一个参数：`-XX:-UseGCOverheadLimit` 设置为false可以禁�
 
 JDK 8 中将类信息移到到了本地堆内存(Native Heap)中，将原有的永久代移动到了本地堆中成为 `MetaSpace` ,如果不指定该区域的大小，JVM 将会动态的调整
 
-可以使用 `-XX:MaxMetaspaceSize=10M` 来限制最大元数据这样当不停的创建类时将会占满该区域并出现 `OOM`
+可以使用 `-XX:MaxMetaspaceSize=10M` 来限制最大元数据。这样当不停的创建类时将会占满该区域并出现 `OOM`
 
 ```java
 public static void main(String[] args) {
