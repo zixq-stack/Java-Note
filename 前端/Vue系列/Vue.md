@@ -19,7 +19,6 @@ Vue开发工具：vscode
 - 给浏览器安装vuejs devtool工具，阿里云盘链接: https://www.aliyundrive.com/s/JtHVq5SX3po 
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +58,7 @@ Vue开发工具：vscode
 
 **启动效果如下：**
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109230432977-1121379970.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109230432977-1121379970.png" alt="image" style="zoom:50%;" /> 
 
 
 
@@ -106,7 +105,6 @@ Vue开发工具：vscode
 #### 1.2、认识v-bind - 数据单向绑定
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -149,14 +147,13 @@ Vue开发工具：vscode
     })
 </script>
 </html>
-
 ```
 
 
 
 **启动效果**
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109231628608-509473361.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109231628608-509473361.png" alt="image" style="zoom:50%;" /> 
 
 
 
@@ -190,7 +187,6 @@ Vue开发工具：vscode
 
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -236,29 +232,29 @@ Vue开发工具：vscode
 
 **效果如下：**
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234404402-1827986397.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234404402-1827986397.png" alt="image" style="zoom:50%;" /> 
 
 
 
 
 
 **测试单向绑定**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234642452-76190818.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234642452-76190818.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234709271-927087231.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234709271-927087231.png" alt="image" style="zoom:50%;" />
 
 
 
 
 
 **测试双向绑定**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234818796-2025201519.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234818796-2025201519.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234853946-1110651492.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220109234853946-1110651492.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -285,7 +281,6 @@ Vue开发工具：vscode
 #### 1.4、el和data的两种写法
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -320,7 +315,6 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
@@ -355,7 +349,6 @@ Vue开发工具：vscode
 - VM   指：viewmodel
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -391,20 +384,19 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110005303126-2036218753.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110005303126-2036218753.png" alt="image" style="zoom:50%;" />
 
 
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110005431968-11780065.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110005431968-11780065.png" alt="image" style="zoom:50%;" />
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111004118792-1033664173.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111004118792-1033664173.png" alt="image" style="zoom:50%;" /> 
 
 
 
@@ -412,7 +404,7 @@ Vue开发工具：vscode
 
 **查看代码中的MVVM**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110005808477-1490200236.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110005808477-1490200236.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -429,7 +421,7 @@ Vue开发工具：vscode
 1. data中所有的属性最后都在vm身上（ 即：ViewModel ）
 2. vm身上所有的属性 及 Vue原型上的所有属性，在Vue模板中都可以直接使用。原型就是下图中的这个
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110010642457-581477043.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110010642457-581477043.png" alt="image" style="zoom:50%;" /> 
 
 
 
@@ -491,7 +483,7 @@ Vue开发工具：vscode
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114232945298-702502795.png) 
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114232945298-702502795.png" alt="image" style="zoom:50%;" /> 
 
 
 
@@ -508,7 +500,6 @@ Vue开发工具：vscode
 #### 1.7、简单理解数据代理原理
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -540,14 +531,13 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
 
 **原理图**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110011213903-813016895.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110011213903-813016895.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -573,7 +563,6 @@ Vue开发工具：vscode
 #### 1.8、事件绑定及其修饰符
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -629,7 +618,6 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
@@ -709,7 +697,7 @@ Vue开发工具：vscode
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110164430015-707254161.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110164430015-707254161.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -737,7 +725,6 @@ Vue开发工具：vscode
 ##### 1.9.1、结合computed、methods、v-on做一个小Demo
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -784,23 +771,21 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110201731019-823588774.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110201731019-823588774.png" alt="image" style="zoom:50%;" /> 
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110201845885-743416982.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110201845885-743416982.png" alt="image" style="zoom:50%;" /> 
 
 
 
 **但是：上面的代码其实是可以简化的**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110201943247-737412424.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110201943247-737412424.png" alt="image" style="zoom:50%;" />
 
 - 我们主要做的是图中的这一步，因此：简化 ———— 衍生出v-on的另外一个玩法
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -852,7 +837,6 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
@@ -866,7 +850,6 @@ Vue开发工具：vscode
 #### 1.10、监视属性
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -922,10 +905,9 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
- ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110210000666-1722794867.png) 
+ <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220110210000666-1722794867.png" alt="image" style="zoom:50%;" /> 
 
 
 
@@ -954,7 +936,6 @@ Vue开发工具：vscode
 ##### 1.10.1、深度监视 - 需要掌握的一种
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -1016,14 +997,13 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111003614857-1529309033.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111003614857-1529309033.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1056,7 +1036,6 @@ Vue开发工具：vscode
 #### 1.11、computed和watch的坑
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -1106,76 +1085,73 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111170142471-510653069.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111170142471-510653069.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111170221890-308232571.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111170221890-308232571.png" alt="image" style="zoom:50%;" />
 
 
 
 **用computed实现**
 
 ```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>computed实现</title>
 
-	<!DOCTYPE html>
-	<html lang="en">
-	  <head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		<title>computed实现</title>
+        <script src="../../js/vue.js"></script>
+    </head>
 
-		<script src="../../js/vue.js"></script>
-	  </head>
+    <body>
+        <!-- 被 vm 实例所控制的区域 -->
+        <div id="app">
+            姓: <input type="text" v-model = "firstname">   
+            名: <input type="text" v-model = "lastname">
 
-	  <body>
-		<!-- 被 vm 实例所控制的区域 -->
-		<div id="app">
-			姓: <input type="text" v-model = "firstname">   
-			名: <input type="text" v-model = "lastname">
+            <hr/>
 
-			<hr/>
+            信息: {{fullname}}
+        </div>
 
-			信息: {{fullname}}
-		</div>
+        <script>
+            // 去除浏览器控制台中的警告提示信息
+            Vue.config.productionTip = false;
 
-		<script>
-		   // 去除浏览器控制台中的警告提示信息
-		  Vue.config.productionTip = false;
+            // 创建 vm 实例对象
+            const vm = new Vue({
+                //指定控制的区域
+                el:'#app',
+                data:{
+                    firstname: '紫',
+                    lastname: '邪情'
+                },
 
-		  // 创建 vm 实例对象
-		  const vm = new Vue({
-			//指定控制的区域
-			el:'#app',
-			data:{
-				firstname: '紫',
-				lastname: '邪情'
-			},
-
-			computed: {
-				fullname(){
-					return this.firstname + this.lastname;
-				}
-			}
-		   });
-		</script>
-	  </body>
-	</html>
-
+                computed: {
+                    fullname(){
+                        return this.firstname + this.lastname;
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
 ```
 
 
 
 **最后运行的效果都是一样的，而官网中对这二者有着这样的实例演示**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111172243425-883506409.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111172243425-883506409.png" alt="image" style="zoom:50%;" />
 
 **但是：虽然看起来没区别，可是computed和watch还是有区别的，假如：现在我需要让姓改了之后，隔1s之后再显示到信息那里。那么：computed无法做到，但是watch就可以**
 
@@ -1243,16 +1219,15 @@ Vue开发工具：vscode
     </script>
   </body>
 </html>
-
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111174244409-129943920.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111174244409-129943920.png" alt="image" style="zoom:50%;" />
 
 - **而利用computed就不可以做到上面的这种异步操作**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111174834292-2087858254.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220111174834292-2087858254.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1410,7 +1385,7 @@ Vue开发工具：vscode
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112145739973-1540401625.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112145739973-1540401625.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1425,11 +1400,11 @@ Vue开发工具：vscode
 
 则：切换之后是如下效果
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112150026440-1127582188.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112150026440-1127582188.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112150114919-513670415.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112150114919-513670415.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1447,23 +1422,22 @@ Vue开发工具：vscode
 
 切换之后是下面这样
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112151449887-1834029770.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112151449887-1834029770.png" alt="image" style="zoom:50%;" />
 
 
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112151509115-89069048.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112151509115-89069048.png" alt="image" style="zoom:50%;" />
 
 
 
 后面又说其实都可以，但是先把两种都留着，因此：此时这个class的名字不确定到底是哪一个，需要动态去绑定，所以通过Vue来动态绑定一下（ 即：把class类名交给Vue托管 ）
-![image](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230813004030275-453133073.png)
+<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230813004030275-453133073.png" alt="image" style="zoom:50%;" />
 
 
 
 class类名不确定，交由Vue托管很简单，而且知识点前面已经学过了，就是v-bind
 
-![image](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230813004042090-1337985325.png)
+<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230813004042090-1337985325.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1514,11 +1488,11 @@ class类名不确定，交由Vue托管很简单，而且知识点前面已经学
   </body>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112153222034-96492326.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112153222034-96492326.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112154322637-801012754.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112154322637-801012754.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1526,13 +1500,13 @@ class类名不确定，交由Vue托管很简单，而且知识点前面已经学
 
 需求2：现在class类名的个数、名字都不确定
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112153527282-1237116785.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112153527282-1237116785.png" alt="image" style="zoom:50%;" />
 
 
 
 那么就继续改造
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112162539830-440963188.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112162539830-440963188.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1686,17 +1660,17 @@ class类名不确定，交由Vue托管很简单，而且知识点前面已经学
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112162919925-1075574975.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112162919925-1075574975.png" alt="image" style="zoom:50%;" />
 
 
 
 需求3：要绑定的class名字确定，但是：个数不确定，也需要动态绑定
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112163418216-1474875259.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112163418216-1474875259.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112163526739-976166236.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112163526739-976166236.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1720,11 +1694,11 @@ class类名不确定，交由Vue托管很简单，而且知识点前面已经学
 
 ##### 1.12.2、style行内样式绑定 - 了解即可
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112181039986-2086408185.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112181039986-2086408185.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112175939796-1969239896.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112175939796-1969239896.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1763,7 +1737,6 @@ class类名不确定，交由Vue托管很简单，而且知识点前面已经学
 ##### 1.13.1、v-if
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -1808,20 +1781,19 @@ class类名不确定，交由Vue托管很简单，而且知识点前面已经学
     </script>
   </body>
 </html>
-
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112195328410-2039468003.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112195328410-2039468003.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112200423295-515300252.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112200423295-515300252.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112200636142-5110588.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112200636142-5110588.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1835,23 +1807,21 @@ class类名不确定，交由Vue托管很简单，而且知识点前面已经学
 
 在弄这个之前，回到前面的v-if代码
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112202514741-191539577.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112202514741-191539577.png" alt="image" style="zoom:50%;" />
 
 
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112202634397-1943117610.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112202634397-1943117610.png" alt="image" style="zoom:50%;" />
 
 
 
 所以：使用v-if和template改造
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112202927351-626689859.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112202927351-626689859.png" alt="image" style="zoom:50%;" />
 
 
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112203014624-412583462.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112203014624-412583462.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1869,11 +1839,11 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 
 不过它和v-if的原理不一样
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112204647607-1242940889.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112204647607-1242940889.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112204841359-1048586869.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112204841359-1048586869.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1891,7 +1861,7 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
   - （3）、v-else = “表达式”
 - 适用于：切换频率较低的场景，因为：v-if是直接把不展示的DOM元素给移除掉
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112205323401-1434922093.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112205323401-1434922093.png" alt="image" style="zoom:50%;" />
 
 - 特点：不展示的DOM直接移除
 - 注意：v-if可以和v-else-if、v-else一起使用，但是：要求结构不可以被“打断”（ 代码紧挨着 ）
@@ -1921,7 +1891,6 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 ##### 1.14.1、认识v-for
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -1996,12 +1965,11 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
     </script>
   </body>
 </html>
-
 ```
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112222319358-81596417.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112222319358-81596417.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2019,14 +1987,13 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 
 在前面v-for中key值使用index时有一些坑的，**正确的做法是：最好使用数据的id作为key值，但不是说index作为key值就是错的，前面演示过了，是正常效果，可是：在特定的场景下使用 :key = "index"就会出问题**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112234400243-1134987470.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112234400243-1134987470.png" alt="image" style="zoom:50%;" />
 
 
 
 实例
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -2069,37 +2036,36 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
     </script>
   </body>
 </html>
-
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112235837477-1419101654.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112235837477-1419101654.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112235908520-339424287.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112235908520-339424287.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
 
 
 现在需要在做一件事情
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113000016520-1223051376.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113000016520-1223051376.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113000056164-1674262826.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113000056164-1674262826.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
 
 
 **为什么会发生上面的问题，来看看原理图，了解用index做key值的坑**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113000927297-1907936111.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113000927297-1907936111.png" alt="image" style="zoom:67%;" />
 
 
 
 **了解了上面的index作为key值，那么用数据id作为key值也懂了**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112232745682-1985254966.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220112232745682-1985254966.png" alt="image" style="zoom:67%;" />
 
 - **而不写key的话，Vue做了一件默认的操作，就是把遍历的index作为了key值，也就是和前面使用index作为key值是一样的效果了**
 
@@ -2132,15 +2098,15 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 
   - 则：会产生不必要的真实DOM更新 即：界面显示没问题，但：效率低（ 效率低是因为：最后生成真实DOM时，文本节点是重新生成的 ）
 
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113002736388-97542773.png)
+  <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113002736388-97542773.png" alt="image" style="zoom:67%;" />
 
   - 所谓的逆序操作就是数据添加在前面（ 如：例子中是添加在“张三”前面的，但是：在最后添加（ 即：在例子中“王五”后面添加数据，这种在最后面添加，则：在新虚拟DOM中生成真实DOM时，顺序是对的，不会出现上述问题的 ）
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113004001569-755480222.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113004001569-755480222.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113004034112-1789216782.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113004034112-1789216782.png" alt="image" style="zoom:50%;" />
 
 - （2）、若结构中还包含输入类（ 如：例子中的input ）的DOM
   - 则：会产生错误DOM更新 即：页面中数据错位
@@ -2396,24 +2362,24 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155426164-1734222521.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155426164-1734222521.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155458930-344488009.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155458930-344488009.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155743668-1337397956.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155743668-1337397956.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155825160-1555011014.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155825160-1555011014.png" alt="image" style="zoom:50%;" />
 
 
 
 这里有个容易钻牛角尖的地方
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155732666-822286717.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220113155732666-822286717.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2489,33 +2455,33 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114222947272-1904704839.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114222947272-1904704839.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223019830-1522179497.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223019830-1522179497.png" alt="image" style="zoom:50%;" />
 
 
 
 **把代码稍微变一下，整出bug**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223642694-1811035743.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223642694-1811035743.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223832941-521386425.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223832941-521386425.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223926258-537130399.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114223926258-537130399.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114224103658-1294000854.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114224103658-1294000854.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114224204952-1585684165.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220114224204952-1585684165.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2532,7 +2498,7 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 ##### 1.15.2、Vue监视对象的原理
 
 玩这个就需要又回到前面玩过的“数据代理”了
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115001310441-270063892.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115001310441-270063892.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2583,7 +2549,7 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115010104945-829779763.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115010104945-829779763.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2643,11 +2609,11 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115013236412-2057941816.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115013236412-2057941816.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115013650886-1109383157.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115013650886-1109383157.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2701,28 +2667,27 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115171027434-1108242977.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115171027434-1108242977.png" alt="image" style="zoom:50%;" />
 
 
 
 但是：现在需要添加一个属性 age: 18，不可以直接添加在data中，这样就没意义了
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115172109500-795974442.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115172109500-795974442.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115174427476-1840478253.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115174427476-1840478253.png" alt="image" style="zoom:50%;" />
 
 
 
 当然：还有一种方式也可以实现
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115174516884-1311550635.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115174516884-1311550635.png" alt="image" style="zoom:50%;" />
 
 
 
 上面这是正常情况，我说了target这个参数有坑，官网有介绍
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115171453820-283154829.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115171453820-283154829.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2776,7 +2741,7 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115175344268-1258729216.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115175344268-1258729216.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2831,41 +2796,41 @@ v-if会了，那么v-show就会了，用法和单纯的v-if一模一样
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115215609173-2011270556.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115215609173-2011270556.png" alt="image" style="zoom:50%;" />
 
 
 
 那么我们在控制台把数据改了呢？会不会响应到页面上？
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115215808314-875962506.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115215808314-875962506.png" alt="image" style="zoom:50%;" />
 
 
 
 上面这个问题就和前面一开始的问题一样了：监视数据失效的问题
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115215957752-250116789.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115215957752-250116789.png" alt="image" style="zoom:50%;" />
 
 
 
 这二者都是使用的"索引"来找的数组的具体某个值，而这：恰恰就是一个坑，想一下在Vue中我们操作数组是怎么做的？是通过数组调了对应的API，如：arr.push（）、arr.shift（）........，那Vue怎么知道我调的是哪个API（ 换句话说：它怎么知道这个API是做什么的 / 这个API是数组中的 ），要搞这个问题，就要看看在js中是怎么去调数组的API的？
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115224116579-820904246.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115224116579-820904246.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115224447037-1934327502.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115224447037-1934327502.png" alt="image" style="zoom:50%;" />
 
 
 
 试验一下：这7个API是否可以做到监视数据的效果
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115224703981-585808273.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115224703981-585808273.png" alt="image" style="zoom:50%;" />
 
 
 
 答案肯定不是
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115225756543-1374639087.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115225756543-1374639087.png" alt="image" style="zoom:50%;" />
 
 
 
 而上面探索的结果，在Vue官网说的有
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115230124408-1456490264.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220115230124408-1456490264.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2944,7 +2909,7 @@ reverse()
 
 **1、text类型**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116171101656-2126823594.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116171101656-2126823594.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
@@ -2954,7 +2919,7 @@ reverse()
 
 
 **2、radio单选框类型**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116171527614-1476176947.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116171527614-1476176947.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -2964,60 +2929,56 @@ reverse()
 - 2、而radio是选择，是使用checked = true / false来做到是否选中的
 - 3、因此：给此种radio类型的input添加一个value属性即可
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116172204753-196023706.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116172204753-196023706.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116172239470-390865114.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116172239470-390865114.png" alt="image" style="zoom:50%;" />
 
 
 
 **3、checkBox多选框类型**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116173112153-198098716.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116173112153-198098716.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116173132147-930490621.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116173132147-930490621.png" alt="image" style="zoom:50%;" />
 
 
 
 **4、select与option下拉框类型**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116174648954-972558298.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116174648954-972558298.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116174711783-361997951.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116174711783-361997951.png" alt="image" style="zoom:50%;" />
 
 
 
 **5、textarea类型**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175052022-1717499598.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175052022-1717499598.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175022307-412871953.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175022307-412871953.png" alt="image" style="zoom:50%;" />
 
 
 
 **6、checkBox的另一种类型：做协议勾选的**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175635703-449697849.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175635703-449697849.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175657433-1994104312.png)
-
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116175657433-1994104312.png" alt="image" style="zoom:50%;" />
 
 
 
 **7、做了上面这些就可以把数据收集起来了**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116180142650-620973224.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116180142650-620973224.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116180305466-1333261129.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116180305466-1333261129.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3032,43 +2993,41 @@ reverse()
 - 而v-model也有修饰符，就3个而已：number、lazy、trim，看名字大概就知道是干嘛的
 
 **（1）、number修饰符，这个修饰符一般都是和input的number类型一起使用的，如：增加一个年龄**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181337068-1216678639.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181337068-1216678639.png" alt="image" style="zoom:50%;" />
 
 
 
 去控制台查看，会发现一个问题
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181811862-473562521.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181811862-473562521.png" alt="image" style="zoom:50%;" />
 
 
 
 因此：需要把number弄为number类型
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181928465-111276390.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181928465-111276390.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181952400-844435706.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116181952400-844435706.png" alt="image" style="zoom:50%;" />
 
 
 
 **（2）、lazy修饰符，这个修饰符就光标离开之后再收集数据，拿textarea来举例**
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182223369-58247962.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182223369-58247962.png" alt="image" style="zoom:50%;" />
 
 
 
 所以这种情况应该用lazy来修饰，让光标离开当前输入框之后再收集数据
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182331848-426421579.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182331848-426421579.png" alt="image" style="zoom:50%;" />
 
 —————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182430539-824002411.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182430539-824002411.png" alt="image" style="zoom:50%;" />
 
 —————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182501027-1101166697.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220116182501027-1101166697.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3195,7 +3154,7 @@ v-pre
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117141146517-1877607688.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117141146517-1877607688.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3203,11 +3162,11 @@ v-pre
 
 但是：v-text和插值表达式有区别
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117141500053-1650656024.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117141500053-1650656024.png" alt="image" style="zoom:50%;" />
 
 ———————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117141553610-86360926.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117141553610-86360926.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3217,11 +3176,11 @@ v-pre
 
 **当然：还有一个注意点**
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117144000511-709968494.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117144000511-709968494.png" alt="image" style="zoom:50%;" />
 
 ———————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117144112522-1558704948.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117144112522-1558704948.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3244,13 +3203,11 @@ v-pre
 
 先说用法，其实和v-text差不多，但是内在区别很大
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117155453536-682551068.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117155453536-682551068.png" alt="image" style="zoom:50%;" />
 
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117155710478-2050508591.png" alt="image" style="zoom:50%;" />
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117155710478-2050508591.png)
-
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117155802671-263346955.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117155802671-263346955.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3258,7 +3215,7 @@ v-pre
 
 - 这里涉及到cookie的机制（ 后端理解就对照玩大系统、分布式时的jwt单点登录流程原理 ）
 - 去访问一个需要输入信息的网站时（ 如：要输入用户名、密码之类的重要信息 ），信息在你要登录的网站的服务器上核对成功之后，服务器返回的除了会把用户名、密码这些后续需要的东西返回回来之外，还会返回一些服务器响应的特殊json字符串，从而凭借服务器返回的这些信息，你才可以进入到相应的页面，而这些信息就保存在浏览器的cookie中，如下图：
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117160551652-403063818.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117160551652-403063818.png" alt="image" style="zoom:50%;" />
 
 - 而服务器返回的json信息有大用处，你的重要信息就保存在cookie中，比如：成功登录之后，操作其他的功能就不会要求再次输入用户名、密码之类的（ 个别除外，那是另外设计机制 ），这里聪明点的就会想到另一个东西：跨浏览器不会出现无账号密码就可以访问涩，比如：我在google浏览器登录之后，再用Edge浏览器打开，那Edge是不会登录的涩，但是：利用v-html就可以做到窃取你在google浏览器中登录之后服务器给你返回的json信息，然后把这些json信息放到Edge浏览器中，那么Edge浏览器就不需要做登录操作，一样可以登录进去
 - 而使用v-html能够获取到cookie是因为：可以在用v-html获取的内容中夹杂一些获取你当前服务器的cookie，然后拼接到窃取人的服务器地址的后面（ 比如：网页中的恶意广告，那广告词中的词条是通过v-html渲染上去的，那么一点击就会把你电脑上的cookie获取到然后转发到他自己的服务器上去 ）
@@ -3295,19 +3252,19 @@ v-pre
 **实例**
 
 把加载js的代码移动一个位置
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117230727939-1295155564.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117230727939-1295155564.png" alt="image" style="zoom:50%;" />
 
 
 
 然后把浏览器的网速调一下
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117230900358-1200138976.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117230900358-1200138976.png" alt="image" style="zoom:50%;" />
 
 
 
 然后重新刷新页面，会发现页面的name会有一个稍微慢一点的页面加载过程，是从 {{name}} ——————> 紫邪情，这里不方便演示，就不弄了
 
 而为了解决这个问题，可以使用v-cloak指令，本质是操作CSS罢了
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117232034894-861099543.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117232034894-861099543.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3329,26 +3286,25 @@ v-pre
 
 ##### 1.19.4、v-once指令
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234025445-410778601.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234025445-410778601.png" alt="image" style="zoom:50%;" />
 
 ———————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234035849-1663479424.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234035849-1663479424.png" alt="image" style="zoom:50%;" />
 
 ———————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234119334-2123289299.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234119334-2123289299.png" alt="image" style="zoom:50%;" />
 
 
 
 因此：使用v-once实现效果
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234159933-605537265.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234159933-605537265.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234217613-194233763.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117234217613-194233763.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3367,12 +3323,11 @@ v-pre
 
 
 ##### 1.19.5、v-pre指令
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117235608992-526325245.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117235608992-526325245.png" alt="image" style="zoom:50%;" />
 
 ———————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117235634345-161397174.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220117235634345-161397174.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3450,13 +3405,13 @@ v-pre
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118133248638-684948690.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118133248638-684948690.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118133306427-593417465.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118133306427-593417465.png" alt="image" style="zoom:50%;" />
 
-———————————————————————————————————————————————![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118133627173-1274644930.png)
+———————————————————————————————————————————————<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118133627173-1274644930.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3472,11 +3427,11 @@ v-pre
 
 - 别混淆了此种说法：自定义指令所依赖的数据发生改变时就会调用自定义指令，此种说法是错的。来个实例
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118140139850-586534426.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118140139850-586534426.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118140218020-609919652.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118140218020-609919652.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3540,35 +3495,33 @@ v-pre
 </html>
 ```
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118163539363-621754562.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118163539363-621754562.png" alt="image" style="zoom:50%;" />
 
 ———————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118163613507-81621048.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118163613507-81621048.png" alt="image" style="zoom:50%;" />
 
 
 
 现在再加一点要求：就是页面一初始化时，焦点就在input框中，此时发现貌似做不到（ 用js可以做到啊，只是现在是用Vue ），为什么Vue不行？因为这要考虑到Vue的加载顺序问题（ 重点咯，开始衍生出Vue的生命周期和钩子函数咯，也就可以很容器理解前面使用v-cloak解决页面闪烁的问题了）
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118164925484-1896904902.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118164925484-1896904902.png" alt="image" style="zoom:50%;" />
 
 
 
 所以：应该把focus()获取焦点，放到页面渲染时再做，不然：无法聚焦
 
 相应的，用函数式并不能做到，因为：函数式直接一条龙在内存执行完了，所以：需要使用对象式自定义指令来解决这种小细节问题
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118170502689-1522353607.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118170502689-1522353607.png" alt="image" style="zoom:50%;" />
 
 
 
 update()中不写逻辑目前是不报错的，但是：最好还是写上
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118170602280-973393855.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118170602280-973393855.png" alt="image" style="zoom:50%;" />
 
 ———————————————————————————————————————————————
 
-
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118170618940-1094106864.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118170618940-1094106864.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3582,21 +3535,21 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 - 现在采用驼峰命名看一下这个坑
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118174631094-1294214290.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118174631094-1294214290.png" alt="image" style="zoom:50%;" />
 
 ——————————————————————————————————————————————
 
-![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118174739410-1378313194.png)
+<img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118174739410-1378313194.png" alt="image" style="zoom:50%;" />
 
 
 
 **多个单词组成的指令名正确形式，采用 - 分隔开，指令定义中回归js原始配置**
 
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118175051180-1487426079.png)
+  <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118175051180-1487426079.png" alt="image" style="zoom:50%;" />
 
   ——————————————————————————————————————————————
 
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118175135182-695985940.png)
+  <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118175135182-695985940.png" alt="image" style="zoom:50%;" />
 
   
 
@@ -3606,13 +3559,13 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 2.  **this指向的坑**
 
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118180934302-106847429.png)
+  <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118180934302-106847429.png" alt="image" style="zoom:50%;" />
 
 
 
   ——————————————————————————————————————————————
 
-  ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118181020624-69785015.png)
+  <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118181020624-69785015.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3621,7 +3574,7 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
    - 这是因为：自定义指令已经不是Vue自己本身的东西了，而是根据需要自行设计，因此：此时你要操作的是HTML的DOM节点，因此：为了方便，Vue就把this还回来了，重新给了window
 
   - **this变了，那想要拿到Vue中的数据咋办？**
-    ![image](https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118181528005-717127289.png)
+    <img src="https://img2020.cnblogs.com/blog/2421736/202201/2421736-20220118181528005-717127289.png" alt="image" style="zoom:50%;" />
 
   
 
@@ -3835,20 +3788,19 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 ```
 
 上面这样做之后，看起来好像成功了，但是运行一会就会发现：电脑的风扇会使劲儿转，而且要是在change()中输出一句话的话，会发现：执行了N多次，一直在跑^ _ ^ 。原因如下：
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118203552772-19732433.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118203552772-19732433.png" alt="image" style="zoom:50%;" />
 
 
 
 改造：使用Vue的钩子函数
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118204853354-543470071.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118204853354-543470071.png" alt="image" style="zoom:50%;" />
 
 
 
 **注意：钩子函数执行的次数问题**
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118205037963-1393571370.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118205037963-1393571370.png" alt="image" style="zoom:50%;" />
 
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118205113720-761663219.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220118205113720-761663219.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3872,13 +3824,13 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 - 首先这个知识点的原理图在官网中有
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119135745530-103142089.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119135745530-103142089.png" alt="image" style="zoom:50%;" />
 
 
 
 - 但是：我对上图中的内容做了补充（ 蓝色的东西就是新加的 ）。下图这个图是为了先了解大概，接下来会简单说明一下图中的内容
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119133045755-824545654.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119133045755-824545654.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3898,7 +3850,7 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 先来看一下这部分
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119142002300-1524247555.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119142002300-1524247555.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3960,21 +3912,21 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 要出现下面的页面，记得运行程序之后，先调出控制台，然后刷新页面才会进入debug断点
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119144117718-901257056.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119144117718-901257056.png" alt="image" style="zoom:50%;" />
 
 
 
-接着来看这一部分![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119144323863-1390794462.png)
+接着来看这一部分<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119144323863-1390794462.png" alt="image" style="zoom:67%;" />
 
 
 
 说的是：已经开始了数据监测、数据代理，可以使用vm访问data和methods了，那久测试一下
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119144743786-2086770627.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119144743786-2086770627.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119145401327-1116604649.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119145401327-1116604649.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -3982,45 +3934,45 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 接着看这一部分
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119145558511-2035888178.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119145558511-2035888178.png" alt="image" style="zoom:50%;" />
 
 
 
 先看下面部分，说：页面呈现的是未经编译的DOM结果且对DOM的操作，“最终”都不奏效，测试一下
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119150526010-33636766.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119150526010-33636766.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119150453794-1414104218.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119150453794-1414104218.png" alt="image" style="zoom:50%;" />
 
 
 
 同时还说：所有对DOM结构的操作都不奏效，那就试一下
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119150958582-7137341.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119150958582-7137341.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119151119622-21679891.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119151119622-21679891.png" alt="image" style="zoom:50%;" />
 
 
 
 现在接着回去看那个逻辑判断里面的内容
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119151934905-1520958385.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119151934905-1520958385.png" alt="image" style="zoom:50%;" />
 
 
 
 外层和内层就是下面这个
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119152313500-2090594963.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119152313500-2090594963.png" alt="image" style="zoom:50%;" />
 
 
 
 而所谓的template模板更简单
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119152814941-2051606924.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119152814941-2051606924.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4030,31 +3982,31 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 最后来看这一部分
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119153027769-1300395734.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119153027769-1300395734.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119154214489-262318439.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119154214489-262318439.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119154411683-1782566606.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119154411683-1782566606.png" alt="image" style="zoom:50%;" />
 
 
 
 但是：这里有一个点需要注意
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119160716365-1768864344.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119160716365-1768864344.png" alt="image" style="zoom:50%;" />
 
 
 
 这里是将真实DOM使用”vm.$el“把真实DOM中的内容给复制了一份保存起来了，这一步很关键，为的就是后续 新的虚拟DOM 和 初始的虚拟DOM进行对比算法时，有相同的数据内容，那么新的虚拟DOM就会直接用初始虚拟DOM的数据（ 前面玩v-for中key的原理时，key值为index和数据id的区别 ），而要用初始DOM就需要找到初始DOM呗，它保存起来之后就方便找到了嘛
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119161754589-482583734.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119161754589-482583734.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119161832558-995163989.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119161832558-995163989.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4070,21 +4022,21 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 内容就一丢丢，下图中红色框起来的内容
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119162606893-1339277210.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119162606893-1339277210.png" alt="image" style="zoom:50%;" />
 
 
 
 **来看beforeUpdate()**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163325164-444782214.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163325164-444782214.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163215076-719750883.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163215076-719750883.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163528290-1137405702.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163528290-1137405702.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4092,11 +4044,11 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 **接着来看Updated**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163711068-744260567.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163711068-744260567.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163742413-654105579.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119163742413-654105579.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4108,23 +4060,23 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 内容就是图中的最后一点东西，**但是：这里面坑也是有点多的**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119170726773-2047059685.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119170726773-2047059685.png" alt="image" style="zoom:50%;" />
 
 
 
 图中提到了"vm.$destroy()" 和 销毁哪些东西，所以先看官网对销毁的介绍
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119170321076-217357837.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119170321076-217357837.png" alt="image" style="zoom:50%;" />
 
 
 
 现在就用代码去验证一下图中的内容，需要改造一下代码
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119172208888-605065597.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119172208888-605065597.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119172254219-1751072276.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119172254219-1751072276.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4132,27 +4084,27 @@ update()中不写逻辑目前是不报错的，但是：最好还是写上
 
 执行效果如下
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119172838789-1632407897.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119172838789-1632407897.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173153603-1931479316.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173153603-1931479316.png" alt="image" style="zoom:50%;" />
 
 
 
 **开始踩另一个坑**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173349243-1760857341.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173349243-1760857341.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173540667-1142898863.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173540667-1142898863.png" alt="image" style="zoom:50%;" />
 
 
 
 **vm确实是销毁了，但是这个坑是前面说的销毁事件监听，它销毁的是：自定义事件（ 后续接触 ），所以Vue自身的事件还在，也执行了**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173946162-42297008.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220119173946162-42297008.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4221,7 +4173,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 瞄一下官网，它里面有一个图
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120120217690-1152831316.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120120217690-1152831316.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4348,7 +4300,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 </html>
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120225806501-1073652484.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120225806501-1073652484.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4377,8 +4329,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
    - 2、全局注册：靠Vue。component（ '组件名' , 组件 ）
 
-
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120231514412-750022953.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220120231514412-750022953.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4422,7 +4373,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
                 }
             }
         })
-  
+    
         // 简写形式
         const person2 = {
           template: `
@@ -4442,11 +4393,11 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
   
   上面两种都可以。但是：简写形式在底层其实也调用了 `Vue.extend()`
   
-  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154253541-2078088171.png)
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154253541-2078088171.png" alt="image" style="zoom:50%;" />
   
   
   
-  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154355417-1533975363.png)
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154355417-1533975363.png" alt="image" style="zoom:50%;" />
   
   
   
@@ -4462,35 +4413,35 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 **（1）、组件名为一个单词时，使用全小写字母 / 首字母大小都没问题**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154927392-1387731804.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154927392-1387731804.png" alt="image" style="zoom:50%;" />
 
-- ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154949858-689025921.png)
+- <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121154949858-689025921.png" alt="image" style="zoom:50%;" />
 
 
 
 **（2）、组件名为多个单词组成时，全部用小写  / 使用 - 进行分割都没问题**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155704043-33456825.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155704043-33456825.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155945371-1807008390.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121155945371-1807008390.png" alt="image" style="zoom:50%;" />
 
 
 
 还有一种就是上图中的效果：驼峰命名
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160632609-67278161.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160632609-67278161.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160715764-1078760791.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121160715764-1078760791.png" alt="image" style="zoom:50%;" />
 
 
 
 但是：这种驼峰命名需要注意，有些人就不可以（ 因为：严格来说这种命名是后续的技术使用脚手架玩时的方式 ），但是：有些人就可以，比如我上图中的效果，因为这是Vue版本的问题，要看源码的话，从下图这里往后看即可
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121161752001-541215883.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121161752001-541215883.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4506,11 +4457,11 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 （2）、也可以使用自闭合标签，如：`<my-info/>`，但是这种有坑，这种使用方式需要脚手架支持，否则s数据渲染会出问题
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162701519-1847482790.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162701519-1847482790.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162814905-1531092152.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121162814905-1531092152.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4535,11 +4486,11 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
   - （1）、组件名最好别和HTML的标签名一致，从而造成冲突（ 非要用，可以采用加词 / 使用 - 分割 ）
   - （2）、可以在创建组件时，在里面配置name选项，从而指定组件在Vue开发者工具中呈现的名字
     
-    ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163732203-293464250.png)
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163732203-293464250.png" alt="image" style="zoom:50%;" />
     
     
     
-    ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163832192-903888280.png)
+    <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121163832192-903888280.png" alt="image" style="zoom:50%;" />
     
     
     
@@ -4641,7 +4592,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 </html>
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121215640110-1765447723.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121215640110-1765447723.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4651,7 +4602,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
 
 在开发中的嵌套是一个vm管理独一无二的app（ 就是application 应用的意思 ），然后由app管理众多小弟
 
-![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221514791-383429444.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221514791-383429444.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4749,7 +4700,7 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
   </html>
   ```
   
-  ![image](https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221241435-1900676993.png)
+  <img src="https://img2022.cnblogs.com/blog/2421736/202201/2421736-20220121221241435-1900676993.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -4859,8 +4810,8 @@ Vue生命周期共有8个（ 4对 ），另外其实还有3个周期（ 但是�
     
         return Sub
       };
-   ```
-   
+  ```
+  
   **经过前面的分析和查看源码得出两个结论：**
 
   1. 所有的组件指的都是VueComponent()

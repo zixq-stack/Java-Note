@@ -15,7 +15,7 @@
 
 **传统文件系统**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531130933679-2059297028.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531130933679-2059297028.png" alt="image" style="zoom:67%;" />
 
 - **缺点**
   - 所有的文件都存放在一台计算机中，如果这台计算机挂彩了，那么就会导致整个服务不可用（ 文件不能上传和下载了 )
@@ -31,149 +31,144 @@
   - 假如前端轰HTML写法是如下的样子：
 
   ```html
-  
-  		  <div id="image">
-  			  <label for="">标题图片:</label>
-  			  <input type="file" id="file" name="file" >
-  			  <img src="" alt="" width="100px" height="150px">
-  		  </div>
-  
+  <div id="image">
+      <label for="">标题图片:</label>
+      <input type="file" id="file" name="file" >
+      <img src="" alt="" width="100px" height="150px">
+  </div>
   ```
-
+  
   - JS写法如下：
 
   ```javascript
+  // 当图片发生改变时 —— 也就是用户点击file框，上传文件时
+  $("#file").on( 'change' , function () {
   
-  		// 当图片发生改变时 —— 也就是用户点击file框，上传文件时
-  		$("#file").on( 'change' , function () {
-   
-  			// 创建一个FormData空对象，就相当于是伪造了一个form表单
-  			let formData = new FormData();
-   
-  			// 这个FromData对象就用来装文件内容
-              // 文件的files属性本质是个数组
-  			let files = $("#file").prop("files");
-  			formData.append("upFile" , files[0] );
-   
-  			$.ajax( {
-   
-  				url: '/ajax/upload.do',
-  				type: 'post',
-  				data: formData,
-  				dataType: 'json',
-   
-  				cache: false,    // 上传文件不需要缓存
-  				contentType: false,      // 不需要对内容类型进行处理  因为内容是一个FormData对象
-  				processData: false,       // 不需要对数据进行处理，因为上面的data是一个FormData对象
-   
-  				// 后台返回的格式 ：
-  				// { "errno":"0" , "data":[ {"alt":"1633528500498.jpg" , "url":"/upload/2021-10-06/1633528500498.jpg"} ] }
-  				success: function (info) {
-  					info.data.forEach( function (data) {
-   
-  						// $("#image img").remove();
-  						// $("#image").append( ' <img src=" '+data.url+' " alt="" width="100px" height="150px"> ' )
-   
-  	/*
-  	 注掉的这种是：html中没有img标签时使用
-  	 因为：使用下面这种方法的情景是 —— 页面本来就有一个img框（ 即：初始页面上这个file本身有一张图片 ），所以下面这种可以做到图片改变时把图片的路径换掉，也就是图片渲染（ 也是数据回填 的思想 ）
-  	 但是：如果页面一开始file的位置是不应该有图片的，是后面用户选了之后才出现图片预览效果，那么：就使用注释掉的这种方法：追加
+      // 创建一个FormData空对象，就相当于是伪造了一个form表单
+      let formData = new FormData();
+  
+      // 这个FromData对象就用来装文件内容
+      // 文件的files属性本质是个数组
+      let files = $("#file").prop("files");
+      formData.append("upFile" , files[0] );
+  
+      $.ajax( {
+  
+          url: '/ajax/upload.do',
+          type: 'post',
+          data: formData,
+          dataType: 'json',
+  
+          cache: false,    // 上传文件不需要缓存
+          contentType: false,      // 不需要对内容类型进行处理  因为内容是一个FormData对象
+          processData: false,       // 不需要对数据进行处理，因为上面的data是一个FormData对象
+  
+          // 后台返回的格式 ：
+          // { "errno":"0" , "data":[ {"alt":"1633528500498.jpg" , "url":"/upload/2021-10-06/1633528500498.jpg"} ] }
+          success: function (info) {
+              info.data.forEach( function (data) {
+  
+                  // $("#image img").remove();
+                  // $("#image").append( ' <img src=" '+data.url+' " alt="" width="100px" height="150px"> ' )
+  
+                  /*
+                       注掉的这种是：html中没有img标签时使用
+                       因为：使用下面这种方法的情景是 —— 页面本来就有一个img框（ 即：初始页面上这个file本身有一张图片 ），所以下面这种可以做到图片改变时把图片的路径换掉，也就是图片渲染（ 也是数据回填 的思想 ）
+                       但是：如果页面一开始file的位置是不应该有图片的，是后面用户选了之后才出现图片预览效果，那么：就使用注释掉的这种方法：追加
   	*/
-   
-  						$("#image img").attr("src" , data.url );
-  					});
-  				}
-  			} );
-   
-  		})
   
+                  $("#image img").attr("src" , data.url );
+              });
+          }
+      } );
+  
+  })
   ```
-
+  
   - 那么后端的low代码如下：
-
+  
   ```java
+  import com.alibaba.fastjson.JSON;
   
-  	import com.alibaba.fastjson.JSON;
-   
-  	import javax.servlet.ServletException;
-  	import javax.servlet.annotation.MultipartConfig;
-  	import javax.servlet.annotation.WebServlet;
-  	import javax.servlet.http.HttpServlet;
-  	import javax.servlet.http.HttpServletRequest;
-  	import javax.servlet.http.HttpServletResponse;
-  	import javax.servlet.http.Part;
-  	import java.io.File;
-  	import java.io.IOException;
-  	import java.time.LocalDate;
-  	import java.util.ArrayList;
-  	import java.util.Collection;
-  	import java.util.Date;
-  	import java.util.HashMap;
-   
-   
-  	// @MultipartConfig 注解就是文件注解，要获取前端的文件信息，必须加这个注解，不然做的所有事情都是无用功
-  	@MultipartConfig
-  	@WebServlet("/ajax/upload.do")
-  	public class UploadServlet extends HttpServlet {
-   
-  		@Override
-  		protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-   
-  			/*
-  			*   想要构建的是这么一个玩意儿
-  			*       "errno":0 data:[ { url:"图片地址“ } , { alt:"图片说明“ } , { href:"null" } ]
-  			*
-  			* */
-   
-  			ArrayList<Object> list = new ArrayList<>();
-   
-  			Collection<Part> parts = req.getParts();   // 这是获取前台上传的文件
-   
-  			for (Part part : parts) {
-   
-  				// 先构建 data:[ { } , { } ]中的[ { } , { } ]
-   
-  				// 获取文件的全路径
-                  // 但是：不同浏览器的这个全路径都不一样，所以需要截取从而自定义文件名
-  				String filePath = part.getSubmittedFileName();  
-  				// System.out.println(filePath);
-  				// 截取文件的后缀名
-  				int subFileName = filePath.lastIndexOf(".");
-  				String fileSuffix = filePath.substring(subFileName);
-   
-  				// 自己给文件重新定义一个名字，并规定存放的地方
-  				String timeStr = LocalDate.now().toString();
-   
-  				// 获取当前项目的一个指定文件夹名字，用来保存文件 注意：getRealPath这是获取的当前项目的全路径，即：从盘符开始的路径
-  				String proPathName = this.getServletContext().getRealPath("/upload/" + timeStr );
-  				File file = new File(proPathName);
-  				if ( !file.exists() ){
-  					file.mkdirs();
-  				}
-   
-  				// 拼接文件后缀名并保存文件
-  				long timeStamp = new Date().getTime();
-  				part.write(proPathName + "/" + timeStamp + fileSuffix );
-   
-  				HashMap<String, String> map = new HashMap<>();
-  				map.put( "url" , "/upload/" + timeStr + "/" + timeStamp + fileSuffix );
-  				map.put( "alt" , timeStamp + fileSuffix );
-  				map.put( "href" , null );
-  				list.add(map);
-  			}
-   
-  			// 再构建"errno":0 data:[ { url:"图片地址“ } , { alt:"图片说明“ } , { href:"null" } ]
-  			HashMap<String, Object> map = new HashMap<>();
-  			map.put("errno", "0");
-  			map.put("data", list);
-   
-  			resp.getWriter().print( JSON.toJSONString(map) );
-  		}
-  	}
+  import javax.servlet.ServletException;
+  import javax.servlet.annotation.MultipartConfig;
+  import javax.servlet.annotation.WebServlet;
+  import javax.servlet.http.HttpServlet;
+  import javax.servlet.http.HttpServletRequest;
+  import javax.servlet.http.HttpServletResponse;
+  import javax.servlet.http.Part;
+  import java.io.File;
+  import java.io.IOException;
+  import java.time.LocalDate;
+  import java.util.ArrayList;
+  import java.util.Collection;
+  import java.util.Date;
+  import java.util.HashMap;
   
+  
+  // @MultipartConfig 注解就是文件注解，要获取前端的文件信息，必须加这个注解，不然做的所有事情都是无用功
+  @MultipartConfig
+  @WebServlet("/ajax/upload.do")
+  public class UploadServlet extends HttpServlet {
+  
+      @Override
+      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, 
+      IOException {
+  
+          /*
+  		 *   想要构建的是这么一个玩意儿
+  		 *       "errno":0 data:[ { url:"图片地址“ } , { alt:"图片说明“ } , { href:"null" } ]
+  		 *
+  		 * */
+  
+          ArrayList<Object> list = new ArrayList<>();
+  
+          Collection<Part> parts = req.getParts();   // 这是获取前台上传的文件
+  
+          for (Part part : parts) {
+  
+              // 先构建 data:[ { } , { } ]中的[ { } , { } ]
+  
+              // 获取文件的全路径
+              // 但是：不同浏览器的这个全路径都不一样，所以需要截取从而自定义文件名
+              String filePath = part.getSubmittedFileName();  
+              // System.out.println(filePath);
+              // 截取文件的后缀名
+              int subFileName = filePath.lastIndexOf(".");
+              String fileSuffix = filePath.substring(subFileName);
+  
+              // 自己给文件重新定义一个名字，并规定存放的地方
+              String timeStr = LocalDate.now().toString();
+  
+              // 获取当前项目的一个指定文件夹名字，用来保存文件 注意：getRealPath这是获取的当前项目的全路径，即：从盘符开始的路径
+              String proPathName = this.getServletContext().getRealPath("/upload/" + timeStr );
+              File file = new File(proPathName);
+              if ( !file.exists() ){
+                  file.mkdirs();
+              }
+  
+              // 拼接文件后缀名并保存文件
+              long timeStamp = new Date().getTime();
+              part.write(proPathName + "/" + timeStamp + fileSuffix );
+  
+              HashMap<String, String> map = new HashMap<>();
+              map.put( "url" , "/upload/" + timeStr + "/" + timeStamp + fileSuffix );
+              map.put( "alt" , timeStamp + fileSuffix );
+              map.put( "href" , null );
+              list.add(map);
+          }
+  
+          // 再构建"errno":0 data:[ { url:"图片地址“ } , { alt:"图片说明“ } , { href:"null" } ]
+          HashMap<String, Object> map = new HashMap<>();
+          map.put("errno", "0");
+          map.put("data", list);
+  
+          resp.getWriter().print( JSON.toJSONString(map) );
+      }
+  }
   ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531132604814-61556119.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531132604814-61556119.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -182,70 +177,68 @@
 - 后端low代码如下
 
 ```java
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
 
-	import javax.servlet.ServletException;
-	import javax.servlet.ServletOutputStream;
-	import javax.servlet.annotation.WebServlet;
-	import javax.servlet.http.HttpServlet;
-	import javax.servlet.http.HttpServletRequest;
-	import javax.servlet.http.HttpServletResponse;
-	import java.io.FileInputStream;
-	import java.io.IOException;
-	import java.net.URLEncoder;
- 
-	@WebServlet("/downFile")
-	public class downFileInClientServlet extends HttpServlet {
- 
-		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			doPost(req, resp);
-		}
- 
-		@Override
-		protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
- 
-			// 1、获取让浏览器下载的文件路径
-			String FileRealPath = "D:\\JavaTrainStudy\\servlet\\out\\production\\study06-httpServletResponse\\loginbg.png";
- 
-			// 2、告知浏览器要下载的文件名是什么？
-			String fileName = FileRealPath.substring( FileRealPath.lastIndexOf("\\") + 1 );
- 
-			// 3、让浏览器支持文件下载
-			// Content-Disposition这个就是让浏览器支持文件下载
-			// URLEncoder.encode（ String s , String enc ) 是为了以防文件名是中文名，这样就设置编码格式了，让浏览器能够解析这个中文文件名
-			resp.setHeader("Content-Disposition" , "attachment ; filename=" + URLEncoder.encode(fileName , "utf-8"));
- 
-			// 4、获取输入、输出流对象 并 把服务器中的文件输出到浏览器上
-			FileInputStream fis = new FileInputStream( FileRealPath );
-			ServletOutputStream os = resp.getOutputStream();
- 
-			// 创建缓冲区
-			int len = 0 ;
-			byte[] buffer = new byte[1024];
-			while ( ( len = fis.read( buffer ) )  > 0 ){
-				os.write( buffer , 0 , len);
-			}
- 
-			// 5、关闭流管道
-			if ( os != null ){
-				os.close();
-			}
-			if ( fis != null ){
-				fis.close();
-			}
- 
-		}
-	}
- 
+@WebServlet("/downFile")
+public class downFileInClientServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // 1、获取让浏览器下载的文件路径
+        String FileRealPath = "D:\\JavaTrainStudy\\servlet\\out\\production\\study06-httpServletResponse\\loginbg.png";
+
+        // 2、告知浏览器要下载的文件名是什么？
+        String fileName = FileRealPath.substring( FileRealPath.lastIndexOf("\\") + 1 );
+
+        // 3、让浏览器支持文件下载
+        // Content-Disposition这个就是让浏览器支持文件下载
+        // URLEncoder.encode（ String s , String enc ) 是为了以防文件名是中文名，这样就设置编码格式了，让浏览器能够解析这个中文文件名
+        resp.setHeader("Content-Disposition" , "attachment ; filename=" + URLEncoder.encode(fileName , "utf-8"));
+
+        // 4、获取输入、输出流对象 并 把服务器中的文件输出到浏览器上
+        FileInputStream fis = new FileInputStream( FileRealPath );
+        ServletOutputStream os = resp.getOutputStream();
+
+        // 创建缓冲区
+        int len = 0 ;
+        byte[] buffer = new byte[1024];
+        while ( ( len = fis.read( buffer ) )  > 0 ){
+            os.write( buffer , 0 , len);
+        }
+
+        // 5、关闭流管道
+        if ( os != null ){
+            os.close();
+        }
+        if ( fis != null ){
+            fis.close();
+        }
+
+    }
+}
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531132639716-1294505210.png)
+<img src="https://img2023.cnblogs.com/blog/2421736/202312/2421736-20231221142526114-107010715.png" alt="image-20231221142524560" style="zoom:67%;" />
 
 
 
 **分布式文件系统**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531133554497-813437547.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531133554497-813437547.png" alt="image" style="zoom:67%;" />
 
 - **优点**
   - 解决了传统方式的单点故障问题
@@ -276,7 +269,7 @@
 - FastDFS特别适合以文件为载体的在线服务，如相册网站、文档网站、图片网站、视频网站等
 - FastDFS充分考虑了冗余备份、线性扩容等机制，并注重高可用、高性能等指标，使用FastDFS很容易搭建一套高性能的文件服务器集群提供文件上传、下载等服务
   - 冗余备份：指的是文件系统中存的文件 和 数据备份中存的文件完全一致的问题
-    - ![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531140634652-1681210056.png)
+    - <img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531140634652-1681210056.png" alt="image" style="zoom:67%;" />
   - 线性扩容：文件系统 和 数据备份不断增加呗( 就是上图中再加几份嘛 ），和水平扩容类似
 
 
@@ -312,7 +305,7 @@ yum install gcc libevent libevent-devel -y
 - **安装公共函数库libfastcommon 和 fastDFS压缩包**
   - 自行去前面官网中进行下载，当然：官网的wiki中有在线拉取命令
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531151515193-138524580.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531151515193-138524580.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -335,7 +328,7 @@ tar -zxvf libfastcommon-1.0.36.tar.gz
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531152212821-846136292.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531152212821-846136292.png" alt="image" style="zoom:67%;" />
 
 - 安装公共函数
 
@@ -345,7 +338,7 @@ tar -zxvf libfastcommon-1.0.36.tar.gz
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531152401205-116210948.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531152401205-116210948.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -388,7 +381,7 @@ cd /usr/bin
 
 - 往后找，出现这些fdfs开头的文件就表示成功（ 这些文件就是fastDFS的相关命令 )
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531153158850-1837925811.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531153158850-1837925811.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -401,7 +394,7 @@ cd /etc/fdfs
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531153601182-198451142.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531153601182-198451142.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -416,7 +409,7 @@ cp mime.types /etc/fdfs
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531155849016-1117685090.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531155849016-1117685090.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -430,7 +423,7 @@ cp mime.types /etc/fdfs
 
 - 要修改的文件就两个
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531160843547-962705415.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531160843547-962705415.png" alt="image" style="zoom:67%;" />
 
 - 以防万一，因此：将上面的文件拷贝一份
 
@@ -444,7 +437,7 @@ mv tracker.conf.sample ./tracker.conf
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531162036373-1222382368.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531162036373-1222382368.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -533,7 +526,7 @@ ps -ef | grep fdfs
 
 - 如下图表示启动成功
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531164935428-59444575.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531164935428-59444575.png" alt="image" style="zoom:67%;" />
 
 - **但是上面的启动会有坑儿，所以需要确认一把**
 
@@ -580,13 +573,13 @@ cd /opt/fastdfs/storage/files/data
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531190140636-1058734685.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531190140636-1058734685.png" alt="image" style="zoom:67%;" />
 
 - 这里面有526个文件夹，而每一个文件夹里面又有526个文件夹，即256 * 256个文件夹，总的文件夹数目为6万多个
 
   - 这256 * 256个文件夹的作用：解决的就是如下的问题
 
-  ![image](https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531191447653-2142567796.png)
+  <img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531191447653-2142567796.png" alt="image" style="zoom:50%;" />
 
   - 而fastDFS就是使用那256 * 256个文件夹，把文件分别放入哪些文件夹中，这样就让搜索变得方便了
 
@@ -600,7 +593,7 @@ cd /opt/fastdfs/storage/files/data
 
 - 要能进行测试的话，需要修改一个配置文件，因为这个配置文件中的配置信息是作者余庆的
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601085529351-1674223002.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601085529351-1674223002.png" alt="image" style="zoom:67%;" />
 
 - **要修改的内容如下：**
 
@@ -617,7 +610,7 @@ tracker_server=自己服务器ip:22122
 
 - **搞一个用来测试上传的文件**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601095813784-1688866298.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601095813784-1688866298.png" alt="image" style="zoom:67%;" />
 
 - **执行文件上传命令**
 
@@ -629,7 +622,7 @@ tracker_server=自己服务器ip:22122
       
       ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601100046307-1815112793.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601100046307-1815112793.png" alt="image" style="zoom:67%;" />
 
 - **提取出测试命令语法**
 
@@ -645,7 +638,7 @@ fdfs_test /etc/fdfs/client.conf upload /root/hello-fastdfs.txt
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601101742207-1931098713.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601101742207-1931098713.png" alt="image" style="zoom:67%;" />
 
 - **注意：防火墙的问题啊，要是报：`connect to 162.14.66.60:23000 fail, errno: 113, error info: No route to host`，这就是防火墙没开放23000端口，打开就可以了**
 
@@ -716,9 +709,9 @@ CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt  指的是：保存的文件名  fastdfs会�
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103120994-99896373.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103120994-99896373.png" alt="image" style="zoom:50%;" />
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103154752-1302284835.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103154752-1302284835.png" alt="image" style="zoom:50%;" />
 
 - 上图中几个文件解读
 
@@ -740,7 +733,7 @@ CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt  指的是：保存的文件名  fastdfs会�
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103625604-1533859055.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103625604-1533859055.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -791,7 +784,7 @@ fdfs_test /etc/fdfs/client.conf delete group1 M00/00/00/CgAAEGKWzCOACGE1AAACgUQE
 - **安装nginx，要是有的话就跳过**
 - **注意点：`nginx`和`fastdfs-nginx`放到`/usr/local`目录下，不然可能会出现莫名其妙的问题**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601150551340-722514246.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601150551340-722514246.png" alt="image" style="zoom:50%;" />
 
 - **记住两个目录**
 
@@ -805,7 +798,7 @@ fdfs_test /etc/fdfs/client.conf delete group1 M00/00/00/CgAAEGKWzCOACGE1AAACgUQE
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601141711103-711656905.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601141711103-711656905.png" alt="image" style="zoom:50%;" />
 
 - **进入nginx安装目录，进行模块添加配置**
 
@@ -829,7 +822,7 @@ make & make install
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601150912072-1052442485.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601150912072-1052442485.png" alt="image" style="zoom:50%;" />
 
 - **注释事项：Nginx的安装需要Linux安装相关的几个库，否则编译会出现错误，有这几个的话就不安装了**
 
@@ -851,7 +844,7 @@ cp /usr/local/fastdfs-nginx-module-master/src/mod_fastdfs.conf /etc/fdfs
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601132037277-1059067263.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601132037277-1059067263.png" alt="image" style="zoom:50%;" />
 
 - **修改`/etc/fdfs/mod_fastdfs.conf`**
 
@@ -873,7 +866,7 @@ store_path0=/opt/fastdfs/storage/files
 
 - 上面`base_path`目录要是不存在记得创建
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601132631083-1262340685.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601132631083-1262340685.png" alt="image" style="zoom:50%;" />
 
 - **进入`nginx_fdfs`的安装目录中，去`nginx.conf`中配置`fastdfs-nginx`的扩展模块**
 
@@ -891,7 +884,7 @@ location ~ /group[1-9]/M0[0-9] {
 # 	这个指令不是Nginx本身提供的，是扩展模块提供的，根据这个指令找到FastDFS提供的Nginx模块配置文件，然后找到Tracker，最终找到Stroager
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601160836508-1504938975.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601160836508-1504938975.png" alt="image" style="zoom:50%;" />
 
 - **启动`nginx`**
 
@@ -906,11 +899,11 @@ ps -ef | grep nginx
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601154554178-1692693500.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601154554178-1692693500.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601154741181-1459702966.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601154741181-1459702966.png" alt="image" style="zoom:50%;" />
 
 - 注意：这里很容易出现启动不起来，如果下面这个进程没有启动起来
 
@@ -932,10 +925,9 @@ cd /opt/fastdfs/nginx_mod
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601155004253-612848326.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601155004253-612848326.png" alt="image" style="zoom:50%;" />
 
-
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601155127364-1427912722.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601155127364-1427912722.png" alt="image" style="zoom:50%;" />
 
 - **现在就可以去浏览器中查看刚刚上传的文件的**
 
@@ -997,7 +989,7 @@ example file url: http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2
 
 - **访问：`http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt`**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601160349162-2029736800.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601160349162-2029736800.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1005,7 +997,7 @@ example file url: http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2
 
 - **下面这个流程很重要，涉及到后面的知识**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601172753939-1467167321.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601172753939-1467167321.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1027,16 +1019,14 @@ example file url: http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2
 - 真正的依赖没有放到中央仓库中去，因此并不能通过maven拉取，而是需要去官网https://github.com/happyfish100/fastdfs-client-java/tags中下载源码，然后解压，进入解压目录，使用DOS窗口，执行`mvn clean install`命令，打成j本地ar包，然后就可以在maven中使用了，最后打出来的jar包是在`org.csource`目录下，所以正规依赖应该是下面这个
 
 ```xml
-
-        <dependency>
-            <groupId>org.csource</groupId>
-            <artifactId>fastdfs-client-java</artifactId>
-            <version>1.27-RELEASE</version>
-        </dependency>
-
+<dependency>
+    <groupId>org.csource</groupId>
+    <artifactId>fastdfs-client-java</artifactId>
+    <version>1.27-RELEASE</version>
+</dependency>
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602090958365-92162004.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602090958365-92162004.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1140,16 +1130,15 @@ public class UploadFile {
         }
     }
 }
-
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602131009377-273499948.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602131009377-273499948.png" alt="image" style="zoom:50%;" />
 
 
 
 - **浏览器访问**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602131158122-421046807.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602131158122-421046807.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1239,9 +1228,9 @@ public class DownloadFile {
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602183220360-869930375.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602183220360-869930375.png" alt="image" style="zoom:50%;" />
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602183346231-396977430.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602183346231-396977430.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1335,11 +1324,11 @@ public class DeleteFile {
 
 > **示例的架构图**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220606100814159-1421740184.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220606100814159-1421740184.png" alt="image" style="zoom:50%;" />
 
 
 
-```txt
+```bash
 
 FastDFS分布式文件系统集群环境搭建-操作步骤手册
 

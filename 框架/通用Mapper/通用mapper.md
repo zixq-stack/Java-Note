@@ -51,80 +51,80 @@ insert  into `user`(`user_id`,`user_name`,`user_sex`,`user_salary`) values
 > **创建Spring项目 并 导入依赖**
 
 ```xml
-    <!--  spring整合mybatis的依赖  -->
-    <!--  1、spring需要的依赖  -->
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.2.9.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aspects</artifactId>
-            <version>5.1.9.RELEASE</version>
-        </dependency>
+<!--  spring整合mybatis的依赖  -->
+<!--  1、spring需要的依赖  -->
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.2.9.RELEASE</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aspects</artifactId>
+        <version>5.1.9.RELEASE</version>
+    </dependency>
 
-        <!-- 2、mybatis的依赖 -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.6</version>
-        </dependency>
+    <!-- 2、mybatis的依赖 -->
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>3.4.6</version>
+    </dependency>
 
-        <!-- spring整合mybatis的第三方依赖 -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>2.0.2</version>
-        </dependency>
+    <!-- spring整合mybatis的第三方依赖 -->
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis-spring</artifactId>
+        <version>2.0.2</version>
+    </dependency>
 
-        <!--    1、数据库驱动    -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.47</version>
-        </dependency>
+    <!--    1、数据库驱动    -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.47</version>
+    </dependency>
 
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>1.2.6</version>
-        </dependency>
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>1.2.6</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>5.2.9.RELEASE</version>
-        </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>5.2.9.RELEASE</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
-        </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.22</version>
+    </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.17</version>
+    </dependency>
 
-        <!-- 通用mapper的依赖 -->
-        <dependency>
-            <groupId>tk.mybatis</groupId>
-            <artifactId>mapper</artifactId>
-            <version>3.4.2</version>
-        </dependency>
+    <!-- 通用mapper的依赖 -->
+    <dependency>
+        <groupId>tk.mybatis</groupId>
+        <artifactId>mapper</artifactId>
+        <version>3.4.2</version>
+    </dependency>
 
-    </dependencies>
+</dependencies>
 ```
 
 
@@ -208,13 +208,13 @@ insert  into `user`(`user_id`,`user_name`,`user_sex`,`user_salary`) values
 
 - **注意点：在扫描mapper层时，使用通用mapper覆盖mybatis，写法不太一样**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220413130519939-1442795967.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220413130519939-1442795967.png" alt="image" style="zoom:50%;" />
 
 
 
 - **我的项目结构如下**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220413130707473-912076240.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220413130707473-912076240.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -258,13 +258,13 @@ public interface UserMapper extends Mapper<User> {		// 看源码，点mapper即�
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412223350257-113535741.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412223350257-113535741.png" alt="image" style="zoom:50%;" />
 
 
 
 **看看BaseMapper**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412223536994-2109219894.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412223536994-2109219894.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -278,7 +278,7 @@ public interface UserMapper extends Mapper<User> {		// 看源码，点mapper即�
 
 ##### 2.2.1、selectOne方法 和 @Table及@Column注解
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412224058727-1585991322.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412224058727-1585991322.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -321,13 +321,13 @@ public class MyTest {
 
 - **出现报错：Table 'mapper_study.user_entity' doesn't exist**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416171653584-1421493233.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416171653584-1421493233.png" alt="image" style="zoom:50%;" />
 
 
 
 - **原因就是编写的实体类名叫做UserEntity，而数据库的表名叫做user，解决方式就是在实体类中加入@Table注释，注意此注解是import javax.persistence.*;包下的**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416171948106-2075104792.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416171948106-2075104792.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -342,7 +342,7 @@ public class MyTest {
     - 实体类字段：驼峰式命名 
     - 数据库表字段：使用“_”区分各个单词
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416173826269-1269992706.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416173826269-1269992706.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -350,14 +350,14 @@ public class MyTest {
 
 ##### 2.2.2、观察日志总结selectOne方法
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416172326778-492922714.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416172326778-492922714.png" alt="image" style="zoom:50%;" />
 
 
 
 - **selectOne()是将封装的实体类作为了WHERE子句的条件**
   - 这里是使用了非空的值作为的WHERE子句
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416172613501-1483535000.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416172613501-1483535000.png" alt="image" style="zoom:50%;" />
 
 - **在条件表达式中使用“=”进行比较**
 - **注意点：**要求必须返回<span style="color:blue">一个</span>实体类结果，如果有多个，则会抛出异常
@@ -381,16 +381,16 @@ public class MyTest {
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174558536-1265840354.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174558536-1265840354.png" alt="image" style="zoom:50%;" />
 
 - **结果：发现将实体类的所有字段属性都作为WHERE子句的条件了**
 - **解决办法：给实体类中对应的数据库表的主键字段加上@Id注解**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174814745-2112149310.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174814745-2112149310.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174849756-1397767306.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174849756-1397767306.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -418,11 +418,11 @@ public class MyTest {
 
   - 2、使用@Id主键将实体类中的字段属性和数据库表中的主键做明确匹配
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416180054825-1736554194.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416180054825-1736554194.png" alt="image" style="zoom:67%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416180209148-1254437192.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416180209148-1254437192.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -453,7 +453,7 @@ public class MyTest {
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416181854269-143823458.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416181854269-143823458.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -482,7 +482,7 @@ public class MyTest {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416233315357-1713515164.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416233315357-1713515164.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -502,7 +502,7 @@ public class MyTest {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416234236481-433364130.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416234236481-433364130.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -514,7 +514,7 @@ public class MyTest {
 
 - 官网文档介绍：https://gitee.com/free/Mapper/wikis/2.orm/2.3-generatedvalue
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417142812499-435107595.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417142812499-435107595.png" alt="image" style="zoom:67%;" />
 
 
 
@@ -538,7 +538,7 @@ public class MyTest {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417132901654-1598246757.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417132901654-1598246757.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -555,7 +555,7 @@ public class MyTest {
 - **切记：使用时，记得把实体类值传进去，否则：若是null的实体类，则：SQL语句就没有WHERE条件了，继而：变成全表的逻辑删除了**
 - **原理：还是一样的，使用非null的字段作为WHERE子句条件**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417134105619-1607172028.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417134105619-1607172028.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -576,7 +576,7 @@ public class MyTest {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417134325706-1118632996.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417134325706-1118632996.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -650,7 +650,7 @@ public class ExampleTest {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417180023776-1917131290.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417180023776-1917131290.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -690,7 +690,7 @@ public class ExampleTest {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417183011014-1160192055.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417183011014-1160192055.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -713,7 +713,7 @@ public class ExampleTest {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417183529838-1900043799.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417183529838-1900043799.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -785,63 +785,63 @@ public class ExampleTest {
 
 ```xml
 
-    <!-- 注意：别少了这个依赖啊，下面plugins中的依赖，那只是插件需要的依赖
+<!-- 注意：别少了这个依赖啊，下面plugins中的依赖，那只是插件需要的依赖
             没有引入这个dependency的通用mapper依赖的话，那么生成的代码需要引入一些包，到时就是不存在，会报错的
-    -->
-    <dependencies>
-        <dependency>
-            <groupId>tk.mybatis</groupId>
-            <artifactId>mapper</artifactId>
-            <version>4.0.0-beta3</version>
-        </dependency>
-        
-        <!-- 有些人可能会出现生成的mapper接口层报错，说的是：rowBounds不存在 查看import发现源码是引入的org.mybatis
-                但是目前我用得时候并没有报错，所以：为了以防万一还是加上这个org.mybatis依赖
-        -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.7</version>
-        </dependency>
-    </dependencies>
+-->
+<dependencies>
+    <dependency>
+        <groupId>tk.mybatis</groupId>
+        <artifactId>mapper</artifactId>
+        <version>4.0.0-beta3</version>
+    </dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.mybatis.generator</groupId>
-                <artifactId>mybatis-generator-maven-plugin</artifactId>
-                <version>1.3.6</version>
-                <configuration>
-                    <!-- generatorConfig.xml逆向工程配置文件所在地 根据需要自行修改 -->
-                    <configurationFile>
-                        ${basedir}/generatorConfig.xml
-                    </configurationFile>
-                    <overwrite>true</overwrite>
-                    <verbose>true</verbose>
-                </configuration>
-                <!-- 通用mapper逆向工程需要的两个依赖 -->
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.47</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>tk.mybatis</groupId>
-                        <artifactId>mapper</artifactId>
-                        <version>4.0.0-beta3</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
-    </build>
+    <!-- 有些人可能会出现生成的mapper接口层报错，说的是：rowBounds不存在 查看import发现源码是引入的org.mybatis
+                但是目前我用得时候并没有报错，所以：为了以防万一还是加上这个org.mybatis依赖
+     -->
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>3.5.7</version>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.mybatis.generator</groupId>
+            <artifactId>mybatis-generator-maven-plugin</artifactId>
+            <version>1.3.6</version>
+            <configuration>
+                <!-- generatorConfig.xml逆向工程配置文件所在地 根据需要自行修改 -->
+                <configurationFile>
+                    ${basedir}/generatorConfig.xml
+                </configurationFile>
+                <overwrite>true</overwrite>
+                <verbose>true</verbose>
+            </configuration>
+            <!-- 通用mapper逆向工程需要的两个依赖 -->
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.1.47</version>
+                </dependency>
+                <dependency>
+                    <groupId>tk.mybatis</groupId>
+                    <artifactId>mapper</artifactId>
+                    <version>4.0.0-beta3</version>
+                </dependency>
+            </dependencies>
+        </plugin>
+    </plugins>
+</build>
 
 ```
 
@@ -849,7 +849,7 @@ public class ExampleTest {
 
 - 若是出现上述报RowBounds不存在的原因在下面这里
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220418231204554-580370204.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220418231204554-580370204.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -959,12 +959,6 @@ jdbc.testConnection=true
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220418225618856-1413625074.png)
 
-
-
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220418230119544-1836407706.png)
-
-
-
 - **但是：注意生成的实体类中并没有无参和有参构造及toString()，可以自行加上**
 
 
@@ -978,29 +972,27 @@ jdbc.testConnection=true
 > **依赖**
 
 ```xml
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.47</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
-        </dependency>
-
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.13.2</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.47</version>
+</dependency>
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.22</version>
+</dependency>
 ```
 
 
@@ -1089,25 +1081,25 @@ log4j.logger.java.sql.PreparedStatement=DEBUG
 
 ```java
 
-    @Test
-    public void simpleTest() throws IOException {
+@Test
+public void simpleTest() throws IOException {
 
-        InputStream in = Resources.getResourceAsStream("mybatis-config.xml");
+    InputStream in = Resources.getResourceAsStream("mybatis-config.xml");
 
-        SqlSessionFactory build = new SqlSessionFactoryBuilder().build(in);
+    SqlSessionFactory build = new SqlSessionFactoryBuilder().build(in);
 
-        SqlSession sqlSession = build.openSession();
-        // 以上和mybatis的流程一样，通用mapper只是获取了sqlSession之后需要多做下面的这一步操作
+    SqlSession sqlSession = build.openSession();
+    // 以上和mybatis的流程一样，通用mapper只是获取了sqlSession之后需要多做下面的这一步操作
 
-        MapperHelper mapperHelper = new MapperHelper();
-        Configuration configuration = sqlSession.getConfiguration();
-        mapperHelper.processConfiguration(configuration);
-        // new MapperHelper().processConfiguration(sqlSession.getConfiguration());
+    MapperHelper mapperHelper = new MapperHelper();
+    Configuration configuration = sqlSession.getConfiguration();
+    mapperHelper.processConfiguration(configuration);
+    // new MapperHelper().processConfiguration(sqlSession.getConfiguration());
 
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
 
-        userMapper.selectAll().forEach(System.out::println);
-    }
+    userMapper.selectAll().forEach(System.out::println);
+}
 
 ```
 
@@ -1119,7 +1111,7 @@ log4j.logger.java.sql.PreparedStatement=DEBUG
 
 ### 2.5、自定义mapper
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220419231618082-882876794.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220419231618082-882876794.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1168,7 +1160,7 @@ public interface UserMapper extends CustomMapper<UserEntity> {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421153906300-59376692.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421153906300-59376692.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1183,53 +1175,41 @@ public interface UserMapper extends CustomMapper<UserEntity> {
 > **3、修改applicationContext.xml文件的MapperScannerConfigurer配置**
 
 ```xml
-
-    <!-- 4、扫描mapper层，整合通用mapper的唯一一个注意点
+<!-- 4、扫描mapper层，整合通用mapper的唯一一个注意点
         原始SSM整合写法是：org.mybatis.spring.mapper.MapperScannerConfigurer
         现在用通用mapper替换：tk.mybatis.spring.mapper.MapperScannerConfigurer
         为什么通用mapper可以替换掉mybatis？
             因为：通用mapper的MapperScannerConfigurer在底层继承了mybatis的MapperScannerConfigurer，可以点源码
-    -->
-    <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="cn.zixieqing.mapper"/>
-        <!--<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>-->
-        <property name="properties">
-            <value>
-                <!--自定义接口所在的包路径-->
-                mapper=cn.zixieqing.common.CustomMapper
-            </value>
-        </property>
-    </bean>
-
+-->
+<bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="cn.zixieqing.mapper"/>
+    <!--<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>-->
+    <property name="properties">
+        <value>
+            <!--自定义接口所在的包路径-->
+            mapper=cn.zixieqing.common.CustomMapper
+        </value>
+    </property>
+</bean>
 ```
-
-
-
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421154303543-1257215923.png)
-
-
-
-
 
 
 
 > **4、测试**
 
 ```java
+@Test
+public void customMapperTest() {
 
-    @Test
-    public void customMapperTest() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    UserMapper userMapper = context.getBean("userMapper",UserMapper.class);
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-        UserMapper userMapper = context.getBean("userMapper",UserMapper.class);
+    userMapper.selectAll().forEach(System.out::println);
 
-        userMapper.selectAll().forEach(System.out::println);
-
-    }
-
+}
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421154617132-1268805491.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421154617132-1268805491.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1239,13 +1219,13 @@ public interface UserMapper extends CustomMapper<UserEntity> {
 
 > **补充1、要是不想写applicationContext.xml中MapperScannerConfigurer的那个配置**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421154919820-22316183.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421154919820-22316183.png" alt="image" style="zoom:50%;" />
 
 
 
 - **那把内容注释掉，在自定义mapper接口的地方加个注解@RegisterMapper就搞定了**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155140599-1197616807.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155140599-1197616807.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1265,17 +1245,17 @@ tk.mybatis.mapper.MapperException: java.lang.ClassCastException: sun.reflect.gen
 
 ```
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155415899-1059970156.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155415899-1059970156.png" alt="image" style="zoom:50%;" />
 
 
 
 - 原因就是利用反射，获取类对象时失败，即：原因如下
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155640872-968692757.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155640872-968692757.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155817779-1405692927.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155817779-1405692927.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1288,13 +1268,13 @@ tk.mybatis.mapper.MapperException: java.lang.ClassCastException: sun.reflect.gen
 - 一二级缓存的概念哪些就跳过了，MyBatis中已经见过了，这里玩通用mapper的配置
 - 测试：自行编写一个业务mapper，然后去实现mapper<T>，从而进行多次执行，会发现SQL执行了多次
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425134328149-1580152425.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425134328149-1580152425.png" alt="image" style="zoom:50%;" />
 
 
 
 - 注意：需要让mapper<T>中的实体类T实现Serializable接口，从而有用序列号，否则：会报错的
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425134756463-541871070.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425134756463-541871070.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1303,12 +1283,10 @@ tk.mybatis.mapper.MapperException: java.lang.ClassCastException: sun.reflect.gen
 > **修改mybatis-config.xml文件**
 
 ```xml
-
-    <settings>
-        <!--显示开启缓存-->
-        <setting name="cacheEnabled" value="true"/>
-    </settings>
-
+<settings>
+    <!--显示开启缓存-->
+    <setting name="cacheEnabled" value="true"/>
+</settings>
 ```
 
 
@@ -1327,7 +1305,7 @@ public interface UserMapper extends Mapper<UserEntity> {
 
 > **再次测试**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425135220678-1997230277.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425135220678-1997230277.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1342,17 +1320,17 @@ public interface UserMapper extends Mapper<UserEntity> {
 - **简单类型：**只有一个值
 - **复杂类型：**有多个值
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425145334011-2056011746.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425145334011-2056011746.png" alt="image" style="zoom:50%;" />
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425150530667-258459663.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425150530667-258459663.png" alt="image" style="zoom:50%;" />
 
 
 
 - 而上面这种，对于userName来说，是无法进行CRUD的
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425150839366-1771529095.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425150839366-1771529095.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1360,7 +1338,7 @@ public interface UserMapper extends Mapper<UserEntity> {
 
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425151053463-1178427386.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425151053463-1178427386.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1376,7 +1354,7 @@ public interface UserMapper extends Mapper<UserEntity> {
 
 > **解决办法：自定义类型处理器**
 
-![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425152727977-140859912.png)
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425152727977-140859912.png" alt="image" style="zoom:50%;" />
 
 
 
@@ -1517,12 +1495,12 @@ public interface UserMapper extends Mapper<UserEntity> {
 
       - **第一种( 字段级别 )：使用`@ColumnType(typeHandler = xxxx.class)`注解**
 
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160506676-2042913166.png)
+      - <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160506676-2042913166.png" alt="image" style="zoom:50%;" />
 
-      - ![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160846632-1978440946.png)
+      - <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160846632-1978440946.png" alt="image" style="zoom:50%;" />
 
         - 注意啊：我这里是改数据库了的，这是做的查询嘛，要是数据库中的数据没符合规范，那还是查不到
-        - ![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160955463-1305722015.png)
+        - <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160955463-1305722015.png" alt="image" style="zoom:50%;" />
 
       - **第二种( 全局配置 ）：在mybatis-config.xml中进行配置**
 
