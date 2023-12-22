@@ -70,7 +70,7 @@
 
 
 # 方法论
-[阿里巴巴 Java 开发手册-黄山版.Ppdf](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%20Java%20%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C_%E9%BB%84%E5%B1%B1%E7%89%88.pdf)
+[阿里巴巴 Java 开发手册-黄山版.pdf](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%20Java%20%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C_%E9%BB%84%E5%B1%B1%E7%89%88.pdf)
 
 [前端开发手册_个人版.pdf](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C_%E4%B8%AA%E4%BA%BA%E7%BC%96%E5%86%99%E7%89%88.pdf)
 
