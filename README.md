@@ -26,6 +26,8 @@
 
 [SpringCloud](https://github.com/zixq-stack/Java-Note/blob/master/Spring/SpringCloud%20%E6%95%B4%E5%90%88.md)
 
+[高并发手册_楼仔著.PDF](https://github.com/zixq-stack/Java-Note/blob/master/Spring/%E9%AB%98%E5%B9%B6%E5%8F%91%E6%89%8B%E5%86%8C_%E6%A5%BC%E4%BB%94%E8%91%97.pdf)
+
 
 
 
@@ -113,7 +115,7 @@
 
 
 
-[Linux.pdf](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Linux/Linux.pdf)
+[Linux](https://github.com/zixq-stack/Java-Note/tree/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Linux)
 
 [Git：廖雪峰](https://www.liaoxuefeng.com/wiki/896043488029600)
 
