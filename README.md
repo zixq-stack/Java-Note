@@ -123,8 +123,6 @@
 
 # 面经
 
-[个人仓库版](https://github.com/zixq-stack/Java-Note/tree/master/%E9%9D%A2%E7%BB%8F)
-
 [@pdai整理](https://www.pdai.tech/md/interview/x-interview.html)
 
 [JavaGuide版](https://javaguide.cn/home.html)

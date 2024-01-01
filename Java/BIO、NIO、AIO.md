@@ -78,8 +78,6 @@ Java AIO(NIO.2) ： 异步 异步非阻塞，服务器实现模式为一个有�
 ### 		客户端案例如下
 
 ```java
-package com.itheima._02bio01;
-
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -133,8 +131,6 @@ public class ClientDemo {
 ### 服务端案例如下
 
 ```java
-package com.itheima._02bio01;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -176,8 +172,6 @@ public class ServerDemo {
 ### 		客户端代码如下
 
 ```java
-package com.itheima._03bio02;
-
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -216,8 +210,6 @@ public class ClientDemo {
 ### 		服务端代码如下
 
 ```java
-package com.itheima._03bio02;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -484,8 +476,6 @@ class ReaderClientRunnable implements Runnable{
 ### 客户端开发
 
 ```java
-package com.itheima.file;
-
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -524,8 +514,6 @@ public class Client {
 ### 服务端开发
 
 ```java
-package com.itheima.file;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -549,8 +537,6 @@ public class Server {
 ```
 
 ```java
-package com.itheima.file;
-
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -602,8 +588,6 @@ public class ServerReaderThread extends Thread {
 ### 客户端开发
 
 ```java
-package com.itheima.file;
-
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -1875,7 +1859,7 @@ public class TestBuffer {
    
    @Test
    public void test2(){
-      String str = "itheima";
+      String str = "zixq.";
       
       ByteBuffer buf = ByteBuffer.allocate(1024);
       
@@ -1908,7 +1892,7 @@ public class TestBuffer {
     
    @Test
    public void test1(){
-      String str = "itheima";
+      String str = "zixq.";
       //1. 分配一个指定大小的缓冲区
       ByteBuffer buf = ByteBuffer.allocate(1024);
       System.out.println("-----------------allocate()----------------");
@@ -2049,7 +2033,7 @@ void force(boolean metaData) 强制将所有对此通道的文件更新写入到
 需求：使用前面学习后的 ByteBuffer(缓冲) 和 FileChannel(通道)， 将 "hello,黑马Java程序员！" 写入到 data.txt 中.
 
 ```java
-package com.itheima;
+package com.zixq.;
 
 
 import org.junit.Test;
@@ -2610,7 +2594,7 @@ public class Server {
 ### 客户端代码实现
 
 ```java
-package com.itheima.chat;
+package com.zixq.chat;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

@@ -1,14 +1,12 @@
 # 版权声明
 
-**内容说明：** 本篇内容不属于原创，只是当做笔记的作用，方便需要时查看而已
-
-**原作者：** pdai
-
-**原文链接：** https://www.pdai.tech/md/Java/JVM/Java-JVM-x-overview.html
-
-**额外说明：** 若要用于谋利，请联系原作者
-
-
+> **内容说明：** 本篇内容不属于原创，只是当做笔记的作用，方便需要时查看而已
+>
+> **原作者：** pdai
+>
+> **原文链接：** https://www.pdai.tech/md/Java/JVM/Java-JVM-x-overview.html
+>
+> **额外说明：** 若要用于谋利，请联系原作者
 
 
 
@@ -3629,55 +3627,22 @@ Zeus在升级JDK 11+ZGC中，通过将风险和问题分类，然后各个击破
 
 ## JVM参数
 
-- -Xms
+| 参数                        | 含义                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| -Xms                        | 堆最小值                                                     |
+| -Xmx                        | 堆最大堆值-Xms与-Xmx 的单位默认字节都是以k、m做单位的<br />通常这两个配置参数相等，避免每次空间不足，动态扩容带来的影响 |
+| -Xmn                        | 新生代大小                                                   |
+| -Xss                        | 每个线程池的堆栈大小在JDK5以上的版本，每个线程堆栈大小为1m，JDK5以前的版本是每个线程池大小为256k一般在相同物理内存下，如果减少－xss值会产生更大的线程数，但不同的操作系统对进程内线程数是有限制的，是不能无限生成 |
+| -XX:NewRatio                | 设置新生代与老年代比值，-XX:NewRatio=4 表示新生代与老年代所占比例为1:4 ，新生代占比整个堆的五分之一如果设置了-Xmn的情况下，该参数是不需要在设置的 |
+| -XX:PermSize                | 设置持久代初始值，默认是物理内存的六十四分之一               |
+| -XX:MaxPermSize             | 设置持久代最大值，默认是物理内存的四分之一                   |
+| -XX:MaxTenuringThreshold    | 新生代中对象存活次数，默认15(若对象在eden区，经历一次MinorGC后还活着，则被移动到Survior区，年龄加1以后，对象每次经历MinorGC，年龄都加1达到阀值，则移入老年代) |
+| -XX:SurvivorRatio           | Eden区与Subrvivor区大小的比值，如果设置为8，两个Subrvivor区与一个Eden区的比值为2:8，一个Survivor区占整个新生代的十分之一 |
+| -XX:+UseFastAccessorMethods | 原始类型快速优化                                             |
+| -XX:+AggressiveOpts         | 编译速度加快                                                 |
+| -XX:PretenureSizeThreshold  | 对象超过多大值时直接在老年代中分配                           |
 
-堆最小值
 
-- -Xmx
-
-堆最大堆值-Xms与-Xmx 的单位默认字节都是以k、m做单位的
-
-通常这两个配置参数相等，避免每次空间不足，动态扩容带来的影响
-
-- -Xmn
-
-新生代大小
-
-- -Xss
-
-每个线程池的堆栈大小在JDK5以上的版本，每个线程堆栈大小为1m，JDK5以前的版本是每个线程池大小为256k一般在相同物理内存下，如果减少－xss值会产生更大的线程数，但不同的操作系统对进程内线程数是有限制的，是不能无限生成
-
-- -XX:NewRatio
-
-设置新生代与老年代比值，-XX:NewRatio=4 表示新生代与老年代所占比例为1:4 ，新生代占比整个堆的五分之一如果设置了-Xmn的情况下，该参数是不需要在设置的
-
-- -XX:PermSize
-
-设置持久代初始值，默认是物理内存的六十四分之一
-
-- -XX:MaxPermSize
-
-设置持久代最大值，默认是物理内存的四分之一
-
-- -XX:MaxTenuringThreshold
-
-新生代中对象存活次数，默认15(若对象在eden区，经历一次MinorGC后还活着，则被移动到Survior区，年龄加1以后，对象每次经历MinorGC，年龄都加1达到阀值，则移入老年代)
-
-- -XX:SurvivorRatio
-
-Eden区与Subrvivor区大小的比值，如果设置为8，两个Subrvivor区与一个Eden区的比值为2:8，一个Survivor区占整个新生代的十分之一
-
-- -XX:+UseFastAccessorMethods
-
-原始类型快速优化
-
-- -XX:+AggressiveOpts
-
-编译速度加快
-
-- -XX:PretenureSizeThreshold
-
-对象超过多大值时直接在老年代中分配
 
 ```text
 说明: 
@@ -6015,7 +5980,7 @@ Sampler
 
 ## Visual GC
 
-> visual gc 是 visualvm 中的图形化查看 gc 状况的插件官方文档可以参考[这里](https://www.oracle.com/Java/technologies/visual-garbage-collection-monitoring-tool.html)
+> visual gc 是 visualvm 中的图形化查看 gc 状况的插件。官方文档可以参考[这里](https://www.oracle.com/Java/technologies/visual-garbage-collection-monitoring-tool.html)
 
 比如我在IDEA中使用visual GC 插件来看GC状况
 
@@ -6027,9 +5992,9 @@ Sampler
 
 ## JProfile
 
-> Profiler 是一个商业的主要用于检查和跟踪系统（限于Java开发的）的性能的工具JProfiler可以通过时时的监控系统的内存使用情况，随时监视垃圾回收，线程运行状况等手段，从而很好的监视JVM运行情况及其性能
+> Profiler 是一个商业的主要用于检查和跟踪系统（限于Java开发的）的性能的工具。JProfiler可以通过时时的监控系统的内存使用情况，随时监视垃圾回收，线程运行状况等手段，从而很好的监视JVM运行情况及其性能
 
-JProfiler 是一个全功能的Java剖析工具（profiler），专用于分析J2SE和J2EE应用程序它把CPU、执行绪和内存的剖析组合在一个强大的应用中 JProfiler可提供许多IDE整合和应用服务器整合用途JProfiler直觉式的GUI让你可以找到效能瓶颈、抓出内存漏失(memory leaks)、并解决执行绪的问题它让你得以对heap walker作资源回收器的root analysis，可以轻易找出内存漏失；heap快照（snapshot）模式让未被参照（reference）的对象、稍微被参照的对象、或在终结（finalization）队列的对象都会被移除；整合精灵以便剖析浏览器的Java外挂功能
+JProfiler 是一个全功能的Java剖析工具（profiler），专用于分析J2SE和J2EE应用程序。它把CPU、执行绪和内存的剖析组合在一个强大的应用中。 JProfiler可提供许多IDE整合和应用服务器整合用途。JProfiler直觉式的GUI让你可以找到效能瓶颈、抓出内存漏失(memory leaks)、并解决执行绪的问题。它让你得以对heap walker作资源回收器的root analysis，可以轻易找出内存漏失；heap快照（snapshot）模式让未被参照（reference）的对象、稍微被参照的对象、或在终结（finalization）队列的对象都会被移除；整合精灵以便剖析浏览器的Java外挂功能
 
 
 
@@ -6043,11 +6008,11 @@ JProfiler 包含用于采集目标 JVM 分析数据的 JProfiler agent、用于�
 
 - **JProfiler agent**
 
-JProfiler agent 是一个本地库，它可以在 JVM 启动时通过参数`-agentpath:<path to native library>`进行加载或者在程序运行时通过[JVM Attach 机制](http://lovestblog.cn/blog/2014/06/18/JVM-attach/)进行加载Agent 被成功加载后，会设置 JVMTI 环境，监听虚拟机产生的事件，如类加载、线程创建等例如，当它监听到类加载事件后，会给这些类注入用于执行度量操作的字节码
+JProfiler agent 是一个本地库，它可以在 JVM 启动时通过参数`-agentpath:<path to native library>`进行加载或者在程序运行时通过[JVM Attach 机制](http://lovestblog.cn/blog/2014/06/18/JVM-attach/)进行加载。Agent 被成功加载后，会设置 JVMTI 环境，监听虚拟机产生的事件，如类加载、线程创建等例如，当它监听到类加载事件后，会给这些类注入用于执行度量操作的字节码
 
 - **JProfiler UI**
 
-JProfiler UI 是一个可独立部署的组件，它通过 socket 和 agent 建立连接这意味着不论目标 JVM 运行在本地还是远端，JProfiler UI 和 agent 间的通信机制都是一样的
+JProfiler UI 是一个可独立部署的组件，它通过 socket 和 agent 建立连接。这意味着不论目标 JVM 运行在本地还是远端，JProfiler UI 和 agent 间的通信机制都是一样的
 
 JProfiler UI 的主要功能是展示通过 agent 采集上来的分析数据，此外还可以通过它控制 agent 的采集行为，将快照保存至磁盘，展示保存的快照
 
@@ -6055,7 +6020,7 @@ JProfiler UI 的主要功能是展示通过 agent 采集上来的分析数据，
 
 JProfiler 提供了一系列命令行工具以实现不同的功能
 
-1. jpcontroller - 用于控制 agent 的采集行为它通过 agent 注册的 JProfiler MBean 向 agent 传递命令
+1. jpcontroller - 用于控制 agent 的采集行为。它通过 agent 注册的 JProfiler MBean 向 agent 传递命令
 2. jpenable - 用于将 agent 加载到一个正在运行的 JVM 上
 3. jpdump - 用于获取正在运行的 JVM 的堆快照
 4. jpexport & jpcompare - 用于从保存的快照中提取数据并创建 HTML 报告
@@ -6135,7 +6100,7 @@ MBeans
 
 ## Eclipse Memory Analyzer (MAT)
 
-> MAT 是一种快速且功能丰富的 Java 堆分析器，可帮助你发现内存泄漏并减少内存消耗 MAT在的堆内存分析问题使用极为广泛，需要重点掌握
+> MAT 是一种快速且功能丰富的 Java 堆分析器，可帮助你发现内存泄漏并减少内存消耗。MAT在的堆内存分析问题使用极为广泛，需要重点掌握
 
 可以在[这里](https://www.eclipse.org/mat/)下载， 官方文档可以看[这里](http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.mat.ui.help/welcome.html)
 
