@@ -191,13 +191,13 @@
 
 
 # 框架
-[分布式文件系统：FastDFS](https://github.com/zixq-stack/Java-Note/tree/master/%E6%A1%86%E6%9E%B6/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F)
+[分布式文件系统：FastDFS](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/FastDFS.md)。文件格式：md
 
-[定时任务](https://github.com/zixq-stack/Java-Note/tree/master/%E6%A1%86%E6%9E%B6/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1)
+[定时任务](https://github.com/zixq-stack/Java-Note/tree/master/%E6%A1%86%E6%9E%B6/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1)。文件格式：md
 
-[消息队列：RabbitMQ](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RabbitMQ/rabbitMQ.md)
+[消息队列：RabbitMQ](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RabbitMQ/rabbitMQ.md)。文件格式：md
 
-[通用Mapper：tk.mapper](https://github.com/zixq-stack/Java-Note/tree/master/%E6%A1%86%E6%9E%B6/%E9%80%9A%E7%94%A8Mapper)
+[通用Mapper：tk.mapper](https://github.com/zixq-stack/Java-Note/tree/master/%E6%A1%86%E6%9E%B6/%E9%80%9A%E7%94%A8Mapper)。文件格式：md
 
 
 
