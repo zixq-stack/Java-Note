@@ -285,7 +285,9 @@
 
 # 前端
 
-[VUE2 与 VUE3基础](https://github.com/zixq-stack/Java-Note/blob/master/%E5%89%8D%E7%AB%AF/Vue%E7%B3%BB%E5%88%97/Vue.md)
+[VUE2 与 VUE3基础](https://github.com/zixq-stack/Java-Note/tree/master/%E5%89%8D%E7%AB%AF/Vue%E7%B3%BB%E5%88%97)。文件格式：md
+
+[前端全栈知识](https://github.com/zixq-stack/Java-Note/tree/master/%E5%89%8D%E7%AB%AF)。文件格式：PDF
 
 
 
