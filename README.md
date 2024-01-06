@@ -287,7 +287,25 @@
 
 [VUE2 与 VUE3基础](https://github.com/zixq-stack/Java-Note/tree/master/%E5%89%8D%E7%AB%AF/Vue%E7%B3%BB%E5%88%97)。文件格式：md
 
-[前端全栈知识](https://github.com/zixq-stack/Java-Note/tree/master/%E5%89%8D%E7%AB%AF)。文件格式：PDF
+> 「前端全栈知识-不含上述的VUE系列」https://www.alipan.com/s/U3URqmoVftF
+>
+> 提取码: zixq
+>
+> 文件格式：PDF
+>
+> 文件大小：3.81 GB
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
