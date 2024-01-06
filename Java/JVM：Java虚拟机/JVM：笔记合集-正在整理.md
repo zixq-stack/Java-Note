@@ -3428,6 +3428,70 @@ JVM 在进行 GC 时，并非每次都对堆内存（新生代、老年代；方
 
 # 调试排错
 
+> **内存泄漏**（memory leak）：在Java中如果不再使用一个对象，但是该对象依然在GC ROOT的引用链上，这个对象就不会被垃圾回收器回收，这种情况就称之为内存泄漏。 
+>
+> - PS：==内存泄漏绝大多数情况都是由堆内存泄漏引起的==。
+>
+> **内存溢出**：指的是内存的使用量超过了Java虚拟机可以分配的上限，最终产生了内存溢出OutOfMemory的错误。
+
+
+
+**内存溢出产生的原因**：
+
+1. **持续的内存泄漏**：内存泄漏持续发生，不可被回收同时不再使用的内存越来越多，就像滚雪球雪球越滚越大，最终内存被消耗完无法分配更多的内存取使用，导致内存溢出。
+2. **并发请求问题**：用户通过发送请求向Java应用获取数据，正常情况下Java应用将数据返回之后，这部分数据就可以在内存中被释放掉。但是由于用户的并发请求量有可能很大，同时处理数据的时间很长，导致大量的数据存在于内存中，最终超过了内存的上限，导致内存溢出。
+
+
+
+**解决内存溢出的思路**：
+
+1. **发现问题**：通过监控工具尽可能尽早地发现内存慢慢变大的现象。
+2. **诊断原因**：通过分析内存快照或者在线分析方法调用过程，诊断问题产生的根源，定位到出现问题的源代码。
+3. **修复问题**：如源代码中的bug问题、技术方案不合理、业务设计不合理等等。
+4. **验证测试**：在测试环境验证问题是否已经解决，最后发布上线。
+
+
+
+
+
+## 发现问题：可视化工具
+
+### Linux：Top命令
+
+> top除了看一些基本信息之外，剩下的就是配合来查询vm的各种问题了。
+>
+> 缺点：只能查看最基础的进程信息，无法查看到每个部分的内存占用（堆、方法区、堆外）
+
+top命令是Linux下用来查看系统信息的一个命令，它提供给我们去实时地去查看系统的资源，比如执行时的进程、线程和系统参数等信息。
+
+> 关于下列两个概念的说明：
+>
+> 1. **常驻内存**：当前进程总的使用了多少内存。
+>
+> - PS：常驻内存包含了“共享内存”，所以当前进程真正使用的内存是：常驻内存 - 共享内存。
+>
+> 2. **共享内存**：当前进程第三方依赖需要的内存。只加载一次，其他地方就可以用了，故而称为“共享”。
+
+```bash
+# top -H -p pid
+
+top - 08:37:51 up 45 days, 18:45,  1 user,  load average: 0.01, 0.03, 0.05
+Threads:  28 total,   0 running,  28 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.7 us,  0.7 sy,  0.0 ni, 98.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :  1882088 total（堆的总内存）,    74608 free（空闲内存，若此值极小则说明本服务器的程序有问题）,   202228 used（已使用内存）,  1605252 buff/cache（缓存）		# 关注点
+KiB Swap:  2097148 total,  1835392 free,   261756 used.  1502036 avail Mem
+
+
+# %CPU		当前进程对CPU的使用率				 若此值长期保持很高，则需要关注程序请求量是否过大，或出现死循环之类的
+# %MEM		当前进程占总内存的比率					若上面的 free值很小，而此值很高，则可以确定系统内存不足就是当前进程所造成的
+# TIME+		当前进程自启动以来所消耗的CPU累计时间
+# COMMAND	启动命令
+  PID USER      PR  NI    VIRT（虚拟内存）    RES（常驻内存）    SHR（共享内存） S %CPU %MEM     TIME+ COMMAND
+ 1347 root      20   0 2553808 				113752   		 1024 			S  0.3  6.0  48:46.74 VM Periodic Tas
+ 1249 root      20   0 2553808 				113752   		 1024 			S  0.0  6.0   0:00.00 Java
+ 1289 root      20   0 2553808 				113752   		 1024 			S  0.0  6.0   0:03.74 Java
+...
+```
 
 
 
@@ -3435,6 +3499,23 @@ JVM 在进行 GC 时，并非每次都对堆内存（新生代、老年代；方
 
 
 
+### JConsole：本地+远程监控
+
+> Jconsole （Java Monitoring and Management Console），JDK自带的基于JMX的可视化监视、管理工具 官方文档可以参考[这里](https://docs.oracle.com/Javase/8/docs/technotes/guides/management/jconsole.html)
+>
+> 路径：JDK\bin\jconsole.exe
+
+
+
+本地连接 或 远程连接：
+
+> 注：远程连接在“测试环境”用就可以了，别在线上环境用。
+
+![image-20240106195445531](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240106195445077-496683861.png)
+
+
+
+![image-20240106195600896](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240106195559898-1219779873.png)
 
 
 
@@ -3442,23 +3523,112 @@ JVM 在进行 GC 时，并非每次都对堆内存（新生代、老年代；方
 
 
 
+### VisualVM：本地+远程监控
+
+> VisualVM 是一款免费的，集成了多个 JDK 命令行工具的可视化工具，整合了命令行 JDK 工具和轻量级分析功能，它能为您提供强大的分析能力，对 Java 应用程序做性能分析和调优这些功能包括生成和分析海量数据、跟踪内存泄漏、监控垃圾回收器、执行内存和 CPU 分析，同时它还支持在 MBeans 上进行浏览和操作。
+>
+> 注：这款软件在Oracle JDK 6~8 中发布（路径：JDK\bin\jvisualvm.exe），但是在 Oracle JDK 9 之后不在JDK安装目录下需要单独下载。下载地址：https://visualvm.github.io/
+>
+> 优点：支持Idea插件，开发过程中也可以使用。
+>
+> 缺点：对大量集群化部署的Java进程需要手动进行管理。
 
 
 
+本地连接：JDK\bin\jvisualvm.exe的方式，这种是中文版
+
+![image-20240106200430766](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240106200429361-1686866202.png)
+
+IDEA插件的方式：
+
+![image-20240106200638281](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240106200636862-1051496214.png)
+
+以下两种方式均可启动VisualVM
+
+![image-20240106200750834](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240106200759167-968268559.png)
+
+远程连接：
+
+> 注：==只可用于“测试环境”，不可用于“生产环境”==。因为操作VisualVM中提供的功能时会停掉线程，从而影响用户。
+
+1. 服务器中开启JMX远程连接
+
+```bash
+java -jar \
+-Djava.rmi.server.hostname=xxxxxxxx \					# 配置主机名	就是服务器ip
+-Dcom.sun.management.jmxremote \						# 开启JMX远程连接
+-Dcom.sun.management.jmxremote.port=xxxx \				# 设置连接的端口号
+-Dcom.sun.management.jmxremote.ssl=false \				# 关闭ssl连接
+-Dcom.sun.management.jmxremote.authenticate=false \		# 关闭身份验证
+xxxxx.jar												# 要启动的服务jar包
+```
+
+2. 使用VisualVM建立远程连接
+
+![image-20240106202155366](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240106202154183-1465862557.png)
 
 
 
+### Arthas Tunnel
+
+> 官网地址：https://arthas.aliyun.com/doc/tunnel.html
+>
+> 优点：
+>
+> 1. 功能强大，不止于监控基础的信息，还能监控单个方法的执行耗时等细节内容。
+> 2.  支持应用的集群管理.
 
 
 
+大概流程如下：
+
+![image-20240106202700733](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240106202659094-425000391.png)
+
+大概操作流程如下：
+
+1. 添加依赖（目前仅支持Spring Boot2.x版本），在配置文件中添加tunnel服务端的地址，便于tunnel去监控所有的程序。
+
+```xml
+<dependency>
+    <groupId>com.taobao.arthas</groupId>
+    <artifactId>arthas-spring-boot-starter</artifactId>
+    <version>3.7.1</version>
+</dependency>
+```
 
 
 
+```yaml
+arthas:
+  # tunnel部署的地址
+  tunnel-server: ws://localhost:7777/ws
+  # tunnel显示的应用名称：注册到tunnel上的每个服务都要有个名称
+  app-name: ${spring.application.name}
+  # arthas http访问的端口 和 远程连接的端口		这两个端口不可重复
+  http-port: 8888
+  telnet-port: 9999
+```
 
 
 
+2. 将tunnel服务端程序部署在某台服务器上并启动
+
+> 注：需要去官网[下载](https://github.com/alibaba/arthas/releases) tunnel的jar包丢在服务器目录中，
+
+```bash
+# 启动命令
+nohup java -jar \										# nohup 即no hang up（不挂起），后台不挂断
+-Darthas.detail.pages=true \							# 打开可视化页面	注：这个页面占用的端口是80
+arthas-tunnel-server-下载的某版本-fatjar.jar $			# 别忘了有个 $	即：将这个任务放到后台执行
+```
+
+页面网址：部署tunnel的ip:8080/apps.html
 
 
+
+3. 启动Java程序，然后再上一步的页面中就可以看到对应的应用名称了。打开tunnel的服务端页面，查看所有的进程列表，并选择进程（应用名称）就可进入arthas进行arthas的操作。
+
+> 排错：在arthas-tunnel-server-下载的某版本-fatjar.jar所在的目录中有一个nohup.out文件，打开即可排错，如：有些服务没注册上来之类的。
 
 
 
