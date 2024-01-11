@@ -5631,7 +5631,7 @@ jstack参数：
 
 更多请参考: [JVM 性能调优工具之 jstack](https://www.jianshu.com/p/025cb069cb69)
 
-### [#](#jinfo) jinfo
+### jinfo
 
 > jinfo 是 JDK 自带的命令，可以用来查看正在运行的 Java 应用程序的扩展参数，包括Java System属性和JVM命令行参数；也可以动态的修改正在运行的 JVM 一些参数当系统崩溃时，jinfo可以从core文件里面知道崩溃的Java应用程序的配置信息
 
@@ -5745,7 +5745,7 @@ jdb -attach 8000
 
 ###  CHLSDB
 
-CHLSDB感觉很多情况下可以看到更好玩的东西，不详细叙述了 查询资料听说jstack和jmap等工具就是基于它的
+CHLSDB感觉很多情况下可以看到更好玩的东西，不详细叙述了。查询资料听说jstack和jmap等工具就是基于它的
 
 ```bash
 Java -Classpath /opt/taobao/Java/lib/sa-jdi.jar sun.JVM.hotspot.CLHSDB
@@ -5803,7 +5803,7 @@ btrace 具体可以参考这里：https://github.com/btraceio/btrace
 
 ### Greys
 
-Greys是@杜琨的大作吧说几个挺棒的功能(部分功能和btrace重合):
+Greys是@杜琨的大作吧。说几个挺棒的功能(部分功能和btrace重合):
 
 - `sc -df xxx`: 输出当前类的详情,包括源码位置和Classloader结构
 - `trace Class method`: 打印出当前方法调用的耗时情况，细分到每个方法, 对排查方法性能时很有帮助
@@ -6157,7 +6157,7 @@ MBeans
 
 ## Arthas简介
 
-> 在学习Arthas之前，推荐先看上一篇美团技术团队的[Java 动态调试技术原理及实践]()，这样你会对它最底层技术有个了解可以看下文中最后有个对比图：Greys(Arthas也是基于它做的二次开发)和Java-debug-tool
+> 在学习Arthas之前，推荐先看上一篇美团技术团队的"Java 动态调试技术原理及实践"，这样你会对它最底层技术有个了解。可以看下文中最后有个对比图：Greys(Arthas也是基于它做的二次开发)和Java-debug-tool
 
 
 
@@ -6202,14 +6202,14 @@ MBeans
 
 ### Arthas基于了哪些工具上发展而来
 
-- [greys-anatomy](https://github.com/oldmanpushcart/greys-anatomy): Arthas代码基于Greys二次开发而来，非常感谢Greys之前所有的工作，以及Greys原作者对Arthas提出的意见和建议！
-- [termd](https://github.com/termd/termd): Arthas的命令行实现基于termd开发，是一款优秀的命令行程序开发框架，感谢termd提供了优秀的框架
-- [crash](https://github.com/crashub/crash): Arthas的文本渲染功能基于crash中的文本渲染功能开发，可以从[这里](https://github.com/crashub/crash/tree/1.3.2/shell)看到源码，感谢crash在这方面所做的优秀工作
-- [cli](https://github.com/eclipse-vertx/vert.x/tree/master/src/main/Java/io/vertx/core/cli): Arthas的命令行界面基于vert.x提供的cli库进行开发，感谢vert.x在这方面做的优秀工作
+- [greys-anatomy](https://github.com/oldmanpushcart/greys-anatomy): Arthas代码基于Greys二次开发而来
+- [termd](https://github.com/termd/termd): Arthas的命令行实现基于termd开发，是一款优秀的命令行程序开发框架
+- [crash](https://github.com/crashub/crash): Arthas的文本渲染功能基于crash中的文本渲染功能开发，可以从[这里](https://github.com/crashub/crash/tree/1.3.2/shell)看到源码
+- [cli](https://github.com/eclipse-vertx/vert.x/tree/master/src/main/Java/io/vertx/core/cli): Arthas的命令行界面基于vert.x提供的cli库进行开发
 - [compiler](https://github.com/skalogs/SkaETL/tree/master/compiler) Arthas里的内存编绎器代码来源
 - [Apache Commons Net](https://commons.apache.org/proper/commons-net/) Arthas里的Telnet Client代码来源
 - `JavaAgent`：运行在 main方法之前的拦截器，它内定的方法名叫 premain ，也就是说先执行 premain 方法然后再执行 main 方法
-- `ASM`：一个通用的Java字节码操作和分析框架它可以用于修改现有的类或直接以二进制形式动态生成类ASM提供了一些常见的字节码转换和分析算法，可以从它们构建定制的复杂转换和代码分析工具ASM提供了与其他Java字节码框架类似的功能，但是主要关注性能因为它被设计和实现得尽可能小和快，所以非常适合在动态系统中使用(当然也可以以静态方式使用，例如在编译器中)
+- `ASM`：一个通用的Java字节码操作和分析框架。它可以用于修改现有的类或直接以二进制形式动态生成类。ASM提供了一些常见的字节码转换和分析算法，可以从它们构建定制的复杂转换和代码分析工具。ASM提供了与其他Java字节码框架类似的功能，但是主要关注性能。因为它被设计和实现得尽可能小和快，所以非常适合在动态系统中使用(当然也可以以静态方式使用，例如在编译器中)
 
 
 
@@ -6265,6 +6265,7 @@ Java -jar arthas-boot.jar
 
 ```bash
 $ thread -n 3
+
 "as-command-execute-daemon" Id=29 cpuUsage=75% RUNNABLE
     at sun.management.ThreadImpl.dumpThreads0(Native Method)
     at sun.management.ThreadImpl.getThreadInfo(ThreadImpl.Java:440)
@@ -6368,6 +6369,7 @@ redefine -c 327a647b /tmp/Test.Class /tmp/Test\$Inner.Class
 
 ```bash
 $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
+
  Class-info        org.springframework.web.context.support.XmlWebApplicationContext
  code-source       /Users/xxx/work/test/WEB-INF/lib/spring-web-3.2.11.RELEASE.jar
  name              org.springframework.web.context.support.XmlWebApplicationContext
@@ -6407,6 +6409,7 @@ $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
 
 ```bash
 $ stack test.arthas.TestStack doGet
+
 Press Ctrl+C to abort.
 Affect(Class-cnt:1 , method-cnt:1) cost in 286 ms.
 ts=2018-09-18 10:11:45;thread_name=http-bio-8080-exec-10;id=d9;is_daemon=true;priority=5;TCCL=org.apache.catalina.loader.ParallelWebappClassLoader@25131501
@@ -6456,6 +6459,7 @@ ts=2018-09-18 10:11:45;thread_name=http-bio-8080-exec-10;id=d9;is_daemon=true;pr
 
 ```bash
 $ watch test.arthas.TestWatch doGet {params[0], throwExp} -e
+
 Press Ctrl+C to abort.
 Affect(Class-cnt:1 , method-cnt:1) cost in 65 ms.
 ts=2018-09-18 10:26:28;result=@ArrayList[
@@ -6474,6 +6478,7 @@ ts=2018-09-18 10:26:28;result=@ArrayList[
 
 ```bash
 $ monitor -c 5 org.apache.dubbo.demo.provider.DemoServiceImpl sayHello
+
 Press Ctrl+C to abort.
 Affect(Class-cnt:1 , method-cnt:1) cost in 109 ms.
  timestamp            Class                                           method    total  success  fail  avg-rt(ms)  fail-rate
@@ -6499,6 +6504,7 @@ Affect(Class-cnt:1 , method-cnt:1) cost in 109 ms.
 
 ```bash
 $ tt -t org.apache.dubbo.demo.provider.DemoServiceImpl sayHello
+
 Press Ctrl+C to abort.
 Affect(Class-cnt:1 , method-cnt:1) cost in 75 ms.
  INDEX   TIMESTAMP            COST(ms)  IS-RET  IS-EXP   OBJECT         Class                          METHOD
@@ -6524,6 +6530,7 @@ Affect(Class-cnt:1 , method-cnt:1) cost in 75 ms.
 
 ```bash
 $ Classloader
+
  name                                                  numberOfInstances  loadedCountTotal
  BootstrapClassLoader                                  1                  3346
  com.taobao.arthas.agent.ArthasClassloader             1                  1262
@@ -6684,9 +6691,9 @@ Arthas支持使用管道对上述命令的结果进行进一步的处理，如`s
 > 场景：我想看下查看最繁忙的线程，以及是否有阻塞情况发生? 常规查看线程，一般我们可以通过 top 等系统命令进行查看，但是那毕竟要很多个步骤，很麻烦
 
 ```bash
-thread -n 3 # 查看最繁忙的三个线程栈信息
-thread  # 以直观的方式展现所有的线程情况
-thread -b #找出当前阻塞其他线程的线程
+thread -n 3			# 查看最繁忙的三个线程栈信息
+thread				# 以直观的方式展现所有的线程情况
+thread -b			#找出当前阻塞其他线程的线程
 ```
 
 
@@ -6825,7 +6832,7 @@ monitor -c 5 demo.MathGame primeFactors
 
 # 调试排错 - Java 问题排查之使用IDEA本地调试和远程调试
 
-> Debug用来追踪代码的运行流程，通常在程序运行过程中出现异常，启用Debug模式可以分析定位异常发生的位置，以及在运行过程中参数的变化；并且在实际的排错过程中，还会用到Remote DebugIDEA 相比 Eclipse/STS效率更高，本文主要介绍基于IDEA的Debug和Remote Debug的技巧
+> Debug用来追踪代码的运行流程，通常在程序运行过程中出现异常，启用Debug模式可以分析定位异常发生的位置，以及在运行过程中参数的变化；并且在实际的排错过程中，还会用到Remote DebugIDEA 。相比 Eclipse/STS效率更高，本文主要介绍基于IDEA的Debug和Remote Debug的技巧
 
 
 
@@ -6835,7 +6842,7 @@ monitor -c 5 demo.MathGame primeFactors
 
 > 首先看下IDEA中Debug模式下的界面
 
-如下是在IDEA中启动Debug模式，进入断点后的界面，我这里是Windows，可能和Mac的图标等会有些不一样就简单说下图中标注的8个地方：
+如下是在IDEA中启动Debug模式，进入断点后的界面，我这里是Windows，可能和Mac的图标等会有些不一样。就简单说下图中标注的8个地方：
 
 - ① 以Debug模式启动服务，左边的一个按钮则是以Run模式启动在开发中，我一般会直接启动Debug模式，方便随时调试代码
 - ② 断点：在左边行号栏单击左键，或者快捷键Ctrl+F8 打上/取消断点，断点行的颜色可自己去设置
@@ -6915,7 +6922,7 @@ Debug调试的功能主要对应着图一中4和5两组按钮：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809173446303-213207605.png)
 
-- 光标悬停到参数上，显示当前变量信息点击打开详情如下图我一般会使用这种方式，快捷方便
+- 光标悬停到参数上，显示当前变量信息。点击打开详情如下图。我一般会使用这种方式，快捷方便
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809173457399-14499864.png)
 
@@ -7057,7 +7064,7 @@ Debug调试的功能主要对应着图一中4和5两组按钮：
 
 > 在调试的时候，想要重新走一下流程而不用再次发起一个请求？
 
-- 首先认识下这个**方法调用栈**，如图首先请求进入DemoController的insertDemo方法，然后调用insert方法，其它的invoke我们且先不管，最上面的方法是当前断点所在的方法
+- 首先认识下这个**方法调用栈**，如下图，首先请求进入DemoController的insertDemo方法，然后调用insert方法，其它的invoke我们且先不管，最上面的方法是当前断点所在的方法
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809173858307-262284257.png)
 
@@ -7119,7 +7126,7 @@ Debug调试的功能主要对应着图一中4和5两组按钮：
 
 其中的`${debug_port}`是用户自定义的，为debug端口，本例以5555端口为例
 
-本人在这里踩过一个坑，必须要说一下在使用公司内部的自动化部署平台NDP进行应用部署时，该平台号称支持远程调试，只需要在某个配置页面配置一下调试端口号（没有填写任何IP相关的信息），并且重新发布一下应用即可事实上也可以发现，上述JVM参数中唯一可变的就是${debug_port}但是实际在本地连接时发现却始终连不上5555 的调试端口，仔细排查才发现，下面截取了NDP发布的应用所有JVM参数列表中与远程调试相关的JVM启动参数如下：
+本人在这里踩过一个坑，必须要说一下：在使用公司内部的自动化部署平台NDP进行应用部署时，该平台号称支持远程调试，只需要在某个配置页面配置一下调试端口号（没有填写任何IP相关的信息），并且重新发布一下应用即可。事实上也可以发现，上述JVM参数中唯一可变的就是${debug_port}。但是实际在本地连接时发现却始终连不上5555 的调试端口，仔细排查才发现，下面截取了NDP发布的应用所有JVM参数列表中与远程调试相关的JVM启动参数如下：
 
 ```bash
 -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=127.0.0.1:5555
@@ -7133,11 +7140,11 @@ Debug调试的功能主要对应着图一中4和5两组按钮：
 
 ### 本地连接远程服务器debug端口
 
-打开Intellij IDEA，在顶部靠右的地方选择”Edit Configurations…”，进去之后点击+号，选择”Remote”，按照下图的只是填写红框内的内容，其中Name填写名称，这里为remote webserver，host为远程代码运行的机器的ip/hostname，port为上一步指定的debug_port，本例是5555然后点击Apply，最后点击OK即可
+打开IDEA，在顶部靠右的地方选择”Edit Configurations…”，进去之后点击+号，选择”Remote”，按照下图的只是填写红框内的内容，其中Name填写名称，这里为remote webserver，host为远程代码运行的机器的ip/hostname，port为上一步指定的debug_port，本例是5555。然后点击Apply，最后点击OK即可
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809174020671-1179886966.png)
 
-现在在上一步选择”Edit Configurations…”的下拉框的位置选择上一步创建的remote webserver，然后点击右边的debug按钮(长的像臭虫那个)，看控制台日志，如果出现类似“Connected to the target VM, address: ‘xx.xx.xx.xx:5555’, transport: ‘socket’”的字样，就表示连接成功过了我这里实际显示的内容如下：
+现在在上一步选择”Edit Configurations…”的下拉框的位置选择上一步创建的remote webserver，然后点击右边的debug按钮(长的像臭虫那个)，看控制台日志，如果出现类似“Connected to the target VM, address: ‘xx.xx.xx.xx:5555’, transport: ‘socket’”的字样，就表示连接成功过了，我这里实际显示的内容如下：
 
 ```bash
 Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
@@ -7189,15 +7196,15 @@ Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
 
 ##  简介
 
-断点调试是我们最常使用的调试手段，它可以获取到方法执行过程中的变量信息，并可以观察到方法的执行路径但断点调试会在断点位置停顿，使得整个应用停止响应在线上停顿应用是致命的，动态调试技术给了我们创造新的调试模式的想象空间本文将研究Java语言中的动态调试技术，首先概括Java动态调试所涉及的技术基础，接着介绍我们在Java动态调试领域的思考及实践，通过结合实际业务场景，设计并实现了一种具备动态性的断点调试工具Java-debug-tool，显著提高了故障排查效率
+断点调试是我们最常使用的调试手段，它可以获取到方法执行过程中的变量信息，并可以观察到方法的执行路径但断点调试会在断点位置停顿，使得整个应用停止响应在线上停顿应用是致命的，动态调试技术给了我们创造新的调试模式的想象空间。本文将研究Java语言中的动态调试技术，首先概括Java动态调试所涉及的技术基础，接着介绍我们在Java动态调试领域的思考及实践，通过结合实际业务场景，设计并实现了一种具备动态性的断点调试工具Java-debug-tool，显著提高了故障排查效率
 
-JVMTI (JVM Tool Interface)是Java虚拟机对外提供的Native编程接口，通过JVMTI，外部进程可以获取到运行时JVM的诸多信息，比如线程、GC等Agent是一个运行在目标JVM的特定程序，它的职责是负责从目标JVM中获取数据，然后将数据传递给外部进程加载Agent的时机可以是目标JVM启动之时，也可以是在目标JVM运行时进行加载，而在目标JVM运行时进行Agent加载具备动态性，对于时机未知的Debug场景来说非常实用下面将详细分析Java Agent技术的实现细节
+JVMTI (JVM Tool Interface)是Java虚拟机对外提供的Native编程接口，通过JVMTI，外部进程可以获取到运行时JVM的诸多信息，比如线程、GC等。Agent是一个运行在目标JVM的特定程序，它的职责是负责从目标JVM中获取数据，然后将数据传递给外部进程。加载Agent的时机可以是目标JVM启动之时，也可以是在目标JVM运行时进行加载，而在目标JVM运行时进行Agent加载具备动态性，对于时机未知的Debug场景来说非常实用。下面将详细分析Java Agent技术的实现细节
 
 
 
 ## Agent的实现模式
 
-JVMTI是一套Native接口，在Java SE 5之前，要实现一个Agent只能通过编写Native代码来实现从Java SE 5开始，可以使用Java的Instrumentation接口(Java.lang.instrument)来编写Agent无论是通过Native的方式还是通过Java Instrumentation接口的方式来编写Agent，它们的工作都是借助JVMTI来进行完成，下面介绍通过Java Instrumentation接口编写Agent的方法
+JVMTI是一套Native接口，在Java SE 5之前，要实现一个Agent只能通过编写Native代码来实现。从Java SE 5开始，可以使用Java的Instrumentation接口(Java.lang.instrument)来编写Agent。无论是通过Native的方式还是通过Java Instrumentation接口的方式来编写Agent，它们的工作都是借助JVMTI来进行完成，下面介绍通过Java Instrumentation接口编写Agent的方法
 
 
 
@@ -7232,15 +7239,16 @@ Agent-Class: Class
 
 - 挂载到目标JVM
 
-将编写的Agent打成jar包后，就可以挂载到目标JVM上去了如果选择在目标JVM启动时加载Agent，则可以使用 “-Javaagent:[=]“，具体的使用方法可以使用“Java -Help”来查看如果想要在运行时挂载Agent到目标JVM，就需要做一些额外的开发了
+将编写的Agent打成jar包后，就可以挂载到目标JVM上去了如果选择在目标JVM启动时加载Agent，则可以使用 “-Javaagent:[=]“，具体的使用方法可以使用“Java -Help”来查看。如果想要在运行时挂载Agent到目标JVM，就需要做一些额外的开发了
 
-com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通过这个类找到目标JVM，并且将Agent挂载到目标JVM上下面是使用com.sun.tools.attach.VirtualMachine进行动态挂载Agent的一般实现：
+com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通过这个类找到目标JVM，并且将Agent挂载到目标JVM上。下面是使用com.sun.tools.attach.VirtualMachine进行动态挂载Agent的一般实现：
 
 ```java
     private void attachAgentToTargetJVM() throws Exception {
         List<VirtualMachineDescriptor> virtualMachineDescriptors = VirtualMachine.list();
         VirtualMachineDescriptor targetVM = null;
         for (VirtualMachineDescriptor descriptor : virtualMachineDescriptors) {
+            // 通过指定的进程ID找到目标JVM
             if (descriptor.id().equals(configure.getPid())) {
                 targetVM = descriptor;
                 break;
@@ -7251,17 +7259,19 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
         }
         VirtualMachine virtualMachine = null;
         try {
+            // 通过Attach挂载到目标JVM上
             virtualMachine = VirtualMachine.attach(targetVM);
             virtualMachine.loadAgent("{agent}", "{params}");
         } catch (Exception e) {
             if (virtualMachine != null) {
+                // 将Agent从目标JVM卸载
                 virtualMachine.detach();
             }
         }
     }
 ```
 
-首先通过指定的进程ID找到目标JVM，然后通过Attach挂载到目标JVM上，执行加载Agent操作VirtualMachine的Attach方法就是用来将Agent挂载到目标JVM上去的，而Detach则是将Agent从目标JVM卸载关于Agent是如何挂载到目标JVM上的具体技术细节，将在下文中进行分析
+首先通过指定的进程ID找到目标JVM，然后通过Attach挂载到目标JVM上，执行加载Agent操作。VirtualMachine的Attach方法就是用来将Agent挂载到目标JVM上去的，而Detach则是将Agent从目标JVM卸载。关于Agent是如何挂载到目标JVM上的具体技术细节，将在下文中进行分析
 
 
 
@@ -7269,7 +7279,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
 
 ### 参数解析
 
-创建JVM时，JVM会进行参数解析，即解析那些用来配置JVM启动的参数，比如堆大小、GC等；本文主要关注解析的参数为-agentlib、 -agentpath、 -Javaagent，这几个参数用来指定Agent，JVM会根据这几个参数加载Agent下面来分析一下JVM是如何解析这几个参数的
+创建JVM时，JVM会进行参数解析，即解析那些用来配置JVM启动的参数，比如堆大小、GC等；本文主要关注解析的参数为-agentlib、 -agentpath、 -Javaagent，这几个参数用来指定Agent，JVM会根据这几个参数加载Agent。下面来分析一下JVM是如何解析这几个参数的
 
 ```java
   // -agentlib and -agentpath
@@ -7314,7 +7324,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
     }
 ```
 
-上面的代码片段截取自hotspot/src/share/vm/runtime/arguments.cpp中的 Arguments::parse_each_vm_init_arg(const JavaVMInitArgs* args, bool* patch_mod_Javabase, Flag::Flags origin) 函数，该函数用来解析一个具体的JVM参数这段代码的主要功能是解析出需要加载的Agent路径，然后调用add_init_agent函数进行解析结果的存储下面先看一下add_init_agent函数的具体实现：
+上面的代码片段截取自hotspot/src/share/vm/runtime/arguments.cpp中的 Arguments::parse_each_vm_init_arg(const JavaVMInitArgs* args, bool* patch_mod_Javabase, Flag::Flags origin) 函数，该函数用来解析一个具体的JVM参数。这段代码的主要功能是解析出需要加载的Agent路径，然后调用add_init_agent函数进行解析结果的存储。下面先看一下add_init_agent函数的具体实现：
 
 ```java
   // -agentlib and -agentpath arguments
@@ -7325,7 +7335,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
 
 AgentLibraryList是一个简单的链表结构，add_init_agent函数将解析好的、需要加载的Agent添加到这个链表中，等待后续的处理
 
-这里需要注意，解析-Javaagent参数有一些特别之处，这个参数用来指定一个我们通过Java Instrumentation API来编写的Agent，Java Instrumentation API底层依赖的是JVMTI，对-JavaAgent的处理也说明了这一点，在调用add_init_agent函数时第一个参数是“instrument”，关于加载Agent这个问题在下一小节进行展开到此，我们知道在启动JVM时指定的Agent已经被JVM解析完存放在了一个链表结构中下面来分析一下JVM是如何加载这些Agent的
+这里需要注意，解析-Javaagent参数有一些特别之处，这个参数用来指定一个我们通过Java Instrumentation API来编写的Agent，Java Instrumentation API底层依赖的是JVMTI，对-JavaAgent的处理也说明了这一点，在调用add_init_agent函数时第一个参数是“instrument”，关于加载Agent这个问题在下一小节进行展开。到此，我们知道在启动JVM时指定的Agent已经被JVM解析完存放在了一个链表结构中。下面来分析一下JVM是如何加载这些Agent的
 
 
 
@@ -7358,7 +7368,7 @@ void Threads::create_vm_init_agents() {
 }
 ```
 
-create_vm_init_agents这个函数通过遍历Agent链表来逐个加载Agent通过这段代码可以看出，首先通过lookup_agent_on_load来加载Agent并且找到Agent_OnLoad函数，这个函数是Agent的入口函数如果没找到这个函数，则认为是加载了一个不合法的Agent，则什么也不做，否则调用这个函数，这样Agent的代码就开始执行起来了对于使用Java Instrumentation API来编写Agent的方式来说，在解析阶段观察到在add_init_agent函数里面传递进去的是一个叫做”instrument”的字符串，其实这是一个动态链接库在Linux里面，这个库叫做libinstrument.so，在BSD系统中叫做libinstrument.dylib，该动态链接库在{Java_HOME}/jre/lib/目录下
+create_vm_init_agents这个函数通过遍历Agent链表来逐个加载Agent。通过这段代码可以看出，首先通过lookup_agent_on_load来加载Agent并且找到Agent_OnLoad函数，这个函数是Agent的入口函数。如果没找到这个函数，则认为是加载了一个不合法的Agent，则什么也不做，否则调用这个函数，这样Agent的代码就开始执行起来了。对于使用Java Instrumentation API来编写Agent的方式来说，在解析阶段观察到在add_init_agent函数里面传递进去的是一个叫做”instrument”的字符串，其实这是一个动态链接库。在Linux里面，这个库叫做libinstrument.so，在BSD系统中叫做libinstrument.dylib，该动态链接库在{Java_HOME}/jre/lib/目录下
 
 
 
@@ -7366,7 +7376,7 @@ create_vm_init_agents这个函数通过遍历Agent链表来逐个加载Agent通�
 
 libinstrument用来支持使用Java Instrumentation API来编写Agent，在libinstrument中有一个非常重要的类称为：JPLISAgent(Java Programming Language Instrumentation Services Agent)，它的作用是初始化所有通过Java Instrumentation API编写的Agent，并且也承担着通过JVMTI实现Java Instrumentation中暴露API的责任
 
-我们已经知道，在JVM启动的时候，JVM会通过-Javaagent参数加载Agent最开始加载的是libinstrument动态链接库，然后在动态链接库里面找到JVMTI的入口方法：Agent_OnLoad下面就来分析一下在libinstrument动态链接库中，Agent_OnLoad函数是怎么实现的
+我们已经知道，在JVM启动的时候，JVM会通过-Javaagent参数加载Agent。最开始加载的是libinstrument动态链接库，然后在动态链接库里面找到JVMTI的入口方法：Agent_OnLoad。下面就来分析一下在libinstrument动态链接库中，Agent_OnLoad函数是怎么实现的
 
 ```java
 JNIEXPORT jint JNICALL
@@ -7394,7 +7404,7 @@ DEF_Agent_OnLoad(JavaVM *vm, char *tail, void * reserved) {
 }
 ```
 
-上述代码片段是经过精简的libinstrument中Agent_OnLoad实现的，大概的流程就是：先创建一个JPLISAgent，然后将ManiFest中设定的一些参数解析出来， 比如(Premain-Class)等创建了JPLISAgent之后，调用initializeJPLISAgent对这个Agent进行初始化操作跟进initializeJPLISAgent看一下是如何初始化的：
+上述代码片段是经过精简的libinstrument中Agent_OnLoad实现，大概的流程就是：先创建一个JPLISAgent，然后将ManiFest中设定的一些参数解析出来， 比如(Premain-Class)等。创建了JPLISAgent之后，调用initializeJPLISAgent对这个Agent进行初始化操作。跟进initializeJPLISAgent看一下是如何初始化的：
 
 ```java
 JPLISInitializationError initializeJPLISAgent(JPLISAgent *agent, JavaVM *vm, JVMtiEnv *JVMtienv) {
@@ -7416,7 +7426,7 @@ JPLISInitializationError initializeJPLISAgent(JPLISAgent *agent, JavaVM *vm, JVM
 }
 ```
 
-这里，我们关注callbacks.VMInit = &eventHandlerVMInit;这行代码，这里设置了一个VMInit事件的回调函数，表示在JVM初始化的时候会回调eventHandlerVMInit函数下面来看一下这个函数的实现细节，猜测就是在这里调用了Premain方法：
+这里，我们关注callbacks.VMInit = &eventHandlerVMInit;这行代码，这里设置了一个VMInit事件的回调函数，表示在JVM初始化的时候会回调eventHandlerVMInit函数。下面来看一下这个函数的实现细节，猜测就是在这里调用了Premain方法：
 
 ```java
 void JNICALL  eventHandlerVMInit( JVMtiEnv *JVMtienv,JNIEnv *jnienv,jthread thread) {
@@ -7441,7 +7451,7 @@ jboolean startJavaAgent( JPLISAgent *agent,JNIEnv *jnienv,const char *Classname,
 }
 ```
 
-看到这里，Instrument已经实例化，invokeJavaAgentMainMethod这个方法将我们的premain方法执行起来了接着，我们就可以根据Instrument实例来做我们想要做的事情了
+看到这里，Instrument已经实例化，invokeJavaAgentMainMethod这个方法将我们的premain方法执行起来了。接着，我们就可以根据Instrument实例来做我们想要做的事情了
 
 
 
@@ -7449,7 +7459,7 @@ jboolean startJavaAgent( JPLISAgent *agent,JNIEnv *jnienv,const char *Classname,
 
 ## 运行时加载Agent
 
-比起JVM启动时加载Agent，运行时加载Agent就比较有诱惑力了，因为运行时加载Agent的能力给我们提供了很强的动态性，我们可以在需要的时候加载Agent来进行一些工作因为是动态的，我们可以按照需求来加载所需要的Agent，下面来分析一下动态加载Agent的相关技术细节
+比起JVM启动时加载Agent，运行时加载Agent就比较有诱惑力了，因为运行时加载Agent的能力给我们提供了很强的动态性，我们可以在需要的时候加载Agent来进行一些工作。因为是动态的，我们可以按照需求来加载所需要的Agent，下面来分析一下动态加载Agent的相关技术细节
 
 
 
@@ -7539,9 +7549,9 @@ LinuxAttachOperation* LinuxAttachListener::dequeue() {
 }
 ```
 
-这是Linux上的实现，不同的操作系统实现方式不太一样上面的代码表面，Attach Listener在某个端口监听着，通过accept来接收一个连接，然后从这个连接里面将请求读取出来，然后将请求包装成一个AttachOperation类型的对象，之后就会从表里查询对应的处理函数，然后进行处理
+这是Linux上的实现，不同的操作系统实现方式不太一样。上面的代码表面，Attach Listener在某个端口监听着，通过accept来接收一个连接，然后从这个连接里面将请求读取出来，然后将请求包装成一个AttachOperation类型的对象，之后就会从表里查询对应的处理函数，然后进行处理
 
-Attach Listener使用一种被称为“懒加载”的策略进行初始化，也就是说，JVM启动的时候Attach Listener并不一定会启动起来下面我们来分析一下这种“懒加载”策略的具体实现方案
+Attach Listener使用一种被称为“懒加载”的策略进行初始化，也就是说，JVM启动的时候Attach Listener并不一定会启动起来。下面我们来分析一下这种“懒加载”策略的具体实现方案
 
 ```java
   // Start Attach Listener if +StartAttachListener or it can't be started lazily
@@ -7582,14 +7592,14 @@ void AttachListener::vm_start() {
 }
 ```
 
-这是在Linux上的实现，是将/tmp/目录下的.Java_pid{pid}文件删除，后面在创建Attach Listener线程的时候会创建出来这个文件上面说到，AttachListener::init()这行代码不会在create_vm的时候执行，这行代码的实现已经在上文中分析了，就是创建Attach Listener线程，并监听其他JVM的命令请求现在来分析一下这行代码是什么时候被调用的，也就是“懒加载”到底是怎么加载起来的
+这是在Linux上的实现，是将/tmp/目录下的.Java_pid{pid}文件删除，后面在创建Attach Listener线程的时候会创建出来这个文件。上面说到，AttachListener::init()这行代码不会在create_vm的时候执行，这行代码的实现已经在上文中分析了，就是创建Attach Listener线程，并监听其他JVM的命令请求。现在来分析一下这行代码是什么时候被调用的，也就是“懒加载”到底是怎么加载起来的
 
 ```java
   // Signal Dispatcher needs to be started before VMInit event is posted
   os::signal_init();
 ```
 
-这是create_vm中的一段代码，看起来跟信号相关，其实Attach机制就是使用信号来实现“懒加载“的下面我们来仔细地分析一下这个过程
+这是create_vm中的一段代码，看起来跟信号相关，其实Attach机制就是使用信号来实现“懒加载“的。下面我们来仔细地分析一下这个过程
 
 ```java
 void os::signal_init() {
@@ -7623,7 +7633,7 @@ JVM创建了一个新的进程来实现信号处理，这个线程叫“Signal D
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809174335168-632289388.png)
 
-这段代码截取自signal_thread_entry函数，截取中的内容是和Attach机制信号处理相关的代码这段代码的意思是，当接收到“SIGBREAK”信号，就执行接下来的代码，这个信号是需要Attach到JVM上的信号发出来，这个后面会再分析我们先来看一句关键的代码：AttachListener::is_init_trigger()：
+这段代码截取自signal_thread_entry函数，截取中的内容是和Attach机制信号处理相关的代码。这段代码的意思是，当接收到“SIGBREAK”信号，就执行接下来的代码，这个信号是需要Attach到JVM上的信号发出来，这个后面会再分析。我们先来看一句关键的代码：AttachListener::is_init_trigger()：
 
 ```java
 bool AttachListener::is_init_trigger() {
@@ -7652,13 +7662,13 @@ bool AttachListener::is_init_trigger() {
 }
 ```
 
-首先检查了一下是否在JVM启动时启动了Attach Listener，或者是否已经启动过如果没有，才继续执行，在/tmp目录下创建一个叫做.attach_pid%d的文件，然后执行AttachListener的init函数，这个函数就是用来创建Attach Listener线程的函数，上面已经提到多次并进行了分析到此，我们知道Attach机制的奥秘所在，也就是Attach Listener线程的创建依靠Signal Dispatcher线程，Signal Dispatcher是用来处理信号的线程，当Signal Dispatcher线程接收到“SIGBREAK”信号之后，就会执行初始化Attach Listener的工作
+首先检查了一下是否在JVM启动时启动了Attach Listener，或者是否已经启动过。如果没有，才继续执行，在/tmp目录下创建一个叫做.attach_pid%d的文件，然后执行AttachListener的init函数，这个函数就是用来创建Attach Listener线程的函数，上面已经提到多次并进行了分析。到此，我们知道Attach机制的奥秘所在，也就是Attach Listener线程的创建依靠Signal Dispatcher线程，Signal Dispatcher是用来处理信号的线程，当Signal Dispatcher线程接收到“SIGBREAK”信号之后，就会执行初始化Attach Listener的工作
 
 
 
 ### 运行时加载Agent的实现
 
-我们继续分析，到底是如何将一个Agent挂载到运行着的目标JVM上，在上文中提到了一段代码，用来进行运行时挂载Agent，可以参考上文中展示的关于“attachAgentToTargetJVM”方法的代码这个方法里面的关键是调用VirtualMachine的attach方法进行Agent挂载的功能。下面我们就来分析一下VirtualMachine的attach方法具体是怎么实现的
+我们继续分析，到底是如何将一个Agent挂载到运行着的目标JVM上，在上文中提到了一段代码，用来进行运行时挂载Agent，可以参考上文中展示的关于“attachAgentToTargetJVM”方法的代码。这个方法里面的关键是调用VirtualMachine的attach方法进行Agent挂载的功能。下面我们就来分析一下VirtualMachine的attach方法具体是怎么实现的
 
 ```java
 public static VirtualMachine attach(String var0) throws AttachNotSupportedException, IOException {
@@ -7685,7 +7695,7 @@ public static VirtualMachine attach(String var0) throws AttachNotSupportedExcept
 }
 ```
 
-这个方法通过attachVirtualMachine方法进行attach操作，在MacOS系统中，AttachProvider的实现类是BsdAttachProvider我们来看一下BsdAttachProvider的attachVirtualMachine方法是如何实现的：
+这个方法通过attachVirtualMachine方法进行attach操作，在MacOS系统中，AttachProvider的实现类是BsdAttachProvider。我们来看一下BsdAttachProvider的attachVirtualMachine方法是如何实现的：
 
 ```java
 public VirtualMachine attachVirtualMachine(String var1) throws AttachNotSupportedException, IOException {
@@ -7727,7 +7737,7 @@ private String findSocketFile(int var1) {
 }
 ```
 
-findSocketFile方法用来查询目标JVM上是否已经启动了Attach Listener，它通过检查”tmp/“目录下是否存在Java_pid{pid}来进行实现如果已经存在了，则说明Attach机制已经准备就绪，可以接受客户端的命令了，这个时候客户端就可以通过connect连接到目标JVM进行命令的发送，比如可以发送“load”命令来加载Agent如果Java_pid{pid}文件还不存在，则需要通过sendQuitTo方法向目标JVM发送一个“SIGBREAK”信号，让它初始化Attach Listener线程并准备接受客户端连接可以看到，发送了信号之后客户端会循环等待Java_pid{pid}这个文件，之后再通过connect连接到目标JVM上
+findSocketFile方法用来查询目标JVM上是否已经启动了Attach Listener，它通过检查”tmp/“目录下是否存在Java_pid{pid}来进行实现。如果已经存在了，则说明Attach机制已经准备就绪，可以接受客户端的命令了，这个时候客户端就可以通过connect连接到目标JVM进行命令的发送，比如可以发送“load”命令来加载Agent；如果Java_pid{pid}文件还不存在，则需要通过sendQuitTo方法向目标JVM发送一个“SIGBREAK”信号，让它初始化Attach Listener线程并准备接受客户端连接。可以看到，发送了信号之后客户端会循环等待Java_pid{pid}这个文件，之后再通过connect连接到目标JVM上
 
 
 
@@ -7772,7 +7782,7 @@ static jint load_agent(AttachOperation* op, outputStream* out) {
      * error this method will throw an exception.
 ```
 
-这里面提到，我们不可以增加、删除或者重命名字段和方法，改变方法的签名或者类的继承关系认识到这一点很重要，当我们通过ASM获取到增强的字节码之后，如果增强后的字节码没有遵守这些规则，那么调用redefineClasses方法来进行类的重定义就会失败那redefineClasses方法具体是怎么实现类的重定义的呢? 它对运行时的JVM会造成什么样的影响呢? 下面来分析redefineClasses的实现细节
+这里面提到，我们不可以增加、删除或者重命名字段和方法，改变方法的签名或者类的继承关系。认识到这一点很重要，当我们通过ASM获取到增强的字节码之后，如果增强后的字节码没有遵守这些规则，那么调用redefineClasses方法来进行类的重定义就会失败。那redefineClasses方法具体是怎么实现类的重定义的呢? 它对运行时的JVM会造成什么样的影响呢? 下面来分析redefineClasses的实现细节
 
 
 
@@ -7780,7 +7790,7 @@ static jint load_agent(AttachOperation* op, outputStream* out) {
 
 ## 重定义类字节码的实现细节
 
-上文中我们提到，libinstrument动态链接库中，JPLISAgent不仅实现了Agent入口代码执行的路由，而且还是Java代码与JVMTI之间的一道桥梁我们在Java代码中调用Java Instrumentation API的redefineClasses，其实会调用libinstrument中的相关代码，我们来分析一下这条路径
+上文中我们提到，libinstrument动态链接库中，JPLISAgent不仅实现了Agent入口代码执行的路由，而且还是Java代码与JVMTI之间的一道桥梁。我们在Java代码中调用Java Instrumentation API的redefineClasses，其实会调用libinstrument中的相关代码，我们来分析一下这条路径
 
 ```java
 public void redefineClasses(ClassDefinition... var1) throws ClassNotFoundException {
@@ -7828,7 +7838,7 @@ JVMtiError JVMtiEnv::RedefineClasses(jint Class_count, const JVMtiClassDefinitio
 } /* end RedefineClasses */
 ```
 
-重定义类的请求会被JVM包装成一个VM_RedefineClasses类型的VM_Operation，VM_Operation是JVM内部的一些操作的基类，包括GC操作等VM_Operation由VMThread来执行，新的VM_Operation操作会被添加到VMThread的运行队列中去，VMThread会不断从队列里面拉取VM_Operation并调用其doit等函数执行具体的操作VM_RedefineClasses函数的流程较为复杂，下面是VM_RedefineClasses的大致流程：
+重定义类的请求会被JVM包装成一个VM_RedefineClasses类型的VM_Operation，VM_Operation是JVM内部的一些操作的基类，包括GC操作等。VM_Operation由VMThread来执行，新的VM_Operation操作会被添加到VMThread的运行队列中去，VMThread会不断从队列里面拉取VM_Operation并调用其doit等函数执行具体的操作。VM_RedefineClasses函数的流程较为复杂，下面是VM_RedefineClasses的大致流程：
 
 - 加载新的字节码，合并常量池，并且对新的字节码进行校验工作
 
@@ -7870,13 +7880,13 @@ VM_RedefineClasses实现比较复杂的，详细实现可以参考 [RedefineClas
 
 ## Java-debug-tool
 
-Java-debug-tool是一个使用Java Instrument API来实现的动态调试工具，它通过在目标JVM上启动一个TcpServer来和调试客户端通信调试客户端通过命令行来发送调试命令给TcpServer，TcpServer中有专门用来处理命令的handler，handler处理完命令之后会将结果发送回客户端，客户端通过处理将调试结果展示出来下面将详细介绍Java-debug-tool的整体设计和实现
+Java-debug-tool是一个使用Java Instrument API来实现的动态调试工具，它通过在目标JVM上启动一个TcpServer来和调试客户端通信。调试客户端通过命令行来发送调试命令给TcpServer，TcpServer中有专门用来处理命令的handler，handler处理完命令之后会将结果发送回客户端，客户端通过处理将调试结果展示出来。下面将详细介绍Java-debug-tool的整体设计和实现
 
 
 
 ### Java-debug-tool整体架构
 
-Java-debug-tool包括一个Java Agent和一个用于处理调试命令的核心API，核心API通过一个自定义的类加载器加载进来，以保证目标JVM的类不会被污染整体上Java-debug-tool的设计是一个Client-Server的架构，命令客户端需要完整的完成一个命令之后才能继续执行下一个调试命令Java-debug-tool支持多人同时进行调试，下面是整体架构图：
+Java-debug-tool包括一个Java Agent和一个用于处理调试命令的核心API，核心API通过一个自定义的类加载器加载进来，以保证目标JVM的类不会被污染。整体上Java-debug-tool的设计是一个Client-Server的架构，命令客户端需要完整的完成一个命令之后才能继续执行下一个调试命令。Java-debug-tool支持多人同时进行调试，下面是整体架构图：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809174610464-1097594053.png)
 
@@ -7887,7 +7897,7 @@ Java-debug-tool包括一个Java Agent和一个用于处理调试命令的核心A
 - 业务逻辑层：实现调试命令处理，包括命令分发、数据收集、数据处理等过程
 - 基础实现层：Java-debug-tool实现的底层依赖，通过Java Instrumentation提供的API进行类查找、类重定义等能力，Java Instrumentation底层依赖JVMTI来完成具体的功能
 
-在Agent被挂载到目标JVM上之后，Java-debug-tool会安排一个Spy在目标JVM内活动，这个Spy负责将目标JVM内部的相关调试数据转移到命令处理模块，命令处理模块会处理这些数据，然后给客户端返回调试结果命令处理模块会增强目标类的字节码来达到数据获取的目的，多个客户端可以共享一份增强过的字节码，无需重复增强下面从Java-debug-tool的字节码增强方案、命令设计与实现等角度详细说明
+在Agent被挂载到目标JVM上之后，Java-debug-tool会安排一个Spy在目标JVM内活动，这个Spy负责将目标JVM内部的相关调试数据转移到命令处理模块，命令处理模块会处理这些数据，然后给客户端返回调试结果。命令处理模块会增强目标类的字节码来达到数据获取的目的，多个客户端可以共享一份增强过的字节码，无需重复增强下面从Java-debug-tool的字节码增强方案、命令设计与实现等角度详细说明
 
 
 
@@ -7895,7 +7905,7 @@ Java-debug-tool包括一个Java Agent和一个用于处理调试命令的核心A
 
 ### Java-debug-tool的字节码增强方案
 
-Java-debug-tool使用字节码增强来获取到方法运行时的信息，比如方法入参、出参等，可以在不同的字节码位置进行增强，这种行为可以称为“插桩”，每个“桩”用于获取数据并将他转储出去Java-debug-tool具备强大的插桩能力，不同的桩负责获取不同类别的数据，下面是Java-debug-tool目前所支持的“桩”：
+Java-debug-tool使用字节码增强来获取到方法运行时的信息，比如方法入参、出参等，可以在不同的字节码位置进行增强，这种行为可以称为“插桩”，每个“桩”用于获取数据并将他转储出去。Java-debug-tool具备强大的插桩能力，不同的桩负责获取不同类别的数据，下面是Java-debug-tool目前所支持的“桩”：
 
 - 方法进入点：用于获取方法入参信息
 - Fields获取点1：在方法执行前获取到对象的字段信息
@@ -7909,15 +7919,15 @@ Java-debug-tool使用字节码增强来获取到方法运行时的信息，比�
 
 #### 字节码增强
 
-Java-debug-tool在实现上使用了ASM工具来进行字节码增强，并且每个插桩点都可以进行配置，如果不想要什么信息，则没必要进行对应的插桩操作这种可配置的设计是非常有必要的，因为有时候我们仅仅是想要知道方法的入参和出参，但Java-debug-tool却给我们返回了所有的调试信息，这样我们就得在众多的输出中找到我们所关注的内容如果可以进行配置，则除了入参点和出参点外其他的桩都不插，那么就可以快速看到我们想要的调试数据，这种设计的本质是为了让调试者更加专注下面是Java-debug-tool的字节码增强工作方式：
+Java-debug-tool在实现上使用了ASM工具来进行字节码增强，并且每个插桩点都可以进行配置，如果不想要什么信息，则没必要进行对应的插桩操作这种可配置的设计是非常有必要的，因为有时候我们仅仅是想要知道方法的入参和出参，但Java-debug-tool却给我们返回了所有的调试信息，这样我们就得在众多的输出中找到我们所关注的内容。如果可以进行配置，则除了入参点和出参点外其他的桩都不插，那么就可以快速看到我们想要的调试数据，这种设计的本质是为了让调试者更加专注。下面是Java-debug-tool的字节码增强工作方式：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809174639872-1049167292.png)
 
-如图所示，当调试者发出调试命令之后，Java-debug-tool会识别命令并判断是否需要进行字节码增强，如果命令需要增强字节码，则判断当前类+当前方法是否已经被增强过上文已经提到，字节码替换是有一定损耗的，这种具有损耗的操作发生的次数越少越好，所以字节码替换操作会被记录起来，后续命令直接使用即可，不需要重复进行字节码增强，字节码增强还涉及多个调试客户端的协同工作问题，当一个客户端增强了一个类的字节码之后，这个客户端就锁定了该字节码，其他客户端变成只读，无法对该类进行字节码增强，只有当持有锁的客户端主动释放锁或者断开连接之后，其他客户端才能继续增强该类的字节码
+如图所示，当调试者发出调试命令之后，Java-debug-tool会识别命令并判断是否需要进行字节码增强，如果命令需要增强字节码，则判断当前类+当前方法是否已经被增强过。上文已经提到，字节码替换是有一定损耗的，这种具有损耗的操作发生的次数越少越好，所以字节码替换操作会被记录起来，后续命令直接使用即可，不需要重复进行字节码增强，字节码增强还涉及多个调试客户端的协同工作问题，当一个客户端增强了一个类的字节码之后，这个客户端就锁定了该字节码，其他客户端变成只读，无法对该类进行字节码增强，只有当持有锁的客户端主动释放锁或者断开连接之后，其他客户端才能继续增强该类的字节码
 
 字节码增强模块收到字节码增强请求之后，会判断每个增强点是否需要插桩，这个判断的根据就是上文提到的插桩配置，之后字节码增强模块会生成新的字节码，Java-debug-tool将执行字节码替换操作，之后就可以进行调试数据收集了
 
-经过字节码增强之后，原来的方法中会插入收集运行时数据的代码，这些代码在方法被调用的时候执行，获取到诸如方法入参、局部变量等信息，这些信息将传递给数据收集装置进行处理数据收集的工作通过Advice完成，每个客户端同一时间只能注册一个Advice到Java-debug-tool调试模块上，多个客户端可以同时注册自己的Advice到调试模块上Advice负责收集数据并进行判断，如果当前数据符合调试命令的要求，Java-debug-tool就会卸载这个Advice，Advice的数据就会被转移到Java-debug-tool的命令结果处理模块进行处理，并将结果发送到客户端
+经过字节码增强之后，原来的方法中会插入收集运行时数据的代码，这些代码在方法被调用的时候执行，获取到诸如方法入参、局部变量等信息，这些信息将传递给数据收集装置进行处理。数据收集的工作通过Advice完成，每个客户端同一时间只能注册一个Advice到Java-debug-tool调试模块上，多个客户端可以同时注册自己的Advice到调试模块上。Advice负责收集数据并进行判断，如果当前数据符合调试命令的要求，Java-debug-tool就会卸载这个Advice，Advice的数据就会被转移到Java-debug-tool的命令结果处理模块进行处理，并将结果发送到客户端
 
 
 
@@ -7925,13 +7935,13 @@ Java-debug-tool在实现上使用了ASM工具来进行字节码增强，并且�
 
 #### Advice的工作方式
 
-Advice是调试数据收集器，不同的调试策略会对应不同的AdviceAdvice是工作在目标JVM的线程内部的，它需要轻量级和高效，意味着Advice不能做太过于复杂的事情，它的核心接口“match”用来判断本次收集到的调试数据是否满足调试需求如果满足，那么Java-debug-tool就会将其卸载，否则会继续让他收集调试数据，这种“加载Advice” -> “卸载Advice”的工作模式具备很好的灵活性
+Advice是调试数据收集器，不同的调试策略会对应不同的Advice。Advice是工作在目标JVM的线程内部的，它需要轻量级和高效，意味着Advice不能做太过于复杂的事情，它的核心接口“match”用来判断本次收集到的调试数据是否满足调试需求。如果满足，那么Java-debug-tool就会将其卸载，否则会继续让他收集调试数据，这种“加载Advice” -> “卸载Advice”的工作模式具备很好的灵活性
 
-关于Advice，需要说明的另外一点就是线程安全，因为它加载之后会运行在目标JVM的线程中，目标JVM的方法极有可能是多线程访问的，这也就是说，Advice需要有能力处理多个线程同时访问方法的能力，如果Advice处理不当，则可能会收集到杂乱无章的调试数据下面的图片展示了Advice和Java-debug-tool调试分析模块、目标方法执行以及调试客户端等模块的关系
+关于Advice，需要说明的另外一点就是线程安全，因为它加载之后会运行在目标JVM的线程中，目标JVM的方法极有可能是多线程访问的，这也就是说，Advice需要有能力处理多个线程同时访问方法的能力，如果Advice处理不当，则可能会收集到杂乱无章的调试数据。下面的图片展示了Advice和Java-debug-tool调试分析模块、目标方法执行以及调试客户端等模块的关系
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809174703200-324764638.png)
 
-Advice的首次挂载由Java-debug-tool的命令处理器完成，当一次调试数据收集完成之后，调试数据处理模块会自动卸载Advice，然后进行判断，如果调试数据符合Advice的策略，则直接将数据交由数据处理模块进行处理，否则会清空调试数据，并再次将Advice挂载到目标方法上去，等待下一次调试数据非首次挂载由调试数据处理模块进行，它借助Advice按需取数据，如果不符合需求，则继续挂载Advice来获取数据，否则对调试数据进行处理并返回给客户端
+Advice的首次挂载由Java-debug-tool的命令处理器完成，当一次调试数据收集完成之后，调试数据处理模块会自动卸载Advice，然后进行判断，如果调试数据符合Advice的策略，则直接将数据交由数据处理模块进行处理，否则会清空调试数据，并再次将Advice挂载到目标方法上去，等待下一次调试数据。非首次挂载由调试数据处理模块进行，它借助Advice按需取数据，如果不符合需求，则继续挂载Advice来获取数据，否则对调试数据进行处理并返回给客户端
 
 
 
@@ -7941,13 +7951,13 @@ Advice的首次挂载由Java-debug-tool的命令处理器完成，当一次调�
 
 #### 命令执行
 
-上文已经完整的描述了Java-debug-tool的设计以及核心技术方案，本小节将详细介绍Java-debug-tool的命令设计与实现首先需要将一个调试命令的执行流程描述清楚，下面是一张用来表示命令请求处理流程的图片：
+上文已经完整的描述了Java-debug-tool的设计以及核心技术方案，本小节将详细介绍Java-debug-tool的命令设计与实现。首先需要将一个调试命令的执行流程描述清楚，下面是一张用来表示命令请求处理流程的图片：
 
 ![img](https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230809174727030-2620359.png)
 
-上图简单的描述了Java-debug-tool的命令处理方式，客户端连接到服务端之后，会进行一些协议解析、协议认证、协议填充等工作，之后将进行命令分发服务端如果发现客户端的命令不合法，则会立即返回错误信息，否则再进行命令处理命令处理属于典型的三段式处理，前置命令处理、命令处理以及后置命令处理，同时会对命令处理过程中的异常信息进行捕获处理，三段式处理的好处是命令处理被拆成了多个阶段，多个阶段负责不同的职责前置命令处理用来做一些命令权限控制的工作，并填充一些类似命令处理开始时间戳等信息，命令处理就是通过字节码增强，挂载Advice进行数据收集，再经过数据处理来产生命令结果的过程，后置处理则用来处理一些连接关闭、字节码解锁等事项
+上图简单的描述了Java-debug-tool的命令处理方式，客户端连接到服务端之后，会进行一些协议解析、协议认证、协议填充等工作，之后将进行命令分发。服务端如果发现客户端的命令不合法，则会立即返回错误信息，否则再进行命令处理命令。处理属于典型的三段式处理，前置命令处理、命令处理以及后置命令处理，同时会对命令处理过程中的异常信息进行捕获处理，三段式处理的好处是命令处理被拆成了多个阶段，多个阶段负责不同的职责。前置命令处理用来做一些命令权限控制的工作，并填充一些类似命令处理开始时间戳等信息，命令处理就是通过字节码增强，挂载Advice进行数据收集，再经过数据处理来产生命令结果的过程，后置处理则用来处理一些连接关闭、字节码解锁等事项
 
-Java-debug-tool允许客户端设置一个命令执行超时时间，超过这个时间则认为命令没有结果，如果客户端没有设置自己的超时时间，就使用默认的超时时间进行超时控制Java-debug-tool通过设计了两阶段的超时检测机制来实现命令执行超时功能：首先，第一阶段超时触发，则Java-debug-tool会友好的警告命令处理模块处理时间已经超时，需要立即停止命令执行，这允许命令自己做一些现场清理工作，当然需要命令执行线程自己感知到这种超时警告；当第二阶段超时触发，则Java-debug-tool认为命令必须结束执行，会强行打断命令执行线程超时机制的目的是为了不让命令执行太长时间，命令如果长时间没有收集到调试数据，则应该停止执行，并思考是否调试了一个错误的方法当然，超时机制还可以定期清理那些因为未知原因断开连接的客户端持有的调试资源，比如字节码锁
+Java-debug-tool允许客户端设置一个命令执行超时时间，超过这个时间则认为命令没有结果，如果客户端没有设置自己的超时时间，就使用默认的超时时间进行超时控制。Java-debug-tool通过设计了两阶段的超时检测机制来实现命令执行超时功能：首先，第一阶段超时触发，则Java-debug-tool会友好的警告命令处理模块处理时间已经超时，需要立即停止命令执行，这允许命令自己做一些现场清理工作，当然需要命令执行线程自己感知到这种超时警告；当第二阶段超时触发，则Java-debug-tool认为命令必须结束执行，会强行打断命令执行线程。超时机制的目的是为了不让命令执行太长时间，命令如果长时间没有收集到调试数据，则应该停止执行，并思考是否调试了一个错误的方法当然，超时机制还可以定期清理那些因为未知原因断开连接的客户端持有的调试资源，比如字节码锁
 
 
 
