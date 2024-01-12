@@ -56,7 +56,7 @@
 
 # 分布式
 
-[[分布式Java应用基础与实践].林昊.扫描版](https://github.com/zixq-stack/Java-Note/blob/master/%E5%88%86%E5%B8%83%E5%BC%8F/%5B%E5%88%86%E5%B8%83%E5%BC%8FJava%E5%BA%94%E7%94%A8%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%AE%9E%E8%B7%B5%5D.%E6%9E%97%E6%98%8A.%E6%89%AB%E6%8F%8F%E7%89%88.pdf)。文件格式：PDF
+[分布式Java应用基础与实践（林昊）【扫描版】](https://github.com/zixq-stack/Java-Note/blob/master/%E5%88%86%E5%B8%83%E5%BC%8F/%5B%E5%88%86%E5%B8%83%E5%BC%8FJava%E5%BA%94%E7%94%A8%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%AE%9E%E8%B7%B5%5D.%E6%9E%97%E6%98%8A.%E6%89%AB%E6%8F%8F%E7%89%88.pdf)。文件格式：PDF
 
 [Java中间件技术及其应用开发](https://github.com/zixq-stack/Java-Note/blob/master/%E5%88%86%E5%B8%83%E5%BC%8F/Java%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%8A%80%E6%9C%AF%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91.pdf)。文件格式：PDF
 
@@ -128,7 +128,7 @@
 
 [图解计算机基础](https://github.com/zixq-stack/Java-Note/blob/master/%E5%BC%80%E5%8F%91/%E5%9B%BE%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80.pdf)。文件格式：PDF
 
-[《HTTP权威指南》最新中文完整版本](https://github.com/zixq-stack/Java-Note/blob/master/%E5%BC%80%E5%8F%91/%E3%80%8AHTTP%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E6%9C%80%E6%96%B0%E4%B8%AD%E6%96%87%E5%AE%8C%E6%95%B4%E7%89%88%E6%9C%AC.pdf)。文件格式：PDF
+[HTTP权威指南【最新中文完整版本】](https://github.com/zixq-stack/Java-Note/blob/master/%E5%BC%80%E5%8F%91/%E3%80%8AHTTP%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E6%9C%80%E6%96%B0%E4%B8%AD%E6%96%87%E5%AE%8C%E6%95%B4%E7%89%88%E6%9C%AC.pdf)。文件格式：PDF
 
 [图解HTTP](https://github.com/zixq-stack/Java-Note/blob/master/%E5%BC%80%E5%8F%91/%E5%9B%BE%E8%A7%A3HTTP.pdf)。文件格式：PDF
 
