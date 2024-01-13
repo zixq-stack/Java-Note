@@ -4076,7 +4076,7 @@ tsar --cpu				## 当然这个也可以和-d参数配合来查询某天的单个�
 
 
 
-# [#](#Java问题排错)Java问题排错
+# [#](#Java问题排错)Java内存问题排查
 
 > **内存泄漏**（memory leak）：在Java中如果不再使用一个对象，但是该对象依然在GC ROOT的引用链上，这个对象就不会被垃圾回收器回收，这种情况就称之为内存泄漏。 
 >
@@ -4632,7 +4632,7 @@ ps -ef|grep java
 heapdump --live 文件路径\文件名
 ```
 
-
+> 导出的dump文件还可以直接使用在线工具 [HeapHero](https://heaphero.io/) 打开来分析。
 
 
 
@@ -4712,9 +4712,7 @@ heapdump --live 文件路径\文件名
 
 > Arthas的stacke在线定位大致思路
 
-1. 将内存中存活对象以直方图的形式保存到文件中，这个过程会影响用户的时间，但是时间比较短暂。
-
-使用命令如下：
+1. 将内存中存活对象以直方图的形式保存到文件中，这个过程会影响用户的时间，但是时间比较短暂。使用命令如下：
 
 ```bash
 jmap -histo:live 进程ID > 文件路径/文件名		# 表示：将 > 符号左边的内容 输出到 右边这个路径中
@@ -4929,7 +4927,7 @@ Debug调试的功能主要对应着上面开篇中图一的4和5两组按钮：
 
 - `On 'Update' actions`，执行更新操作时所做的事情，一般选择`'Update Classes and resources'`，即更新类和资源文件
 
-一般配合热部署插件会更好用，如JRebel，这样就不用每次更改代码后还要去重新启动服务。如何激活JRebe在前面声明的原文连接中。
+一般配合热部署插件会更好用，如JRebel，这样就不用每次更改代码后还要去重新启动服务。[激活JRebe戳这里](https://www.cnblogs.com/sansui6/p/17043448.html)，另外会涉及到邮箱问题：[临时邮箱在线生成](https://temp-mail.org/zh/)。
 
 - `On frame deactivation`，在IDEA窗口失去焦点时触发，即一般你从idea切换到浏览器的时候，idea会自动帮你做的事情，一般可以设置Do nothing，频繁切换会比较消耗资源的
 
@@ -5231,7 +5229,7 @@ Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
 
 
 
-# 附加：Java应用在线调试Arthas整理
+# Java应用在线调试Arthas整理
 
 > 参考资料：
 >
@@ -5651,7 +5649,7 @@ $ Classloader
 
 - help——查看命令帮助信息
 - [cat](https://arthas.aliyun.com/doc/cat.html)——打印文件内容，和linux里的cat命令类似
-- [grep]](https://arthas.aliyun.com/doc/grep.html)——匹配查找，和linux里的grep命令类似
+- [grep](https://arthas.aliyun.com/doc/grep.html)——匹配查找，和linux里的grep命令类似
 - [pwd](https://arthas.aliyun.com/doc/pwd.html)——返回当前的工作目录，和linux命令类似
 - cls——清空当前屏幕区域
 - session——查看当前会话的信息
@@ -5659,10 +5657,11 @@ $ Classloader
 - version——输出当前目标 Java 进程所加载的 Arthas 版本号
 - history——打印命令历史
 - quit——退出当前 Arthas 客户端，其他 Arthas 客户端不受影响
-- stop/shutdown——关闭 Arthas 服务端，所有 Arthas 客户端全部退出
+- stop / shutdown——关闭 Arthas 服务端，所有 Arthas 客户端全部退出
 - [keymap](https://arthas.aliyun.com/doc/keymap.html)——Arthas快捷键列表及自定义快捷键
+- [profiler](https://arthas.aliyun.com/doc/profiler.html)——使用[async-profiler](https://github.com/jvm-profiling-tools/async-profiler)生成火焰图。
 
-
+> 注意：profiler这个命令无法在Windows中运行，可以在Linux或MacOS中运行。
 
 
 
@@ -5698,9 +5697,9 @@ $ Classloader
 
 
 
-#### monitor/watch/trace相关
+#### [#](#monitor/watch/trace相关)monitor/watch/trace相关
 
-> 请注意，这些命令，都通过字节码增强技术来实现的，会在指定类的方法中插入一些切面来实现数据统计和观测，因此在线上、预发使用时，请尽量明确需要观测的类、方法以及条件，诊断结束要执行 `shutdown` 或将增强过的类执行 `reset` 命令
+> 请注意：这些命令，都通过字节码增强技术来实现的，会在指定类的方法中插入一些切面来实现数据统计和观测，因此在线上、预发使用时，请尽量明确需要观测的类、方法以及条件，诊断结束要执行 `shutdown` 或 `stop` 亦或将增强过的类执行 `reset` 命令
 
 - [monitor](https://arthas.aliyun.com/doc/monitor.html)——方法执行监控
 - [watch](https://arthas.aliyun.com/doc/watch.html)——方法执行数据观测
@@ -5744,7 +5743,7 @@ Arthas支持使用管道对上述命令的结果进行进一步的处理，如`s
 
 
 
-## Arthas场景实战
+## [#](Arthas场景实战)Arthas场景实战
 
 ### 查看最繁忙的线程，以及是否有阻塞情况发生?
 
@@ -5753,7 +5752,7 @@ Arthas支持使用管道对上述命令的结果进行进一步的处理，如`s
 ```bash
 thread -n 3			# 查看最繁忙的三个线程栈信息
 thread				# 以直观的方式展现所有的线程情况
-thread -b			#找出当前阻塞其他线程的线程
+thread -b			# 找出当前阻塞其他线程的线程
 ```
 
 
@@ -5788,14 +5787,23 @@ jad pdai.tech.servlet.TestMyServlet
 
 ### 重要：如何跟踪某个方法的返回值、入参.... ?
 
-> 场景：我想看下我新加的方法在线运行的参数和返回值?
+> 场景：我想看下我新加的方法在线运行的参数和返回值？或者是 在使用trace定位到性能较低的方法之后，使用watch命令监控该方法，获得更为详细的方法信息。
 
 ```bash
 # 同时监控入参，返回值，及异常
-watch pdai.tech.servlet.TestMyServlet testMethod "{params, returnObj, throwExp}" -e -x 2 
+watch pdai.tech.servlet.TestMyServlet testMethod "{params, returnObj, throwExp}" -e -x 2
+
+
+# 参数
+"{params, returnObj, throwExp}"			单引号、双引号都行。打印参数、返回值、抛出异常	可以任意选择，一般都只看params，从而模拟现象
+‘#cost>毫秒值'						  	  只打印耗时超过该毫秒值的调用。
+-e										在 函数异常之后 观察
+-x 2									打印的结果中如果有嵌套（比如对象里有属性），最多只展开2层。允许设置的最大值为4。
 ```
 
-具体看watch命令
+> 对该命令注意前面说的 [monitor/watch/trace相关](#monitor/watch/trace相关) 注意事项，监控完了需要使用命令结束。
+
+具体看 [watch](https://arthas.aliyun.com/doc/watch.html) 命令
 
 
 
@@ -5804,23 +5812,37 @@ watch pdai.tech.servlet.TestMyServlet testMethod "{params, returnObj, throwExp}"
 > 场景：我想看下某个方法的调用栈的信息?
 
 ```bash
+# stack 类名 方法名
 stack pdai.tech.servlet.TestMyServlet testMethod
 ```
 
-运行此命令之后需要即时触发方法才会有响应的信息打印在控制台上
+运行此命令之后需要即时触发方法才会有响应的信息打印在控制台上。
+
+具体请看 [stack](https://arthas.aliyun.com/doc/stack.html) 命令
 
 
 
-### 重要：找到最耗时的方法调用?
+### [#](#重要：找到最耗时的方法调用?)重要：找到最耗时的方法调用?
 
-> 场景：testMethod这个方法入口响应很慢，如何找到最耗时的子调用?
+> 场景：testMethod这个方法入口响应很慢，如何找到最耗时的子调用？即方法嵌套，找出具体是哪个方法耗时。
 
 ```bash
 # 执行的时候每个子调用的运行时长，可以找到最耗时的子调用
+# trace 类名 方法名
 trace pdai.tech.servlet.TestMyServlet testMethod
+
+
+# 此命令此场景常用参数
+--skipJDKMethod false		可以输出JDK核心包中的方法及耗时。
+‘#cost>毫秒值’			  	  只打印耗时超过该毫秒值的调用。
+–n 数值					   最多显示该数值条数的数据。
 ```
 
-运行此命令之后需要即时触发方法才会有响应的信息打印在控制台上，然后一层一层看子调用
+> 对该命令注意前面说的 [monitor/watch/trace相关](#monitor/watch/trace相关) 注意事项，监控完了需要使用命令结束。
+
+运行此命令之后需要即时触发方法才会有响应的信息打印在控制台上，然后一层一层看子调用。
+
+更多请看 [trace](https://arthas.aliyun.com/doc/trace.html) 命令。
 
 
 
@@ -5852,6 +5874,34 @@ redefine /tmp/com/example/demo/arthas/user/UserController.Class
 ```bash
 monitor -c 5 demo.MathGame primeFactors
 ```
+
+
+
+
+
+### 如何定位偏底层的性能问题？
+
+> 场景：通过前面的排查之后，发现是偏底层的API耗时长，我怎么确定是底层什么原因导致的？如：for循环中向ArrayList添加数据。
+>
+> 可以采用trace+watch，但稍微麻烦，下面说明 profiler 命令生成性能监控火焰图来直观的查看。
+
+```bash
+# 步骤一
+profiler start							开始监控方法执行性能。运行此命令之后需要即时触发方法才会进行监控
+
+				注意：该命令不可在Windows中执行。
+
+# 步骤二
+profiler stop --format html				以HTML的方式生成火焰图
+```
+
+> 火焰图中一般找绿色部分Java中栈顶上比较平（比较宽）的部分，很可能就是性能的瓶颈。
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240113173648691-627056610.png" alt="image-20240113173653011" style="zoom:50%;" />
+
+
+
+更多请看这里：[profiler](https://arthas.aliyun.com/doc/profiler.html)
 
 
 
@@ -6769,11 +6819,9 @@ GCT：GC总耗时
 java -jar gcviewer_1.3.4.jar 日志文件.log
 ```
 
-- [GCeasy](https://gceasy.io/)：业界首款使用AI机器学习技术在线进行GC分析和诊断的工具。定位内存泄漏、GC延迟高的问题，提供JVM参数优化建议，支持在线的可视化工具图表展示。
+- [GCeasy](https://gceasy.io/)：业界首款使用AI机器学习技术在线进行GC分析和诊断的工具。可定位内存泄漏、GC延迟高的问题，提供JVM参数优化建议，支持在线的可视化工具图表展示。此工具进入网址选择日志文件（支持tar、zip），之后点击分析，最后就会生成分析报告。
 
-此工具：进入上面的网址之后，需要注册登录、然后选择日志文件（支持tar、zip），最后就会生成分析报告。
-
-但是：此工具每天只能免费使用5次，多了就得缴费。
+- Prometheus + Grafana：这个玩意儿可以作为GC调优的工具，也可以用来做内存分析，但是，要整知识内容的话又很麻烦和费笔墨，因此，自行去网上找相关资料学习（可以直接去这里：https://www.cnblogs.com/chanshuyi/category/1862951.html）。PS：大厂中这个搭配是肯定会见到的，搭建一般是运维人员弄好，开发人员要学会怎么去看这个玩意儿。
 
 2. **诊断问题**：通过分析工具，诊断问题产生的原因。
 3. **修复问题**：调整JVM参数 或 修复源代码中的问题。
@@ -6836,7 +6884,7 @@ java -jar gcviewer_1.3.4.jar 日志文件.log
 下面前三种是比较推荐的手段，第四种仅在前三种无法解决时选用：
 
 1. **优化基础JVM参数**：基础JVM参数的设置不当，会导致频繁 FULLGC的产生。
-2. **减少对象产生**：大多数场景下的FULLGC是由于对象产生速度过快导致的， 减少对象产生可以有效的缓解FULLGC的发生。这个解决方式去看前面：[Java问题排错](#Java问题排错)。
+2. **减少对象产生**：大多数场景下的FULLGC是由于对象产生速度过快导致的， 减少对象产生可以有效的缓解FULLGC的发生。这个解决方式去看前面：[Java内存问题排查](#Java内存问题排查)。
 3. **更换垃圾回收器**：选择适合当前业务场景的垃圾回收器，减少延迟、提高吞吐量。这个解决方式去看前面的：[垃圾回收器](#垃圾回收器)。
 4. **优化垃圾回收器参数**：优化垃圾回收器的参数， 能在一定程度上提升GC 效率。
 
@@ -6993,6 +7041,236 @@ JDK9及之后 ： -Xlog:gc*:file=文件路径
 
 -XX:+PrintGCDateStamps：将时间和日期也加入到GC日志中。默认是禁用的
 ```
+
+
+
+
+
+
+
+# 性能调优
+
+> 性能调优的思路
+
+和内存排查、GC调优思路差不多。因为修复问题和测试验证需要具体开发场景演示，因此这里主要说明发现问题和诊断问题。
+
+1. **发现问题**：通过监控、测试工具发现性能问题。
+2. **诊断问题**：通过分析工具定位到某一部分代码存在的性能问题。
+3. **修复问题**：内存调优、GC调优、业务代码优化、SQL优化、架构优化等等。
+4. **测试验证**：在测试环境运行之后验证问题是否解决。
+
+
+
+> 较常见的性能问题现象
+
+1. **CPU占有率高**：通过top命令查看CPU占用率高，接近100甚至多核CPU下超过100都是有可能的。
+2. **服务处理时间特别长**：请求单个服务处理时间特别长，多服务（微服务）可以直接使用 [Apache SkyWalking](https://skywalking.apache.org/) 等监控系统来判断是哪一个环节性能低下。这个问题可以直接去前面的Arthas的实践内容：[重要：找到最耗时的方法调用?](#重要：找到最耗时的方法调用?)
+3. **线程被耗尽问题**：程序启动之后运行正常，但是在运行一段时间之后无法处理任何的请求（内存和GC正常）。
+
+
+
+> 线程转储（Thread Dump）：对所有运行中的线程当前状态的快照。
+>
+> 线程转储可以通过jstack、visualvm等工具获取。其中包含了线程名、优先级、线程ID、线程状态、线程栈信息等等内容，可以用来解决CPU占用率高、死锁等问题。
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240113182532429-342733415.png" alt="image-20240113182538277" style="zoom:80%;" />
+
+线程转储（Thread Dump）中的几个核心内容：
+
+1. **名称**： 线程名称，通过给线程设置合适的名称更容易“见名知意”。
+2. **优先级**（prio）：线程的优先级。
+3. **Java ID**（tid）：JVM中线程的唯一ID。
+4. **本地** **ID** (nid)：操作系统分配给线程的唯一ID。
+5. **状态**：线程的状态，分为
+
+- NEW – 新创建的线程，尚未开始执行。
+- RUNNABLE –正在运行或准备执行。
+- BLOCKED – 等待获取监视器锁以进入或重新进入同步块/方法。
+- WAITING – 等待其他线程执行特定操作，没有时间限制。
+- TIMED_WAITING – 等待其他线程在指定时间内执行特定操作。
+- TERMINATED – 已完成执行
+
+6. 栈追踪： 显示整个方法的栈帧信息
+
+
+
+线程转储的可视化在线分析平台：
+
+1. https://jstack.review/
+2. https://fastthread.io/
+
+
+
+
+
+## CPU占有率高问题的大致思路
+
+> 这里说明的是最基础的一种，但麻烦的方式，只起引导思路的作用。
+
+1. 通过 `top –c` 命令找到CPU占用率高的进程，获取它的进程ID。
+
+![image-20240113182955199](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240113182949128-120502860.png)
+
+2. 使用 `top -p 进程ID` 单独监控某个进程，按H查看所有的线程以及线程对应的CPU使用率，找到CPU使用率特别高的线程，获取此线程的线程ID（即下图PID，上一步获取的是进程ID，这里查看的是某进程的所有线程）。
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240113183230494-2096379167.png" alt="image-20240113183235931" style="zoom:67%;" />
+
+3. 使用 `jstack 进程ID` 命令查看所有线程正在执行的栈信息。使用 `jstack 进 程ID > 文件名` 保存到文件中方便查看。
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240113183406078-1303275662.png" alt="image-20240113183411823" style="zoom:67%;" />
+
+4. 找到nid线程ID相同的栈信息，从而就可以找到栈信息对应的源代码位置了。
+
+> 注意：需要将之前记录下的十进制线程ID号（第2步获取的）转换成16进制。
+>
+> 可以通过计算器，也可以通过 `printf ‘%x\n’ 线程ID` 命令直接获得16进制下的线程ID。
+
+
+
+另外什么更简单、方法嵌套排查、性能问题等等直接去前面的Arthas的内容：[Arthas场景实战](#Arthas场景实战)。
+
+
+
+
+
+## 线程被耗尽问题
+
+> 线程耗尽问题：程序在启动运行一段时间之后，就无法接受任何请求了。将程序重启之后继续运行，依然会出现相同的情况。
+
+线程耗尽问题，一般是由于执行时间过长：
+
+1. 检测是否有死锁产生，无法自动解除的死锁会将线程永远阻塞。
+2. 若无死锁，再使用前面“CPU占有率高的问题”中的打印线程栈的方法检测线程正在执行哪个方法，一般这些大量出现的方法就是慢方法。
+
+
+
+> 线程死锁问题的定位方式
+
+1. **第一种方式（适合线上环境）**：`jstack -l 进程ID > 文件名` 将线程栈保存到本地。在文件中搜索"deadlock"即可找到死锁位置。
+2. **第二种方式（适合开发与测试环境使）**：使用visual vm或者Jconsole工具。可以自动检测出死锁问题。生成环境这种方式一般没相应权限。
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240113193453671-1607359720.png" alt="image-20240113193459841" style="zoom:67%;" />
+
+3. **第三种方式（适合开发与测试环境）**：生成线程转储文件（Thread Dump），然后使用 [fastthread](https://fastthread.io/) 自动检测线程问题
+
+
+
+
+
+
+
+## 如何准确判断一个方法耗时多久
+
+这个问题会想到什么方式？
+
+1. 方法上打印开始时间和结束时间，他们的差值就是方法的执行耗时。
+2. 通过postman或者jmeter发起一笔请求，在控制台上看输出的时间。
+
+> 这样做是不准确的。
+>
+> 第一：测试时有些对象创建是懒加载的，所以会影响第一次的请求时间；
+>
+> 第二：因为虚拟机中JIT（即时编译器）会优化你的代码，所以上面的测试方式得出的时间并不一定是最终用户处理的时间。
+
+OpenJDK中提供了一款叫 [JMH](https://github.com/openjdk/jmh)（Java Microbenchmark Harness）的工具，可以准确地对Java代码进行基准测试，量化方法的执行性能。
+
+JMH会首先执行预热过程，确保JIT对代码进行优化之后再进行真正的迭代测试，最后输出测试的结果。
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240113215545233-1315756950.png" alt="image-20240113215550673" style="zoom:67%;" />
+
+> 简单搭建JMH环境
+
+1. 依赖：版本看GitHub官网 [JMH](https://github.com/openjdk/jmh)
+
+```xml
+<dependency>
+    <groupId>org.openjdk.jmh</groupId>
+    <artifactId>jmh-core</artifactId>
+    <version>${jmh.version}</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.openjdk.jmh</groupId>
+    <artifactId>jmh-generator-annprocess</artifactId>
+    <version>${jmh.version}</version>
+    <scope>test</scope>
+</dependency>
+```
+
+2. 编写测试代码
+
+```java
+import org.openjdk.jmh.annotations.*;
+
+import java.util.concurrent.TimeUnit;
+
+// 会将测试方法（@Benchmark标识的方法）执行5轮预热，每次持续1秒
+@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+// 启动多少个进程      jvmArgsAppend追加JVM参数
+@Fork(value = 1, jvmArgsAppend = {"-Xms1g", "-Xmx1g"})
+// 指定显示结果   可选：平均时间（Mode.AverageTime 单位纳秒）、吞吐量（Mode.Throughput）、所有内容（Mode.All）等
+@BenchmarkMode(Mode.AverageTime)
+// 指定显示结果的单位    方法执行时间快就纳秒、慢就毫秒.........
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+// 变量共享范围   整个测试环境中共享（Scope.Benchmark）、单个线程中共享（Scope.Thread）
+@State(Scope.Benchmark)
+public class HelloWorldBench {
+
+    @Benchmark  // 标志是一个测试方法
+    public int test1() {
+        int i = 0;
+        i++;
+		/*
+        * 需要将变量返回。因为上面的i没用（即：死代码），所以JIT就会将其去掉，从而造成实际测试时间的出入
+        *
+        * 要是有多个变量怎么做？
+        *   使用黑洞方法：new Blackhole().consume(...variable);
+        * */
+        return i;
+    }
+}
+```
+
+3. 开始测试
+
+方式一（推荐）：通过maven的verify命令，检测代码问题并打包成jar包。然后通过 `java -jar 打成的jar包` 命令执行基准测试。
+
+方式二：使用Java代码。但是，这种方式测试出来的时间会有出入。
+
+```java
+public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        // 要测试的类
+        .include(HelloWorldBench.class.getSimpleName())
+        // 结果的格式
+        .resultFormat(ResultFormatType.JSON)
+        // 启用多少进程（当前main方法使用）   jar就是用类上的@Fork(value = 1, jvmArgsAppend = {"-Xms1g", "-Xmx1g"})
+        .forks(1)
+        .build();
+
+    new Runner(opt).run();
+}
+```
+
+
+
+更多openjdk jmh专业场景示例去官网：[jmh-samples](https://github.com/openjdk/jmh/tree/master/jmh-samples/src/main/java/org/openjdk/jmh/samples)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
