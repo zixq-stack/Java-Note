@@ -20,6 +20,8 @@
 
 # Java
 
+[Java 多线程与并发【@pdai】](https://github.com/zixq-stack/Java-Note/blob/master/Java/Java%20%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91%E3%80%90%40pdai%E3%80%91.md)。文件格式：md
+
 [Netty权威指南-完整版](https://github.com/zixq-stack/Java-Note/blob/master/Java/Netty%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97-%E5%AE%8C%E6%95%B4%E7%89%88.pdf)。文件格式：PDF
 
 [BIO、NIO、AIO](https://github.com/zixq-stack/Java-Note/blob/master/Java/BIO%E3%80%81NIO%E3%80%81AIO.md)。文件格式：md
