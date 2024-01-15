@@ -7164,7 +7164,7 @@ JDK9及之后 ： -Xlog:gc*:file=文件路径
 这个问题会想到什么方式？
 
 1. 方法上打印开始时间和结束时间，他们的差值就是方法的执行耗时。
-2. 通过postman或者jmeter发起一笔请求，在控制台上看输出的时间。
+2. 通过postman或者jmeter发起一笔请求，在控制台上看输出的时间。或者使用前面Arthas的 [重要：找到最耗时的方法调用?trace](#重要：找到最耗时的方法调用?)。
 
 > 这样做是不准确的。
 >
@@ -7233,6 +7233,8 @@ public class HelloWorldBench {
 
 3. 开始测试
 
+> 测试结果可以通过 https://jmh.morethan.io/ 转为可视化。格式的是JSON格式(`new OptionsBuilder()..resultFormat(ResultFormatType.JSON)`可以构建为JSON格式)
+
 方式一（推荐）：通过maven的verify命令，检测代码问题并打包成jar包。然后通过 `java -jar 打成的jar包` 命令执行基准测试。
 
 方式二：使用Java代码。但是，这种方式测试出来的时间会有出入。
@@ -7252,6 +7254,8 @@ public static void main(String[] args) throws RunnerException {
 }
 ```
 
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240114163632057-473509994.png" alt="image-20240114163638444" style="zoom:67%;" />
+
 
 
 更多openjdk jmh专业场景示例去官网：[jmh-samples](https://github.com/openjdk/jmh/tree/master/jmh-samples/src/main/java/org/openjdk/jmh/samples)
@@ -7260,9 +7264,478 @@ public static void main(String[] args) throws RunnerException {
 
 
 
+## 综合案例：Java层面性能调优思路
+
+1. 假设从数据库获取的数据如下
+
+```java
+package com.zixieqing.jvmoptimize.performance.practice.dao.impl;
+
+import com.zixieqing.jvmoptimize.performance.practice.dao.UserDao;
+import com.zixieqing.jvmoptimize.performance.practice.entity.UserDetails;
+import org.springframework.stereotype.Repository;
+
+import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Repository
+public class UserDaoImpl implements UserDao {
+
+    // 提前准备好数据
+    private List<UserDetails> users = new ArrayList<>();
+
+    @PostConstruct
+    public void init(){
+        // 初始化时生成数据		这里模拟获取的数据很多
+        for (int i = 1; i <= 10000; i++) {
+            users.add(new UserDetails((long) i, LocalDateTime.now(),new Date()));
+        }
+    }
+
+    /*
+       模拟下数据库查询接口，主要目的是只优化Java代码，屏蔽SQL相关的内容
+     */
+    @Override
+    public List<UserDetails> findUsers() {
+        return users;
+    }
+}
+```
+
+```java
+package com.zixieqing.jvmoptimize.performance.practice.service.impl;
+
+import com.zixieqing.jvmoptimize.performance.practice.dao.UserDao;
+import com.zixieqing.jvmoptimize.performance.practice.entity.User;
+import com.zixieqing.jvmoptimize.performance.practice.entity.UserDetails;
+import com.zixieqing.jvmoptimize.performance.practice.service.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    private List<User> users = new ArrayList<>();
+
+    @PostConstruct
+    public void init(){
+        // 初始化时生成数据
+        for (int i = 1; i <= 10000; i++) {
+            users.add(new User((long) i, RandomStringUtils.randomAlphabetic(10)));
+        }
+    }
+
+
+    @Autowired
+    private UserDao userDao;
+
+    @Override
+    public List<UserDetails> getUserDetails() {
+        return userDao.findUsers();
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return users;
+    }
+}
+```
+
+2. 假设服务器中程序员写的代码如下，还未优化
+
+```java
+package com.zixieqing.jvmoptimize.performance.practice.controller;
+
+import com.zixieqing.jvmoptimize.performance.practice.entity.User;
+import com.zixieqing.jvmoptimize.performance.practice.entity.UserDetails;
+import com.zixieqing.jvmoptimize.performance.practice.service.UserService;
+import com.zixieqing.jvmoptimize.performance.practice.vo.UserVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/puser")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    // 初始代码
+    public List<UserVO> user1(){
+        // 1.从数据库获取前端需要的详情数据
+        List<UserDetails> userDetails = userService.getUserDetails();
+
+        // 2.获取缓存中的用户数据
+        List<User> users = userService.getUsers();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // 3.遍历详情集合，从缓存中获取用户名，生成VO进行填充
+        ArrayList<UserVO> userVOS = new ArrayList<>();
+        // 嵌套循环
+        for (UserDetails userDetail : userDetails) {
+            UserVO userVO = new UserVO();
+            // 可以使用BeanUtils对象拷贝
+            userVO.setId(userDetail.getId());
+            userVO.setRegister(simpleDateFormat.format(userDetail.getRegister2()));
+            // 填充name
+            for (User user : users) {
+                if(user.getId().equals(userDetail.getId())){
+                    userVO.setName(user.getName());
+                }
+            }
+            // 加入集合
+            userVOS.add(userVO);
+        }
+
+        return userVOS;
+
+    }
+}
+```
+
+3. 使用Arthas的trace定位性能
+
+```bash
+# trace 类名 方法名 --skipJDKMethod false
+
+trace com.zixieqing.jvmoptimize.performance.practice.controller.UserController user1 --skipJDKMethod false
+```
+
+![image-20240114174734995](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240114174728126-467498094.png)
+
+发现问题就出在上面的循环嵌套里面（第2步user1()方法），共循环了（count）100 0000次。
+
+通过多次对2中代码的优化、多次3的测试，发现的问题如下：
+
+- 两次循环，则减少循环次数：去掉内层循环，使用map
+
+```java
+        // 2.获取缓存中的用户数据
+        List<User> users = userService.getUsers();        
+
+		// 将list转换成hashmap
+        HashMap<Long, User> map = new HashMap<>();
+        for (User user : users) {
+            map.put(user.getId(), user);
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // 3.遍历详情集合，从缓存中获取用户名，生成VO进行填充
+        ArrayList<UserVO> userVOS = new ArrayList<>();
+        for (UserDetails userDetail : userDetails) {
+            UserVO userVO = new UserVO();
+            // 可以使用BeanUtils对象拷贝
+            userVO.setId(userDetail.getId());
+            userVO.setRegister(simpleDateFormat.format(userDetail.getRegister2()));
+            // 填充name
+            userVO.setName(map.get(userDetail.getId()).getName());
+            // 加入集合
+            userVOS.add(userVO);
+        }
 
 
 
+
+```
+
+- 优化日期格式化：
+
+Date对象（`new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());`）：的SimpleDateFormatter是线程不安全的，所以每次需要重新创建对象。优化的方式：将对象放入ThreadLocal中进行保存。
+
+LocalDateTime对象（`LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));`）：DateTimeFormatter线程安全，并且性能较好。
+
+测试代码：
+
+```java
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.results.format.ResultFormatType;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+// 执行5轮预热，每次持续1秒
+@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+// 执行一次测试
+@Fork(value = 1, jvmArgsAppend = {"-Xms1g", "-Xmx1g"})
+// 显示平均时间，单位纳秒
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@State(Scope.Thread)
+public class DateBench {
+
+    private static String sDateFormatString = "yyyy-MM-dd HH:mm:ss";
+    private Date date = new Date();
+    private LocalDateTime localDateTime = LocalDateTime.now();
+    private static ThreadLocal<SimpleDateFormat> simpleDateFormatThreadLocal = new ThreadLocal();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    @Setup
+    public void setUp() {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(sDateFormatString);
+        simpleDateFormatThreadLocal.set(sdf);
+    }
+
+    @Benchmark
+    public String date() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sDateFormatString);
+        return simpleDateFormat.format(date);
+    }
+
+    @Benchmark
+    public String localDateTime() {
+        return localDateTime.format(formatter);
+    }
+    @Benchmark
+    public String localDateTimeNotSave() {
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    @Benchmark
+    public String dateThreadLocal() {
+        return simpleDateFormatThreadLocal.get().format(date);
+    }
+
+
+    public static void main(String[] args) throws RunnerException {
+        Options opt = new OptionsBuilder()
+                .include(DateBench.class.getSimpleName())
+                .resultFormat(ResultFormatType.JSON)
+                .forks(1)
+                .build();
+
+        new Runner(opt).run();
+    }
+}
+```
+
+将JSON结果用 https://jmh.morethan.io/ 转为可视化的对比结果如下：
+
+![image-20240114201842422](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240114201835675-70171434.png)
+
+可见如下方式的LocalDateTime胜出：
+
+```java
+private LocalDateTime localDateTime = LocalDateTime.now();
+private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+@Benchmark
+public String localDateTime() {
+    return localDateTime.format(formatter);
+}
+```
+
+- 使用并发流（`xxxx.parallelStream()`，`xxxxx.Stream()`的方式性能低）优化外层循环
+
+所以经过上面的优化之后，源代码就被优化为如下的形式：
+
+```java
+package com.zixieqing.jvmoptimize.performance.practice.controller;
+
+import com.zixieqing.jvmoptimize.performance.practice.entity.User;
+import com.zixieqing.jvmoptimize.performance.practice.entity.UserDetails;
+import com.zixieqing.jvmoptimize.performance.practice.service.UserService;
+import com.zixieqing.jvmoptimize.performance.practice.vo.UserVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/puser")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    // 初始代码
+    // public List<UserVO> user1() {
+    //     // 1.从数据库获取前端需要的详情数据
+    //     List<UserDetails> userDetails = userService.getUserDetails();
+    //
+    //     // 2.获取缓存中的用户数据
+    //     List<User> users = userService.getUsers();
+    //
+    //     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    //     // 3.遍历详情集合，从缓存中获取用户名，生成VO进行填充
+    //     ArrayList<UserVO> userVOS = new ArrayList<>();
+    //     for (UserDetails userDetail : userDetails) {
+    //         UserVO userVO = new UserVO();
+    //         // 可以使用BeanUtils对象拷贝
+    //         userVO.setId(userDetail.getId());
+    //         userVO.setRegister(simpleDateFormat.format(userDetail.getRegister2()));
+    //         // 填充name
+    //         for (User user : users) {
+    //             if (user.getId().equals(userDetail.getId())) {
+    //                 userVO.setName(user.getName());
+    //             }
+    //         }
+    //         // 加入集合
+    //         userVOS.add(userVO);
+    //     }
+    //
+    //     return userVOS;
+    //
+    // }
+
+    // 使用并行流优化性能
+    public List<UserVO> user5() {
+        // 1.从数据库获取前端需要的详情数据
+        List<UserDetails> userDetails = userService.getUserDetails();
+
+        // 2.获取缓存中的用户数据
+        List<User> users = userService.getUsers();
+        // 将list转换成hashmap
+        Map<Long, User> map = users.parallelStream().collect(Collectors.toMap(User::getId, o -> o));
+
+        // 3.遍历详情集合，从缓存中获取用户名，生成VO进行填充
+        return userDetails.parallelStream().map(userDetail -> {
+            UserVO userVO = new UserVO();
+            // 可以使用BeanUtils对象拷贝
+            userVO.setId(userDetail.getId());
+            userVO.setRegister(userDetail.getRegister().format(formatter));
+            // 填充name
+            userVO.setName(map.get(userDetail.getId()).getName());
+            return userVO;
+        }).collect(Collectors.toList());
+
+    }
+}
+```
+
+4. JMH再次测试
+
+```java
+package com.zixieqing.jvmoptimize;
+
+import com.zixieqing.jvmoptimize.performance.practice.controller.UserController;
+import org.junit.jupiter.api.Test;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.results.format.ResultFormatType;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+// 执行5轮预热，每次持续1秒
+@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+// 执行一次测试
+@Fork(value = 1, jvmArgsAppend = {"-Xms1g", "-Xmx1g"})
+// 显示平均时间，单位纳秒
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@State(Scope.Benchmark)
+public class PracticeBenchmarkTest {
+
+    private UserController userController;
+    private ApplicationContext context;
+
+    // 初始化将springboot容器启动 端口号随机
+    @Setup
+    public void setup() {
+        this.context = new SpringApplication(JvmOptimizeApplication.class).run();
+        userController = this.context.getBean(UserController.class);
+    }
+
+    // 启动这个测试用例进行测试
+    @Test
+    public void executeJmhRunner() throws RunnerException, IOException {
+
+        new Runner(new OptionsBuilder()
+                .shouldDoGC(true)
+                .forks(0)
+                .resultFormat(ResultFormatType.JSON)
+                .shouldFailOnError(true)
+                .build()).run();
+    }
+
+    // 用黑洞消费数据，避免JIT消除代码
+    @Benchmark
+    public void test1(final Blackhole bh) {
+        bh.consume(userController.user1());
+    }
+
+    @Benchmark
+    public void test2(final Blackhole bh) {
+
+        bh.consume(userController.user2());
+    }
+
+    @Benchmark
+    public void test3(final Blackhole bh) {
+
+        bh.consume(userController.user3());
+    }
+
+    @Benchmark
+    public void test4(final Blackhole bh) {
+
+        bh.consume(userController.user4());
+    }
+
+    @Benchmark
+    public void test5(final Blackhole bh) {
+
+        bh.consume(userController.user5());
+    }
+}
+```
+
+JMH测试对比结果如下：
+
+![image-20240114202925544](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240114202918632-2010969851.png)
+
+> 若是需要再提升，追求更高的性能、更小的CPU和内存开销，则可以使用Oracle提供的另一款高性能JDK：[GraalVM](https://www.graalvm.org/) 。这玩意儿有两种模式：
+>
+> 1. JIT（Just-In-Time）模式：可跨平台，就是“一次编写，到处运行”。预热之后，通过内置的Graal即时编译器优化热点代码，生成比Hotspot JIT更高性能的机器码。这种模式提高性能，社区版对CPU占有率和内存提高不明显（企业版有显著提高）。
+> 2. AOP（Ahead-Of-Time）模式：不可跨平台，而是为特定平台创建可执行文件，本质是本地镜像（Native Image）。这种模式对启动速度、CPU、内存开销都有了显著提高。但是此模式也有另外问题：
+>    - 跨平台问题：在不同平台下运行需要编译多次。编译平台的依赖库等环境要与运行平台保持一致。
+>    - 消耗大量的CPU和内存：使用框架之后，编译本地镜像的时间比较长，同时也需要消耗大量的CPU和内存。
+>    - AOT 编译器在编译时，需要知道运行时所有可访问的所有类。但是Java中有一些技术可以在运行时创建类，例如反射、动态代理等。这些技术在很多框架比如Spring中大量使用，所以框架需要对AOT编译器进行适配解决类似的问题。
+>
+> GraalVM的使用场景：传统的系统架构有人力、机房开销大；流量激增需要大量服务器，流量过后很多服务器就闲置造成资源浪费，而因为虚拟化技术、云原生技术，所以GraalVM+云服务商提高的Serverless无服务器化架构就是其使用场景了。
 
 
 
