@@ -1344,7 +1344,7 @@ public static Class<?> forName(String name, boolean initialize, ClassLoader load
 
 ## 卸载
 
-这个玩意儿在垃圾回收还会整。
+> 这个玩意儿在垃圾回收还会整。
 
 
 
@@ -1455,8 +1455,8 @@ public static Class<?> forName(String name, boolean initialize, ClassLoader load
 > 每个线程在创建的时候都会创建一个虚拟机栈，其内部保存一个个的**栈帧(Stack Frame）**，每一个Java方法的调用都使用一个栈帧来保存。
 
 1. Java虚拟机栈主管 Java 程序的运行，它保存方法的局部变量、部分结果，并参与方法的调用和返回。
-2. ==Java虚拟机栈线程私有的，生命周期和线程一致==。
-3. JVM 直接对虚拟机栈的操作只有两个：方法的入栈(方法的执行)与出栈(方法的结束)。
+2. ==Java虚拟机栈是线程私有的，生命周期和线程一致==。
+3. JVM 直接对虚拟机栈的操作只有两个：方法的入栈(方法的执行) 与 出栈(方法的结束)。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231112165138710-1571653769.png" alt="image-20231112165137448" style="zoom:67%;" />
 
@@ -1539,7 +1539,7 @@ Solarls
 
 
 
-与 -Xss 类似，也可以使用 -XX:ThreadStackSize 调整标志来配置堆栈大小。
+与 -Xss 类似，也可以使用 -XX:ThreadStackSize 来配置栈大小。
 
 	格式为： -XX:ThreadStackSize=1024
 ```
@@ -3154,7 +3154,7 @@ RSet在内部使用Per Region Table(PRT)记录分区的引用情况。由于RSet
 >
 > 2. 混合回收（年轻代+老年代）：Mixed GC。
 >
-> - Mixed GC：回收所有年轻代和部分老年代的对象以及大对象区。采用标记-复制算法
+> - Mixed GC：回收所有年轻代和部分老年代的对象以及大对象区。采用标记-复制整理算法
 
 
 
@@ -3235,7 +3235,7 @@ G1内部做了一个优化，一旦发现没有引用指向巨型对象，则可
 
 > 混合收集：Mixed GC
 >
-> - 回收所有年轻代和部分老年代的对象以及大对象区。采用的算法：类似标记-整理（无只可使用堆的一半的限制）。
+> - 回收所有年轻代和部分老年代的对象以及大对象区。采用的算法：标记-复制整理。
 >
 > **触发时机**：经过多次的回收之后(上述Young GC执行流程)，会出现很多老年代区（Old），此时总堆占有率达到阈值时（`-XX:InitiatingHeapOccupancyPercent` 默认45%）会触发混合回收Mixed GC。
 
@@ -5947,34 +5947,74 @@ JVMTI是一套Native接口，在Java SE 5之前，要实现一个Agent只能通�
 
 ### 通过Java Instrumentation API
 
-- 实现Agent启动方法
+- 【[可选]：在maven中可以添加maven-assembly-plugin插件，此插件可以打包出java agent的jar包。】
 
-Java Agent支持目标JVM启动时加载，也支持在目标JVM运行时加载，这两种不同的加载模式会使用不同的入口函数，如果需要在目标JVM启动的同时加载Agent，那么可以选择实现下面的方法：
+```xml
+<build>
+	<plugins>
+    	<plugin>
+        	<groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plgin</artifactId>
+            <configuration>
+            	<!-- 将所有依赖都打入一个jar包中 -->
+                <descriptorRefs>
+                	<descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <!-- 指定java agent相关配置文件 -->
+                <archive>
+                	<manifestFile>src/main/resources/MANIFEST.MF</manifestFile>
+                </archive>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+- 实现Agent启动方法：新建类，根据需要使用如下API即可，如AgentMain类
+
+Java Agent支持目标JVM启动时加载（即静态加载模式），也支持在目标JVM运行时加载（即动态加载模式），这两种不同的加载模式会使用不同的入口函数，如果需要在目标JVM启动的同时加载Agent，那么可以选择实现下面的方法：
 
 ```java
+// 静态加载模式
 [1] public static void premain(String agentArgs, Instrumentation inst);
 [2] public static void premain(String agentArgs);
 ```
 
-JVM将首先寻找[1]，如果没有发现[1]，再寻找[2]如果希望在目标JVM运行时加载Agent，则需要实现下面的方法：
+JVM将首先寻找[1]，如果没有发现[1]，再寻找[2]。
+
+如果希望在目标JVM运行时加载Agent，则需要实现下面的方法：
 
 ```java
+// 动态加载模式
 [1] public static void agentmain(String agentArgs, Instrumentation inst);
 [2] public static void agentmain(String agentArgs);
 ```
 
-这两组方法的第一个参数AgentArgs是随同 “– Javaagent”一起传入的程序参数，如果这个字符串代表了多个参数，就需要自己解析这些参数inst是Instrumentation类型的对象，是JVM自动传入的，我们可以拿这个参数进行类增强等操作
+这两组方法的第一个参数AgentArgs是随同 “-Javaagent”一起传入的程序参数，如果这个字符串代表了多个参数，就需要自己解析这些参数，inst是Instrumentation类型的对象，是JVM自动传入的，我们可以拿这个参数进行类增强等操作
 
 - 指定Main-Class
 
-Agent需要打包成一个jar包，在ManiFest属性中指定“Premain-Class”或者“Agent-Class”：
+Agent需要打包成一个jar包，在resources中新建MANIFEST.MF文件，此文件主要用于描述java agent的配置属性，比如使用哪一个类的agentmain方法。
 
-```java
-Premain-Class: Class
-Agent-Class: Class
+> 注意：使用时去掉下面的注释
+
+```ini
+Mainfest-Version: 1.0
+# 静态加载模式：指定 public static void premain() 方法所在的类路径
+Premain-Class: xxxx.xxxx.xxxx.xxx.xxx.PreAgentMain
+# 动态加载模式：指定 public static void agentmain(）方法所在的类路径
+Agent-Class: xxxx.xxxx.xxxx.xxx.xxx.AgentMain
+# 在Java Agent中能否重新定义一个类
+Can-Redefine-Classes: true
+# 能否将老的类转换成新的类
+Can-Retransform-Classes: true
+# 能否在Java Agent中生成native本地方法，有需要可以使用C/C++创建native方法
+Can-Set-Native-Method-Prefix: true
+# 注意：这里最好空一行，不然可能会报错
+
 ```
 
-- 挂载到目标JVM
+- 挂载到目标JVM：可以选择新建类，如AttachMain类
 
 将编写的Agent打成jar包后，就可以挂载到目标JVM上去了如果选择在目标JVM启动时加载Agent，则可以使用 “-Javaagent:[=]“，具体的使用方法可以使用“Java -Help”来查看。如果想要在运行时挂载Agent到目标JVM，就需要做一些额外的开发了
 
@@ -5996,7 +6036,7 @@ com.sun.tools.attach.VirtualMachine 这个类代表一个JVM抽象，可以通�
         }
         VirtualMachine virtualMachine = null;
         try {
-            // 通过Attach挂载到目标JVM上
+            // 通过Attach挂载到目标JVM上	最核心的就是这两步
             virtualMachine = VirtualMachine.attach(targetVM);
             virtualMachine.loadAgent("{agent}", "{params}");
         } catch (Exception e) {
@@ -7049,6 +7089,10 @@ JDK9及之后 ： -Xlog:gc*:file=文件路径
 
 
 # 性能调优
+
+> 这里面的内容其实在前面知识体系中已经概括进去了，这里单独弄出来方便初学者理清思路。
+
+
 
 > 性能调优的思路
 
