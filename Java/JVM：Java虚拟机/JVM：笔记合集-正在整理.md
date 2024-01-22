@@ -572,6 +572,333 @@ jad 类的全限定名		命令含义：反编译已加载类的源码
 
 
 
+# 字节码增强技术
+
+> 声明：本章节内容转载于 https://www.pdai.tech/md/java/jvm/java-jvm-class-enhancer.html
+
+
+
+## 字节码增强技术
+
+在上文中，着重介绍了字节码的结构，这为我们了解字节码增强技术的实现打下了基础。字节码增强技术就是一类对现有字节码进行修改或者动态生成全新字节码文件的技术。接下来，我们将从最直接操纵字节码的实现方式开始深入进行剖析
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511122938700-1810862780.png)
+
+### ASM
+
+对于需要手动操纵字节码的需求，可以使用ASM，它可以直接生产 .Class字节码文件，也可以在类被加载入JVM之前动态修改类行为（如下图所示）ASM的应用场景有AOP（Cglib就是基于ASM）、热部署、修改其他jar包中的类等。当然，涉及到如此底层的步骤，实现起来也比较麻烦。接下来，本文将介绍ASM的两种API，并用ASM来实现一个比较粗糙的AOP。但在此之前，为了让大家更快地理解ASM的处理流程，强烈建议读者先对访问者模式进行了解。简单来说，访问者模式主要用于修改或操作一些数据结构比较稳定的数据，而通过第一章，我们知道字节码文件的结构是由JVM固定的，所以很适合利用访问者模式对字节码文件进行修改
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511122953285-894496650.png)
+
+#### ASM API
+
+##### 核心API
+
+ASM Core API可以类比解析XML文件中的SAX方式，不需要把这个类的整个结构读取进来，就可以用流式的方法来处理字节码文件，好处是非常节约内存，但是编程难度较大。然而出于性能考虑，一般情况下编程都使用Core AP。I在Core API中有以下几个关键类：
+
+- ClassReader：用于读取已经编译好的.Class文件
+- ClassWriter：用于重新构建编译后的类，如修改类名、属性以及方法，也可以生成新的类的字节码文件
+- 各种Visitor类：如上所述，Core API根据字节码从上到下依次处理，对于字节码文件中不同的区域有不同的Visitor，比如用于访问方法的MethodVisitor、用于访问类变量的FieldVisitor、用于访问注解的AnnotationVisitor等。为了实现AOP，重点要使用的是MethodVisitor
+
+
+
+##### 树形API
+
+ASM Tree API可以类比解析XML文件中的DOM方式，把整个类的结构读取到内存中，缺点是消耗内存多，但是编程比较简单。Tree Api不同于Core API，Tree API通过各种Node类来映射字节码的各个区域，类比DOM节点，就可以很好地理解这种编程方式
+
+#### 直接利用ASM实现AOP
+
+利用ASM的Core API来增强类，这里不纠结于AOP的专业名词如切片、通知，只实现在方法调用前、后增加逻辑，通俗易懂且方便理解，首先定义需要被增强的Base类：其中只包含一个process()方法，方法内输出一行“process”。增强后，我们期望的是，方法执行前输出“start”，之后输出”end”
+
+```java
+public Class Base {
+    public void process(){
+        System.out.println("process");
+    }
+}
+```
+
+为了利用ASM实现AOP，需要定义两个类：一个是MyClassVisitor类，用于对字节码的visit以及修改；另一个是Generator类，在这个类中定义ClassReader和ClassWriter，其中的逻辑是，ClassReader读取字节码，然后交给MyClassVisitor类处理，处理完成后由ClassWriter写字节码并将旧的字节码替换掉，Generator类较简单，我们先看一下它的实现，如下所示，然后重点解释MyClassVisitor类
+
+```java
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+
+public Class Generator {
+    public static void main(String[] args) throws Exception {
+		// 读取
+        ClassReader ClassReader = new ClassReader("meituan/bytecode/asm/Base");
+        ClassWriter ClassWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        // 处理
+        ClassVisitor ClassVisitor = new MyClassVisitor(ClassWriter);
+        ClassReader.accept(ClassVisitor, ClassReader.SKIP_DEBUG);
+        byte[] data = ClassWriter.toByteArray();
+        // 输出
+        File f = new File("operation-server/target/Classes/meituan/bytecode/asm/Base.Class");
+        FileOutputStream fout = new FileOutputStream(f);
+        fout.write(data);
+        fout.close();
+        System.out.println("now generator cc success!!!!!");
+    }
+}
+```
+
+MyClassVisitor继承自ClassVisitor，用于对字节码的观察，它还包含一个内部类MyMethodVisitor，继承自MethodVisitor，用于对类内方法的观察，它的整体代码如下：
+
+```java
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+public Class MyClassVisitor extends ClassVisitor implements Opcodes {
+    
+    public MyClassVisitor(ClassVisitor cv) {
+        super(ASM5, cv);
+    }
+    
+    @Override
+    public void visit(int version, int access, String name, String signature,
+                      String superName, String[] interfaces) {
+        cv.visit(version, access, name, signature, superName, interfaces);
+    }
+    
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        
+        MethodVisitor mv = cv.visitMethod(access, name, desc, signature,exceptions);
+        // Base类中有两个方法：无参构造以及process方法，这里不增强构造方法
+        if (!name.equals("<init>") && mv != null) {
+            mv = new MyMethodVisitor(mv);
+        }
+        return mv;
+    }
+    
+    Class MyMethodVisitor extends MethodVisitor implements Opcodes {
+        public MyMethodVisitor(MethodVisitor mv) {
+            super(Opcodes.ASM5, mv);
+        }
+
+        @Override
+        public void visitCode() {
+            super.visitCode();
+            mv.visitFieldInsn(GETSTATIC, "Java/lang/System", "out", "LJava/io/PrintStream;");
+            mv.visitLdcInsn("start");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "Java/io/PrintStream", "println", "(LJava/lang/String;)V", false);
+        }
+        @Override
+        public void visitInsn(int opcode) {
+            if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
+                    || opcode == Opcodes.ATHROW) {
+                // 方法在返回之前，打印"end"
+                mv.visitFieldInsn(GETSTATIC, "Java/lang/System", "out", "LJava/io/PrintStream;");
+                mv.visitLdcInsn("end");
+                mv.visitMethodInsn(INVOKEVIRTUAL, "Java/io/PrintStream", "println", "(LJava/lang/String;)V", false);
+            }
+            mv.visitInsn(opcode);
+        }
+    }
+}
+```
+
+利用这个类就可以实现对字节码的修改详细解读其中的代码，对字节码做修改的步骤是：
+
+- 首先通过MyClassVisitor类中的visitMethod方法，判断当前字节码读到哪一个方法了跳过构造方法 `<init>` 后，将需要被增强的方法交给内部类MyMethodVisitor来进行处理
+- 接下来，进入内部类MyMethodVisitor中的visitCode方法，它会在ASM开始访问某一个方法的Code区时被调用，重写visitCode方法，将AOP中的前置逻辑就放在这里，MyMethodVisitor继续读取字节码指令，每当ASM访问到无参数指令时，都会调用MyMethodVisitor中的visitInsn方法，我们判断了当前指令是否为无参数的“return”指令，如果是就在它的前面添加一些指令，也就是将AOP的后置逻辑放在该方法中
+- 综上，重写MyMethodVisitor中的两个方法，就可以实现AOP了，而重写方法时就需要用ASM的写法，手动写入或者修改字节码，通过调用methodVisitor的visitXXXXInsn()方法就可以实现字节码的插入，XXXX对应相应的操作码助记符类型，比如mv.visitLdcInsn(“end”)对应的操作码就是ldc “end”，即将字符串“end”压入栈 完成这两个visitor类后，运行Generator中的main方法完成对Base类的字节码增强，增强后的结果可以在编译后的target文件夹中找到Base.Class文件进行查看，可以看到反编译后的代码已经改变了然后写一个测试类MyTest，在其中new Base()，并调用base.process()方法，可以看到下图右侧所示的AOP实现效果：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123049539-1608513746.png)
+
+#### ASM工具
+
+利用ASM手写字节码时，需要利用一系列visitXXXXInsn()方法来写对应的助记符，所以需要先将每一行源代码转化为一个个的助记符，然后通过ASM的语法转换为visitXXXXInsn()，这种写法第一步将源码转化为助记符就已经够麻烦了，不熟悉字节码操作集合的话，需要我们将代码编译后再反编译，才能得到源代码对应的助记符；第二步利用ASM写字节码时，如何传参也很令人头疼，ASM社区也知道这两个问题，所以提供了工具[ASM Byte Code Outline](https://plugins.jetbrains.com/plugin/5918-asm-bytecode-outline)
+
+安装后，右键选择“Show Bytecode Outline”，在新标签页中选择“ASMified”这个tab，如下图所示，就可以看到这个类中的代码对应的ASM写法了，图中上下两个红框分别对应AOP中的前置逻辑与后置逻辑，将这两块直接复制到visitor中的visitMethod()以及visitInsn()方法中，就可以了
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123110707-1707923633.png)
+
+### Javassist
+
+ASM是在指令层次上操作字节码的，阅读上文后，我们的直观感受是在指令层次上操作字节码的框架实现起来比较晦涩，故除此之外，我们再简单介绍另外一类框架：强调源代码层次操作字节码的框架Javassist
+
+利用Javassist实现字节码增强时，可以无须关注字节码刻板的结构，其优点就在于编程简单直接使用Java编码的形式，而不需要了解虚拟机指令，就能动态改变类的结构或者动态生成类，其中最重要的是ClassPool、CtClass、CtMethod、CtField这四个类：
+
+- CtClass（compile-time Class）：编译时类信息，它是一个Class文件在代码中的抽象表现形式，可以通过一个类的全限定名来获取一个CtClass对象，用来表示这个类文件
+- ClassPool：从开发视角来看，ClassPool是一张保存CtClass信息的HashTable，key为类名，value为类名对应的CtClass对象，当我们需要对某个类进行修改时，就是通过pool.getCtClass(“ClassName”)方法从pool中获取到相应的CtClass
+- CtMethod、CtField：这两个比较好理解，对应的是类中的方法和属性
+
+了解这四个类后，我们可以写一个小Demo来展示Javassist简单、快速的特点，我们依然是对Base中的process()方法做增强，在方法调用前后分别输出”start”和”end”，实现代码如下，我们需要做的就是从pool中获取到相应的CtClass对象和其中的方法，然后执行method.insertBefore和insertAfter方法，参数为要插入的Java代码，再以字符串的形式传入即可，实现起来也极为简单
+
+```java
+import com.meituan.mtrace.agent.Javassist.*;
+
+public Class JavassistTest {
+    public static void main(String[] args) throws NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException, IOException {
+        ClassPool cp = ClassPool.getDefault();
+        CtClass cc = cp.get("meituan.bytecode.Javassist.Base");
+        CtMethod m = cc.getDeclaredMethod("process");
+        m.insertBefore("{ System.out.println(\"start\"); }");
+        m.insertAfter("{ System.out.println(\"end\"); }");
+        Class c = cc.toClass();
+        cc.writeFile("/Users/zen/projects");
+        Base h = (Base)c.newInstance();
+        h.process();
+    }
+}
+```
+
+## 运行时类的重载
+
+### 问题引出
+
+上一章重点介绍了两种不同类型的字节码操作框架，且都利用它们实现了较为粗糙的AOP。其实，为了方便大家理解字节码增强技术，在上文中我们避重就轻将ASM实现AOP的过程分为了两个main方法：第一个是利用MyClassVisitor对已编译好的Class文件进行修改，第二个是new对象并调用，这期间并不涉及到JVM运行时对类的重加载，而是在第一个main方法中，通过ASM对已编译类的字节码进行替换，在第二个main方法中，直接使用已替换好的新类信息，另外在Javassist的实现中，我们也只加载了一次Base类，也不涉及到运行时重加载类
+
+如果我们在一个JVM中，先加载了一个类，然后又对其进行字节码增强并重新加载会发生什么呢？模拟这种情况，只需要我们在上文中Javassist的Demo中main()方法的第一行添加Base b=new Base()，即在增强前就先让JVM加载Base类，然后在执行到c.toClass()方法时会抛出错误，如下图20所示跟进c.toClass()方法中，我们会发现它是在最后调用了ClassLoader的native方法defineClass()时报错，也就是说，JVM是不允许在运行时动态重载一个类的
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123143951-474784759.png)
+
+显然，如果只能在类加载前对类进行强化，那字节码增强技术的使用场景就变得很窄了。我们期望的效果是：在一个持续运行并已经加载了所有类的JVM中，还能利用字节码增强技术对其中的类行为做替换并重新加载，为了模拟这种情况，我们将Base类做改写，在其中编写main方法，每五秒调用一次process()方法，在process()方法中输出一行“process”
+
+我们的目的就是，在JVM运行中的时候，将process()方法做替换，在其前后分别打印“start”和“end”，也就是在运行中时，每五秒打印的内容由”process”变为打印”start process end”。那如何解决JVM不允许运行时重加载类信息的问题呢？为了达到这个目的，我们接下来一一来介绍需要借助的Java类库
+
+```java
+import Java.lang.management.ManagementFactory;
+
+public Class Base {
+    public static void main(String[] args) {
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+        String s = name.split("@")[0];
+        // 打印当前Pid
+        System.out.println("pid:"+s);
+        while (true) {
+            try {
+                Thread.sleep(5000L);
+            } catch (Exception e) {
+                break;
+            }
+            process();
+        }
+    }
+
+    public static void process() {
+        System.out.println("process");
+    }
+}
+```
+
+### Instrument
+
+instrument是JVM提供的一个可以修改已加载类的类库，专门为Java语言编写的插桩服务，提供支持它需要依赖JVMTI的Attach API机制实现，JVMTI这一部分，我们将在下一小节进行介绍，在JDK 1.6以前，instrument只能在JVM刚启动开始加载类时生效，而在JDK 1.6之后，instrument支持了在运行时对类定义的修改，要使用instrument的类修改功能，我们需要实现它提供的ClassFileTransformer接口，定义一个类文件转换器，接口中的transform()方法会在类文件被加载时调用，而在transform方法里，我们可以利用上文中的ASM或Javassist对传入的字节码进行改写或替换，生成新的字节码数组后返回
+
+我们定义一个实现了ClassFileTransformer接口的类TestTransformer，依然在其中利用Javassist对Base类中的process()方法进行增强，在前后分别打印“start”和“end”，代码如下：
+
+```java
+import Java.lang.instrument.ClassFileTransformer;
+
+public Class TestTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader, String ClassName, Class<?> ClassBeingRedefined, ProtectionDomain protectionDomain, byte[] ClassfileBuffer) {
+        System.out.println("Transforming " + ClassName);
+        try {
+            ClassPool cp = ClassPool.getDefault();
+            CtClass cc = cp.get("meituan.bytecode.JVMti.Base");
+            CtMethod m = cc.getDeclaredMethod("process");
+            m.insertBefore("{ System.out.println(\"start\"); }");
+            m.insertAfter("{ System.out.println(\"end\"); }");
+            return cc.toBytecode();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+```
+
+现在有了Transformer，那么它要如何注入到正在运行的JVM呢？还需要定义一个Agent，借助Agent的能力将Instrument注入到JVM中，我们将在下一小节介绍Agent，现在要介绍的是Agent中用到的另一个类Instrumentation，在JDK 1.6之后，Instrumentation可以做启动后的Instrument、本地代码（Native Code）的Instrument，以及动态改变Classpath等等。我们可以向Instrumentation中添加上文中定义的Transformer，并指定要被重加载的类，代码如下所示这样，当Agent被Attach到一个JVM中时，就会执行类字节码替换并重载入JVM的操作
+
+```java
+import Java.lang.instrument.Instrumentation;
+
+public Class TestAgent {
+    public static void agentmain(String args, Instrumentation inst) {
+        //指定我们自己定义的Transformer，在其中利用Javassist做字节码替换
+        inst.addTransformer(new TestTransformer(), true);
+        try {
+            //重定义类并载入新的字节码
+            inst.retransformClasses(Base.Class);
+            System.out.println("Agent Load Done.");
+        } catch (Exception e) {
+            System.out.println("agent load failed!");
+        }
+    }
+}
+```
+
+### JVMTI & Agent & Attach API
+
+上一小节中，我们给出了Agent类的代码，追根溯源需要先介绍JPDA（Java Platform Debugger Architecture）如果JVM启动时开启了JPDA，那么类是允许被重新加载的，在这种情况下，已被加载的旧版本类信息可以被卸载，然后重新加载新版本的类。正如JDPA名称中的Debugger，JDPA其实是一套用于调试Java程序的标准，任何JDK都必须实现该标准
+
+JPDA定义了一整套完整的体系，它将调试体系分为三部分，并规定了三者之间的通信接口，三部分由低到高分别是Java 虚拟机工具接口（JVMTI），Java 调试协议（JDWP）以及 Java 调试接口（JDI），三者之间的关系如下图所示：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123211335-980002630.png)
+
+现在回到正题，我们可以借助JVMTI的一部分能力，帮助动态重载类信息JVM TI（JVM TOOL INTERFACE，JVM工具接口）是JVM提供的一套对JVM进行操作的工具接口通过JVMTI，可以实现对JVM的多种操作，它通过接口注册各种事件勾子，在JVM事件触发时，同时触发预定义的勾子，以实现对各个JVM事件的响应，事件包括类文件加载、异常产生与捕获、线程启动和结束、进入和退出临界区、成员变量修改、GC开始和结束、方法调用进入和退出、临界区竞争与等待、VM启动与退出等等
+
+而Agent就是JVMTI的一种实现，Agent有两种启动方式，一是随Java进程启动而启动，经常见到的Java -agentlib就是这种方式；二是运行时载入，通过attach API，将模块（jar包）动态地Attach到指定进程id的Java进程内
+
+Attach API 的作用是提供JVM进程间通信的能力，比如说我们为了让另外一个JVM进程把线上服务的线程Dump出来，会运行jstack或jmap的进程，并传递pid的参数，告诉它要对哪个进程进行线程Dump，这就是Attach API做的事情在下面，我们将通过Attach API的loadAgent()方法，将打包好的Agent jar包动态Attach到目标JVM上具体实现起来的步骤如下：
+
+- 定义Agent，并在其中实现AgentMain方法，如上一小节中定义的代码块7中的TestAgent类；
+- 然后将TestAgent类打成一个包含MANIFEST.MF的jar包，其中MANIFEST.MF文件中将Agent-Class属性指定为TestAgent的全限定名，如下图所示；
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123224970-1235488534.png)
+
+- 最后利用Attach API，将我们打包好的jar包Attach到指定的JVM pid上，代码如下：
+
+```java
+import com.sun.tools.attach.VirtualMachine;
+
+public Class Attacher {
+    public static void main(String[] args) throws AttachNotSupportedException, IOException, AgentLoadException, AgentInitializationException {
+        // 传入目标 JVM pid
+        VirtualMachine vm = VirtualMachine.attach("39333");
+        vm.loadAgent("/Users/zen/operation_server_jar/operation-server.jar");
+    }
+}
+```
+
+- 由于在MANIFEST.MF中指定了Agent-Class，所以在Attach后，目标JVM在运行时会走到TestAgent类中定义的agentmain()方法，而在这个方法中，我们利用Instrumentation，将指定类的字节码通过定义的类转化器TestTransformer做了Base类的字节码替换（通过Javassist），并完成了类的重新加载由此，我们达成了“在JVM运行时，改变类的字节码并重新载入类信息”的目的
+
+以下为运行时重新载入类的效果：先运行Base中的main()方法，启动一个JVM，可以在控制台看到每隔五秒输出一次”process”接着执行Attacher中的main()方法，并将上一个JVM的pid传入此时回到上一个main()方法的控制台，可以看到现在每隔五秒输出”process”前后会分别输出”start”和”end”，也就是说完成了运行时的字节码增强，并重新载入了这个类
+
+![img](https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230511123237414-2118602051.png)
+
+### 使用场景
+
+至此，字节码增强技术的可使用范围就不再局限于JVM加载类前了。通过上述几个类库，我们可以在运行时对JVM中的类进行修改并重载了。通过这种手段，可以做的事情就变得很多了：
+
+- 热部署：不部署服务而对线上服务做修改，可以做打点、增加日志等操作
+- Mock：测试时候对某些服务做Mock
+- 性能诊断工具：比如bTrace就是利用Instrument，实现无侵入地跟踪一个正在运行的JVM，监控到类和方法级别的状态信息
+
+## 总结
+
+字节码增强技术相当于是一把打开运行时JVM的钥匙，利用它可以动态地对运行中的程序做修改，也可以跟踪JVM运行中程序的状态。此外，我们平时使用的动态代理、AOP也与字节码增强密切相关，它们实质上还是利用各种手段生成符合规范的字节码文件。综上所述，掌握字节码增强后可以高效地定位并快速修复一些棘手的问题（如线上性能问题、方法出现不可控的出入参需要紧急加日志等问题），也可以在开发中减少冗余代码，大大提高开发效率
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 类的生命周期
 
 整个流程如下：
@@ -3428,6 +3755,651 @@ JVM 在进行 GC 时，并非每次都对堆内存（新生代、老年代；方
 3. 方法区空间不足。
 
 
+
+
+
+# Java 内存模型（JMM）
+
+## Java 内存模型引入
+
+> 声明：本节内容转载于 [@pdai：JVM基础 - Java内存模型引入](https://www.pdai.tech/md/java/jvm/java-jvm-x-introduce.html)。
+>
+> 很多人都无法区分Java内存模型和JVM内存结构，以及Java内存模型与物理内存之间的关系。本文从堆栈角度引入JMM，然后介绍JMM和物理内存之间的关系, @pdai
+
+- JVM 基础 - Java 内存模型引入
+  - JMM引入
+    - [从堆栈说起](#从堆栈说起)
+    - [堆栈里面放了什么? ](#堆栈里面放了什么)
+    - [线程栈如何访问堆上对象? ](#线程栈如何访问堆上对象)
+    - [线程栈访问堆示例](#线程栈访问堆示例)
+  - JMM与硬件内存结构关系
+    - [硬件内存结构简介](#硬件内存结构简介)
+    - [JMM与硬件内存连接 - 引入](#jmm与硬件内存连接---引入)
+    - [JMM与硬件内存连接 - 对象共享后的可见性](#jmm与硬件内存连接---对象共享后的可见性)
+    - [JMM与硬件内存连接 - 竞态条件](#jmm与硬件内存连接---竞态条件)
+
+### [#](#jmm引入) JMM引入
+
+#### [#](#从堆栈说起) 从堆栈说起
+
+JVM内部使用的Java内存模型在线程栈和堆之间划分内存。 此图从逻辑角度说明了Java内存模型：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122154425606-1206722716.png)
+
+#### [#](#堆栈里面放了什么) 堆栈里面放了什么?
+
+线程堆栈还包含正在执行的每个方法的所有局部变量(调用堆栈上的所有方法)。 线程只能访问它自己的线程堆栈。 由线程创建的局部变量对于创建它的线程以外的所有其他线程是不可见的。 即使两个线程正在执行完全相同的代码，两个线程仍将在每个自己的线程堆栈中创建该代码的局部变量。 因此，每个线程都有自己的每个局部变量的版本。
+
+基本类型的所有局部变量(boolean，byte，short，char，int，long，float，double)完全存储在线程堆栈中，因此对其他线程不可见。 一个线程可以将一个基本类型变量的副本传递给另一个线程，但它不能共享原始局部变量本身。
+
+堆包含了在Java应用程序中创建的所有对象，无论创建该对象的线程是什么。 这包括基本类型的包装类(例如Byte，Integer，Long等)。 无论是创建对象并将其分配给局部变量，还是创建为另一个对象的成员变量，该对象仍然存储在堆上。
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122154436919-1877919048.png)
+
+局部变量可以是基本类型，在这种情况下，它完全保留在线程堆栈上。
+
+局部变量也可以是对象的引用。 在这种情况下，引用(局部变量)存储在线程堆栈中，但是对象本身存储在堆(Heap)上。
+
+对象的成员变量与对象本身一起存储在堆上。 当成员变量是基本类型时，以及它是对象的引用时都是如此。
+
+静态类变量也与类定义一起存储在堆上。
+
+#### [#](#线程栈如何访问堆上对象) 线程栈如何访问堆上对象?
+
+所有具有对象引用的线程都可以访问堆上的对象。 当一个线程有权访问一个对象时，它也可以访问该对象的成员变量。 如果两个线程同时在同一个对象上调用一个方法，它们都可以访问该对象的成员变量，但每个线程都有自己的局部变量副本。
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122154455589-1178699278.png)
+
+两个线程有一组局部变量。 其中一个局部变量(局部变量2)指向堆上的共享对象(对象3)。 两个线程各自对同一对象具有不同的引用。 它们的引用是局部变量，因此存储在每个线程的线程堆栈中(在每个线程堆栈上)。 但是，这两个不同的引用指向堆上的同一个对象。
+
+注意共享对象(对象3)如何将对象2和对象4作为成员变量引用(由对象3到对象2和对象4的箭头所示)。 通过对象3中的这些成员变量引用，两个线程可以访问对象2和对象4.
+
+该图还显示了一个局部变量，该变量指向堆上的两个不同对象。 在这种情况下，引用指向两个不同的对象(对象1和对象5)，而不是同一个对象。 理论上，如果两个线程都引用了两个对象，则两个线程都可以访问对象1和对象5。 但是在上图中，每个线程只引用了两个对象中的一个。
+
+#### [#](#线程栈访问堆示例) 线程栈访问堆示例
+
+那么，什么样的Java代码可以导致上面的内存图? 好吧，代码就像下面的代码一样简单：
+
+```java
+public class MyRunnable implements Runnable() {
+
+    public void run() {
+        methodOne();
+    }
+
+    public void methodOne() {
+        int localVariable1 = 45;
+
+        MySharedObject localVariable2 =
+            MySharedObject.sharedInstance;
+
+        //... do more with local variables.
+
+        methodTwo();
+    }
+
+    public void methodTwo() {
+        Integer localVariable1 = new Integer(99);
+
+        //... do more with local variable.
+    }
+}
+
+public class MySharedObject {
+
+    //static variable pointing to instance of MySharedObject
+
+    public static final MySharedObject sharedInstance =
+        new MySharedObject();
+
+
+    //member variables pointing to two objects on the heap
+
+    public Integer object2 = new Integer(22);
+    public Integer object4 = new Integer(44);
+
+    public long member1 = 12345;
+    public long member1 = 67890;
+}
+```
+
+如果两个线程正在执行run()方法，则前面显示的图表将是结果。 run()方法调用methodOne()，methodOne()调用methodTwo()。
+
+methodOne()声明一个局部基本类型变量(类型为int的localVariable1)和一个局部变量，它是一个对象引用(localVariable2)。
+
+执行methodOne()的每个线程将在各自的线程堆栈上创建自己的localVariable1和localVariable2副本。 localVariable1变量将完全相互分离，只存在于每个线程的线程堆栈中。 一个线程无法看到另一个线程对其localVariable1副本所做的更改。
+
+执行methodOne()的每个线程也将创建自己的localVariable2副本。 但是，localVariable2的两个不同副本最终都指向堆上的同一个对象。 代码将localVariable2设置为指向静态变量引用的对象。 静态变量只有一个副本，此副本存储在堆上。 因此，localVariable2的两个副本最终都指向静态变量指向的MySharedObject的同一个实例。 MySharedObject实例也存储在堆上。 它对应于上图中的对象3。
+
+注意MySharedObject类还包含两个成员变量。 成员变量本身与对象一起存储在堆上。 两个成员变量指向另外两个Integer对象。 这些Integer对象对应于上图中的Object 2和Object 4。
+
+另请注意methodTwo()如何创建名为localVariable1的局部变量。 此局部变量是对Integer对象的对象引用。 该方法将localVariable1引用设置为指向新的Integer实例。 localVariable1引用将存储在执行methodTwo()的每个线程的一个副本中。 实例化的两个Integer对象将存储在堆上，但由于该方法每次执行该方法时都会创建一个新的Integer对象，因此执行此方法的两个线程将创建单独的Integer实例。 在methodTwo()中创建的Integer对象对应于上图中的Object 1和Object 5。
+
+另请注意类型为long的MySharedObject类中的两个成员变量，它们是基本类型。 由于这些变量是成员变量，因此它们仍与对象一起存储在堆上。 只有局部变量存储在线程堆栈中。
+
+### [#](#jmm与硬件内存结构关系) JMM与硬件内存结构关系
+
+#### [#](#硬件内存结构简介) 硬件内存结构简介
+
+现代硬件内存架构与内部Java内存模型略有不同。 了解硬件内存架构也很重要，以了解Java内存模型如何与其一起工作。 本节介绍了常见的硬件内存架构，后面的部分将介绍Java内存模型如何与其配合使用。
+
+这是现代计算机硬件架构的简化图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122154513371-955785164.png)
+
+现代计算机通常有2个或更多CPU。 其中一些CPU也可能有多个内核。 关键是，在具有2个或更多CPU的现代计算机上，可以同时运行多个线程。 每个CPU都能够在任何给定时间运行一个线程。 这意味着如果您的Java应用程序是多线程的，线程真的在可能同时运行.
+
+每个CPU基本上都包含一组在CPU内存中的寄存器。 CPU可以在这些寄存器上执行的操作比在主存储器中对变量执行的操作快得多。 这是因为CPU可以比访问主存储器更快地访问这些寄存器。
+
+每个CPU还可以具有CPU高速缓存存储器层。 事实上，大多数现代CPU都有一些大小的缓存存储层。 CPU可以比主存储器更快地访问其高速缓存存储器，但通常不会像访问其内部寄存器那样快。 因此，CPU高速缓存存储器介于内部寄存器和主存储器的速度之间。 某些CPU可能有多个缓存层(级别1和级别2)，但要了解Java内存模型如何与内存交互，这一点并不重要。 重要的是要知道CPU可以有某种缓存存储层。
+
+计算机还包含主存储区(RAM)。 所有CPU都可以访问主内存。 主存储区通常比CPU的高速缓存存储器大得多。同时访问速度也就较慢.
+
+通常，当CPU需要访问主存储器时，它会将部分主存储器读入其CPU缓存。 它甚至可以将部分缓存读入其内部寄存器，然后对其执行操作。 当CPU需要将结果写回主存储器时，它会将值从其内部寄存器刷新到高速缓冲存储器，并在某些时候将值刷新回主存储器。
+
+#### [#](#jmm与硬件内存连接-引入) JMM与硬件内存连接 - 引入
+
+如前所述，Java内存模型和硬件内存架构是不同的。 硬件内存架构不区分线程堆栈和堆。 在硬件上，线程堆栈和堆都位于主存储器中。 线程堆栈和堆的一部分有时可能存在于CPU高速缓存和内部CPU寄存器中。 这在图中说明：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122154527278-1655049111.png)
+
+当对象和变量可以存储在计算机的各种不同存储区域中时，可能会出现某些问题。 两个主要问题是：
+
+- Visibility of thread updates (writes) to shared variables.
+- Race conditions when reading, checking and writing shared variables. 以下各节将解释这两个问题。
+
+#### [#](#jmm与硬件内存连接-对象共享后的可见性) JMM与硬件内存连接 - 对象共享后的可见性
+
+如果两个或多个线程共享一个对象，而没有正确使用volatile声明或同步，则一个线程对共享对象的更新可能对其他线程不可见。
+
+想象一下，共享对象最初存储在主存储器中。 然后，在CPU上运行的线程将共享对象读入其CPU缓存中。 它在那里对共享对象进行了更改。 只要CPU缓存尚未刷新回主内存，共享对象的更改版本对于在其他CPU上运行的线程是不可见的。 这样，每个线程最终都可能拥有自己的共享对象副本，每个副本都位于不同的CPU缓存中。
+
+下图描绘了该情况。 在左CPU上运行的一个线程将共享对象复制到其CPU缓存中，并将其count变量更改为2.对于在右边的CPU上运行的其他线程，此更改不可见，因为计数更新尚未刷新回主内存中.
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122154539792-1899933180.png)
+
+要解决此问题，您可以使用Java的volatile关键字。 volatile关键字可以确保直接从主内存读取给定变量，并在更新时始终写回主内存。
+
+#### [#](#jmm与硬件内存连接-竞态条件) JMM与硬件内存连接 - 竞态条件
+
+如果两个或多个线程共享一个对象，并且多个线程更新该共享对象中的变量，则可能会出现竞态。
+
+想象一下，如果线程A将共享对象的变量计数读入其CPU缓存中。 想象一下，线程B也做同样的事情，但是进入不同的CPU缓存。 现在，线程A将一个添加到count，而线程B执行相同的操作。 现在var1已经增加了两次，每个CPU缓存一次。
+
+如果这些增量是按先后顺序执行的，则变量计数将增加两次并将原始值+ 2写回主存储器。
+
+但是，两个增量同时执行而没有适当的同步。 无论线程A和B中哪一个将其更新后的计数版本写回主存储器，更新的值将仅比原始值高1，尽管有两个增量。
+
+该图说明了如上所述的竞争条件问题的发生：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122154550986-954771232.png)
+
+要解决此问题，您可以使用Java synchronized块。 同步块保证在任何给定时间只有一个线程可以进入代码的给定关键部分。 同步块还保证在同步块内访问的所有变量都将从主存储器中读入，当线程退出同步块时，所有更新的变量将再次刷新回主存储器，无论变量是不是声明为volatile
+
+
+
+
+
+## Java内存模型详解
+
+> 声明：本文主要转载自 Info 上[深入理解Java内存模型](https://www.infoq.cn/article/java_memory_model/)。
+>
+> 原作者：程晓明。
+>
+> 说明：这篇文章对JMM讲得很清楚了，大致分三部分：重排序与顺序一致性；三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现；Java内存模型的设计，及其与处理器内存模型和顺序一致性内存模型的关系。
+
+- JVM 基础 - Java 内存模型详解
+  - 基础
+    - [并发编程模型的分类](#并发编程模型的分类)
+    - [Java 内存模型的抽象](#java-内存模型的抽象)
+    - [重排序](#重排序)
+    - [处理器重排序与内存屏障指令](#处理器重排序与内存屏障指令)
+    - [happens-before](#happens-before)
+  - 重排序
+    - [数据依赖性](#数据依赖性)
+    - [as-if-serial 语义](#as-if-serial-语义)
+    - [程序顺序规则](#程序顺序规则)
+    - [重排序对多线程的影响](#重排序对多线程的影响)
+  - 顺序一致性
+    - [数据竞争与顺序一致性保证](#数据竞争与顺序一致性保证)
+    - [顺序一致性内存模型](#顺序一致性内存模型)
+    - [同步程序的顺序一致性效果](#同步程序的顺序一致性效果)
+    - [未同步程序的执行特性](#未同步程序的执行特性)
+  - 总结
+    - [处理器内存模型](#处理器内存模型)
+    - [JMM，处理器内存模型与顺序一致性内存模型之间的关系](#jmm处理器内存模型与顺序一致性内存模型之间的关系)
+    - [JMM 的设计](#jmm-的设计)
+    - [JMM 的内存可见性保证](#jmm-的内存可见性保证)
+    - [JSR-133 对旧内存模型的修补](#jsr-133-对旧内存模型的修补)
+
+### [#](#基础) 基础
+
+#### [#](#并发编程模型的分类) 并发编程模型的分类
+
+在并发编程中，我们需要处理两个关键问题：线程之间如何通信及线程之间如何同步（这里的线程是指并发执行的活动实体）。通信是指线程之间以何种机制来交换信息。在命令式编程中，线程之间的通信机制有两种：共享内存和消息传递。
+
+在共享内存的并发模型里，线程之间共享程序的公共状态，线程之间通过写 - 读内存中的公共状态来隐式进行通信。在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信。
+
+同步是指程序用于控制不同线程之间操作发生相对顺序的机制。在共享内存并发模型里，同步是显式进行的。程序员必须显式指定某个方法或某段代码需要在线程之间互斥执行。在消息传递的并发模型里，由于消息的发送必须在消息的接收之前，因此同步是隐式进行的。
+
+Java 的并发采用的是共享内存模型，Java 线程之间的通信总是隐式进行，整个通信过程对程序员完全透明。如果编写多线程程序的 Java 程序员不理解隐式进行的线程之间通信的工作机制，很可能会遇到各种奇怪的内存可见性问题。
+
+#### [#](#java-内存模型的抽象) Java 内存模型的抽象
+
+在 java 中，所有实例域、静态域和数组元素存储在堆内存中，堆内存在线程之间共享（本文使用“共享变量”这个术语代指实例域，静态域和数组元素）。局部变量（Local variables），方法定义参数（java 语言规范称之为 formal method parameters）和异常处理器参数（exception handler parameters）不会在线程之间共享，它们不会有内存可见性问题，也不受内存模型的影响。
+
+Java 线程之间的通信由 Java 内存模型（本文简称为 JMM）控制，JMM 决定一个线程对共享变量的写入何时对另一个线程可见。从抽象的角度来看，JMM 定义了线程和主内存之间的抽象关系：线程之间的共享变量存储在主内存（main memory）中，每个线程都有一个私有的本地内存（local memory），本地内存中存储了该线程以读 / 写共享变量的副本。本地内存是 JMM 的一个抽象概念，并不真实存在。它涵盖了缓存，写缓冲区，寄存器以及其他的硬件和编译器优化。Java 内存模型的抽象示意图如下：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153114681-566819713.png)
+
+从上图来看，线程 A 与线程 B 之间如要通信的话，必须要经历下面 2 个步骤：
+
+- 首先，线程 A 把本地内存 A 中更新过的共享变量刷新到主内存中去。
+- 然后，线程 B 到主内存中去读取线程 A 之前已更新过的共享变量。
+
+下面通过示意图来说明这两个步骤：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153128397-156174190.png)
+
+如上图所示，本地内存 A 和 B 有主内存中共享变量 x 的副本。假设初始时，这三个内存中的 x 值都为 0。线程 A 在执行时，把更新后的 x 值（假设值为 1）临时存放在自己的本地内存 A 中。当线程 A 和线程 B 需要通信时，线程 A 首先会把自己本地内存中修改后的 x 值刷新到主内存中，此时主内存中的 x 值变为了 1。随后，线程 B 到主内存中去读取线程 A 更新后的 x 值，此时线程 B 的本地内存的 x 值也变为了 1。
+
+从整体来看，这两个步骤实质上是线程 A 在向线程 B 发送消息，而且这个通信过程必须要经过主内存。JMM 通过控制主内存与每个线程的本地内存之间的交互，来为 java 程序员提供内存可见性保证。
+
+#### [#](#重排序) 重排序
+
+在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
+
+- 编译器优化的重排序。编译器在不改变单线程程序语义的前提下，可以重新安排语句的执行顺序。
+- 指令级并行的重排序。现代处理器采用了指令级并行技术（Instruction-Level Parallelism， ILP）来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序。
+- 内存系统的重排序。由于处理器使用缓存和读 / 写缓冲区，这使得加载和存储操作看上去可能是在乱序执行。
+
+从 java 源代码到最终实际执行的指令序列，会分别经历下面三种重排序：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153142813-1995039118.png)
+
+上述的 1 属于编译器重排序，2 和 3 属于处理器重排序。这些重排序都可能会导致多线程程序出现内存可见性问题。对于编译器，JMM 的编译器重排序规则会禁止特定类型的编译器重排序（不是所有的编译器重排序都要禁止）。对于处理器重排序，JMM 的处理器重排序规则会要求 java 编译器在生成指令序列时，插入特定类型的内存屏障（memory barriers，intel 称之为 memory fence）指令，通过内存屏障指令来禁止特定类型的处理器重排序（不是所有的处理器重排序都要禁止）。
+
+JMM 属于语言级的内存模型，它确保在不同的编译器和不同的处理器平台之上，通过禁止特定类型的编译器重排序和处理器重排序，为程序员提供一致的内存可见性保证。
+
+#### [#](#处理器重排序与内存屏障指令) 处理器重排序与内存屏障指令
+
+现代的处理器使用写缓冲区来临时保存向内存写入的数据。写缓冲区可以保证指令流水线持续运行，它可以避免由于处理器停顿下来等待向内存写入数据而产生的延迟。同时，通过以批处理的方式刷新写缓冲区，以及合并写缓冲区中对同一内存地址的多次写，可以减少对内存总线的占用。虽然写缓冲区有这么多好处，但每个处理器上的写缓冲区，仅仅对它所在的处理器可见。这个特性会对内存操作的执行顺序产生重要的影响：处理器对内存的读 / 写操作的执行顺序，不一定与内存实际发生的读 / 写操作顺序一致！为了具体说明，请看下面示例：
+
+```java
+// Processor A
+a = 1; //A1  
+x = b; //A2
+
+// Processor B
+b = 2; //B1  
+y = a; //B2
+
+// 初始状态：a = b = 0；处理器允许执行后得到结果：x = y = 0
+```
+
+假设处理器 A 和处理器 B 按程序的顺序并行执行内存访问，最终却可能得到 x = y = 0 的结果。具体的原因如下图所示：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153156655-2068587440.png)
+
+这里处理器 A 和处理器 B 可以同时把共享变量写入自己的写缓冲区（A1，B1），然后从内存中读取另一个共享变量（A2，B2），最后才把自己写缓存区中保存的脏数据刷新到内存中（A3，B3）。当以这种时序执行时，程序就可以得到 x = y = 0 的结果。
+
+从内存操作实际发生的顺序来看，直到处理器 A 执行 A3 来刷新自己的写缓存区，写操作 A1 才算真正执行了。虽然处理器 A 执行内存操作的顺序为：A1->A2，但内存操作实际发生的顺序却是：A2->A1。此时，处理器 A 的内存操作顺序被重排序了（处理器 B 的情况和处理器 A 一样，这里就不赘述了）。
+
+这里的关键是，由于写缓冲区仅对自己的处理器可见，它会导致处理器执行内存操作的顺序可能会与内存实际的操作执行顺序不一致。由于现代的处理器都会使用写缓冲区，因此现代的处理器都会允许对写 - 读操做重排序。
+
+下面是常见处理器允许的重排序类型的列表：
+
+|           | Load-Load | Load-Store | Store-Store | Store-Load | 数据依赖 |
+| --------- | --------- | ---------- | ----------- | ---------- | -------- |
+| sparc-TSO | N         | N          | N           | Y          | N        |
+| x86       | N         | N          | N           | Y          | N        |
+| ia64      | Y         | Y          | Y           | Y          | N        |
+| PowerPC   | Y         | Y          | Y           | Y          | N        |
+
+上表单元格中的“N”表示处理器不允许两个操作重排序，“Y”表示允许重排序。
+
+从上表我们可以看出：常见的处理器都允许 Store-Load 重排序；常见的处理器都不允许对存在数据依赖的操作做重排序。sparc-TSO 和 x86 拥有相对较强的处理器内存模型，它们仅允许对写 - 读操作做重排序（因为它们都使用了写缓冲区）。
+
+- ※注 1：sparc-TSO 是指以 TSO(Total Store Order) 内存模型运行时，sparc 处理器的特性。
+- ※注 2：上表中的 x86 包括 x64 及 AMD64。
+- ※注 3：由于 ARM 处理器的内存模型与 PowerPC 处理器的内存模型非常类似，本文将忽略它。
+- ※注 4：数据依赖性后文会专门说明。
+
+为了保证内存可见性，java 编译器在生成指令序列的适当位置会插入内存屏障指令来禁止特定类型的处理器重排序。JMM 把内存屏障指令分为下列四类：
+
+| 屏障类型            | 指令示例                   | 说明                                                         |
+| ------------------- | -------------------------- | ------------------------------------------------------------ |
+| LoadLoad Barriers   | Load1; LoadLoad; Load2     | 确保 Load1 数据的装载，之前于 Load2 及所有后续装载指令的装载。 |
+| StoreStore Barriers | Store1; StoreStore; Store2 | 确保 Store1 数据对其他处理器可见（刷新到内存），之前于 Store2 及所有后续存储指令的存储。 |
+| LoadStore Barriers  | Load1; LoadStore; Store2   | 确保 Load1 数据装载，之前于 Store2 及所有后续的存储指令刷新到内存。 |
+| StoreLoad Barriers  | Store1; StoreLoad; Load2   | 确保 Store1 数据对其他处理器变得可见（指刷新到内存），之前于 Load2 及所有后续装载指令的装载。 |
+
+StoreLoad Barriers 会使该屏障之前的所有内存访问指令（存储和装载指令）完成之后，才执行该屏障之后的内存访问指令。
+
+StoreLoad Barriers 是一个“全能型”的屏障，它同时具有其他三个屏障的效果。现代的多处理器大都支持该屏障（其他类型的屏障不一定被所有处理器支持）。执行该屏障开销会很昂贵，因为当前处理器通常要把写缓冲区中的数据全部刷新到内存中（buffer fully flush）。
+
+#### [#](#happens-before) happens-before
+
+从 JDK5 开始，java 使用新的 JSR -133 内存模型（本文除非特别说明，针对的都是 JSR- 133 内存模型）。JSR-133 提出了 happens-before 的概念，通过这个概念来阐述操作之间的内存可见性。如果一个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须存在 happens-before 关系。这里提到的两个操作既可以是在一个线程之内，也可以是在不同线程之间。 与程序员密切相关的 happens-before 规则如下：
+
+- 程序顺序规则：一个线程中的每个操作，happens- before 于该线程中的任意后续操作。
+- 监视器锁规则：对一个监视器锁的解锁，happens- before 于随后对这个监视器锁的加锁。
+- volatile 变量规则：对一个 volatile 域的写，happens- before 于任意后续对这个 volatile 域的读。
+- 传递性：如果 A happens- before B，且 B happens- before C，那么 A happens- before C。
+
+注意，两个操作之间具有 happens-before 关系，并不意味着前一个操作必须要在后一个操作之前执行！happens-before 仅仅要求前一个操作（执行的结果）对后一个操作可见，且前一个操作按顺序排在第二个操作之前（the first is visible to and ordered before the second）。happens- before 的定义很微妙，后文会具体说明 happens-before 为什么要这么定义。
+
+happens-before 与 JMM 的关系如下图所示：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153215030-1308950993.png)
+
+如上图所示，一个 happens-before 规则通常对应于多个编译器重排序规则和处理器重排序规则。对于 java 程序员来说，happens-before 规则简单易懂，它避免程序员为了理解 JMM 提供的内存可见性保证而去学习复杂的重排序规则以及这些规则的具体实现。
+
+### [#](#重排序-1) 重排序
+
+#### [#](#数据依赖性) 数据依赖性
+
+如果两个操作访问同一个变量，且这两个操作中有一个为写操作，此时这两个操作之间就存在数据依赖性。数据依赖分下列三种类型：
+
+| 名称   | 代码示例     | 说明                           |
+| ------ | ------------ | ------------------------------ |
+| 写后读 | a = 1;b = a; | 写一个变量之后，再读这个位置。 |
+| 写后写 | a = 1;a = 2; | 写一个变量之后，再写这个变量。 |
+| 读后写 | a = b;b = 1; | 读一个变量之后，再写这个变量。 |
+
+上面三种情况，只要重排序两个操作的执行顺序，程序的执行结果将会被改变。
+
+前面提到过，编译器和处理器可能会对操作做重排序。编译器和处理器在重排序时，会遵守数据依赖性，编译器和处理器不会改变存在数据依赖关系的两个操作的执行顺序。
+
+注意，这里所说的数据依赖性仅针对单个处理器中执行的指令序列和单个线程中执行的操作，不同处理器之间和不同线程之间的数据依赖性不被编译器和处理器考虑。
+
+#### [#](#as-if-serial-语义) as-if-serial 语义
+
+as-if-serial 语义的意思指：不管怎么重排序（编译器和处理器为了提高并行度），（单线程）程序的执行结果不能被改变。编译器，runtime 和处理器都必须遵守 as-if-serial 语义。
+
+为了遵守 as-if-serial 语义，编译器和处理器不会对存在数据依赖关系的操作做重排序，因为这种重排序会改变执行结果。但是，如果操作之间不存在数据依赖关系，这些操作可能被编译器和处理器重排序。为了具体说明，请看下面计算圆面积的代码示例：
+
+```java
+double pi  = 3.14;    //A
+double r   = 1.0;     //B
+double area = pi * r * r; //C
+```
+
+上面三个操作的数据依赖关系如下图所示：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153231775-360196760.png)
+
+如上图所示，A 和 C 之间存在数据依赖关系，同时 B 和 C 之间也存在数据依赖关系。因此在最终执行的指令序列中，C 不能被重排序到 A 和 B 的前面（C 排到 A 和 B 的前面，程序的结果将会被改变）。但 A 和 B 之间没有数据依赖关系，编译器和处理器可以重排序 A 和 B 之间的执行顺序。下图是该程序的两种执行顺序：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153241257-234552626.png)
+
+as-if-serial 语义把单线程程序保护了起来，遵守 as-if-serial 语义的编译器，runtime 和处理器共同为编写单线程程序的程序员创建了一个幻觉：单线程程序是按程序的顺序来执行的。as-if-serial 语义使单线程程序员无需担心重排序会干扰他们，也无需担心内存可见性问题。
+
+#### [#](#程序顺序规则) 程序顺序规则
+
+根据 happens- before 的程序顺序规则，上面计算圆的面积的示例代码存在三个 happens- before 关系：
+
+- A happens- before B；
+- B happens- before C；
+- A happens- before C；
+
+这里的第 3 个 happens- before 关系，是根据 happens- before 的传递性推导出来的。
+
+这里 A happens- before B，但实际执行时 B 却可以排在 A 之前执行（看上面的重排序后的执行顺序）。在第一章提到过，如果 A happens- before B，JMM 并不要求 A 一定要在 B 之前执行。JMM 仅仅要求前一个操作（执行的结果）对后一个操作可见，且前一个操作按顺序排在第二个操作之前。这里操作 A 的执行结果不需要对操作 B 可见；而且重排序操作 A 和操作 B 后的执行结果，与操作 A 和操作 B 按 happens- before 顺序执行的结果一致。在这种情况下，JMM 会认为这种重排序并不非法（not illegal），JMM 允许这种重排序。
+
+在计算机中，软件技术和硬件技术有一个共同的目标：在不改变程序执行结果的前提下，尽可能的开发并行度。编译器和处理器遵从这一目标，从 happens- before 的定义我们可以看出，JMM 同样遵从这一目标。
+
+#### [#](#重排序对多线程的影响) 重排序对多线程的影响
+
+现在让我们来看看，重排序是否会改变多线程程序的执行结果。请看下面的示例代码：
+
+```java
+class ReorderExample {
+    int a = 0;
+    boolean flag = false;
+
+    public void writer() {
+        a = 1;                   //1
+        flag = true;             //2
+    }
+
+    Public void reader() {
+        if (flag) {                //3
+            int i =  a * a;        //4
+            ……
+        }
+    }
+}
+```
+
+flag 变量是个标记，用来标识变量 a 是否已被写入。这里假设有两个线程 A 和 B，A 首先执行 writer() 方法，随后 B 线程接着执行 reader() 方法。线程 B 在执行操作 4 时，能否看到线程 A 在操作 1 对共享变量 a 的写入?
+
+答案是：不一定能看到。
+
+由于操作 1 和操作 2 没有数据依赖关系，编译器和处理器可以对这两个操作重排序；同样，操作 3 和操作 4 没有数据依赖关系，编译器和处理器也可以对这两个操作重排序。让我们先来看看，当操作 1 和操作 2 重排序时，可能会产生什么效果? 请看下面的程序执行时序图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153258466-2041374938.png)
+
+如上图所示，操作 1 和操作 2 做了重排序。程序执行时，线程 A 首先写标记变量 flag，随后线程 B 读这个变量。由于条件判断为真，线程 B 将读取变量 a。此时，变量 a 还根本没有被线程 A 写入，在这里多线程程序的语义被重排序破坏了！
+
+※注：本文统一用红色的虚箭线表示错误的读操作，用绿色的虚箭线表示正确的读操作。
+
+下面再让我们看看，当操作 3 和操作 4 重排序时会产生什么效果（借助这个重排序，可以顺便说明控制依赖性）。下面是操作 3 和操作 4 重排序后，程序的执行时序图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153310727-2103553273.png)
+
+在程序中，操作 3 和操作 4 存在控制依赖关系。当代码中存在控制依赖性时，会影响指令序列执行的并行度。为此，编译器和处理器会采用猜测（Speculation）执行来克服控制相关性对并行度的影响。以处理器的猜测执行为例，执行线程 B 的处理器可以提前读取并计算 a*a，然后把计算结果临时保存到一个名为重排序缓冲（reorder buffer ROB）的硬件缓存中。当接下来操作 3 的条件判断为真时，就把该计算结果写入变量 i 中。
+
+从图中我们可以看出，猜测执行实质上对操作 3 和 4 做了重排序。重排序在这里破坏了多线程程序的语义！
+
+在单线程程序中，对存在控制依赖的操作重排序，不会改变执行结果（这也是 as-if-serial 语义允许对存在控制依赖的操作做重排序的原因）；但在多线程程序中，对存在控制依赖的操作重排序，可能会改变程序的执行结果。
+
+### [#](#顺序一致性) 顺序一致性
+
+#### [#](#数据竞争与顺序一致性保证) 数据竞争与顺序一致性保证
+
+当程序未正确同步时，就会存在数据竞争。java 内存模型规范对数据竞争的定义如下：
+
+- 在一个线程中写一个变量，
+- 在另一个线程读同一个变量，
+- 而且写和读没有通过同步来排序。
+
+当代码中包含数据竞争时，程序的执行往往产生违反直觉的结果（前一章的示例正是如此）。如果一个多线程程序能正确同步，这个程序将是一个没有数据竞争的程序。
+
+JMM 对正确同步的多线程程序的内存一致性做了如下保证：
+
+- 如果程序是正确同步的，程序的执行将具有顺序一致性（sequentially consistent）-- 即程序的执行结果与该程序在顺序一致性内存模型中的执行结果相同（马上我们将会看到，这对于程序员来说是一个极强的保证）。这里的同步是指广义上的同步，包括对常用同步原语（lock，volatile 和 final）的正确使用。
+
+#### [#](#顺序一致性内存模型) 顺序一致性内存模型
+
+顺序一致性内存模型是一个被计算机科学家理想化了的理论参考模型，它为程序员提供了极强的内存可见性保证。顺序一致性内存模型有两大特性：
+
+- 一个线程中的所有操作必须按照程序的顺序来执行。 +（不管程序是否同步）所有线程都只能看到一个单一的操作执行顺序。在顺序一致性内存模型中，每个操作都必须原子执行且立刻对所有线程可见。 顺序一致性内存模型为程序员提供的视图如下：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153325852-100921933.png)
+
+在概念上，顺序一致性模型有一个单一的全局内存，这个内存通过一个左右摆动的开关可以连接到任意一个线程。同时，每一个线程必须按程序的顺序来执行内存读 / 写操作。从上图我们可以看出，在任意时间点最多只能有一个线程可以连接到内存。当多个线程并发执行时，图中的开关装置能把所有线程的所有内存读 / 写操作串行化。
+
+为了更好的理解，下面我们通过两个示意图来对顺序一致性模型的特性做进一步的说明。
+
+假设有两个线程 A 和 B 并发执行。其中 A 线程有三个操作，它们在程序中的顺序是：A1->A2->A3。B 线程也有三个操作，它们在程序中的顺序是：B1->B2->B3。
+
+假设这两个线程使用监视器来正确同步：A 线程的三个操作执行后释放监视器，随后 B 线程获取同一个监视器。那么程序在顺序一致性模型中的执行效果将如下图所示：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153339094-1330816608.png)
+
+现在我们再假设这两个线程没有做同步，下面是这个未同步程序在顺序一致性模型中的执行示意图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153348555-947991834.png)
+
+未同步程序在顺序一致性模型中虽然整体执行顺序是无序的，但所有线程都只能看到一个一致的整体执行顺序。以上图为例，线程 A 和 B 看到的执行顺序都是：B1->A1->A2->B2->A3->B3。之所以能得到这个保证是因为顺序一致性内存模型中的每个操作必须立即对任意线程可见。
+
+但是，在 JMM 中就没有这个保证。未同步程序在 JMM 中不但整体的执行顺序是无序的，而且所有线程看到的操作执行顺序也可能不一致。比如，在当前线程把写过的数据缓存在本地内存中，且还没有刷新到主内存之前，这个写操作仅对当前线程可见；从其他线程的角度来观察，会认为这个写操作根本还没有被当前线程执行。只有当前线程把本地内存中写过的数据刷新到主内存之后，这个写操作才能对其他线程可见。在这种情况下，当前线程和其它线程看到的操作执行顺序将不一致。
+
+#### [#](#同步程序的顺序一致性效果) 同步程序的顺序一致性效果
+
+下面我们对前面的示例程序 ReorderExample 用监视器来同步，看看正确同步的程序如何具有顺序一致性。
+
+请看下面的示例代码：
+
+```java
+class SynchronizedExample {
+    int a = 0;
+    boolean flag = false;
+
+    public synchronized void writer() {
+        a = 1;
+        flag = true;
+    }
+
+    public synchronized void reader() {
+        if (flag) {
+            int i = a;
+            ……
+        }
+    }
+}
+```
+
+上面示例代码中，假设 A 线程执行 writer() 方法后，B 线程执行 reader() 方法。这是一个正确同步的多线程程序。根据 JMM 规范，该程序的执行结果将与该程序在顺序一致性模型中的执行结果相同。下面是该程序在两个内存模型中的执行时序对比图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153404232-1999093534.png)
+
+在顺序一致性模型中，所有操作完全按程序的顺序串行执行。而在 JMM 中，临界区内的代码可以重排序（但 JMM 不允许临界区内的代码“逸出”到临界区之外，那样会破坏监视器的语义）。JMM 会在退出监视器和进入监视器这两个关键时间点做一些特别处理，使得线程在这两个时间点具有与顺序一致性模型相同的内存视图（具体细节后文会说明）。虽然线程 A 在临界区内做了重排序，但由于监视器的互斥执行的特性，这里的线程 B 根本无法“观察”到线程 A 在临界区内的重排序。这种重排序既提高了执行效率，又没有改变程序的执行结果。
+
+从这里我们可以看到 JMM 在具体实现上的基本方针：在不改变（正确同步的）程序执行结果的前提下，尽可能的为编译器和处理器的优化打开方便之门。
+
+#### [#](#未同步程序的执行特性) 未同步程序的执行特性
+
+对于未同步或未正确同步的多线程程序，JMM 只提供最小安全性：线程执行时读取到的值，要么是之前某个线程写入的值，要么是默认值（0，null，false），JMM 保证线程读操作读取到的值不会无中生有（out of thin air）的冒出来。为了实现最小安全性，JVM 在堆上分配对象时，首先会清零内存空间，然后才会在上面分配对象（JVM 内部会同步这两个操作）。因此，在以清零的内存空间（pre-zeroed memory）分配对象时，域的默认初始化已经完成了。
+
+JMM 不保证未同步程序的执行结果与该程序在顺序一致性模型中的执行结果一致。因为未同步程序在顺序一致性模型中执行时，整体上是无序的，其执行结果无法预知。保证未同步程序在两个模型中的执行结果一致毫无意义。
+
+和顺序一致性模型一样，未同步程序在 JMM 中的执行时，整体上也是无序的，其执行结果也无法预知。同时，未同步程序在这两个模型中的执行特性有下面几个差异：
+
+- 顺序一致性模型保证单线程内的操作会按程序的顺序执行，而 JMM 不保证单线程内的操作会按程序的顺序执行（比如上面正确同步的多线程程序在临界区内的重排序）。这一点前面已经讲过了，这里就不再赘述。
+- 顺序一致性模型保证所有线程只能看到一致的操作执行顺序，而 JMM 不保证所有线程能看到一致的操作执行顺序。这一点前面也已经讲过，这里就不再赘述。
+- JMM 不保证对 64 位的 long 型和 double 型变量的读 / 写操作具有原子性，而顺序一致性模型保证对所有的内存读 / 写操作都具有原子性。
+
+第 3 个差异与处理器总线的工作机制密切相关。在计算机中，数据通过总线在处理器和内存之间传递。每次处理器和内存之间的数据传递都是通过一系列步骤来完成的，这一系列步骤称之为总线事务（bus transaction）。总线事务包括读事务（read transaction）和写事务（write transaction）。读事务从内存传送数据到处理器，写事务从处理器传送数据到内存，每个事务会读 / 写内存中一个或多个物理上连续的字。这里的关键是，总线会同步试图并发使用总线的事务。在一个处理器执行总线事务期间，总线会禁止其它所有的处理器和 I/O 设备执行内存的读 / 写。下面让我们通过一个示意图来说明总线的工作机制：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153423006-114753786.png)
+
+如上图所示，假设处理器 A，B 和 C 同时向总线发起总线事务，这时总线仲裁（bus arbitration）会对竞争作出裁决，这里我们假设总线在仲裁后判定处理器 A 在竞争中获胜（总线仲裁会确保所有处理器都能公平的访问内存）。此时处理器 A 继续它的总线事务，而其它两个处理器则要等待处理器 A 的总线事务完成后才能开始再次执行内存访问。假设在处理器 A 执行总线事务期间（不管这个总线事务是读事务还是写事务），处理器 D 向总线发起了总线事务，此时处理器 D 的这个请求会被总线禁止。
+
+总线的这些工作机制可以把所有处理器对内存的访问以串行化的方式来执行；在任意时间点，最多只能有一个处理器能访问内存。这个特性确保了单个总线事务之中的内存读 / 写操作具有原子性。
+
+在一些 32 位的处理器上，如果要求对 64 位数据的读 / 写操作具有原子性，会有比较大的开销。为了照顾这种处理器，java 语言规范鼓励但不强求 JVM 对 64 位的 long 型变量和 double 型变量的读 / 写具有原子性。当 JVM 在这种处理器上运行时，会把一个 64 位 long/ double 型变量的读 / 写操作拆分为两个 32 位的读 / 写操作来执行。这两个 32 位的读 / 写操作可能会被分配到不同的总线事务中执行，此时对这个 64 位变量的读 / 写将不具有原子性。
+
+当单个内存操作不具有原子性，将可能会产生意想不到后果。请看下面示意图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153434834-76545725.png)
+
+如上图所示，假设处理器 A 写一个 long 型变量，同时处理器 B 要读这个 long 型变量。处理器 A 中 64 位的写操作被拆分为两个 32 位的写操作，且这两个 32 位的写操作被分配到不同的写事务中执行。同时处理器 B 中 64 位的读操作被拆分为两个 32 位的读操作，且这两个 32 位的读操作被分配到同一个的读事务中执行。当处理器 A 和 B 按上图的时序来执行时，处理器 B 将看到仅仅被处理器 A“写了一半“的无效值。
+
+### [#](#总结) 总结
+
+#### [#](#处理器内存模型) 处理器内存模型
+
+顺序一致性内存模型是一个理论参考模型，JMM 和处理器内存模型在设计时通常会把顺序一致性内存模型作为参照。JMM 和处理器内存模型在设计时会对顺序一致性模型做一些放松，因为如果完全按照顺序一致性模型来实现处理器和 JMM，那么很多的处理器和编译器优化都要被禁止，这对执行性能将会有很大的影响。
+
+根据对不同类型读 / 写操作组合的执行顺序的放松，可以把常见处理器的内存模型划分为下面几种类型：
+
+- 放松程序中写 - 读操作的顺序，由此产生了 total store ordering 内存模型（简称为 TSO）。
+- 在前面 1 的基础上，继续放松程序中写 - 写操作的顺序，由此产生了 partial store order 内存模型（简称为 PSO）。
+- 在前面 1 和 2 的基础上，继续放松程序中读 - 写和读 - 读操作的顺序，由此产生了 relaxed memory order 内存模型（简称为 RMO）和 PowerPC 内存模型。
+
+注意，这里处理器对读 / 写操作的放松，是以两个操作之间不存在数据依赖性为前提的（因为处理器要遵守 as-if-serial 语义，处理器不会对存在数据依赖性的两个内存操作做重排序）。
+
+下面的表格展示了常见处理器内存模型的细节特征：
+
+| 内存模型名称 | 对应的处理器  | Store-Load 重排序 | Store-Store 重排序 | Load-Load 和 Load-Store 重排序 | 可以更早读取到其它处理器的写 | 可以更早读取到当前处理器的写 |
+| ------------ | ------------- | ----------------- | ------------------ | ------------------------------ | ---------------------------- | ---------------------------- |
+| TSO          | sparc-TSO X64 | Y                 |                    |                                |                              | Y                            |
+| PSO          | sparc-PSO     | Y                 | Y                  |                                |                              | Y                            |
+| RMO          | ia64          | Y                 | Y                  | Y                              |                              | Y                            |
+| PowerPC      | PowerPC       | Y                 | Y                  | Y                              | Y                            | Y                            |
+
+在这个表格中，我们可以看到所有处理器内存模型都允许写 - 读重排序，原因在第一章以说明过：它们都使用了写缓存区，写缓存区可能导致写 - 读操作重排序。同时，我们可以看到这些处理器内存模型都允许更早读到当前处理器的写，原因同样是因为写缓存区：由于写缓存区仅对当前处理器可见，这个特性导致当前处理器可以比其他处理器先看到临时保存在自己的写缓存区中的写。
+
+上面表格中的各种处理器内存模型，从上到下，模型由强变弱。越是追求性能的处理器，内存模型设计的会越弱。因为这些处理器希望内存模型对它们的束缚越少越好，这样它们就可以做尽可能多的优化来提高性能。
+
+由于常见的处理器内存模型比 JMM 要弱，java 编译器在生成字节码时，会在执行指令序列的适当位置插入内存屏障来限制处理器的重排序。同时，由于各种处理器内存模型的强弱并不相同，为了在不同的处理器平台向程序员展示一个一致的内存模型，JMM 在不同的处理器中需要插入的内存屏障的数量和种类也不相同。下图展示了 JMM 在不同处理器内存模型中需要插入的内存屏障的示意图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153453221-750327606.png)
+
+如上图所示，JMM 屏蔽了不同处理器内存模型的差异，它在不同的处理器平台之上为 java 程序员呈现了一个一致的内存模型。
+
+#### [#](#jmm-处理器内存模型与顺序一致性内存模型之间的关系) JMM，处理器内存模型与顺序一致性内存模型之间的关系
+
+JMM 是一个语言级的内存模型，处理器内存模型是硬件级的内存模型，顺序一致性内存模型是一个理论参考模型。下面是语言内存模型，处理器内存模型和顺序一致性内存模型的强弱对比示意图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153506773-2141474464.png)
+
+从上图我们可以看出：常见的 4 种处理器内存模型比常用的 3 中语言内存模型要弱，处理器内存模型和语言内存模型都比顺序一致性内存模型要弱。同处理器内存模型一样，越是追求执行性能的语言，内存模型设计的会越弱。
+
+#### [#](#jmm-的设计) JMM 的设计
+
+从 JMM 设计者的角度来说，在设计 JMM 时，需要考虑两个关键因素：
+
+- 程序员对内存模型的使用。程序员希望内存模型易于理解，易于编程。程序员希望基于一个强内存模型来编写代码。
+- 编译器和处理器对内存模型的实现。编译器和处理器希望内存模型对它们的束缚越少越好，这样它们就可以做尽可能多的优化来提高性能。编译器和处理器希望实现一个弱内存模型。
+
+由于这两个因素互相矛盾，所以 JSR-133 专家组在设计 JMM 时的核心目标就是找到一个好的平衡点：一方面要为程序员提供足够强的内存可见性保证；另一方面，对编译器和处理器的限制要尽可能的放松。下面让我们看看 JSR-133 是如何实现这一目标的。
+
+为了具体说明，请看前面提到过的计算圆面积的示例代码：
+
+```java
+double pi  = 3.14;    //A
+double r   = 1.0;     //B
+double area = pi * r * r; //C
+```
+
+上面计算圆的面积的示例代码存在三个 happens- before 关系：
+
+- A happens- before B；
+- B happens- before C；
+- A happens- before C；
+
+由于 A happens- before B，happens- before 的定义会要求：A 操作执行的结果要对 B 可见，且 A 操作的执行顺序排在 B 操作之前。 但是从程序语义的角度来说，对 A 和 B 做重排序即不会改变程序的执行结果，也还能提高程序的执行性能（允许这种重排序减少了对编译器和处理器优化的束缚）。也就是说，上面这 3 个 happens- before 关系中，虽然 2 和 3 是必需要的，但 1 是不必要的。因此，JMM 把 happens- before 要求禁止的重排序分为了下面两类：
+
+- 会改变程序执行结果的重排序。
+- 不会改变程序执行结果的重排序。
+
+JMM 对这两种不同性质的重排序，采取了不同的策略：
+
+- 对于会改变程序执行结果的重排序，JMM 要求编译器和处理器必须禁止这种重排序。
+- 对于不会改变程序执行结果的重排序，JMM 对编译器和处理器不作要求（JMM 允许这种重排序）。
+
+下面是 JMM 的设计示意图：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153520090-1228290304.png)
+
+从上图可以看出两点：
+
+- JMM 向程序员提供的 happens- before 规则能满足程序员的需求。JMM 的 happens- before 规则不但简单易懂，而且也向程序员提供了足够强的内存可见性保证（有些内存可见性保证其实并不一定真实存在，比如上面的 A happens- before B）。
+- JMM 对编译器和处理器的束缚已经尽可能的少。从上面的分析我们可以看出，JMM 其实是在遵循一个基本原则：只要不改变程序的执行结果（指的是单线程程序和正确同步的多线程程序），编译器和处理器怎么优化都行。比如，如果编译器经过细致的分析后，认定一个锁只会被单个线程访问，那么这个锁可以被消除。再比如，如果编译器经过细致的分析后，认定一个 volatile 变量仅仅只会被单个线程访问，那么编译器可以把这个 volatile 变量当作一个普通变量来对待。这些优化既不会改变程序的执行结果，又能提高程序的执行效率。
+
+#### [#](#jmm-的内存可见性保证) JMM 的内存可见性保证
+
+Java 程序的内存可见性保证按程序类型可以分为下列三类：
+
+- 单线程程序。单线程程序不会出现内存可见性问题。编译器，runtime 和处理器会共同确保单线程程序的执行结果与该程序在顺序一致性模型中的执行结果相同。
+- 正确同步的多线程程序。正确同步的多线程程序的执行将具有顺序一致性（程序的执行结果与该程序在顺序一致性内存模型中的执行结果相同）。这是 JMM 关注的重点，JMM 通过限制编译器和处理器的重排序来为程序员提供内存可见性保证。
+- 未同步 / 未正确同步的多线程程序。JMM 为它们提供了最小安全性保障：线程执行时读取到的值，要么是之前某个线程写入的值，要么是默认值（0，null，false）。
+
+下图展示了这三类程序在 JMM 中与在顺序一致性内存模型中的执行结果的异同：
+
+![img](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240122153533066-1000175401.png)
+
+只要多线程程序是正确同步的，JMM 保证该程序在任意的处理器平台上的执行结果，与该程序在顺序一致性内存模型中的执行结果一致。
+
+#### [#](#jsr-133-对旧内存模型的修补) JSR-133 对旧内存模型的修补
+
+JSR-133 对 JDK5 之前的旧内存模型的修补主要有两个：
+
+- 增强 volatile 的内存语义。旧内存模型允许 volatile 变量与普通变量重排序。JSR-133 严格限制 volatile 变量与普通变量的重排序，使 volatile 的写 - 读和锁的释放 - 获取具有相同的内存语义。
+- 增强 final 的内存语义。在旧内存模型中，多次读取同一个 final 变量的值可能会不相同。为此，JSR-133 为 final 增加了两个重排序规则。现在，final 具有了初始化安全性。
 
 
 
