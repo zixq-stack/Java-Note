@@ -3764,7 +3764,7 @@ JVM 在进行 GC 时，并非每次都对堆内存（新生代、老年代；方
 
 > 声明：本节内容转载于 [@pdai：JVM基础 - Java内存模型引入](https://www.pdai.tech/md/java/jvm/java-jvm-x-introduce.html)。
 >
-> 很多人都无法区分Java内存模型和JVM内存结构，以及Java内存模型与物理内存之间的关系。本文从堆栈角度引入JMM，然后介绍JMM和物理内存之间的关系, @pdai
+> 很多人都无法区分Java内存模型和JVM内存结构，以及Java内存模型与物理内存之间的关系。本文从堆栈角度引入JMM，然后介绍JMM和物理内存之间的关系。@pdai
 
 - JVM 基础 - Java 内存模型引入
   - JMM引入
