@@ -4080,7 +4080,20 @@ StoreLoad Barriers 是一个“全能型”的屏障，它同时具有其他三�
 
 #### [#](#happens-before) happens-before
 
-从 JDK5 开始，java 使用新的 JSR -133 内存模型（本文除非特别说明，针对的都是 JSR- 133 内存模型）。JSR-133 提出了 happens-before 的概念，通过这个概念来阐述操作之间的内存可见性。如果一个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须存在 happens-before 关系。这里提到的两个操作既可以是在一个线程之内，也可以是在不同线程之间。 与程序员密切相关的 happens-before 规则如下：
+##### happens-before八大规则
+
+1. **单一线程规则（Single Thread rule）**：在一个线程内，在程序前面的操作先行发生于后面的操作。
+2. **管道锁定规则（Monitor Lock Rule）**：一个 unlock 操作先行发生于后面对同一个锁的 lock 操作。
+3. **Volatile变量规则（Volatile Variable Rule）**：对一个 volatile 变量的写操作先行发生于后面对这个变量的读操作。
+4. **线程启动规则（Thread Start Rule）**：Thread 对象的 `start()` 方法调用先行发生于此线程的每一个动作。
+5. **线程加入规则（Thread Join Rule）**：Thread 对象的结束先行发生于 `join()` 方法返回。
+6. **线程中断规则（Thread Interruption Rule）**：对线程 i`nterrupt()` 方法的调用先行发生于被中断线程的代码检测到中断事件的发生，可以通过 `interrupted()` 方法检测到是否有中断发生。
+7. **对象终结规则（Finalizer Rule）**：一个对象的初始化完成(构造函数执行结束)先行发生于它的 `finalize()` 方法的开始。
+8. **传递性（Transitivity）**：如果操作 A 先行发生于操作 B，操作 B 先行发生于操作 C，那么操作 A 先行发生于操作 C。
+
+
+
+从 JDK5 开始，Java 使用新的 JSR -133 内存模型（本文除非特别说明，针对的都是 JSR- 133 内存模型）。JSR-133 提出了 happens-before 的概念，通过这个概念来阐述操作之间的内存可见性。如果一个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须存在 happens-before 关系。这里提到的两个操作既可以是在一个线程之内，也可以是在不同线程之间。 与程序员密切相关的 happens-before 规则如下：
 
 - 程序顺序规则：一个线程中的每个操作，happens- before 于该线程中的任意后续操作。
 - 监视器锁规则：对一个监视器锁的解锁，happens- before 于随后对这个监视器锁的加锁。
