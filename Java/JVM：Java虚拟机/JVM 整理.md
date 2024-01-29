@@ -4508,6 +4508,19 @@ ZGC的执行流程（待完善）:
 
 所以G1为了解决问题，在转移过程中需要进行用户线程的停止。ZGC和Shenandoah GC解决了这个问题，让转移过程也能够并发执行。
 
+> Shenandoah GC就是通过G1源代码改造而来的，通过修改对象头的方式来完成并发转移，使用的核心技术：前向指针+读前屏障。Shenandoah GC有两个版本：
+>
+> - 1.0版本（不稳定）存在于JDK8和JDK11中，此版本是直接在对象的前8个字节增加了前向指针
+>   - 读数据：读前屏障，判断前向指针指向的是自己还是转移后的对象，然后进行操作；
+>   - 写数据：写前屏障，判断Mark Work中的GC状态，若GC状态为0说明处于GC过程中，直接写入、不为0则根据GC状态值确认当前处于垃圾回收的哪个阶段，让用户线程执行垃圾回收相关的任务。
+> - 后续的JDK版本中均使用2.0版本，优化前向指针的位置，仅转移阶段将其放入了Mark Word中。
+
+Shenandoah GC执行流程：
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240128131804097-1786384664.png" alt="image-20240128131821173" style="zoom:67%;" />
+
+
+
 
 
 ## ZGC原理
@@ -7355,28 +7368,6 @@ Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Java应用在线调试Arthas整理
 
 > 参考资料：
@@ -9229,6 +9220,28 @@ JDK9及之后 ： -Xlog:gc*:file=文件路径
 
 -XX:+PrintGCDateStamps：将时间和日期也加入到GC日志中。默认是禁用的
 ```
+
+
+
+参数模板：
+
+```bash
+-Xms1g													# 初始堆内存1g
+-Xmx1g													# 最大堆内存1g
+-Xss256k												# 每个线程的栈内存最大256k
+-XX:MaxMetaspaceSize=512m								# 最大元空间大小512m
+-XX:+DisableExplicitGC									# 代码中System.gc()无效
+-XX:+HeapDumpOnOutOfMemoryError							# OutOfMemory错误时生成堆内存快照
+-XX:HeapDumpPath=/opt/dumps/my-service.hprof			# 堆内存快照生成位置
+-XX:+PrintGCDetails										# 打印详细垃圾回收日志
+-XX:+PrintGCDateStamps									# 打印垃圾回收时间
+-Xloggc:文件路径										 # 日志文件输出位置
+```
+
+注意：
+
+- JDK9及之后gc日志输出修改为 `-Xlog:gc*:file=文件名`。
+- 堆内存大小和栈内存大小根据实际情况灵活调整。
 
 
 
