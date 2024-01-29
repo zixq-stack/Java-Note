@@ -1072,7 +1072,7 @@ DriverManager.getCallerClassLoader();
 
 
 
-<img src="C:/Users/zixq/AppData/Roaming/Typora/typora-user-images/image-20231108204352072.png" alt="image-20231108204352072" style="zoom: 67%;" />
+![image-20240129150541913](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240129150523738-1741029320.png)
 
 
 
@@ -2820,52 +2820,6 @@ public class StackStore {
 使用invokevirtual和虚方法表来解释整个过程：产生invokevirtual调用时，先根据对象头中的类型指针找到方法区中InstanceClass对象，获得虚方法表，再根据虚方法表找到对应的对方，获得方法的地址，最后调用方法。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240125221737532-1546994555.png" alt="image-20240125221753257" style="zoom:67%;" />
-
-
-
-
-
-
-
-### 异常捕获原理
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
