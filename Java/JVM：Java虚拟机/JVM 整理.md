@@ -94,9 +94,7 @@ javac KnowClass.java
 
 主版本号用来标识大版本号
 
-JDK1.0-1.1使用了45.0-45.3，JDK1.2是46之后每升级一个大版本就加1；副版本号是当主版本号相同时作为区分不同
-
-版本的标识，一般只需要关心主版本号
+JDK1.0-1.1使用了45.0-45.3，JDK1.2是46之后每升级一个大版本就加1；副版本号是当主版本号相同时作为区分不同版本的标识，一般只需要关心主版本号
 
 ```txt
 1.2之后大版本号计算方法就是:
@@ -468,7 +466,7 @@ Signature		类型签名/变量类型		就是前面“常量池”中说的字节
 
 上面Code中有一个小东西：`0: aload_0`，这里的 `aload_0` 叫做虚拟机字节码指令
 
-> 关于更多虚拟机字节码指令，也可以在《深入理解Java虚拟机 ：JVM高级特性与最佳实践-附录B》中获取
+> 关于更多虚拟机字节码指令，也可以在《深入理解Java虚拟机 ：JVM高级特性与最佳实践-附录B》中获取：[深入理解Java虚拟机 ：JVM高级特性与最佳实践_周志明_V3 下载](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%EF%BC%9AJVM%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E3%80%90%40%E5%91%A8%E5%BF%97%E6%98%8E%20-%20%E7%AC%AC3%E7%89%88%E3%80%91.pdf)
 
 这里说几个最基本的虚拟机字节码指令：
 
@@ -498,7 +496,7 @@ javap是JDK自带的反编译工具，可以通过控制台查看字节码文件
 
 直接输入javap查看所有参数
 
-输入` javap -v 字节码文件名称` 查看具体的字节码信息。（如果jar包需要先使用 jar –xvf 命令解压）
+输入` javap -v 字节码文件名称` 查看具体的字节码信息。（jar包需要先使用 jar –xvf 命令解压）
 
 ![image-20231031233150816](https://img2023.cnblogs.com/blog/2421736/202310/2421736-20231031233151837-1538049901.png)
 
@@ -1341,7 +1339,8 @@ public abstract class ClassLoader {
     
     /**
      * 由类加载器子类实现获取二进制数据，
-     * 调用 defineClass(String name, byte[] b, int off, int len) 如：URLClassLoader 会根据文件路径获取类文件中的二进制数据
+     * 调用 defineClass(String name, byte[] b, int off, int len) 
+     * 如：URLClassLoader 会根据文件路径获取类文件中的二进制数据
      */
 	protected Class<?> findClass(String name) {
         throw new ClassNotFoundException(name);
@@ -1365,9 +1364,9 @@ protected final void resolveClass(Class<?> c){
 }
 ```
 
-从上对 loadClass 方法来分析来看：想要自定义类加载器，那么继承 ClassLoader 类，重写 findClass() 即可，示例如下：
+从上对 loadClass 方法来分析来看：想要自定义类加载器，那么继承 ClassLoader 类，重写 `findClass()` 即可，示例如下：
 
-> JDK1.2之前是重写loadClass方法，但JDK1.2之后就建议自定义类加载器最好重写findClass方法而不要重写loadClass方法，因为这样容易破坏双亲委托模式。
+> JDK1.2之前是重写loadClass方法，但JDK1.2之后就建议自定义类加载器最好重写 `findClass()` 而不要重写 `loadClass()`，因为这样容易破坏双亲委托模式。
 
 
 
@@ -1458,7 +1457,7 @@ sun.misc.Launcher$AppClassLoader@18b4aac2
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231109145557267-2110824427.png" alt="image-20231109145558395" style="zoom:67%;" />
 
-这个构造方法由另外一个构造方法调用，其中父类加载器由getSystemClassLoader方法设置，该方法返回的是AppClassLoader。
+这个构造方法由另外一个构造方法调用，其中父类加载器由 `getSystemClassLoader()` 设置，该方法返回的是AppClassLoader。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231109145800286-1067637581.png" alt="image-20231109145801435" style="zoom: 50%;" />
 
@@ -1489,7 +1488,7 @@ JDK9引入了module的概念，类加载器在设计上发生了变化：
 
 1. 启动类加载器使用Java编写，位于`jdk.internal.loader.ClassLoaders`类中。
 
-Java中的BootClassLoader继承自BuiltinClassLoader实现从模块中找到要加载的字节码资源文件。
+Java中的BootClassLoader继承自BuiltinClassLoader，实现从模块中找到要加载的字节码资源文件。
 
 启动类加载器依然无法通过Java代码获取到，返回的仍然是null，保持了统一。
 
@@ -1513,10 +1512,10 @@ Java中的BootClassLoader继承自BuiltinClassLoader实现从模块中找到要�
 
 ==这个阶段一般不需要程序员参与==。验证阶段大致会完成4个阶段的检验动作:
 
-- `文件格式验证`:：验证字节流是否符合Class文件格式的规范；例如: 是否以`0xCAFEBABE`开头、主次版本号是否在当前虚拟机的处理范围之内、常量池中的常量是否有不被支持的类型
-- `元数据验证`:：对字节码描述的信息进行语义分析(注意: 对比`Javac`编译阶段的语义分析)，以保证其描述的信息符合Java语言规范的要求；例如: 这个类是否有父类，除了`Java.lang.Object`之外
-- `字节码验证`:：通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的
-- `符号引用验证`:确保解析动作能正确执行
+- `文件格式验证`：验证字节流是否符合Class文件格式的规范；例如: 是否以`0xCAFEBABE`开头、主次版本号是否在当前虚拟机的处理范围之内、常量池中的常量是否有不被支持的类型
+- `元数据验证`：对字节码描述的信息进行语义分析(注意: 对比`Javac`编译阶段的语义分析)，以保证其描述的信息符合Java语言规范的要求；例如: 这个类是否有父类，除了`Java.lang.Object`之外
+- `字节码验证`：通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的
+- `符号引用验证`：确保解析动作能正确执行
 
 > 验证阶段是非常重要的，但不是必须的，它对程序运行期没有影响，
 >
@@ -1570,7 +1569,7 @@ Java中的BootClassLoader继承自BuiltinClassLoader实现从模块中找到要�
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231109183305002-712655662.png" alt="image-20231109183303764" style="zoom:67%;" />
 
-直接引用不在使用编号，而是使用内存中地址进行访问具体的数据。
+直接引用不再使用编号，而是使用内存地址来访问具体的数据。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231109183446304-200246862.png" alt="image-20231109183445217" style="zoom:80%;" />
 
@@ -1620,7 +1619,7 @@ Java中的BootClassLoader继承自BuiltinClassLoader实现从模块中找到要�
 
 
 
-**类初始化时机**：只有当对类的主动使用的时候才会导致类的初始化。类的主动使用包括以下六种：
+**类初始化时机**：只有当对类的主动使用时会导致类的初始化。类的主动使用包括以下六种：
 
 > 添加 `-XX:+TraceClassLoading` 虚拟机参数可以打印出加载并初始化的类。
 
@@ -1677,7 +1676,7 @@ public static Class<?> forName(String name, boolean initialize, ClassLoader load
 
 **Java虚拟机将结束生命周期的几种情况：**
 
-- 调用 Runtime 类或 system 类的 exit 方法，或 Runtime 类的 halt 方法，并且 Java 安全管理器也允许这次 exit 或 halt 操作。
+- 调用 Runtime 类 或 system 类的 `exit()`，或 Runtime 类的 `halt()`，并且 Java 安全管理器也允许这次 exit 或 halt 操作。
 - 程序正常执行结束。
 - 程序在执行过程中遇到了异常或错误而异常终止。
 - 由于操作系统出现错误而导致Java虚拟机进程终止。
@@ -1727,7 +1726,7 @@ public static Class<?> forName(String name, boolean initialize, ClassLoader load
 
 > **内存溢出：** 指的是程序在使用某一块内存区域时，存放的数据需要占用的内存大小超过了虚拟机能提供的内存上限。
 
-- 因为每个线程只存储一个固定长度的内存地址，所以程序计数器是不会发生内存溢出的。 因此：**程序员无需对程序计数器做任何处**。
+- 因为每个线程只存储一个固定长度的内存地址，所以程序计数器是不会发生内存溢出的。 因此：**程序员无需对程序计数器做任何处理**。
 
 2. **在 JVM 规范中，每个线程都有它自己的程序计数器，是线程私有的，生命周期与线程的生命周期一致**。
 3. 程序计数器是一块很小的内存空间，几乎可以忽略不计，也是运行速度最快的存储区域。
@@ -1905,7 +1904,7 @@ Solarls
 
 > byte、short、char 在存储前被转换为int；
 >
-> boolean也被转换为int，0 表示 false，非 0 表示 true。
+> boolean也被转换为int，0 表示 false，1 表示 true。
 
 
 
@@ -1921,7 +1920,7 @@ Solarls
 
 - **问题：boolean、byte、char、short在栈上是不是存在空间浪费？**
 
-是的，Java虚拟机采用的是空间换时间方案，在栈上不存储具体的类型，只根据slot槽进行数据的处理，浪费了一些内存空间但是避免不同数据类型不同处理方式带来的时间开销。
+是的，Java虚拟机采用的是空间换时间方案，在栈上不存储具体的类型，只根据slot槽进行数据的处理，浪费了一些内存空间，但是避免不同数据类型不同处理方式带来的时间开销。
 
 同时，像long型在64位系统中占用2个slot，使用了16字节空间，但实际上在Hotspot虚拟机中，它的高8个字节没有使用，这样就满足了long型使用8个字节的需要。
 
@@ -1944,8 +1943,6 @@ Solarls
 ###### 操作数栈（Operand Stack）
 
 > **操作数栈：是栈帧中虚拟机在执行指令过程中用来存放中间数据的一块区域**。如果一条指令将一个值压入操作数栈，则后面的指令可以弹出并使用该值。
->
-> - PS：这种栈也是先进后出。
 
 1. **操作数栈，在方法执行过程中，根据字节码指令，往操作数栈中写入数据或提取数据，即入栈（push）、出栈（pop）**。
 
@@ -2049,7 +2046,7 @@ HotSpot 的执行引擎采用的并非是基于寄存器的架构，但这并不
 
 **finally的处理方式**：
 
-- finally中的字节码指令会插入到try 和 catch代码块中,保证在try和catch执行之后一定会执行finally中的代码。
+- finally中的字节码指令会插入到try 和 catch代码块中，保证在try和catch执行之后一定会执行finally中的代码。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240126152724283-1230160433.png" alt="image-20240126152740285" style="zoom:67%;" />
 
@@ -2071,7 +2068,7 @@ HotSpot 的执行引擎采用的并非是基于寄存器的架构，但这并不
 >
 > ==本地方法栈也是线程私有的。也会发生内存溢出==。
 >
-> - 果线程请求分配的栈容量超过本地方法栈允许的最大容量，Java 虚拟机将会抛出一个 `StackOverflowError` 异常
+> - 如果线程请求分配的栈容量超过本地方法栈允许的最大容量，Java 虚拟机将会抛出一个 `StackOverflowError` 异常
 > - 如果本地方法栈可以动态扩展，并且在尝试扩展的时候无法申请到足够的内存，或者在创建新的线程时没有足够的内存去创建对应的本地方法栈，那么 Java虚拟机将会抛出一个`OutofMemoryError`异常
 
 1. 在Hotspot虚拟机中，Java虚拟机栈和本地方法栈实现上使用了同一个栈空间，即**在 Hotspot JVM 中，直接将本地方法栈和虚拟机栈合二为一了**。
@@ -2185,15 +2182,13 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 
 
 
-为了进行高效的垃圾回收（及GC后续说明），虚拟机把堆内存**逻辑上**划分成三块区域（分代的唯一理由就是优化 GC 性能）：
+为了进行高效的垃圾回收（GC后续说明），虚拟机把堆内存**逻辑上**划分成三块区域（分代的唯一理由就是优化 GC 性能）：
 
 ![JDK7](https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231113225142450-1115685021.jpg)
 
-> 根据JDK版本不同，也可以说是两块区域，往下看就会了解。
-
 1. **新生代 / 年轻代 （Young Generation）**：新对象和没达到一定年龄的对象都在新生代。
 
-年轻代是所有新对象创建的地方。当填充年轻代时，执行垃圾收集，这种垃圾收集称为 **Minor GC**。
+年轻代是所有新对象创建的地方。当填充年轻代时，执行垃圾收集，这种垃圾收集称为 **Young GC**。
 
 年轻代被分为三个部分——伊甸园（**Eden Memory**，伊甸园-上帝创造夏娃）和两个幸存区（**Survivor Memory**，被称为 from / to 或 s0 / s1），默认比例是`8:1:1`，这个比例可以通过 `-XX:SurvivorRatio` 来配置。
 
@@ -2216,7 +2211,7 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 >
 > 
 >
-> 若在 JDK 7 中开启了 `-XX:+UseAdaptiveSizePolicy`，JVM 会动态调整 JVM 堆中各个区域的大小以及进入老年代的年龄,此时 `–XX:NewRatio` 和 `-XX:SurvivorRatio` 将会失效，而 JDK 8 是默认开启`-XX:+UseAdaptiveSizePolicy`。
+> 若在 JDK 7 中开启了 `-XX:+UseAdaptiveSizePolicy`，JVM 会动态调整 JVM 堆中各个区域的大小以及进入老年代的年龄，此时 `–XX:NewRatio` 和 `-XX:SurvivorRatio` 将会失效，而 JDK 8 是默认开启`-XX:+UseAdaptiveSizePolicy`。
 >
 > 在 JDK 8中，**不要随意关闭**`-XX:+UseAdaptiveSizePolicy`，除非对堆内存的划分有明确的规划。
 
@@ -2271,10 +2266,8 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 > **total**：指的是Java虚拟机**已经分配的可用堆内存**；
 >
 > **max**：指的是Java虚拟机可以**分配的最大堆内存**。
->
-> ![image-20231114202838913](https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231114202840739-1985125440.png)
 
-
+![image-20231114202838913](https://img2023.cnblogs.com/blog/2421736/202402/2421736-20240202221109510-2054934690.png)
 
 
 
@@ -2335,7 +2328,7 @@ public class Arthas_Heap {
 
 
 
-> 问题：是不是当used = max = total的时候，堆内存就溢出了？
+> 问题：**是不是当used = max = total的时候，堆内存就溢出了？**
 
 **不是**，堆内存溢出的判断条件比较复杂（具体内容需要到后续的垃圾回收相关内容去了解）。
 
@@ -2349,7 +2342,7 @@ public class Arthas_Heap {
 >
 > Oracle官方文档：https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 >
-> **要修改堆内存大小，可以使用虚拟机参数 -Xms (初始的total) 和 –Xmx（max最大值）**。
+> **要修改堆内存大小，可以使用虚拟机参数 `-Xms值` (初始的total) 和 `–Xmx值`（max最大值）**。
 
 Java 堆用于存储 Java 对象实例，那么堆的大小在 JVM 启动的时候就确定了，我们可以通过 `-Xmx` 和 `-Xms` 来设定
 
@@ -2400,7 +2393,7 @@ public static void main(String[] args) {
 
 > 拓展点：为什么Arthas中显示的heap堆大小与设置的值不一样？
 >
-> PS：测试自行在IDEA中设置上面内容的Java虚拟机参数，然后启动Arthas，不断添加对象，在Arthas中输入`memory`参数进行对比查看。
+> PS：测试自行在IDEA中设置下面内容的Java虚拟机参数，然后启动Arthas，不断添加对象，在Arthas中输入`memory`参数进行对比查看。
 
 ```bash
 -Xms1g -Xmx1g
@@ -2422,7 +2415,7 @@ public static void main(String[] args) {
 
 > 方法区只是 JVM 规范中定义的一个概念。并没有规定如何去实现它，不同的厂商有不同的实现。
 >
-> **永久代（PermGen）是 Hotspot 虚拟机特有的概念， Java8 的时候被 元空间**取代了，永久代和元空间方法区的落地实现方式。
+> **永久代（PermGen）是 Hotspot 虚拟机特有的概念， Java8 的时候被 元空间**取代了，永久代和元空间都是方法区的落地实现方式。
 >
 > ==方法区是线程共享的，并且也有内存溢出==
 >
@@ -2508,9 +2501,9 @@ public class DirectMemory {
 
 ![image-20231117225342871](https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231117225344541-1658102154.png)
 
-> 如果需要手动调整直接内存的大小，可以使用 -XX:MaxDirectMemorySize=大小
+> 如果需要手动调整直接内存的大小，可以使用 `-XX:MaxDirectMemorySize=值`
 
-单位k或K表示千字节，m或M表示兆字节，g或G表示千兆字节。默认不设置该参数情况下，JVM 自动选择最大分配的大小。示例如下：
+默认不设置该参数情况下，JVM 自动选择最大分配的大小。示例如下：
 
 ```bash
 -XX:MaxDirectMemorySize=1m
@@ -2544,7 +2537,7 @@ public class DirectMemory {
 
 
 
-3. **字符串常量池（**StringTable**）**：JDK7后，在堆中，存储在代码中定义的常量字符串内容。比如“123” 这个123就会被放入字符串常量池。
+3. **字符串常量池（**StringTable**）**：JDK7后，在堆中，存储的是在代码中定义的常量字符串内容。比如“123” 这个123就会被放入字符串常量池。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202311/2421736-20231117215324003-945968567.png" alt="image-20231117215323048" style="zoom:67%;" />
 
@@ -2675,7 +2668,7 @@ CPU缓存修改A对象并将其写回内存，但另一个线程B读取的是B�
 
 > 内存对齐涉及的小知识：字段重排列。在Hotspot中，要求每个属性的偏移量Offset（字段地址 – 起始地址）必须是字段长度的N倍。如果不满足要求，会尝试使用内存对齐，通过在属性之间插入一块对齐区域达到目的。
 
-如下图中（JOL打印），Student类中的id属性类型为long，那么偏移量就必须是8的倍数：SIZE * 2 = OFFSET
+如下图中（JOL打印），Student类中的id属性类型为long，那么偏移量就必须是8的倍数
 
 ![image-20240124204710320](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240124204655010-473016754.png)
 
@@ -2813,11 +2806,11 @@ public class StackStore {
 
 动态绑定是基于方法表来完成的，invokevirtual使用了虚方法表（vtable），invokeinterface使用了接口方法表(itable)，整体思路类似。
 
-> 虚方法表，本质上是一个数组，记录了方法的内存地址。每个类中都有一个虚方法表，子类方法表中包含父类方法表中的所有方法；子类如果重写了父类方法，则使用自己类中方法的地址进行替换。
+> 虚方法表，本质上是一个数组，记录了方法的内存地址。每个类中都有一个虚方法表，子类方法表中包含父类方法表中的所有方法；子类如果重写了父类方法，则使用子类自己的方法的地址进行替换。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240125221404584-279902103.png" alt="image-20240125221419659" style="zoom:67%;" />
 
-使用invokevirtual和虚方法表来解释整个过程：产生invokevirtual调用时，先根据对象头中的类型指针找到方法区中InstanceClass对象，获得虚方法表，再根据虚方法表找到对应的对方，获得方法的地址，最后调用方法。
+使用invokevirtual和虚方法表来解释整个过程：产生invokevirtual调用时，先根据对象头中的类型指针找到方法区中InstanceKlass对象，获得虚方法表，再根据虚方法表找到对应的地方，获得方法的地址，最后调用方法。
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240125221737532-1546994555.png" alt="image-20240125221753257" style="zoom:67%;" />
 
@@ -2921,11 +2914,11 @@ public class UnloadingConditions {
 
 
 
-> 补充：关于 finalize() 方法
+> 补充：关于 `finalize()` 方法
 
-finalize() 类似 C++ 的析构函数，用来做关闭外部资源等工作。但是 try-finally 等方式可以做的更好，并且该方法运行代价高昂，不确定性大，无法保证各个对象的调用顺序，因此最好不要使用。
+`finalize()` 类似 C++ 的析构函数，用来做关闭外部资源等工作。但是 try-finally 等方式可以做的更好，并且该方法运行代价高昂，不确定性大，无法保证各个对象的调用顺序，因此最好不要使用。
 
-当一个对象可被回收时，如果需要执行该对象的 finalize() 方法，那么就有可能通过在该方法中让对象重新被引用，从而实现自救，自救只能进行一次，如果回收的对象之前调用了 finalize() 方法自救，后面回收时不会调用 finalize() 方法。
+当一个对象可被回收时，如果需要执行该对象的 `finalize()` 方法，那么就有可能通过在该方法中让对象重新被引用，从而实现自救，自救只能进行一次，如果回收的对象之前调用了 `finalize()` 方法自救，后面回收时不会调用 `finalize()` 方法。
 
 
 
@@ -5072,9 +5065,9 @@ methodOne()声明一个局部基本类型变量(类型为int的localVariable1)�
 
 ## Java 内存模型详解
 
-> 声明：本文主要转载自 Info 上[深入理解Java内存模型](https://www.infoq.cn/article/java_memory_model/)。
+> 声明：本章节转载自 Info 上 [深入理解Java内存模型](https://www.infoq.cn/article/java_memory_model/)。PDF文档下载 [深入理解Java内存模型【程晓明】](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E3%80%90%E7%A8%8B%E6%99%93%E6%98%8E%E3%80%91.pdf)
 >
-> 原作者：程晓明。
+> 作者：程晓明。
 >
 > 说明：这篇文章对JMM讲得很清楚了，大致分三部分：重排序与顺序一致性；三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现；Java内存模型的设计，及其与处理器内存模型和顺序一致性内存模型的关系。
 
@@ -9895,12 +9888,6 @@ JMH测试对比结果如下：
 >    - AOT 编译器在编译时，需要知道运行时所有可访问的所有类。但是Java中有一些技术可以在运行时创建类，例如反射、动态代理等。这些技术在很多框架比如Spring中大量使用，所以框架需要对AOT编译器进行适配解决类似的问题。
 >
 > GraalVM的使用场景：传统的系统架构有人力、机房开销大；流量激增需要大量服务器，流量过后很多服务器就闲置造成资源浪费，而因为虚拟化技术、云原生技术，所以GraalVM+云服务商提高的Serverless无服务器化架构就是其使用场景了。
-
-
-
-
-
-
 
 
 
