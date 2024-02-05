@@ -251,19 +251,7 @@
 
 # 面经
 
-[Java核心面试知识整理](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F/Java%E6%A0%B8%E5%BF%83%E9%9D%A2%E8%AF%95%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86.pdf)。文件格式：PDF
-
-[Java面试题【题库全】](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F/Java%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%88%E9%A2%98%E5%BA%93%E5%85%A8%EF%BC%89.doc)。文件格式：doc
-
-[Java面试题](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F/Java%E9%9D%A2%E8%AF%95%E9%A2%98.pdf)。文件格式：PDF
-
-[Java面试题 及 答案【@小生】](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F/Java%E9%9D%A2%E8%AF%95%E9%A2%98%E4%BB%A5%E5%8F%8A%E7%AD%94%E6%A1%88(%E5%B0%8F%E7%94%9F).pdf)。文件格式：PDF
-
-[企业面试笔试题总汇【V1.6】](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F/%E4%BC%81%E4%B8%9A%E9%9D%A2%E8%AF%95%E7%AC%94%E8%AF%95%E9%A2%98%E6%80%BB%E6%B1%87v1.6.docx)。文件格式：docx
-
-[数据结构试题库答案](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%AF%95%E9%A2%98%E5%BA%93%E7%AD%94%E6%A1%88.doc)。文件格式：doc
-
-[面试题整理](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F/%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86.pdf)。文件格式：PDF
+[面经](https://github.com/zixq-stack/Java-Note/tree/master/%E9%9D%A2%E7%BB%8F)
 
 [JavaGuide版](https://javaguide.cn/home.html)
 
