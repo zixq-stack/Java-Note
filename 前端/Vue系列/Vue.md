@@ -5311,9 +5311,9 @@ nodejs的配置很简单，[官网](https://nodejs.org/en/download/) 进行下�
 
 但是：npm是国外的，我们拉取东西时就犹如隔了一道墙，很慢
 
-因此：拉取淘宝的镜像，从而使用cnpm来代替npm指令，拉取淘宝镜像链接：`npm install -g cnpm --registry=https://registry.npm.taobao.org` 或 `npm config set registry http://registry.npm.taobao.org` 
+因此：拉取淘宝的镜像，从而使用cnpm来代替npm指令，拉取淘宝镜像链接：`npm config set registry https://registry.npmmirror.com` 别用  `npm config set registry http://registry.npm.taobao.org` （2022 年 5 月 31 日已停止服务）
 
-这两个淘宝镜像，建议用前者，拉取镜像这里开始就一定要保证自己的网络流畅，不然很容易导致一是淘宝镜像拉取失败（ 看起来成功了，但是一用就报cnpm不是内部命名 ，这种情况要么权限不够，需要管理员身份打开dos窗口；要么cnpm没拉完整），二是后面安装脚手架时，要是网络不好，也很容易出现看起来成功了，但是：一用就发现vue不是内部指令
+拉取镜像这里开始就一定要保证自己的网络流畅，不然很容易导致一是淘宝镜像拉取失败（看起来成功了，但是一用就报cnpm不是内部命名 ，这种情况要么权限不够，需要管理员身份打开dos窗口；要么cnpm没拉完整），二是后面安装脚手架时，要是网络不好，也很容易出现看起来成功了，但是：一用就发现vue不是内部指令
 
 
 
