@@ -299,9 +299,11 @@ for（）{}
 
 ### 理解MVVM模型
 
-> - M    指：model。
-> - V     指：view。
-> - VM   指：ViewModel。
+> M    指：model。
+>
+> V     指：view。
+>
+> VM   指：ViewModel。
 
 
 
@@ -365,7 +367,7 @@ for（）{}
 
 1. M：Model（模型） ————> data中的数据。
 2. V：View（视图 ）—————> 模板代码。
-3. ViewModel：视图模型（ViewModel） ————> Vue实例。
+3. VM：ViewModel（视图模型）————> Vue实例。
 
 观察效果发现
 
