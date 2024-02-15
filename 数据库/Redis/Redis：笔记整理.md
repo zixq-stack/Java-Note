@@ -2667,7 +2667,7 @@ public class RedissonLock extends RedissonExpirable implements RLock {
         
         /*
          * 这里 newTimeout(new TimerTask(), 参数2, 参数3) 指的是：参数2，参数3去描述什么时候去做参数1的事情
-         * 这里的参数2：internalLockLeaseTime / 3 就是前面的 lockWatchdogTimeout = (30 * 1000) / 3 = 1000ms = 10s
+         * 这里的参数2：internalLockLeaseTime / 3 就是前面的 lockWatchdogTimeout = (30 * 1000) / 3 = 10000ms = 10s
          * 
          * 锁的失效时间是30s，当10s之后，此时这个timeTask 就触发了，它就去进行续约，把当前这把锁续约成30s，
          * 如果操作成功，那么此时就会递归调用自己，再重新设置一个timeTask()，于是再过10s后又再设置一个timerTask，
