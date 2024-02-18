@@ -9744,8 +9744,6 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 官网：https://cn.vuejs.org/guide/introduction.html
 
-> 这玩意儿已经大部分趋近于后端思想了，到了TypeScript已经可以说是就是小Java了，所以后端人员这个不用看都可以，在项目中基本上都可以看懂（前提有Vue2知识），甚至设计思想都可以猜得八九不离十。
-
 
 
 ## 创建vue3项目
