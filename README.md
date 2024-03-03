@@ -1,5 +1,10 @@
 # 声明
 这里面涵盖的内容有本人整理的、也有别人整理的，**所有内容仅供学习**，若是侵权或不宜公开等原因，请通过 zixq8@qq.com 联系我，我会立刻进行整改，邮件格式：
+
+> **提示**
+>
+> 附上能证明确实是你本人的附件更好！
+
 ```txt
 姓名：侵权文章你用的名字
 说明：xxxxx
@@ -45,6 +50,8 @@
 # Spring
 
 [Spring技术内幕：深入解析Spring架构与设计原理【@计文科】](https://github.com/zixq-stack/Java-Note/blob/master/Spring/Spring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%EF%BC%9A%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90Spring%E6%9E%B6%E6%9E%84%E4%B8%8E%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86.pdf)。文件格式：PDF
+
+[Spring Boot](https://github.com/zixq-stack/Java-Note/blob/master/Spring/Spring%20Boot%20%E6%95%B4%E5%90%88.md)。文件格式：md
 
 [SpringCloud](https://github.com/zixq-stack/Java-Note/blob/master/Spring/SpringCloud%20%E6%95%B4%E5%90%88.md)。文件格式：md
 
@@ -140,7 +147,7 @@
 
 [Redis](https://github.com/zixq-stack/Java-Note/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/Redis/Redis.md)。文件格式：md
 
-[Elasticsearch](https://github.com/zixq-stack/Java-Note/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/ElasticSearch/ElasticSearch.md)。文件格式：md
+[Elastic-Search](https://github.com/zixq-stack/Java-Note/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/ElasticSearch/ElasticSearch.md)。文件格式：md
 
 [MongoDB](https://github.com/zixq-stack/Java-Note/tree/master/%E6%95%B0%E6%8D%AE%E5%BA%93/MongoDB)。文件格式：PDF
 
@@ -213,7 +220,7 @@
 
 [算法之道【@机械工业出版社：邹恒明 著-第2版-2012】](https://github.com/zixq-stack/Java-Note/blob/master/%E7%AE%97%E6%B3%95/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%81%93(%E7%AC%AC%E4%BA%8C%E7%89%88).2012.%E4%B8%AD%E6%96%87%E7%89%88.pdf)。文件格式：PDF
 
-[开源仓库：hello_algo个人fork版](https://github.com/zixq-stack/hello-algo)
+[开源仓库：hello_algo【个人fork版】](https://github.com/zixq-stack/hello-algo)
 
 [Petri Net](https://github.com/zixq-stack/Java-Note/blob/master/%E7%AE%97%E6%B3%95/Petri%20Net.docx)。文件格式：docx
 
@@ -273,7 +280,7 @@
 >
 > 文件大小：3.81 GB
 
-**提示**：要是没有阿里云盘会员，下载慢，自己也不不知道怎么提速，则下载 [阿里云盘-小白羊版-Open API版](https://github.com/gaozhangmin/aliyunpan/tags)，然后安装即可，这玩意儿可以跑满自己带宽。
+**提示**：要是没有阿里云盘会员，下载慢，自己也不知道怎么提速，则下载 [阿里云盘-小白羊版-Open API版](https://github.com/gaozhangmin/aliyunpan/tags)，然后安装即可，这玩意儿可以跑满自己带宽。
 
 
 
