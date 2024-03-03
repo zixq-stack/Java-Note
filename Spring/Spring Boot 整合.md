@@ -1,11 +1,11 @@
 # 创建Spring Boot项目
-## 通过官网来创建（了解）
+## 官网创建（了解）
 
 这里面的创建方式不做过多说明，只需要在 [官网](https://start.spring.io/) 里面创建好了，然后下载解压，就可以了，我这里直接使用编辑器创建
 
 
 
-## 使用IDEA编辑器创建
+## IDEA编辑器创建
 
 ![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302174956348-803751172.png)
 
@@ -3803,10 +3803,10 @@ public class VisiableThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
 
 
 
-# 结语
 
 
-最后：Spring Boot还有很多内容，那些也就是整合各种框架而已，到了现在整合了这么多，那也有点门路了，其实都差不多是同样的套路：
-1. 引入Spring Boot整合的对应框架依赖；
-2. 编写对应的配置；
-3. 使用对应的注解 / 编写业务逻辑。
+
+
+
+
+
