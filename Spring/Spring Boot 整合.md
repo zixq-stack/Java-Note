@@ -2078,7 +2078,7 @@ cache:
 3. 在主启动类开启缓存功能
 
 ```java
-@Spring BootAllication
+@SpringBootAllication
 @EnableCaching
 public class Starter {
 	public static void main(String[] args) {
@@ -2097,7 +2097,7 @@ public class Starter {
     <!--默认的缓存配置
         maxElementsInMemory 缓存最大数目
         eternal 对象是否永久有效 一旦设置了，那么timeout将不再起作用
-        timeToIdleSeconds 设置对象在实效前能允许的闲置时间（ 单位：秒 ），默认值是0，即：可闲置时间无穷大
+        timeToIdleSeconds 设置对象在失效前能允许的闲置时间（ 单位：秒 ），默认值是0，即：可闲置时间无穷大
                             仅当eternal=“false"对象不是永久有效时使用
         timeToLiveSeconds 设置对象失效前能允许的存活时间（ 单位：秒 ）
                              最大时间介于创建时间和失效时间之间
@@ -2678,6 +2678,468 @@ public class QuartzConfig {
     }
 }
 ```
+
+
+
+
+
+
+
+# 集成支付宝支付
+
+官网地址：https://open.alipay.com/api
+
+选择自己需要的方式：本文示例选择“手机网站支付”，其他的都是差不多的。
+
+![image-20240305180322826](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305180236240-1765340961.png)
+
+
+
+
+
+## 申请与其条件
+
+支持的账号类型：[支付宝企业账号](https://opendocs.alipay.com/common/02kkum)、[支付宝个人账号](https://opendocs.alipay.com/common/02kg61)。
+
+签约申请提交材料要求：
+
+- 提供网站地址，网站能正常访问且页面显示完整，网站需要明确经营内容且有完整的商品信息。
+- 网站必须通过 ICP 备案，且备案主体需与支付宝账号主体一致。若网站备案主体与当前账号主体不同时需上传授权函。
+- 个人账号申请，需提供营业执照，且支付宝账号名称需与营业执照主体一致。
+
+
+
+> **提示**
+>
+> 需按照要求提交材料，若部分材料不合格，收款额度将受到限制（单笔收款 ≤ 2000 元，单日收款 ≤ 20000 元）。若签约时未能提供相关材料（如营业执照），请在合约生效后的 30 天内补全，否则会影响正常收款。
+
+
+
+**费率**
+
+| **收费模式** | **费率**  |
+| ------------ | --------- |
+| 单笔收费     | 0.6%-1.0% |
+
+
+
+特殊行业费率为 1.0%，非特殊行业费率为 0.6%。特殊行业包含：休闲游戏、网络游戏点卡、游戏渠道代理、游戏系统商、网游周边服务、交易平台、网游运营商（含网页游戏）等。
+
+
+
+
+
+## 接入准备
+
+官方文档：https://opendocs.alipay.com/open/203/107084?pathHash=a33de091
+
+整体流程：
+
+![image-20240305180818081](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305180731504-1117620927.png) 
+
+
+
+为了提供数据传输的安全性，在进行传输的时候需要对数据进行加密：
+
+常见的加密方式： 
+
+1、不可逆加密：只能会数据进行加密不能解密
+
+2、可逆加密：可以对数据加密也可以解密
+
+可逆加密可以再细分为：
+
+1、对称加密： 加密和解密使用同一个秘钥
+
+![image-20240305180848219](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305180801176-2027417495.png)
+
+2、非对称加密：加密和解密使用的是不同的秘钥
+
+![image-20240305180910399](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305180823373-775263862.png)
+
+
+
+支付宝为了提供数据传输的安全性使用了两个秘钥对：
+
+ ![image-20240305180933808](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305180846759-1543124324.png)
+
+
+
+
+
+
+
+## 手机端网站支付接入流程
+
+官方文档：https://opendocs.alipay.com/open/203/105285?pathHash=ada1de5b
+
+系统交互流程图：
+
+![image-20230709164753985](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305181925562-536306967.png)
+
+
+
+
+
+
+
+
+
+## 示例
+
+支付宝支付一般都是下面这样，本文做的是简单示例
+
+![image-20240305201729868](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305201643283-1953480071.png)
+
+
+
+1. 依赖
+
+```xml
+<dependency>
+    <groupId>com.alipay.sdk</groupId>
+    <artifactId>alipay-sdk-java</artifactId>
+</dependency>
+```
+
+2. YAML配置：resources目录下新建 `application-alipay.yml`
+
+```yaml
+com:
+  alipay:
+    alipay_url: https://openapi.alipay.com/gateway.do	# 接入的地址
+    app_id: xxxxxxxxxxxxxxx	# 这个id在前面申请后进入网页的控制台可以看到
+    app_private_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx		# 私钥，前面申请后会有这个
+    alipay_public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx	# 密钥，前面申请后会有这个
+    return_payment_url: http://zixieqing.demo.com/#/pages/money/paySuccess	# 支付宝支付成功或失败后，我们自己的页面地址，也叫同步回调
+    notify_payment_url: http://zixieqing.demo.com/api/order/alipay/callback/notify	# 支付宝调用的我们自己服务接口的地址		也叫异步回调
+```
+
+> 关于 return_payment_url 和 notify_payment_url：这两个东西都是支付宝支付来调用我们自己的东西，这都需要使用到域名，这样支付宝支付才可以调用到，公司中使用的就是公司的域名，自己要的话要么买个域名，要么就去搞内网穿透之类的。
+
+
+
+提示：记得在在`application-dev.yml`文件中导入2中的配置
+
+```yaml
+spring:
+  config:
+    import: application-alipay.yml
+```
+
+3. 读取 `application-alipay.yml`中的配置
+
+```java
+@Data
+@ConfigurationProperties(prefix = "com.alipay")
+public class AlipayProperties {
+
+    private String alipayUrl;
+    private String appPrivateKey;
+    public  String alipayPublicKey;
+    private String appId;
+    public  String returnPaymentUrl;
+    public  String notifyPaymentUrl;
+
+    public final static String format="json";
+    public final static String charset="utf-8";
+    public final static String sign_type="RSA2";
+
+}
+```
+
+记得在启动类上加上 `@EnableConfigurationProperties` 注解
+
+```java
+@EnableConfigurationProperties(value = { AlipayProperties.class })
+```
+
+
+
+4. 配置AlipayClient
+
+```java
+@Configuration
+public class AlipayConfiguration {
+
+    @Autowired
+    private AlipayProperties alipayProperties ;
+
+    /**
+     * 配置发送请求的核心对象：AlipayClient
+     */
+    @Bean
+    public AlipayClient alipayClient(){
+        AlipayClient alipayClient = new DefaultAlipayClient(alipayProperties.getAlipayUrl() ,
+                alipayProperties.getAppId() ,
+                alipayProperties.getAppPrivateKey() ,
+                AlipayProperties.format ,
+                AlipayProperties.charset ,
+                alipayProperties.getAlipayPublicKey() ,
+                AlipayProperties.sign_type );
+        
+        return alipayClient;
+    }
+}
+```
+
+
+
+5. 下单支付服务
+
+```java
+/**
+ * 支付服务
+ */
+public interface AlipayService {
+    String submitAlipay(String orderNo);
+}
+
+
+/**
+ * 支付服务实现类
+ */
+@Slf4j
+@Service
+public class AlipayServiceImpl implements AlipayService {
+
+    @Autowired
+    private AlipayClient alipayClient;
+
+    @Autowired
+    private PaymentInfoService paymentInfoService;
+
+    @Autowired
+    private AlipayProperties alipayProperties ;
+
+	@Override
+    @SneakyThrows  // lombok的注解，对外声明异常
+    public String submitAlipay(String orderNo) {
+
+        // 保存支付记录
+        PaymentInfo paymentInfo = paymentInfoService.savePaymentInfo(orderNo);
+
+        // 创建API对应的request
+        AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
+
+        // 同步回调		同步调用我们自己的页面，支付成功或失败的页面路径
+        alipayRequest.setReturnUrl(alipayProperties.getReturnPaymentUrl());
+
+        /*
+         * 异步回调		异步调用我们自己的服务"接口"路径
+         * 			   如：更新支付记录状态（已支付 / 未支付）、更新订单状态、更新商品销量
+         * */
+        alipayRequest.setNotifyUrl(alipayProperties.getNotifyPaymentUrl());
+
+        // 准备请求参数 ，声明一个map 集合
+        HashMap<String, Object> map = new HashMap<>();
+        // 订单编号
+        map.put("out_trade_no",paymentInfo.getOrderNo());
+        map.put("product_code","QUICK_WAP_WAY");
+        // 支付金额
+        map.put("total_amount",paymentInfo.getAmount());
+        map.put("subject",paymentInfo.getContent());
+        alipayRequest.setBizContent(JSON.toJSONString(map));
+
+        // 发送请求
+        AlipayTradeWapPayResponse response = alipayClient.pageExecute(alipayRequest);
+        if(response.isSuccess()){		// 支付成功
+            log.info("调用成功");
+            // 返回form表单数据		就是平时支付宝支付成功返回的那个页面的内容
+            return response.getBody();
+        } else {	// 支付失败
+            log.info("调用失败");
+            throw new CustomException(ResultCodeEnum.DATA_ERROR);
+        }
+    }
+}
+```
+
+上述涉及的PaymentInfoService：
+
+```java
+/**
+ * 支付信息服务
+ */
+public interface PaymentInfoService {
+    PaymentInfo savePaymentInfo(String orderNo);
+}
+
+
+/**
+ * 支付信息服务实现类
+ */
+@Service
+public class PaymentInfoServiceImpl implements PaymentInfoService {
+
+    @Autowired
+    private PaymentInfoMapper paymentInfoMapper ;
+
+    @Autowired
+    private OrderFeignClient orderFeignClient ;
+
+    @Override
+    public PaymentInfo savePaymentInfo(String orderNo) {
+
+        // 查询支付信息
+        PaymentInfo paymentInfo = paymentInfoMapper.getByOrderNo(orderNo);
+        // 若无支付信息则保存支付信息，若已经已经存在了就不用进行保存(一个订单支付失败以后可以继续支付)
+        if(null == paymentInfo) {
+            // OpenFeign远程（这是Spring Cloud中的内容）调用根据订单编号查询订单信息
+            OrderInfo orderInfo = orderFeignClient.getOrderInfoByOrderNo(orderNo).getData();
+            // 封装付款信息
+            paymentInfo = new PaymentInfo();
+            paymentInfo.setUserId(orderInfo.getUserId());
+            paymentInfo.setPayType(orderInfo.getPayType());
+            String content = "";
+            for(OrderItem item : orderInfo.getOrderItemList()) {
+                content += item.getSkuName() + " ";
+            }
+            paymentInfo.setContent(content);
+            paymentInfo.setAmount(orderInfo.getTotalAmount());
+            paymentInfo.setOrderNo(orderNo);
+            paymentInfo.setPaymentStatus(0);
+
+            // 保存支付信息
+            paymentInfoMapper.save(paymentInfo);
+        }
+        
+        // 返回支付信息
+        return paymentInfo;
+    }
+}
+```
+
+
+
+> 要了解Spring Cloud去这里：https://www.cnblogs.com/xiegongzi/p/17858107.html
+
+PaymentInfo实体类：
+
+```java
+@Data
+@Schema(description = "支付信息实体类")
+public class PaymentInfo extends BaseEntity {	// BaseEntity是基本的id、创建时间、删除时间等
+
+   private static final long serialVersionUID = 1L;
+
+   @Schema(description = "用户id")
+   private Long userId;
+
+   @Schema(description = "订单号")
+   private String orderNo;
+
+   @Schema(description = "付款方式：1-微信 2-支付宝")
+   private Integer payType;
+
+   @Schema(description = "交易编号（微信或支付）")
+   private String outTradeNo;
+
+   @Schema(description = "支付金额")
+   private BigDecimal amount;
+
+   @Schema(description = "交易内容")
+   private String content;
+
+   @Schema(description = "支付状态：0-未支付 1-已支付")
+   private Integer paymentStatus;
+
+   @Schema(description = "回调时间")
+   private Date callbackTime;
+
+   @Schema(description = "回调信息")
+   private String callbackContent;
+
+}
+```
+
+
+
+6. 在网关中记得配置支付的路由
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: service-pay
+          uri: lb://service-pay
+          predicates:
+            - Path=/api/order/alipay/**
+```
+
+
+
+7. notify_payment_url 异步回调我们自己的服务接口
+
+```java
+@Controller
+@RequestMapping("/api/order/alipay")
+public class AlipayController {
+
+    @Autowired
+    private AlipayService alipayService;
+
+    @Autowired
+    private AlipayProperties alipayProperties;
+
+    @Autowired
+    private PaymentInfoService paymentInfoService;
+
+    /**
+     * 签名校验
+     *
+     * @param paramMap 支付宝支付给我们返回的数据
+     * @return 执行状态
+     */
+    @Operation(summary="支付宝异步回调")
+    @RequestMapping("callback/notify")
+    @ResponseBody
+    public String alipayNotify(@RequestParam Map<String, String> paramMap, HttpServletRequest request) {
+        
+        log.info("AlipayController...alipayNotify方法执行了...");
+
+        // 调用SDK验证签名
+        boolean signVerified = false;
+        try {
+            // 让支付宝支付来校验进入当前的请求是否是支付宝支付发过来的而不是伪造的请求
+            signVerified = AlipaySignature.rsaCheckV1(paramMap, 
+                                                      alipayProperties.getAlipayPublicKey(),
+                                                      AlipayProperties.charset, 
+                                                      AlipayProperties.sign_type);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+
+        // 交易状态
+        String trade_status = paramMap.get("trade_status");
+
+        // 合法请求
+        if (signVerified) {
+
+            /* 
+             * 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验
+             * 校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
+             * */
+            if ("TRADE_SUCCESS".equals(trade_status) || "TRADE_FINISHED".equals(trade_status)) {
+                // 正常的支付成功，那么可以进行更新支付记录状态（已支付 / 未支付）、更新订单状态、更新商品销量等操作
+                paymentInfoService.updatePaymentStatus(paramMap);
+                // .....................
+                // paramMap.get("out_trade_no")		可以获取当前支付订单的编号
+                return "success";
+            }
+
+        } else {
+            // 验签失败则记录异常日志，并在response中返回failure.
+            return "failure";
+        }
+
+        return "failure";
+    }
+}
+```
+
+
 
 
 

@@ -1,5 +1,5 @@
 # 声明
-这里面涵盖的内容有本人整理的、也有别人整理的，**所有内容仅供学习**，若是侵权或不宜公开等原因，请通过 zixq8@qq.com 联系我，我会立刻进行整改，邮件格式：
+这里面涵盖的内容有本人整理的、也有别人整理的，**所有内容仅供学习**，若是侵权或不宜公开等原因，请通过 zixieqing8@gmail.com 邮我，我会立刻进行整改，邮件格式：
 
 > **提示**
 >
@@ -53,7 +53,7 @@
 
 [Spring Boot](https://github.com/zixq-stack/Java-Note/blob/master/Spring/Spring%20Boot%20%E6%95%B4%E5%90%88.md)。文件格式：md
 
-[SpringCloud](https://github.com/zixq-stack/Java-Note/blob/master/Spring/SpringCloud%20%E6%95%B4%E5%90%88.md)。文件格式：md
+[Spring Cloud](https://github.com/zixq-stack/Java-Note/blob/master/Spring/SpringCloud%20%E6%95%B4%E5%90%88.md)。文件格式：md
 
 [高并发手册【@楼仔】](https://github.com/zixq-stack/Java-Note/blob/master/Spring/%E9%AB%98%E5%B9%B6%E5%8F%91%E6%89%8B%E5%86%8C_%E6%A5%BC%E4%BB%94%E8%91%97.pdf)。文件格式：PDF
 
@@ -220,7 +220,7 @@
 
 [算法之道【@机械工业出版社：邹恒明 著-第2版-2012】](https://github.com/zixq-stack/Java-Note/blob/master/%E7%AE%97%E6%B3%95/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%81%93(%E7%AC%AC%E4%BA%8C%E7%89%88).2012.%E4%B8%AD%E6%96%87%E7%89%88.pdf)。文件格式：PDF
 
-[开源仓库：hello_algo【个人fork版】](https://github.com/zixq-stack/hello-algo)
+[开源仓库：hello_algo](https://github.com/krahets/hello-algo)
 
 [Petri Net](https://github.com/zixq-stack/Java-Note/blob/master/%E7%AE%97%E6%B3%95/Petri%20Net.docx)。文件格式：docx
 

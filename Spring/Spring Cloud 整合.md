@@ -1506,6 +1506,19 @@ spring:
 
 经过上面的操作之后，以前需要单独在 `application.yml` 改的事情就不需要了，`bootstrap.yml` 配置的东西会去拉取nacos中的配置
 
+还有一种引入nacos统一配置的方式：
+
+```yaml
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+  config:
+    import:
+      - nacos:userservice-dev.yaml
+```
+
 
 
 
@@ -4400,7 +4413,7 @@ OpenFeign是Feign的增强版，使用时将依赖换一下，然后注意一下
 
 
 
-**1、依赖:**在“服务消费方”添加如下依赖
+**1、依赖**：在“服务消费方”添加如下依赖
 
 ```xml
 <!--openfeign的依赖-->
@@ -4943,27 +4956,23 @@ Spring Cloud Gateway 通过 Predicate 断言来实现 Route 路由的匹配规�
 
 常见的 Predicate 断言如下表：假设转发的 URI 为 http://localhost:8001
 
-| 断言        | 示例                                                         | 说明                                                         |
-| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **Path**    | - Path=/dept/list/**                                         | 当请求路径与 /dept/list/ 匹配时，该请求才能被转发到 http://localhost:8001 上 |
-| **Before**  | - Before=2021-10-20T11:47:34.255+08:00[Asia/Shanghai]        | 在 2021 年 10 月 20 日 11 时 47 分 34.255 秒之前的请求，才会被转发到 http://localhost:8001 上 |
-| **After**   | - After=2021-10-20T11:47:34.255+08:00[Asia/Shanghai]         | 在 2021 年 10 月 20 日 11 时 47 分 34.255 秒之后的请求，才会被转发到 http://localhost:8001 上 |
-| **Between** | - Between=2021-10-20T15:18:33.226+08:00[Asia/Shanghai],2021-10-20T15:23:33.226+08:00[Asia/Shanghai] | 在 2021 年 10 月 20 日 15 时 18 分 33.226 秒 到 2021 年 10 月 20 日 15 时 23 分 33.226 秒之间的请求，才会被转发到 http://localhost:8001 服务器上 |
-| **Cookie**  | - Cookie=name,www.cnblogs.com/xiegongzi                      | 携带 Cookie 且 Cookie 的内容为 name=www.cnblogs.com/xiegongzi 的请求，才会被转发到 http://localhost:8001 上 |
-| **Header**  | - Header=X-Request-Id,\d+                                    | 请求头上携带属性 X-Request-Id 且属性值为整数的请求，才会被转发到 http://localhost:8001 上 |
-| Method      | - Method=GET                                                 | 只有 GET 请求才会被转发到 http://localhost:8001 上           |
-| Host        | -  Host=.somehost.org,.anotherhost.org                       | 请求必须是访问.somehost.org和.anotherhost.org这两个host（域名）才会被转发到 http://localhost:8001 上 |
-| Query       | - Query=name                                                 | 请求参数必须包含指定参数(name)，才会被转发到 http://localhost:8001 上 |
-| RemoteAddr  | - RemoteAddr=192.168.1.1/24                                  | 请求者的ip必须是指定范围（192.168.1.1 到 192.168.1.24)       |
-| Weight      | <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230605120548651-1280651580.png" alt="image-20230605120547194" style="zoom:67%;" /> | 权重处理weight,有两个参数：group和weight(一个整数)<br />如示例中表示：分80%的流量给weihthigh.org |
+| 断言       | 示例                                                         | 说明                                                         |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `Path`     | - Path=/dept/list/**                                         | 当请求路径与 /dept/list/ 匹配时，该请求才能被转发到 http://localhost:8001 上 |
+| `Before`   | - Before=2021-10-20T11:47:34.255+08:00[Asia/Shanghai]        | 在 2021 年 10 月 20 日 11 时 47 分 34.255 秒之前的请求，才会被转发到 http://localhost:8001 上 |
+| `After`    | - After=2021-10-20T11:47:34.255+08:00[Asia/Shanghai]         | 在 2021 年 10 月 20 日 11 时 47 分 34.255 秒之后的请求，才会被转发到 http://localhost:8001 上 |
+| `Between`  | - Between=2021-10-20T15:18:33.226+08:00[Asia/Shanghai],2021-10-20T15:23:33.226+08:00[Asia/Shanghai] | 在 2021 年 10 月 20 日 15 时 18 分 33.226 秒 到 2021 年 10 月 20 日 15 时 23 分 33.226 秒之间的请求，才会被转发到 http://localhost:8001 服务器上 |
+| Cookie     | - Cookie=name,www.cnblogs.com/xiegongzi                      | 携带 Cookie 且 Cookie 的内容为 name=www.cnblogs.com/xiegongzi 的请求，才会被转发到 http://localhost:8001 上 |
+| `Header`   | - Header=X-Request-Id,\d+                                    | 请求头上携带属性 X-Request-Id 且属性值为整数的请求，才会被转发到 http://localhost:8001 上 |
+| `Method`   | - Method=GET                                                 | 只有 GET 请求才会被转发到 http://localhost:8001 上           |
+| `Host`     | -  Host=.somehost.org,.anotherhost.org                       | 请求必须是访问.somehost.org和.anotherhost.org这两个host（域名）才会被转发到 http://localhost:8001 上 |
+| Query      | - Query=name                                                 | 请求参数必须包含指定参数(name)，才会被转发到 http://localhost:8001 上 |
+| RemoteAddr | - RemoteAddr=192.168.1.1/24                                  | 请求者的ip必须是指定范围（192.168.1.1 到 192.168.1.24)       |
+| Weight     | <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230605120548651-1280651580.png" alt="image-20230605120547194" style="zoom:67%;" /> | 权重处理weight,有两个参数：group和weight(一个整数)<br />如示例中表示：分80%的流量给weihthigh.org |
 
 上表中这些也叫“**Predicate断言工厂**”，我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件
 
-例如 Path=/user/** 是按照路径匹配，这个规则是由
-
-`org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory`类来
-
-处理的
+例如 Path=/user/** 是按照路径匹配，这个规则是由`org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory`类来处理的
 
 
 
@@ -5159,7 +5168,7 @@ public class UserController {
 
 
 
-1. 像上面一样直接在YAML文件中配置
+1. 方式一：像上面一样直接在YAML文件中配置
 
 缺点：要是需要编写复杂的业务逻辑时会非常不方便，但是：**这种过滤器的优先级比下面一种要高**
 
@@ -5190,7 +5199,7 @@ spring:
         - AddRequestHeader=name, zixieqing
 ```
 
-2. 使用代码实现，定义方式是实现GlobalFilter接口：
+2. 方式二：使用代码实现，定义方式是 `implements GlobalFilter` 接口：
 
 ```java
 public interface GlobalFilter {
@@ -5207,9 +5216,9 @@ public interface GlobalFilter {
 
 在filter中编写自定义逻辑，可以实现下列功能：
 
-1. 登录状态判断
-2. 权限校验
-3. 请求限流等
+- 登录状态判断
+- 权限校验
+- 请求限流等
 
 
 
@@ -5234,7 +5243,7 @@ import java.util.List;
  * <p>@author       : ZiXieqing</p>
  */
 
-@Order(-1)  // 这个注解和本类实现 Ordered 是一样的效果，都是返回一个整数
+@Order(-1)  // 这个注解和本类 implements Ordered 是一样的效果，都是返回一个整数
             // 这个整数表示当前过滤器的执行优先级，值越小优先级越高，取值范围就是 int的范围
 @Component
 public class MyGlobalFilter implements GlobalFilter /* , Ordered */ {
@@ -5275,7 +5284,7 @@ public class MyGlobalFilter implements GlobalFilter /* , Ordered */ {
 排序的规则是什么呢？
 
 1. 每一个过滤器都必须指定一个int类型的order值，**order值越小，优先级越高，执行顺序越靠前**
-2. GlobalFilter通过实现Ordered接口，或者添加 @Order 注解来指定order值，由我们自己指定
+2. GlobalFilter通过实现Ordered接口，或者添加 @Order 注解由我们自己指定order值
 3. 路由过滤器和defaultFilter的order值由Spring指定，默认是按照声明顺序从1递增
 4. 当过滤器的order值一样时，会按照 defaultFilter > 路由过滤器 > GlobalFilter 的顺序执行
 
@@ -5385,7 +5394,7 @@ spring:
 yum install -y yum-utils device-mapper-persistent-data lvm2 --skip-broken
 ```
 
-**2、更新本地镜像源为阿里镜像源**
+**2、更新本地镜像源为阿里镜像源**：docker官方镜像仓库网速较差，我们需要设置国内镜像服务
 
 ```shell
 yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
@@ -5394,6 +5403,10 @@ sed -i 's/download.docker.com/mirrors.aliyun.com\/docker-ce/g' /etc/yum.repos.d/
 
 yum makecache fast
 ```
+
+> 参考阿里云的镜像加速文档：https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
+
+
 
 **3、安装docker**
 
@@ -5438,13 +5451,6 @@ docker ps
 ```shell
 docker -v		# 出现docker版本号也表示成功
 ```
-
-
-**8、配置镜像加速**
-
-docker官方镜像仓库网速较差，我们需要设置国内镜像服务：
-
-参考阿里云的镜像加速文档：https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 
 
 
