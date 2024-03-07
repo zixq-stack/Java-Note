@@ -3203,8 +3203,81 @@ public class o10Suggest {
 
 
 
-
 # ES高级篇
+
+
+
+## Docker带密码部署
+
+1. 拉取镜像
+
+```bash
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+```
+
+2. 创建elasticsearch.yml文件。注意：创建此文件的路径在第3步中有用
+
+```yaml
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+# 这一步是开启x-pack插件	配置密码就需要它
+xpack.security.enabled: true
+```
+
+3. 创建容器并启动
+
+```bash
+docker run -d -it \
+--restart=always \
+--privileged=true \
+--name=es7 \
+-p 9200:9200 \
+-p 9300:9300 \
+-e "discovery.type=single-node" \
+# /opt/elasticsearch.yml 就是第2步的路径
+-v /opt/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
+-e ES_JAVA_OPTS="-Xms256m -Xmx256m" 镜像id
+
+
+# 获取镜像ID方式
+docker images
+```
+
+4. 进入容器内容
+
+```bash
+# 1
+docker exec -it es7 /bin/bash
+
+# 2
+cd bin
+```
+
+5. 手动设置密码
+
+```bash
+elasticsearch-setup-passwords interactive
+```
+
+![image-20240307204034870](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240307203946751-1508909511.png)
+
+
+
+6. 退出容器，重启ES
+
+```bash
+# 退出容器
+exit
+
+# 重启ES
+docker restart es7
+```
+
+测试：ip:9200访问，输入密码页面能返回JSON数据即成功。
+
+
+
+
 
 ## 集群部署
 
@@ -5111,7 +5184,6 @@ ES中的节点职责如下：
    - 主节点配置为：node master: true，node data: false
 
    - 从节点置为：node master: false，node data: true
-
 
 
 
