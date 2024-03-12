@@ -3145,6 +3145,278 @@ public class AlipayController {
 
 
 
+# 自定义starter
+
+以前在没有使用`starter`时，我们在项目中需要引入新功能，步骤一般是这样的：
+
+- 在maven仓库找该功能所需jar包
+- 在maven仓库找该jar所依赖的其他jar包
+- 配置新功能所需参数
+
+以上这种方式会带来三个问题：
+
+1. 如果依赖包较多，找起来很麻烦，容易找错，而且要花很多时间。
+2. 各依赖包之间可能会存在版本兼容性问题，项目引入这些jar包后，可能没法正常启动。
+3. 如果有些参数没有配好，启动服务也会报错，没有默认配置。
+
+「为了解决这些问题，Spring Boot的`starter`机制应运而生」。
+
+starter机制带来这些好处：
+
+1. 它能启动相应的默认配置。
+2. 它能够管理所需依赖，摆脱了需要到处找依赖 和 兼容性问题的困扰。
+3. 自动发现机制，将spring.factories文件中配置的类，自动注入到spring容器中。
+4. 遵循“约定大于配置”的理念。
+
+在业务工程中只需引入starter包，就能使用它的功能
+
+一张图总结starter的几个要素：
+
+![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312194035411-1918590677.png)
+
+
+
+
+
+## 示例
+
+1. 创建id-generate-starter工程，pom配置如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <version>1.3.1</version>
+    <groupId>com.sue</groupId>
+    <artifactId>id-generate-spring-boot-starter</artifactId>
+    <name>id-generate-spring-boot-starter</name>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.sue</groupId>
+            <artifactId>id-generate-spring-boot-autoconfigure</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+2. 创建id-generate-spring-boot-autoconfigure工程
+
+![image-20240312194500866](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312194408851-1149356482.png)
+
+该项目当中包含：
+
+- pom.xml
+- spring.factories
+- IdGenerateAutoConfiguration
+- IdGenerateService
+- IdProperties
+
+
+
+pom.xml配置如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.4.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <version>1.3.1</version>
+    <groupId>com.sue</groupId>
+    <artifactId>id-generate-spring-boot-autoconfigure</artifactId>
+    <name>id-generate-spring-boot-autoconfigure</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+spring.factories配置如下：
+
+```java
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.sue.IdGenerateAutoConfiguration
+```
+
+IdGenerateAutoConfiguration类：
+
+```java
+@ConditionalOnClass(IdProperties.class)
+@EnableConfigurationProperties(IdProperties.class)
+@Configuration
+public class IdGenerateAutoConfiguration {
+
+    @Autowired
+    private IdProperties properties;
+
+    @Bean
+    public IdGenerateService idGenerateService() {
+        return new IdGenerateService(properties.getWorkId());
+    }
+}
+```
+
+IdGenerateService类：
+
+```java
+public class IdGenerateService {
+
+    private Long workId;
+
+    public IdGenerateService(Long workId) {
+        this.workId = workId;
+    }
+
+    public Long generate() {
+        return new Random().nextInt(100) + this.workId;
+    }
+}
+```
+
+IdProperties类：
+
+```java
+@ConfigurationProperties(prefix = IdProperties.PREFIX)
+public class IdProperties {
+
+
+    public static final String PREFIX = "sue";
+
+    private Long workId;
+
+    public Long getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(Long workId) {
+        this.workId = workId;
+    }
+}
+```
+
+
+
+这样在业务项目中引入相关依赖:
+
+```xml
+<dependency>
+      <groupId>com.sue</groupId>
+      <artifactId>id-generate-spring-boot-starter</artifactId>
+      <version>1.3.1</version>
+</dependency>
+```
+
+就能使用注入使用IdGenerateService的功能了
+
+```java
+@Autowired
+private IdGenerateService idGenerateService;
+```
+
+
+
+
+
+
+
+
+
+# 项目启动时的附加功能
+
+有时候我们需要在项目启动时定制化一些附加功能，比如：加载一些系统参数、完成初始化、预热本地缓存等，该怎么办？
+
+好消息是`springboot`提供了：
+
+- CommandLineRunner 接口
+- ApplicationRunner 接口
+
+这两个接口帮助我们实现以上需求。
+
+在`SpringApplication`类的`callRunners`方法中，能看到这两个接口的具体调用：
+
+![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312195434910-209369253.png)
+
+
+
+两个接口有什么区别？
+
+- CommandLineRunner接口中run方法的参数为String数组
+- ApplicationRunner中run方法的参数为ApplicationArguments，该参数包含了String数组参数 和 一些可选参数。
+
+
+
+## 示例
+
+以`ApplicationRunner`接口为例：
+
+> 实现`ApplicationRunner`接口，重写`run`方法，在该方法中实现自己定制化需求。
+
+```java
+@Component
+public class TestRunner implements ApplicationRunner {
+
+    @Autowired
+    private LoadDataService loadDataService;
+
+    public void run(ApplicationArguments args) throws Exception {
+        loadDataService.load();
+    }
+    
+}
+```
+
+
+
+> 问题：如果项目中有多个类实现了`ApplicationRunner`接口，它们的执行顺序要怎么指定？
+
+答案是使用`@Order(n)`注解，n的值越小越先执行。当然也可以通过`@Priority`注解指定顺序。
+
+Spring Boot项目启动时主要流程是这样的：
+
+![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312195347904-1545874409.png)
+
+
+
+
+
+
+
 
 
 # 附加：Spring 事务失效场景
