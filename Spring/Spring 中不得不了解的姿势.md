@@ -1,6 +1,16 @@
+# 说明
+
+本文非原创，我只是进行了整理以及做了一些改动，**仅供学习**，若需进行商业使用，请联系原作者
+
+> 原作者：苏三
+>
+> 原文链接：[苏三说技术：Spring系列](https://mp.weixin.qq.com/s/HonNaxcHrOrRem15ct1NNA)
+
+
+
 # Spring IOC
 
-本章节解读的流程，也就是Spring容器初始化的前期准备工作
+本章节解读的流程为Spring容器初始化的前期准备工作
 
 1. Spring容器初始化的入口
 2. refresh方法的主要流程
@@ -38,11 +48,11 @@ User user = (User)applicationContext.getBean("name");
 
 这两个类应该是最常见的入口了，它们却殊途同归，最终都会调用`refresh`方法，该方法才是Spring容器初始化的真正入口。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312213852384-1342898561.png)
+![image-20240313125038104](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313124945872-500665179.png)
 
 
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312213903679-457955147.png)
+![image-20240313125132546](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313125040197-1297602647.png)
 
 
 
@@ -64,17 +74,15 @@ User user = (User)applicationContext.getBean("name");
 
 > `refresh`方法是`Spring IOC`的真正入口，它负责初始化Spring容器。`refresh`表示重新构建的意思。
 
-既然这个方法的作用是初始化Spring容器，那方法名为啥不叫`init`？
-
-答案很简单，因为它不只被调用一次。
+既然这个方法的作用是初始化Spring容器，那方法名为啥不叫`init`？因为它不只被调用一次。
 
 在`Spring Boot`的`SpringAppication`类中的`run`方法会调用`refreshContext`方法，该方法会调用一次`refresh`方法。
 
-在`springcloud`的`BootstrapApplicationListener`类中的`onApplicationEvent`方法会调用`SpringAppication`类中的`run`方法。也会调用一次`refresh`方法。
+在`spring Cloud`的`BootstrapApplicationListener`类中的`onApplicationEvent`方法会调用`SpringAppication`类中的`run`方法。也会调用一次`refresh`方法。
 
 > 这是Spring Boot项目中如果引入了Spring Cloud，则`refresh`方法会被调用两次的原因。
 
-在`springmvc`的`FrameworkServlet`类中的`initWebApplicationContext`方法会调用`configureAndRefreshWebApplicationContext`方法，该方法会调用一次`refresh`方法，不过会提前判断容器是否激活。
+在`Spring MVC`的`FrameworkServlet`类中的`initWebApplicationContext`方法会调用`configureAndRefreshWebApplicationContext`方法，该方法会调用一次`refresh`方法，不过会提前判断容器是否激活。
 
 所以这里的`refresh`表示重新构建的意思。
 
@@ -99,15 +107,15 @@ User user = (User)applicationContext.getBean("name");
 
 经过几层调用之后，会调到`AbstractBeanDefinitionReader`类的`loadBeanDefinitions`方法：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312215100869-261724394.png)
+![image-20240313131048977](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313130956417-688730215.png)
 
-该方法会循环`locations`（applicationContext.xml文件路径）,调用另外一个`loadBeanDefinitions`方法，一个文件一个文件解析。
+该方法会循环`locations`（applicationContext.xml文件路径），调用另外一个`loadBeanDefinitions`方法，一个文件一个文件解析。
 
 
 
-经过一些列的骚操作，会将location转换成inputSource和resource，然后再转换成Document对象，方面解析。
+经过一些列的骚操作，会将location转换成inputSource和resource，然后再转换成Document对象，方便解析。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312215121662-782517451.png)
+![image-20240313131708708](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313131616657-725990028.png)
 
 在解析xml文件时，需要判断是默认标签，还是自定义标签，处理逻辑不一样：
 
@@ -158,7 +166,7 @@ Spring的默认标签只有4种：
 
 其实真正创建BeanDefinition的逻辑是非常简单的，直接new了一个对象：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312215710502-770131879.png)
+![image-20240313132421796](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313132329752-1685422113.png)
 
 真正复杂的地方是在前面的各种属性的解析和赋值上。
 
@@ -212,7 +220,7 @@ Spring的默认标签只有4种：
 
 而`BeanDefinitionRegistryPostProcessor`本身是一种特殊的`BeanFactoryPostProcessor`，它也会执行`BeanFactoryPostProcessor`的逻辑，只是加了一个额外的方法
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312220324356-1064849384.png)
+![image-20240313132656276](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313132604112-344168358.png)
 
 `ConfigurationClassPostProcessor`可能是最重要的`BeanDefinitionRegistryPostProcessor`，它负责处理`@Configuration`注解。
 
@@ -422,13 +430,13 @@ Spring AOP有哪些入口？说人话就是在问：Spring中有哪些场景需�
 
 AbstractAutowireCapableBeanFactory类的createBean方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312225242034-124304340.png)
+![image-20240313134102394](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313134010077-2125615461.png)
 
 
 
 它通过BeanPostProcessor提供了一个生成代理对象的机会。具体逻辑在AbstractAutoProxyCreator类的postProcessBeforeInstantiation方法中：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312225306732-2099390063.png)
+![image-20240313134229315](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313134136948-210467007.png)
 
 
 
@@ -448,7 +456,7 @@ AbstractAutowireCapableBeanFactory类的createBean方法中，有这样一段代
 
 AbstractAutowireCapableBeanFactory类的doCreateBean方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312225754969-812066014.png)
+![image-20240313134449968](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313134357576-1270356971.png)
 
 
 
@@ -456,11 +464,11 @@ AbstractAutowireCapableBeanFactory类的doCreateBean方法中，有这样一段�
 
 通过getEarlyBeanReference方法生成代理对象：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312225831998-550734762.png)
+![image-20240313134655579](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313134603467-501582583.png)
 
 它又会调用wrapIfNecessary方法：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312225848320-1214074485.png)
+![image-20240313134931118](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313134838793-248197687.png)
 
 这里有你想看到的生成代理的逻辑。
 
@@ -478,11 +486,11 @@ AbstractAutowireCapableBeanFactory类的doCreateBean方法中，有这样一段�
 
 AbstractAutowireCapableBeanFactory类的initializeBean方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312230156808-2047502051.png)
+![image-20240313135115847](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313135023563-773079953.png)
 
 它会调用到AbstractAutoProxyCreator类postProcessAfterInitialization方法：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312230214115-1742351397.png)
+![image-20240313135632127](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313135539974-340909842.png)
 
 该方法中能看到我们熟悉的面孔：wrapIfNecessary方法。从上面得知该方法里面包含了真正生成代理对象的逻辑。
 
@@ -634,7 +642,7 @@ public class Test {
 
 DefaultAopProxyFactory类的createAopProxy方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312231104720-2023938274.png)
+![image-20240313135934771](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313135842352-425420346.png)
 
 
 
@@ -680,7 +688,7 @@ JdkDynamicAopProxy类的invoke方法生成的代理对象。而ObjenesisCglibAop
 
 Spring AOP给这五种通知，分别分配了一个xxxAdvice类。在ReflectiveAspectJAdvisorFactory类的getAdvice方法中可以看得到：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312232804223-1221300937.png)
+![image-20240313140355903](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313140303753-441796014.png)
 
 
 
@@ -824,7 +832,7 @@ public void afterThrowing(JoinPoint joinPoint, Throwable e) {
 
 先看看Spring是如何使用链式调用的，在ReflectiveMethodInvocation的proceed方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312233658301-1052784039.png)
+![image-20240313140528790](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313140436451-1931829303.png)
 
 
 
@@ -866,13 +874,13 @@ public void afterThrowing(JoinPoint joinPoint, Throwable e) {
 
 AbstractAutowireCapableBeanFactory类的doCreateBean方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312234715493-1789690217.png)
+![image-20240313140634901](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313140542439-567198264.png)
 
 
 
 其实之前已经说过，它是为了解决循环依赖问题。这次要说的是addSingletonFactory方法：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312234735589-1191520096.png)
+![image-20240313140730051](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313140637897-1566202927.png)
 
 
 
@@ -888,11 +896,11 @@ AbstractAutowireCapableBeanFactory类的doCreateBean方法中，有这样一段�
 
 AbstractBeanFactory类的doGetBean方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312234825226-705830530.png)
+![image-20240313140908949](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313140816540-591568904.png)
 
 在调用getBean方法获取bean实例时，会调用getSingleton尝试先从缓存中看能否获取到，如果能获取到则直接返回。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312234911207-146670299.png)
+![image-20240313141011485](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313140919236-574143229.png)
 
 
 
@@ -914,13 +922,13 @@ AbstractBeanFactory类的doGetBean方法中，有这样一段代码：
 
 DefaultSingletonBeanRegistry类的getSingleton方法中，有这样一段代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312235035653-795514783.png)
+![image-20240313141135925](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313141043380-852241063.png)
 
 
 
 此时的bean创建、注入和初始化完成了，判断如果是新的单例对象，则会加入到一级缓存中，具体代码如下：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312235125914-405271397.png)
+![image-20240313141210906](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313141118449-733622842.png)
 
 
 
@@ -936,7 +944,7 @@ DefaultSingletonBeanRegistry类的getSingleton方法中，有这样一段代码�
 
 如果你每天在用Spring事务的话，就是每天在用Spring AOP，因为Spring事务的底层就用到了Spring AOP。
 
-> 本节可跳过，可直接看后面的：[Spring事务](#Spring事务])
+> 本节可跳过，可直接看后面的：[Spring事务](#Spring事务])，这里只选取了部分内容
 
 
 
@@ -1221,7 +1229,7 @@ public class BService implements InitializingBean {
 
 决定他们调用顺序的关键代码在`AbstractAutowireCapableBeanFactory`类的`initializeBean`方法中。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312170939742-483833743.png)
+![image-20240313141437902](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313141345639-1752733181.png)
 
 
 
@@ -1229,7 +1237,7 @@ public class BService implements InitializingBean {
 
 而`invokeInitMethods`方法中的代码：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312171008508-161183536.png)
+![image-20240313141607275](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313141515259-1062493645.png)
 
 
 
@@ -1353,13 +1361,13 @@ public class CService {
 
 Spring源码中有70多个地方在用FactoryBean接口。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312171314234-1068234697.png)
+![image-20240313141721527](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313141629518-342827403.png)
 
 
 
 上面这张图足以说明该接口的重要性
 
-提一句：`mybatis`的`SqlSessionFactory`对象就是通过`SqlSessionFactoryBean`类创建的。
+> 提一句：`mybatis`的`SqlSessionFactory`对象就是通过`SqlSessionFactoryBean`类创建的。
 
 
 
@@ -1569,7 +1577,7 @@ public class WebAuthConfig extends WebMvcConfigurerAdapter {
 
 可以在`DispatcherServlet`类的`doDispatch`方法中看到调用过程：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312172324927-978774493.png)
+![image-20240313142059807](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313142007504-62415257.png)
 
 
 
@@ -1766,7 +1774,7 @@ public class PersonService {
 }
 ```
 
-然后在使用的地方调用一下：personService.get();就拥有了异步功能。
+然后在使用的地方调用一下：`personService.get();`就拥有了异步功能。
 
 默认情况下，Spring会为我们的异步方法创建一个线程去执行，如果该方法被调用次数非常多的话，需要创建大量的线程，会导致资源浪费。
 
@@ -1808,7 +1816,7 @@ public class ThreadPoolConfig {
 
 Spring异步的核心方法：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312174346905-952540921.png)
+![image-20240313142424948](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313142332938-1668280438.png)
 
 
 
@@ -2155,11 +2163,11 @@ public class MyCondition implements Condition {
 
 Conditional的奥秘就藏在`ConfigurationClassParser`类的`processConfigurationClass`方法中：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312180531396-326521326.png)
+![image-20240313142547961](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313142455772-1146614480.png)
 
 
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312180545539-1151618702.png)
+![image-20240313142651897](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313142559580-419271800.png)
 
 
 
@@ -2193,7 +2201,7 @@ Conditional的奥秘就藏在`ConfigurationClassParser`类的`processConfigurati
 
 在`ConfigurationClassParser`类的`processImports`方法中可以看到这三种方式的处理逻辑：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312183604145-323737002.png)
+![image-20240313142955119](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313142903197-1426855724.png)
 
 
 
@@ -2261,13 +2269,13 @@ public class Application {
 
 Spring Boot的启动类一般都会加`@SpringBootApplication`注解，该注解上加了`@SpringBootConfiguration`注解。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312203802547-917354673.png)
+![image-20240313143158949](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313143106780-984939392.png)
 
 
 
 而`@SpringBootConfiguration`注解，上面又加了`@Configuration`注解，所以，Spring Boot启动类本身带有`@Configuration`注解的功能。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312203833788-934663731.png)
+![image-20240313143224210](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313143131810-1101786598.png)
 
 
 
@@ -2408,7 +2416,7 @@ public class TestConfiguration {
 
 `@EnableAutoConfiguration`注解中导入了AutoConfigurationImportSelector类，并且里面包含系统参数名称：`Spring.boot.enableautoconfiguration`。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312211101735-906991283.png)
+![image-20240313143327574](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313143235243-1939688223.png)
 
 
 
@@ -2418,11 +2426,13 @@ AutoConfigurationImportSelector类实现了`ImportSelector`接口。
 
 并且重写了`selectImports(AnnotationMetadata importingClassMetadata)`方法，该方法会根据某些注解去找所有需要创建bean的类名，然后返回这些类名。其中在查找这些类名之前，先调用isEnabled方法，判断是否需要继续查找。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312211216574-1947915023.png)
+![image-20240313143516293](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313143424210-1305118640.png)
 
 
 
-该方法会根据`ENABLED_OVERRIDE_PROPERTY`的值来作为判断条件。![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312211235040-1879655132.png)
+该方法会根据`ENABLED_OVERRIDE_PROPERTY`的值来作为判断条件。
+
+![image-20240313143604632](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313143512142-1200872962.png)
 
 而这个值就是`Spring.boot.enableautoconfiguration`。
 
@@ -2477,7 +2487,7 @@ public class TestConfiguration {
 
 我们所熟悉的fegin功能，就是使用ImportBeanDefinitionRegistrar接口实现的：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312211600837-1370689390.png)
+![image-20240313144659770](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313144607887-113699360.png)
 
 
 
@@ -2591,7 +2601,7 @@ public class ThreadPoolConfig {
 
 绑定是通过`Binder`类的`bindObject`方法完成的：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312184509609-1875991560.png)
+![image-20240313144929932](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313144837764-2049865887.png)
 
 
 
@@ -3276,7 +3286,7 @@ saveData(userModel);
 
 使用`@CrossOrigin`注解 和 实现`WebMvcConfigurer`接口的方案，Spring在底层最终都会调用到`DefaultCorsProcessor`类的`handleInternal`方法
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312193613698-1869150378.png)
+![image-20240313145127887](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145036080-1576099590.png)
 
 
 
@@ -3581,15 +3591,15 @@ public class UserFactoryBean implements FactoryBean<User> {
 
 其实`@Repository`、`@Service`、`@Controller`三种注解也是`@Component`
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312201638588-246047973.png)
+![image-20240313145208896](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145116585-175056498.png)
 
 
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312201651815-1579860108.png)
+![image-20240313145310670](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145218351-2052725691.png)
 
 
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312201703568-1509987511.png)
+![image-20240313145339588](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145247522-519819819.png)
 
 
 
@@ -3652,7 +3662,7 @@ public class Application {
 
 `@RestController`还支持`@ResponseBody`注解的功能，即将接口响应数据的格式自动转换成JSON。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312202317353-2000667938.png)
+![image-20240313145419559](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145327491-1924587938.png)
 
 
 
@@ -3715,9 +3725,7 @@ Spring还提供了专门注册bean的接口：`BeanDefinitionRegistryPostProcess
 
 该接口的方法`postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)`上有这样一段描述：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312211727747-1452512027.png)
-
-
+![image-20240313145635877](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145544428-1684723179.png)
 
 > 翻译：修改应用程序上下文的内部bean定义注册表标准初始化。所有常规bean定义都将被加载，但是还没有bean被实例化。这允许进一步添加在下一个后处理阶段开始之前定义bean。
 
@@ -3750,7 +3758,7 @@ public class MyRegistryPostProcessor implements BeanDefinitionRegistryPostProces
 }
 ```
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312212247976-1281110943.png)
+![image-20240313145613247](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145521114-2128786501.png)
 
 
 
@@ -4055,7 +4063,7 @@ public class UserService {
 
 先看看`@Autowired`注解的定义：
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313004436339-532374571.png)
+![image-20240313145812722](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145808714-129324028.png)
 
 从图中可以看出该注解能够使用在5种目标类型上，用一张图总结一下：
 
@@ -4558,7 +4566,7 @@ zixq.test.userName=张三
 
 答：在Spring Boot的`CharacterReader`类中，默认的编码格式是`ISO-8859-1`，该类负责`.properties`文件中系统属性的读取。如果系统属性包含中文字符，就会出现乱码
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313013626449-862811210.png)
+![image-20240313150142431](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313150050663-117680220.png)
 
 
 
@@ -4613,7 +4621,7 @@ Duang Duang~去洗脚城的那个吊毛叼着歌过来了：太阳出来嘛爬�
 
 一边凉快去，这玩意儿能一样吗。`.yml` 或 `.yaml`格式的配置文件，最终会使用`UnicodeReader`类进行解析，它的`init`方法中，首先读取BOM文件头信息，如果头信息中有UTF8、UTF16BE、UTF16LE，就采用对应的编码，如果没有，则采用默认`UTF8`编码。
 
-![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313014627572-1215570738.png)
+![image-20240313150344807](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313150252984-1706388433.png)
 
 
 
@@ -5189,6 +5197,10 @@ private double randomValue;
 > **提示**
 >
 > 果是调用类的静态方法，则需要加T(包名 + 方法名称)，如：`T(java.lang.Math)`
+
+
+
+
 
 
 
