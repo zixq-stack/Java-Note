@@ -5196,7 +5196,7 @@ private double randomValue;
 
 > **提示**
 >
-> 果是调用类的静态方法，则需要加T(包名 + 方法名称)，如：`T(java.lang.Math)`
+> 如果是调用类的静态方法，则需要加T(包名 + 方法名称)，如：`T(java.lang.Math)`
 
 
 
