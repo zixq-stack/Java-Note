@@ -2653,7 +2653,7 @@ public class ApolloConfigurationAutoRefresh implements ApplicationContextAware {
 
 
 
-# Spring事务
+# Spring 事务
 
 需要同时写入多张表的数据。为了保证操作的原子性（要么同时成功，要么同时失败），避免数据不一致的情况，我们一般都会用到Spring事务（也会选择其他事务框架）。
 
@@ -3727,7 +3727,7 @@ Spring还提供了专门注册bean的接口：`BeanDefinitionRegistryPostProcess
 
 ![image-20240313145635877](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240313145544428-1684723179.png)
 
-> 翻译：修改应用程序上下文的内部bean定义注册表标准初始化。所有常规bean定义都将被加载，但是还没有bean被实例化。这允许进一步添加在下一个后处理阶段开始之前定义bean。
+> 翻译：在标准初始化之后修改应用程序上下文的内部 bean 定义注册表。所有常规 bean 定义都将被加载，但还没有任何 bean 被实例化。这允许在下一个后处理阶段开始之前添加更多的 bean 定义
 
 如果用这个接口来定义bean，我们要做的事情就变得非常简单了。只需定义一个类实现`BeanDefinitionRegistryPostProcessor`接口。重写`postProcessBeanDefinitionRegistry`方法，在该方法中能够获取`BeanDefinitionRegistry`对象，它负责bean的注册工作。
 
