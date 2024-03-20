@@ -7113,7 +7113,7 @@ Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
 
 ### Arthas简介
 
-> 在学习Arthas之前，推荐先看后面的美团技术团队的 [Java 动态调试技术原理](#Java 动态调试技术原理)，这样你会对它最底层技术有个了解。可以看下文中最后有个对比图：Greys(Arthas也是基于它做的二次开发)和Java-debug-tool
+> 在学习Arthas之前，推荐先看后面的 [@美团技术团队：Java动态调试技术原理](#Java动态调试技术原理)，这样你会对它最底层技术有个了解。可以看下文中最后有个对比图：Greys(Arthas也是基于它做的二次开发)和Java-debug-tool
 
 
 
@@ -7142,21 +7142,14 @@ Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
 
 ### Arthas资源推荐
 
-- [用户文档](https://alibaba.github.io/arthas/)
-- [官方在线教程(推荐)](https://alibaba.github.io/arthas/arthas-tutorials?language=cn)
-- [快速入门](https://alibaba.github.io/arthas/quick-start.html)
-- [进阶使用](https://alibaba.github.io/arthas/advanced-use.html)
-- [命令列表](https://alibaba.github.io/arthas/commands.html)
-- [WebConsole](https://alibaba.github.io/arthas/web-console.html)
-- [Docker](https://alibaba.github.io/arthas/docker.html)
-- [用户案例](https://github.com/alibaba/arthas/issues?q=label%3Auser-case)
+- [官方在线教程(推荐)](https://arthas.gitee.io/)
 - [常见问题](https://github.com/alibaba/arthas/issues?utf8=✓&q=label%3Aquestion-answered+)
 
 
 
 
 
-### Arthas基于了哪些工具上发展而来
+### Arthas基于哪些工具发展而来
 
 - [greys-anatomy](https://github.com/oldmanpushcart/greys-anatomy): Arthas代码基于Greys二次开发而来
 - [termd](https://github.com/termd/termd): Arthas的命令行实现基于termd开发，是一款优秀的命令行程序开发框架
@@ -7186,7 +7179,7 @@ Connected to the target VM, address: '10.185.0.192:15555', transport: 'socket'
 
 ### Arthas 上手前
 
-推荐先在线使用下arthas：[官方在线教程(推荐)](https://alibaba.github.io/arthas/arthas-tutorials?language=cn)
+推荐先在线使用下arthas：[官方在线教程(推荐)](https://arthas.gitee.io/doc/arthas-tutorials.html?language=cn&id=arthas-basics)
 
 
 
@@ -7206,9 +7199,11 @@ Java -jar arthas-boot.jar
 
 ### Arthas 案例展示
 
-#### Dashboard
+> 官方命令列表：https://arthas.aliyun.com/doc/dashboard.html
 
-> 官方地址：https://arthas.aliyun.com/doc/dashboard.html
+
+
+#### Dashboard：当前系统的实时数据
 
 ![dashboard](https://img2023.cnblogs.com/blog/2421736/202401/2421736-20240107160932837-1171725582.png)
 
@@ -7216,7 +7211,7 @@ Java -jar arthas-boot.jar
 
 
 
-#### Thread
+#### Thread：查看当前线程信息、线程的堆栈
 
 一目了然的了解系统的状态，哪些线程比较占cpu? 他们到底在做什么?
 
@@ -7252,7 +7247,7 @@ $ thread -n 3
 
 
 
-#### jad
+#### jad：反编译已加载类
 
 对类进行反编译:
 
@@ -7295,7 +7290,7 @@ public interface Servlet {
 
 
 
-#### mc
+#### mc：Java文件生成Class文件
 
 Memory Compiler/内存编译器，编译`.Java`文件生成`.Class`
 
@@ -7307,9 +7302,9 @@ mc /tmp/Test.Java
 
 
 
-#### redefine
+#### redefine：加载外部Class文件
 
-加载外部的`.Class`文件，redefine JVM已加载的类
+加载外部的`.Class`文件，redefine JVM已加载的类。推荐使用 [retransform](https://arthas.aliyun.com/doc/retransform.html) 命令
 
 ```bash
 redefine /tmp/Test.Class
@@ -7320,9 +7315,9 @@ redefine -c 327a647b /tmp/Test.Class /tmp/Test\$Inner.Class
 
 
 
-#### sc
+#### sc：查看JVM已加载的类信息
 
-查找JVM中已经加载的类
+查看JVM中已经加载的类信息
 
 ```bash
 $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
@@ -7360,9 +7355,9 @@ $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
 
 
 
-#### stack
+#### stack：输出当前方法被调用的调用路径
 
-查看方法 `test.arthas.TestStack#doGet` 的调用堆栈：
+输出当前方法被调用的调用路径
 
 ```bash
 $ stack test.arthas.TestStack doGet
@@ -7400,7 +7395,7 @@ ts=2018-09-18 10:11:45;thread_name=http-bio-8080-exec-10;id=d9;is_daemon=true;pr
 
 
 
-#### Trace
+#### Trace：方法内部调用路径，并输出方法路径上的每个节点上耗时
 
 观察方法执行的时候哪个子调用比较慢:
 
@@ -7410,7 +7405,7 @@ ts=2018-09-18 10:11:45;thread_name=http-bio-8080-exec-10;id=d9;is_daemon=true;pr
 
 
 
-#### Watch
+#### Watch：方法执行数据观测
 
 观察方法 `test.arthas.TestWatch#doGet` 执行的入参，仅当方法抛出异常时才输出
 
@@ -7429,7 +7424,7 @@ ts=2018-09-18 10:26:28;result=@ArrayList[
 
 
 
-#### Monitor
+#### Monitor：方法执行监控
 
 监控某个特殊方法的调用统计数据，包括总调用次数，平均rt，成功率等信息，每隔5秒输出一次
 
@@ -7455,7 +7450,7 @@ Affect(Class-cnt:1 , method-cnt:1) cost in 109 ms.
 
 
 
-#### Time Tunnel(tt)
+#### tt（Time Tunnel）：记录方法调用信息
 
 记录方法调用信息，支持事后查看方法调用的参数，返回值，抛出的异常等信息，仿佛穿越时空隧道回到调用现场一般
 
@@ -7481,7 +7476,7 @@ Affect(Class-cnt:1 , method-cnt:1) cost in 75 ms.
 
 
 
-#### Classloader
+#### Classloader：类加载器
 
 了解当前系统中有多少类加载器，以及每个加载器加载的类数量，帮助您判断是否有类加载器泄露
 
@@ -7569,7 +7564,7 @@ $ Classloader
 
 
 
-#### [#](#monitor/watch/trace相关)monitor/watch/trace相关
+#### [#](#monitor/watch/trace相关) monitor/watch/trace相关
 
 > 请注意：这些命令，都通过字节码增强技术来实现的，会在指定类的方法中插入一些切面来实现数据统计和观测，因此在线上、预发使用时，请尽量明确需要观测的类、方法以及条件，诊断结束要执行 `shutdown` 或 `stop` 亦或将增强过的类执行 `reset` 命令
 
@@ -7619,7 +7614,7 @@ Arthas支持使用管道对上述命令的结果进行进一步的处理，如`s
 
 ### 查看最繁忙的线程，以及是否有阻塞情况发生?
 
-> 场景：我想看下查看最繁忙的线程，以及是否有阻塞情况发生? 常规查看线程，一般我们可以通过 top 等系统命令进行查看，但是那毕竟要很多个步骤，很麻烦
+> 场景：我想看下最繁忙的线程，以及是否有阻塞情况发生? 常规查看线程，一般我们可以通过 top 等系统命令进行查看，但是那毕竟要很多个步骤，很麻烦
 
 ```bash
 thread -n 3			# 查看最繁忙的三个线程栈信息
@@ -7637,7 +7632,7 @@ thread -b			# 找出当前阻塞其他线程的线程
 # 即可以找到需要的类全路径，如果存在的话
 sc *MyServlet
 
-# 查看这个某个类所有的方法
+# 查看这个类所有的方法
 sm pdai.tech.servlet.TestMyServlet *
 
 # 查看某个方法的信息，如果存在的话
@@ -7733,9 +7728,9 @@ mc /tmp/UserController.Java -d /tmp  # 再编译成Class
 redefine /tmp/com/example/demo/arthas/user/UserController.Class
 ```
 
-如上，是直接更改线上代码的方式，但是一般好像是编译不成功的所以，最好是本地ide编译成 Class文件后，再上传替换为好！
+如上，是直接更改线上代码的方式，但是一般好像是编译不成功的，所以，最好是本地ide编译成 Class文件后，再上传替换为好！
 
-总之，已经完全不用重启和发布了！这个功能真的很方便，比起重启带来的代价，真的是不可比的比如，重启时可能导致负载重分配，选主等等问题，就不是你能控制的了
+总之，已经完全不用重启和发布了！这个功能真的很方便，比起重启带来的代价，真的是不可比的，比如，重启时可能导致负载重分配，选主等等问题，就不是你能控制的了
 
 
 
@@ -7805,7 +7800,7 @@ profiler stop --format html				以HTML的方式生成火焰图
 
 
 
-# [#](#Java 动态调试技术原理) Java动态调试技术原理
+# [#](#Java动态调试技术原理) Java动态调试技术原理
 
 > 本文转载自 美团技术团队胡健的[Java 动态调试技术原理及实践](https://tech.meituan.com/2019/11/07/java-dynamic-debugging-technology.html), 通过学习Java agent方式进行动态调试了解目前很多大厂开源的一些基于此的调试工具
 
@@ -9181,7 +9176,7 @@ public class HelloWorldBench {
 
 3. 开始测试
 
-> 测试结果可以通过 https://jmh.morethan.io/ 转为可视化。格式的是JSON格式(`new OptionsBuilder()..resultFormat(ResultFormatType.JSON)`可以构建为JSON格式)
+> 测试结果可以通过 https://jmh.morethan.io/ 转为可视化。格式是JSON格式(`new OptionsBuilder().resultFormat(ResultFormatType.JSON)`可以构建为JSON格式)
 
 方式一（推荐）：通过maven的verify命令，检测代码问题并打包成jar包。然后通过 `java -jar 打成的jar包` 命令执行基准测试。
 
