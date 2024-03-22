@@ -264,7 +264,7 @@
 
 [简历模板](https://github.com/zixq-stack/Java-Note/tree/master/%E9%9D%A2%E7%BB%8F%E4%B8%8E%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF/%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF)。文件格式：doc
 
-[JavaGuide版](https://javaguide.cn/home.html)
+[面经：JavaGuide版](https://javaguide.cn/home.html)
 
 
 
