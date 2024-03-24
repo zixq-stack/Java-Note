@@ -3555,7 +3555,7 @@ public class UserFactoryBean implements FactoryBean<User> {
 }
 ```
 
-然后在`bean.xm`l文件中配置bean时，只需像普通的bean一样配置即可。
+然后在`bean.xml`文件中配置bean时，只需像普通的bean一样配置即可。
 
 ```xml
 <bean id="userFactoryBean" class="com.zixq.async.service.UserFactoryBean">

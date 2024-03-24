@@ -12,7 +12,7 @@
 
 下图服务器用Tomcat举例
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521164029004-1514387794.png" alt="image-20230521164028933" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521164029004-1514387794.png" alt="image-20230521164028933" />
 
 
 
@@ -38,7 +38,7 @@
 
 ## 演进：增加本地缓存和分布式缓存
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521164632922-534104745.png" alt="image-20230521164632822" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521164632922-534104745.png" alt="image-20230521164632822" />
 
 
 
@@ -50,7 +50,7 @@
 
 ## 垂直应用架构：引入Nginx
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521170148624-1735985478.png" alt="image-20230521170148649" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521170148624-1735985478.png" alt="image-20230521170148649" />
 
 
 
@@ -60,7 +60,7 @@
 
 后面就是将数据库做读写分离
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521170535267-191396252.png" alt="image-20230521170535184" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521170535267-191396252.png" alt="image-20230521170535184" />
 
 
 
@@ -76,13 +76,13 @@ SOA指的是Service-OrientedArchitecture，即面向服务架构
 
 随着业务越来越多，代码越来越多，按照业务功能将本来一整块的系统拆分为各个不同的子系统分别提供不同的服务，服务之间会彼此调用，错综复杂
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521175435390-508194047.png" alt="image-20230521175435052" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521175435390-508194047.png" alt="image-20230521175435052" />
 
 
 
 而SOA的思想就是基于前面拆成不同的服务之后，继续再抽离一层，搞一个和事佬，即下图的“统一接口”
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521224344850-262357819.png" alt="image-20230521224344141" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521224344850-262357819.png" alt="image-20230521224344141" />
 
 
 
@@ -94,7 +94,7 @@ SOA指的是Service-OrientedArchitecture，即面向服务架构
 
 上面这种若是反应不过来，那拆回单体架构就懂了
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521230448878-888627647.png" alt="image-20230521230448349" style="zoom:80%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521230448878-888627647.png" alt="image-20230521230448349" />
 
 
 
@@ -110,25 +110,25 @@ SOA指的是Service-OrientedArchitecture，即面向服务架构
 
 其中常见的组件包括：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521231654377-404634780.png" alt="image-20210713204155887" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521231654377-404634780.png" alt="image-20210713204155887" />
 
 
 
 另外，SpringCloud底层是依赖于SpringBoot的，并且有版本的兼容关系，如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521231719947-1707829950.png" alt="image-20210713205003790" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521231719947-1707829950.png" alt="image-20210713205003790" />
 
 
 
 因此。现在系统架构就变成了下面这样，当然不是一定是下面这样架构设计，还得看看架构师，看领导
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521232052531-1243047828.png" alt="image-20230521232051716" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521232052531-1243047828.png" alt="image-20230521232051716" />
 
 
 
 因此，微服务技术知识如下
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521232537360-774880611.png" alt="image-20230521232536647" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230521232537360-774880611.png" alt="image-20230521232536647" />
 
 
 
@@ -152,7 +152,7 @@ SpringCloud将它集成在其子项目spring-cloud-netflix中，以实现SpringC
 
 偷张图更直观地了解一下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230522222600452-117614713.png" alt="image-20210713220104956" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230522222600452-117614713.png" alt="image-20210713220104956" />
 
 
 
@@ -176,7 +176,7 @@ SpringCloud将它集成在其子项目spring-cloud-netflix中，以实现SpringC
 
 ## Eureka的自我保护机制
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230522223650571-1467351950.png" alt="image-20210713220104956" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230522223650571-1467351950.png" alt="image-20210713220104956" />
 
 
 
@@ -269,7 +269,7 @@ eureka:
 
 实现如下的逻辑：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523105026659-571765101.png" alt="image-20230523105025549" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523105026659-571765101.png" alt="image-20230523105025549" />
 
 
 
@@ -435,7 +435,7 @@ eureka:
 
 答案是根本不用加，加了也是多此一举(前提：yml配置中没有手动地把值改为false)，具体原因看源码：答案就在Eureka client对应的自动配置类 `EurekaClientAutoConfiguration 中`
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523140658133-980195700.png" alt="image-20230523140656713" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523140658133-980195700.png" alt="image-20230523140656713" />
 
 上图中这一行的意思是只有当application.yaml（或者环境变量，或者系统变量）里，`eureka.client.enabled`这个属性的值为`true`才会初始化这个类（如果手动赋值为false，就不会初始化这个类了）
 
@@ -443,7 +443,7 @@ eureka:
 
 另外再加上另一个原因，同样在 `EurekaClientAutoConfiguration` 类中还有一个 `eurekaAutoServiceRegistration()` 方法
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523141137735-1222105186.png" alt="image-20230523141136544" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523141137735-1222105186.png" alt="image-20230523141136544" />
 
 
 
@@ -461,7 +461,7 @@ eureka:
 
 另外还有一个原因：上图中不是提到了 `EurekaAutoServiceRegistration类+@Bean注解` 吗，那去看一下
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523142607917-175927233.png" alt="image-20230523142606183" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523142607917-175927233.png" alt="image-20230523142606183" />
 
 
 
@@ -623,23 +623,23 @@ public class OrderService {
 
 依次启动eureka-server、user-service、order-service，然后将user-service做一下模拟集群即可，将user-service弄为模拟集群操作方式如下：不同版本IDEA操作有点区别，出入不大
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523113543880-720911336.png" alt="image-20230523113542449" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523113543880-720911336.png" alt="image-20230523113542449" />
 
 
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523113729320-191314494.png" alt="image-20230523113728396" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523113729320-191314494.png" alt="image-20230523113728396" />
 
 
 
 再将复刻的use-service2也启动即可，启动之后点一下eureka-server的端口就可以在浏览器看到服务情况
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523114005904-1151512200.png" alt="image-20230523114005087" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523114005904-1151512200.png" alt="image-20230523114005087" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523114155475-1176148165.png" alt="image-20230523114153992" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523114155475-1176148165.png" alt="image-20230523114153992" />
 
 
 
@@ -756,7 +756,7 @@ Ribbon是Netflix发布的开源项目，`Spring Cloud Ribbon`是基于`Netflix R
 
 ## Ribbon的流程
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523150221319-1099794917.png" alt="image-20230523150220629" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523150221319-1099794917.png" alt="image-20230523150220629" />
 
 
 
@@ -781,7 +781,7 @@ Ribbon是Netflix发布的开源项目，`Spring Cloud Ribbon`是基于`Netflix R
 
 只要引入了注册中心(Eureka、consul、zookeeper)，那Ribbon的依赖就在注册中心里面了，证明如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523150714289-322784310.png" alt="image-20230523150713088" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523150714289-322784310.png" alt="image-20230523150713088" />
 
 
 
@@ -848,45 +848,45 @@ public class OrderService {
 
 ### LoadBalancerInterceptor类
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523164303496-89314463.png" alt="image-20230523164301233" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523164303496-89314463.png" alt="image-20230523164301233" />
 
 
 
 然后对服务消费者进行Debug
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523164749307-84514600.png" alt="image-20230523164748273" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523164749307-84514600.png" alt="image-20230523164748273" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523164906453-461257891.png" alt="image-20230523164905276" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523164906453-461257891.png" alt="image-20230523164905276" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523165134892-1027704730.png" alt="image-20230523165133615" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523165134892-1027704730.png" alt="image-20230523165133615" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523165333560-193867768.png" alt="image-20230523165332402" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523165333560-193867768.png" alt="image-20230523165332402" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523170045156-1643577053.png" alt="image-20230523170043376" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523170045156-1643577053.png" alt="image-20230523170043376" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523170133632-1871497916.png" alt="image-20230523170132894" style="zoom:67%;" />
-
-
-
-
-
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523171130565-852624319.png" alt="image-20230523171129379" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523170133632-1871497916.png" alt="image-20230523170132894" />
 
 
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523171314721-632166842.png" alt="image-20230523171313688" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523171130565-852624319.png" alt="image-20230523171129379" />
+
+
+
+
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523171314721-632166842.png" alt="image-20230523171313688" />
 
 
 
@@ -894,7 +894,7 @@ public class OrderService {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523171517502-1987407255.png" alt="image-20230523171516222" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523171517502-1987407255.png" alt="image-20230523171516222" />
 
 
 
@@ -906,7 +906,7 @@ public class OrderService {
 
 - 原因就是使用了RibbonLoadBalancerClient+loadBalancer(默认是 ZoneAwareLoadBalance 从服务列表中选取服务)+IRule(默认是 RoundRobinRule 轮询策略选择某个服务)
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523172627992-1458093408.png" alt="image-20230523172623741" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523172627992-1458093408.png" alt="image-20230523172623741" />
 
 
 
@@ -920,7 +920,7 @@ public class OrderService {
 
 SpringCloudRibbon的底层采用了一个拦截器LoadBalancerInterceptor，拦截了RestTemplate发出的请求，对地址做了修改
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523183515709-898697749.png" alt="image-20230523183514694" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523183515709-898697749.png" alt="image-20230523183514694" />
 
 
 
@@ -934,13 +934,13 @@ SpringCloudRibbon的底层采用了一个拦截器LoadBalancerInterceptor，拦�
 
 根据前面的铺垫，也知道了负载均衡策略就在 `IRule` 中，那就去看一下
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523183831369-932003270.png" alt="image-20230523183830372" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523183831369-932003270.png" alt="image-20230523183830372" />
 
 
 
 转换一下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523183903273-919770286.png" alt="image-20210713225653000" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523183903273-919770286.png" alt="image-20210713225653000" />
 
 
 
@@ -1025,7 +1025,7 @@ cloud中文官网：https://www.springcloud.cc/spring-cloud-greenwich.html#netfl
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523193845845-309027790.png" alt="image-20230523193844609" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523193845845-309027790.png" alt="image-20230523193844609" />
 
 
 
@@ -1205,7 +1205,7 @@ spring:
 
 启动之后，在 ip+port/nacos 就在Nacos控制台看到信息了
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524172641663-1724265961.png" alt="image-20230524172640484" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524172641663-1724265961.png" alt="image-20230524172640484" />
 
 
 
@@ -1215,7 +1215,7 @@ spring:
 
 **1、集群配置**：Nacos的服务多级存储模型和其他的不一样
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524173247256-1640638181.png" alt="image-20230524173246752" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524173247256-1640638181.png" alt="image-20230524173246752" />
 
 
 
@@ -1244,7 +1244,7 @@ server:
 
 测试则直接将“服务提供者”复刻多份，共用同一集群名启动，然后再复刻修改集群名启动即可，如下面的：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524174420790-807433895.png" alt="image-20230524174419882" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524174420790-807433895.png" alt="image-20230524174419882" />
 
 
 
@@ -1273,7 +1273,7 @@ USER-SERVICE:
 
 另外的负载均衡策略就是Ribbon中的：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524184810939-1621404096.png" alt="image-20230524184809397" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524184810939-1621404096.png" alt="image-20230524184809397" />
 
 
 
@@ -1289,7 +1289,7 @@ USER-SERVICE:
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524200355093-646170701.png" alt="image-20230524200353921" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230524200355093-646170701.png" alt="image-20230524200353921" />
 
 
 
@@ -1299,7 +1299,7 @@ USER-SERVICE:
 
 前面一节见到了Nacos的集群结构，但那只是较内的一层，**Nacos不止是注册中心，也可以是数据中心**
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525115608477-2097480414.png" alt="image-20230525115608614" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525115608477-2097480414.png" alt="image-20230525115608614" />
 
 
 
@@ -1318,17 +1318,17 @@ USER-SERVICE:
 1.  同名的命名空间只能创建一个
 2. 微服务间如果没有注册到一个命名空间下，无法使用OpenFeign指定服务名负载通信（服务拉取的配置文件不同命名空间不影响）。Feign是后面要玩的
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525120133562-1501134563.png" alt="image-20230525120134073" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525120133562-1501134563.png" alt="image-20230525120134073" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525120229108-2011422258.png" alt="image-20230525120229740" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525120229108-2011422258.png" alt="image-20230525120229740" />
 
 
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525120255381-567965134.png" alt="image-20230525120255821" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525120255381-567965134.png" alt="image-20230525120255821" />
 
 
 
@@ -1361,7 +1361,7 @@ spring:
 
 **1、Nacos和Eureka的不同：**不同在下图字体加粗的部分，加粗是Nacos具备而Eureka不具备的
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525141447179-1876206647.png" alt="image-20230525141447350" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525141447179-1876206647.png" alt="image-20230525141447350" />
 
 
 
@@ -1402,7 +1402,7 @@ Nacos的服务发现分为两种模式：
 
 查看服务发现源码的地方：后续也会介绍
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230712233546759-1646042323.png" alt="image-20230712233544072" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230712233546759-1646042323.png" alt="image-20230712233544072" />
 
 
 
@@ -1451,7 +1451,7 @@ spring:
 
 改完之后可以在Nacos控制台看到服务是否为临时实例
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525142657387-321996528.png" alt="image-20230525142657931" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525142657387-321996528.png" alt="image-20230525142657931" />
 
 
 
@@ -1463,7 +1463,7 @@ spring:
 
 **统一配置管理：** 将容易发生改变的配置单独弄出来，然后在后续需要变更时，直接去统一配置管理处进行更改，这样凡是依赖于这些配置的服务就可以统一被更新，而不用挨个服务更改配置，同时更改配置之后不用重启服务，直接实现热更新
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525194142989-983680569.png" alt="image-20230525194143607" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525194142989-983680569.png" alt="image-20230525194143607" />
 
 
 
@@ -1479,15 +1479,15 @@ Nacos和SpringCloud原生的config不一样，Nacos是将 注册中心+config �
 
 **1、设置Nacos配置管理**
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525200157228-518484269.png" alt="image-20230525200157809" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525200157228-518484269.png" alt="image-20230525200157809" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525205325093-460315993.png" alt="image-20230525205325049" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525205325093-460315993.png" alt="image-20230525205325049" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525200923433-1263014836.png" alt="image-20230525200924326" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525200923433-1263014836.png" alt="image-20230525200924326" />
 
 
 
@@ -1495,7 +1495,7 @@ Nacos和SpringCloud原生的config不一样，Nacos是将 注册中心+config �
 
 在前面说过SpringCloud中有两种yml的配置方式，一种是 `application.yml` ，一种是 `bootstrap.yml` ，这里就需要借助后者了，它是引导文件，优先级比前者高，会优先被加载，这样就可以先使用它加载到Nacos中的配置文件，然后再读取 `application.yml` ，从而完成Spring的那一套注册实例的事情
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525201257229-1149037588.png" alt="image-20230525201257171" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525201257229-1149037588.png" alt="image-20230525201257171" />
 
 
 
@@ -1534,7 +1534,7 @@ spring:
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630172916153-1344503629.png" alt="image-20230630172914571" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630172916153-1344503629.png" alt="image-20230630172914571" />
 
 
 
@@ -1561,17 +1561,17 @@ spring:
 
 1. **`@RefreshScope+@Value`注解：** 在 @Value 注入的变量**所在类上**添加注解 @RefreshScope
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525205534211-29938183.png" alt="image-20230525205534523" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525205534211-29938183.png" alt="image-20230525205534523" />
 
 2. `@ConfigurationProperties` 注解
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525210115994-1555810348.png" alt="image-20230525210116200" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525210115994-1555810348.png" alt="image-20230525210116200" />
 
 
 
 然后在需要的地方直接注入对象即可
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525210203864-778691054.png" alt="image-20230525210204143" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525210203864-778691054.png" alt="image-20230525210204143" />
 
 
 
@@ -1589,13 +1589,13 @@ spring:
 
 因此：想要让环境配置共享，那么直接在Nacos控制台的配置中再加一个以` 服务名.后缀名` 格式命名的配置即可，如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525214929647-1348957116.png" alt="image-20230525214926182" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525214929647-1348957116.png" alt="image-20230525214926182" />
 
 其他的都不用动，要只是针对于项目中的yml，如 `appilication.yml`，那前面已经说了，会先读取Nacos中配置，然后和 `application.yml` 进行合并
 
 但是：若项目本地的yml中、服务名.后缀、服务名-环境.后缀 中有相同的属性/配置时，优先级不一样，如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525215738196-645671337.png" alt="image-20230525215737066" style="zoom:80%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525215738196-645671337.png" alt="image-20230525215737066" />
 
 
 
@@ -1609,7 +1609,7 @@ spring:
 
 windows和Linux都是一样的思路，集群部署的逻辑如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525230904184-1376989748.png" alt="image-20210409211355037" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230525230904184-1376989748.png" alt="image-20210409211355037" />
 
 
 
@@ -1704,7 +1704,7 @@ spring:
 
 分析源码就在nacos官网下载的source.code：nacos-naming/controller/InstanceController#register(HttpServletRequest request)
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230710230701827-1761667250.png" alt="image-20230710230658555" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230710230701827-1761667250.png" alt="image-20230710230658555" />
 
 Java代码中是使用了`Map<String, Map<String, Service>>`：每一个服务去注册到Nacos时，就会把信息组织并存入这个Map中
 
@@ -2078,7 +2078,7 @@ Nacos如何避免并发读写的冲突？
 
 流程如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714213956296-1817140687.png" alt="image-20210923185331470" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714213956296-1817140687.png" alt="image-20210923185331470" />
 
 
 
@@ -2090,17 +2090,17 @@ Nacos的客户端是基于SpringBoot的自动装配实现的，我们可以在na
 
 这个包中找到Nacos自动装配信息：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214158836-1129250375.png" alt="image-20210907201333049" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214158836-1129250375.png" alt="image-20210907201333049" />
 
 可以看到，在NacosServiceRegistryAutoConfiguration这个类中，包含一个跟自动注册有关的Bean：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214159163-1974064508.png" alt="image-20210907201612322" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214159163-1974064508.png" alt="image-20210907201612322" />
 
 
 
 #### NacosAutoServiceRegistration
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423933-1155508228.png" alt="image-20210907213647145" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423933-1155508228.png" alt="image-20210907213647145" />
 
 可以看到在初始化时，其父类`AbstractAutoServiceRegistration`也被初始化了
 
@@ -2108,13 +2108,13 @@ Nacos的客户端是基于SpringBoot的自动装配实现的，我们可以在na
 
 `AbstractAutoServiceRegistration`如图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423637-1253704703.png" alt="image-20210907214111801" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423637-1253704703.png" alt="image-20210907214111801" />
 
 可以看到它实现了`ApplicationListener`接口，监听Spring容器启动过程中的事件
 
 在监听到`WebServerInitializedEvent`（web服务初始化完成）的事件后，执行了`bind` 方法。
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423828-1719975633.png" alt="image-20210907214411267" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423828-1719975633.png" alt="image-20210907214411267" />
 
 其中的bind方法如下：
 
@@ -2177,7 +2177,7 @@ protected void register() {
 
 此处的this.serviceRegistry就是NacosServiceRegistry：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423800-1666539666.png" alt="image-20210907215903335" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714214423800-1666539666.png" alt="image-20210907215903335" />
 
 
 
@@ -2303,7 +2303,7 @@ public void registerService(String serviceName, String groupName, Instance insta
 
 服务端流程图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715001442649-717310257.png" alt="image-20210923214042926" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715001442649-717310257.png" alt="image-20210923214042926" />
 
 
 
@@ -2555,7 +2555,7 @@ public void addInstance(String namespaceId, String serviceName, boolean ephemera
 
 这里的ConsistencyService接口，代表集群一致性的接口，有很多种不同实现：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714231915065-226812848.png" alt="image-20210922161705573" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714231915065-226812848.png" alt="image-20210922161705573" />
 
 进入DelegateConsistencyServiceImpl来看：
 
@@ -2971,7 +2971,7 @@ public class Cluster extends com.alibaba.nacos.api.naming.pojo.Cluster implement
 
 ##### Nacos集群一致性
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715001648829-189629344.png" alt="image-20230715001647191" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715001648829-189629344.png" alt="image-20230715001647191" />
 
 ```java
 @Component
@@ -3095,7 +3095,7 @@ public void registerInstance(String serviceName, String groupName, Instance inst
 
 就包含心跳需要的各种信息
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715004628878-853553063.png" alt="image-20210922213313677" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715004628878-853553063.png" alt="image-20210922213313677" />
 
 
 
@@ -3147,7 +3147,7 @@ public class BeatReactor implements Closeable {
 
 心跳周期的默认值在`com.alibaba.nacos.api.common.Constants`类中：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715005132896-909701255.png" alt="image-20210922213829632" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230715005132896-909701255.png" alt="image-20210922213829632" />
 
 默认5秒一次心跳
 
@@ -3574,7 +3574,7 @@ public class ClientBeatCheckTask implements Runnable {
 
 在前面看服务注册的代码：InstanceController/re/register(HttpServletRequest request)#serviceManager.registerInstance(namespaceId, serviceName, instance)中有如下的代码
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719200941184-924014230.png" alt="image-20230719200935795" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719200941184-924014230.png" alt="image-20230719200935795" />
 
 创建空服务时：
 
@@ -3913,13 +3913,13 @@ Nacos的服务发现分为两种模式：
 
 在前面看服务注册的源码时有一个类`NacosNamingService`，这个类不仅仅提供了服务注册功能，同样提供了服务发现的功能
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719221041344-1066304952.png" alt="image-20230719221039340" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719221041344-1066304952.png" alt="image-20230719221039340" />
 
 
 
 通过下面的思路去找也行
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719230144158-472332622.png" alt="image-20230719230141716" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719230144158-472332622.png" alt="image-20230719230141716" />
 
 
 
@@ -4011,15 +4011,15 @@ public class HostReactor implements Closeable {
 
 1. 如果本地缓存没有，立即去nacos读取，`updateServiceNow(serviceName, clusters)`
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719223405680-1932336321.png" alt="image-20210923161528710" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719223405680-1932336321.png" alt="image-20210923161528710" />
 
 2. 如果本地缓存有，则开启定时更新功能，并返回缓存结果：`scheduleUpdateIfAbsent(serviceName, clusters)`
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719223433368-803063075.png" alt="image-20210923161630575" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719223433368-803063075.png" alt="image-20210923161630575" />
 
 在UpdateTask中，最终还是调用updateService方法：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719223516929-648608640.png" alt="image-20210923161752521" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719223516929-648608640.png" alt="image-20210923161752521" />
 
 不管是立即更新服务列表，还是定时更新服务列表，最终都会执行HostReactor中的updateService()方法：
 
@@ -4094,7 +4094,7 @@ public class NamingProxy implements Closeable {
 
 在HostReactor类的构造函数中，有非常重要的几个步骤：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719224549075-225911888.png" alt="image-20210923164145915" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719224549075-225911888.png" alt="image-20210923164145915" />
 
 
 
@@ -4363,7 +4363,7 @@ PushService类本身实现了`ApplicationListener`接口：这个是事件监听
 
 当服务列表变化时，就会通知我们：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719231717066-1655705443.png" alt="image-20210923183017424" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230719231717066-1655705443.png" alt="image-20210923183017424" />
 
 
 
@@ -4684,11 +4684,11 @@ feign:
 
 验证：在FeignClientFactoryBean中的loadBalance方法中打断点：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230603221112385-452208089.png" alt="image-20210714185925910" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230603221112385-452208089.png" alt="image-20210714185925910" />
 
 Debug方式启动服务消费者，可以看到这里的client底层就是Apache HttpClient：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230603221111983-216336226.png" alt="image-20210714190041542" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230603221111983-216336226.png" alt="image-20210714190041542" />
 
 
 
@@ -4808,7 +4808,7 @@ Debug方式启动服务消费者，可以看到这里的client底层就是Apache
    }
    ```
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701213938464-410457792.png" alt="image-20230701213914563" style="zoom:67%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701213938464-410457792.png" alt="image-20230701213914563" />
 
 
 
@@ -4846,7 +4846,7 @@ API 网关就像整个微服务系统的门面一样，是系统对外的唯一�
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604173637373-1731467261.png" alt="img" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604173637373-1731467261.png" alt="img" />
 
 
 对于服务数量众多、复杂度较高、规模比较大的系统来说，使用 API 网关具有以下好处：
@@ -4915,7 +4915,7 @@ Spring Cloud Gateway 旨在提供一种简单而有效的途径来发送 API，�
 
 架构图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604174001899-867105716.png" alt="image-20210714210131152" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604174001899-867105716.png" alt="image-20210714210131152" />
 
 
 
@@ -4939,7 +4939,7 @@ Spring Cloud Gateway 工作流程如下图:
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604174027529-1077440941.png" alt="Spring Cloud Gateway 工作流程" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604174027529-1077440941.png" alt="Spring Cloud Gateway 工作流程" />
 
 
 Spring Cloud Gateway 工作流程说明如下：
@@ -4962,7 +4962,7 @@ Predicate 就是路由的匹配条件，而 Filter 就是对请求和响应进�
 
 当然，要是再加上前面已经玩过的东西的流程就变成下面的样子了：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604175754741-755292829.png" alt="image-20210714211742956" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604175754741-755292829.png" alt="image-20210714211742956" />
 
 
 
@@ -4980,7 +4980,7 @@ Spring Cloud Gateway 通过 Predicate 断言来实现 Route 路由的匹配规�
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604174131390-660098036.png" alt="img" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230604174131390-660098036.png" alt="img" />
 
 
 
@@ -5002,7 +5002,7 @@ Spring Cloud Gateway 通过 Predicate 断言来实现 Route 路由的匹配规�
 | `Host`     | -  Host=.somehost.org,.anotherhost.org                       | 请求必须是访问.somehost.org和.anotherhost.org这两个host（域名）才会被转发到 http://localhost:8001 上 |
 | Query      | - Query=name                                                 | 请求参数必须包含指定参数(name)，才会被转发到 http://localhost:8001 上 |
 | RemoteAddr | - RemoteAddr=192.168.1.1/24                                  | 请求者的ip必须是指定范围（192.168.1.1 到 192.168.1.24)       |
-| Weight     | <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230605120548651-1280651580.png" alt="image-20230605120547194" style="zoom:67%;" /> | 权重处理weight,有两个参数：group和weight(一个整数)<br />如示例中表示：分80%的流量给weihthigh.org |
+| Weight     | <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230605120548651-1280651580.png" alt="image-20230605120547194" /> | 权重处理weight,有两个参数：group和weight(一个整数)<br />如示例中表示：分80%的流量给weihthigh.org |
 
 上表中这些也叫“**Predicate断言工厂**”，我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件
 
@@ -5074,7 +5074,7 @@ spring:
 
 Filter是网关中提供的一种过滤器，可以对进入网关的请求和微服务返回的响应做处理：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230607230146990-155503942.png" alt="image-20210714212312871" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230607230146990-155503942.png" alt="image-20210714212312871" />
 
 
 
@@ -5311,7 +5311,7 @@ public class MyGlobalFilter implements GlobalFilter /* , Ordered */ {
 
 请求路由后，会将当前路由过滤器和DefaultFilter、GlobalFilter，合并到一个过滤器链（集合）中，排序后依次执行每个过滤器：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230610170715610-1341628357.png" alt="image-20210714214228409" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230610170715610-1341628357.png" alt="image-20210714214228409" />
 
 
 
@@ -5501,7 +5501,7 @@ docker -v		# 出现docker版本号也表示成功
 
 如图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230612184039214-132749515.png" alt="image-20210731155141362" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230612184039214-132749515.png" alt="image-20210731155141362" />
 
 这里的mysql就是repository，5.7就是tag，合一起就是镜像名称，代表5.7版本的MySQL镜像。
 
@@ -5511,7 +5511,7 @@ docker -v		# 出现docker版本号也表示成功
 
 Docker仓库地址(即dockerHub)：https://hub.docker.com
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230612185012119-380491969.png" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230612185012119-380491969.png" />
 
 
 
@@ -5521,7 +5521,7 @@ Docker仓库地址(即dockerHub)：https://hub.docker.com
 
 常见的镜像操作命令如图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230612184112569-603279439.png" alt="image-20210731155649535" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230612184112569-603279439.png" alt="image-20210731155649535" />
 
 
 
@@ -5669,7 +5669,7 @@ docker build .
 docker images
 ```
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613112921076-1538350151.png" alt="image-20230613112920030" style="zoom:80%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230613112921076-1538350151.png" alt="image-20230613112920030" />
 
 
 
@@ -6094,7 +6094,7 @@ docker pull 192.168.xxx.yyy:8080/nginx:1.0
 
 当然只需要记住Topic Exchange类型就可以转成其他任何一种模型，无非就是少这里少那里、适用不同场景的区别
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142728049-266151266.png" alt="image-20210717163332646" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142728049-266151266.png" alt="image-20210717163332646" />
 
 
 
@@ -6106,7 +6106,7 @@ Spring AMQP是基于RabbitMQ封装的一套模板，并且还利用SpringBoot对
 
 Spring AMQP官网：https://spring.io/projects/spring-amqp
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202312/2421736-20231221133316029-1576197112.png" alt="image-20231221133314091" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202312/2421736-20231221133316029-1576197112.png" alt="image-20231221133314091" />
 
 
 
@@ -6136,7 +6136,7 @@ Spring AMQP提供了三个功能：
 
 官网中的结构图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142005369-1795079636.png" alt="image-20230616142003688" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616142005369-1795079636.png" alt="image-20230616142003688" />
 
 
 
@@ -6425,7 +6425,7 @@ public class RabbitmqListener {
 
 官网中的结构图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616145123911-1191538262.png" alt="image-20230616145122494" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616145123911-1191538262.png" alt="image-20230616145122494" />
 
 
 
@@ -6585,7 +6585,7 @@ public class RabbitmqListener {
 
 官网结构图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616151103939-296865311.png" alt="image-20230616151102284" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616151103939-296865311.png" alt="image-20230616151102284" />
 
 
 
@@ -6764,7 +6764,7 @@ public class RabbitmqListener {
 
 官网中的结构图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616190732193-808854073.png" alt="image-20230616190730692" style="zoom:50%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616190732193-808854073.png" alt="image-20230616190730692" />
 
 
 
@@ -6897,7 +6897,7 @@ Fanout Exchange与Direct Exchange的区别：
 
 官网结构图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616221652109-1311293641.png" alt="image-20230616221649375" style="zoom:50%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230616221652109-1311293641.png" alt="image-20230616221649375" />
 
 
 
@@ -7103,7 +7103,7 @@ public class BeanConfig {
 
 查看mq后台管理界面：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617150354639-226036161.png" alt="image-20230617150353048" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617150354639-226036161.png" alt="image-20230617150353048" />
 
 
 
@@ -7284,7 +7284,7 @@ public class RabbitmqListener {
 
 正常的流程应该是下面的样子
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617005335080-1584963969.png" alt="image" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617005335080-1584963969.png" alt="image" />
 
 但是：如果交换机出问题了呢，总之就是交换机没有接收到生产者发布的消息(如：发消息时，交换机名字搞错了)，那消息就直接丢了吗？
 
@@ -7631,7 +7631,7 @@ public void listenSimpleQueue(String msg) {
 
 会死循环：当消费者出现异常后，消息会不断requeue（重入队）到队列，再重新发送给消费者，然后再次异常，再次requeue，无限循环，导致mq的消息处理飙升，带来不必要的压力
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709002845387-819379886.png" alt="image-20230709002843115" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709002845387-819379886.png" alt="image-20230709002843115" />
 
 要解决就得引入下一节的内容
 
@@ -7753,7 +7753,7 @@ public class ErrorMessageConfig {
 
 实现下图逻辑：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709230805203-633364493.png" alt="image-20230709230801915" style="zoom:50%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230709230805203-633364493.png" alt="image-20230709230801915" />
 
 1. 生产者：给消息设置超时时间
 
@@ -8039,7 +8039,7 @@ RabbitMQ是队列存储，天然具备先进先出的特点，只要消息的发
 
 ## 关系型数据库与ES的对应关系
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617212656749-968465782.png" alt="img" style="zoom:80%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617212656749-968465782.png" alt="img" />
 
 
 
@@ -8053,7 +8053,7 @@ RabbitMQ是队列存储，天然具备先进先出的特点，只要消息的发
 
 ### 正向索引和倒排索引
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617213116322-1555655317.png" alt="image" style="zoom:50%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617213116322-1555655317.png" alt="image" />
 
 elasticsearch使用的就是倒排索引
 
@@ -8079,7 +8079,7 @@ elasticsearch使用的就是倒排索引
 
 **但是：不同版本的ES，类型也发生了变化，上面的解读不是全通用的**
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617215117345-685221570.png" alt="image" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617215117345-685221570.png" alt="image" />
 
 
 
@@ -8217,7 +8217,7 @@ POST /{索引库名}/_update/文档id
 #### 文档分析
 
 试想：我们在浏览器中，输入一条信息，如：搜索“博客园紫邪情”，为什么连“博客园也搜索出来了？我要的不是这个结果啊
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160903705-933424963.png" alt="image-20230621160902915" style="zoom:50%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160903705-933424963.png" alt="image-20230621160902915" />
 
 这就是全文检索，就是ES干的事情（ 过滤数据、检索嘛 ），但是：它做了哪些操作呢？
 
@@ -8593,7 +8593,7 @@ DELETE /索引库名
 
 测试拼音分词器
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627215749039-2092610734.png" alt="image-20230627210119445" style="zoom:50%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627215749039-2092610734.png" alt="image-20230627210119445" />
 
 由上可知，伴随2个问题：
 
@@ -8624,7 +8624,7 @@ DELETE /索引库名
 
 举例理解：character filters、tokenizer、tokenizer filter
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627215749039-764720909.png" alt="image-20210723210427878" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627215749039-764720909.png" alt="image-20210723210427878" />
 
 因此现在自定义分词器就变成如下的样子：
 
@@ -8670,7 +8670,7 @@ PUT /test
 
 使用自定义分词器：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627215749040-412706024.png" alt="image-20230627212610200" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627215749040-412706024.png" alt="image-20230627212610200" />
 
 
 
@@ -8720,7 +8720,7 @@ PUT /test
 
 既然都说了这么多，那就再来一个ES的系统架构吧
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617215725410-1123704279.png" alt="image" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230617215725410-1123704279.png" alt="image" />
 
 其中，**P表示分片、R表示副本**
 
@@ -9141,21 +9141,21 @@ public class o3BulkDocumentTest {
 > - 就是搞的**一主多副的方式**(一个主分片，多个副本分片)，这虽然就是一句话概括了，但是：里面的门道却不是那么简单的
 
 **首先来看一下主副操作**
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160841027-1326216498.png" alt="image" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160841027-1326216498.png" alt="image" />
 
 
 
 但是：这种去找寻节点的过程想都想得到会造成延时，而**延时 = 主分片延时 + 主分片拷贝数据给副本的延时**
 
 而且并不是这样就算完了，前面提到的分段、刷新到磁盘还没上堂呢，所以接着看
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160841001-432709753.png" alt="image" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160841001-432709753.png" alt="image" />
 
 
 
 但是：在flush到磁盘中的时候，万一断电了呢？或者其他原因导致出问题了，那最后数据不就没有flush到磁盘吗
 
 因此：其实还有一步操作，把数据保存到另外一个文件中去
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160840966-1495951055.png" alt="image" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160840966-1495951055.png" alt="image" />
 
 
 
@@ -9167,7 +9167,7 @@ public class o3BulkDocumentTest {
 
 可是啊，还是有问题，flush刷写到磁盘是很耗性能的，假如：不断进行更新呢？这样不断进行IO操作，性能好吗？也不行，因此：继续改造(没有什么是加一层解决不了的，一层不够，那就再来一层)
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160841099-1736093438.png" alt="image" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160841099-1736093438.png" alt="image" />
 
 
 
@@ -9273,7 +9273,7 @@ hash()							 是一个hash函数
 6. 主节点给客户端反馈保存结果
 7. 客户端收到反馈结果
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160557204-974310452.png" alt="image-20230621160556854" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621160557204-974310452.png" alt="image-20230621160556854" />
 
 
 
@@ -9336,7 +9336,7 @@ number_of_replicas			是指的在索引设置中设定的副本分片数
 4. 节点反馈结果
 5. 客户端收到反馈结果
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621164044989-2027781030.png" alt="image-20230619202223102" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621164044989-2027781030.png" alt="image-20230619202223102" />
 
 
 
@@ -9350,7 +9350,7 @@ number_of_replicas			是指的在索引设置中设定的副本分片数
 
 ### 集群下的更新操作流程
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621165145137-220191768.png" alt="image-20230619202310833" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621165145137-220191768.png" alt="image-20230619202310833" />
 
 
 
@@ -9378,7 +9378,7 @@ number_of_replicas			是指的在索引设置中设定的副本分片数
 
 
 原理图的话：我就在网上偷一张了
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621165301710-335819263.png" alt="image" style="zoom:80%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621165301710-335819263.png" alt="image" />
 
 
 
@@ -9393,7 +9393,7 @@ number_of_replicas			是指的在索引设置中设定的副本分片数
 
 - bulk API， 允许在单个批量请求中执行多个创建、索引、删除和更新请求
 
- <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621165301646-2122224632.png" alt="img" style="zoom:80%;" /> 
+ <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230621165301646-2122224632.png" alt="img" /> 
 
 
 
@@ -9500,7 +9500,7 @@ public class o1MatchAll {
 
 Java代码和前面玩的DSL语法的对应情况：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230625153725882-834216864.png" alt="image-20230623213506444" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230625153725882-834216864.png" alt="image-20230623213506444" />
 
 
 
@@ -9895,7 +9895,7 @@ public class o5Compound {
 
 Java代码和前面玩的DSL语法对应关系：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230625153725882-1774469174.png" alt="image-20230624131548461" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230625153725882-1774469174.png" alt="image-20230624131548461" />
 
 
 
@@ -10180,7 +10180,7 @@ public class o8HighLightTest {
 
 代码和DSL语法对应关系： request.source()  获取到的就是返回结果的整个json文档
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230625153726096-645662272.png" alt="image-20230624175348848" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230625153726096-645662272.png" alt="image-20230624175348848" />
 
 
 
@@ -10317,11 +10317,11 @@ public class o9AggregationTest {
 
 请求组装对应关系：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627213312189-633112157.png" alt="image-20230627140843561" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627213312189-633112157.png" alt="image-20230627140843561" />
 
 响应结果对应关系：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627213312183-1009559133.png" alt="image-20230627141303392" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627213312183-1009559133.png" alt="image-20230627141303392" />
 
 
 
@@ -10409,7 +10409,7 @@ public class o10Suggest {
 
 代码与DSL、响应结果对应关系：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627235802008-1214986995.png" alt="image-20230627235426570" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230627235802008-1214986995.png" alt="image-20230627235426570" />
 
 
 
@@ -10436,7 +10436,7 @@ public class o10Suggest {
 - 优点：实现简单，粗暴
 - 缺点：业务耦合度高
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160455106-588758222.png" alt="image-20230628155716064" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160455106-588758222.png" alt="image-20230628155716064" />
 
 
 
@@ -10447,7 +10447,7 @@ public class o10Suggest {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160455289-350716727.png" alt="image-20230628160432048" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160455289-350716727.png" alt="image-20230628160432048" />
 
 
 
@@ -10458,13 +10458,13 @@ public class o10Suggest {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160455195-1983290695.png" alt="image-20230628160321828" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230628160455195-1983290695.png" alt="image-20230628160321828" />
 
 
 
 MySQL主从同步：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230827220155641-494759712.png" alt="image-20210821115914748" style="zoom:80%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230827220155641-494759712.png" alt="image-20210821115914748" />
 
 
 
@@ -10480,7 +10480,8 @@ Sentinel是阿里巴巴开源的一款微服务流量控制组件。官网地址
 
 > 所谓的雪崩指的是：微服务之间相互调用，调用链中某个微服务出现问题了，导致整个服务链的所有服务也跟着出问题，从而造成所有服务都不可用
 >
-> <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629232718861-1781673253.png" alt="image-20230629232716886" style="zoom:50%;" />
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629232718861-1781673253.png" alt="image-20230629232716886" />
 
 
 
@@ -10490,7 +10491,7 @@ Sentinel是阿里巴巴开源的一款微服务流量控制组件。官网地址
 
 1. **超时处理**：是一种临时方针，即设置定时器，请求超过规定的时间就返回错误信息，不会无休止等待
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230722001234984-1060313213.png" alt="image-20230629233450322" style="zoom:67%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230722001234984-1060313213.png" alt="image-20230629233450322" />
 
    缺点：在超时时间内，还未返回错误信息内，服务未处理完，请求激增，一样会导致后面的请求阻塞
 
@@ -10498,7 +10499,7 @@ Sentinel是阿里巴巴开源的一款微服务流量控制组件。官网地址
 
 2. **线程隔离**：也叫舱壁模式，即限定每个业务能使用的线程数，避免耗尽整个tomcat的资源
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629233810724-498144747.png" alt="image-20230629233809486" style="zoom:67%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230629233810724-498144747.png" alt="image-20230629233809486" />
 
    缺点：会造成一定资源的浪费。明明服务已经不可用了，还占用固定数量的线程
 
@@ -10513,7 +10514,7 @@ Sentinel是阿里巴巴开源的一款微服务流量控制组件。官网地址
 
 4. **限流：** 也叫流量控制。指的是限制业务访问的QPS，避免服务因流量的突增而故障。是防御保护手段，从流量源头开始控制流量规避问题
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630001726890-238228668.png" alt="image-20230630001726188" style="zoom:67%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630001726890-238228668.png" alt="image-20230630001726188" />
 
 
 
@@ -10559,7 +10560,7 @@ Sentinel是阿里巴巴开源的一款微服务流量控制组件。官网地址
 
 ## 安装sentinel
 
-1. 下载：https://github.com/alibaba/Sentinel/releases 是一个jar包，这是sentinel的ui控制台，下载了放到“非中文”目录中
+1. 下载：https://github.com/alibaba/Sentinel/releases 是一个jar包，下载了放到“非中文”目录中
 
 2. 运行
 
@@ -10610,13 +10611,13 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
      cloud: 
        sentinel:
          transport:
-   # 		sentinel的ui控制台地址
+   # 		sentinel的地址
            dashboard: localhost:8080
    ```
 
 3. 然后将服务提供者、服务消费者、网关、Feign……启动，发送请求即可在前面sentinel的ui控制台看到信息了
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630191055598-1891678688.png" alt="image-20230630191055722" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630191055598-1891678688.png" alt="image-20230630191055722" />
 
 
 
@@ -10638,11 +10639,11 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 2. 每个窗口维护一个计数器，每有一次请求就将计数器 +1，限流就是设置计数器阈值
 3. 如果计数器超过了限流阈值，则超出阈值的请求都被丢弃
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714000702120-26075690.png" alt="image-20230714000659139" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714000702120-26075690.png" alt="image-20230714000659139" />
 
 但是有个缺点：时间是不固定的。如0 - 1000ms是QPS(1秒内的请求数)，这样来看没有超过阈值，可是：4500 - 5500ms也是1s啊，这是不是也是QPS啊，像下面这样就超出阈值了，服务不得干爬了
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714001041348-1019713348.png" alt="image-20230714001039504" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714001041348-1019713348.png" alt="image-20230714001039504" />
 
 #### 滑动窗口计数器算法
 
@@ -10658,11 +10659,11 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 #### 令牌桶算法
 
-1. 以固定的速率生成令牌，存入令牌桶中，如果令牌桶满了以后，多余令牌丢弃
-2. 请求进入后，必须先尝试从桶中获取令牌，获取到令牌后才可以被处理
+1. 以固定的速率生成令牌，存入令牌桶中，如果令牌桶满了以后，不再生成令牌
+2. 请求进入后，必须先尝试从桶中获取令牌，获取到令牌后才可以被处理，否则
 3. 如果令牌桶中没有令牌，则请求等待或丢弃
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714001831603-54266991.png" alt="限流算法 - 令牌桶算法" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714001831603-54266991.png" alt="限流算法 - 令牌桶算法" />
 
 也有个缺点：
 
@@ -10684,7 +10685,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 2. "漏桶"以固定速率向外"漏"出请求来执行，如果"漏桶"空了则停止"漏水”
 3. 如果"漏桶"满了则多余的"水滴"会被直接丢弃
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714002843437-1907902074.png" alt="限流算法 - 漏铜算法" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230714002843437-1907902074.png" alt="限流算法 - 漏铜算法" />
 
 #### 限流算法对比
 
@@ -10704,7 +10705,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 ### 簇点链路
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630232924098-1383625366.png" alt="image-20230630232923426" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630232924098-1383625366.png" alt="image-20230630232923426" />
 
 
 
@@ -10718,7 +10719,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 例如下图中的端点：/order/{orderId}
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630233547524-1380692667.png" alt="image-20230630233547622" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630233547524-1380692667.png" alt="image-20230630233547622" />
 
 流控、熔断等都是针对簇点链路中的资源来设置的，因此我们可以点击对应资源后面的按钮来设置规则：
 
@@ -10735,11 +10736,11 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 1. 点击下图按钮
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630234126489-1698184768.png" alt="image-20230630234126929" style="zoom:80%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630234126489-1698184768.png" alt="image-20230630234126929" />
 
 2. 设置基本流控信息
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630235201380-320755412.png" alt="image-20230630235201675" style="zoom:67%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202306/2421736-20230630235201380-320755412.png" alt="image-20230630235201675" />
 
    上图的含义：限制 /order/{orderId} 这个资源的单机QPS为1，即：每秒只允许1次请求，超出的请求会被拦截并报错
 
@@ -10751,7 +10752,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 ### 流控模式的分类
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701001533748-1421619907.png" alt="image-20230630235600999" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701001533748-1421619907.png" alt="image-20230630235600999" />
 
 在添加限流规则时，点击高级选项，可以选择三种**流控模式**：
 
@@ -10773,7 +10774,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 1. **关联模式：** 对谁进行限流，就点击谁的流控按钮进行设置
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701010740490-994040095.png" alt="image-20230701010739230" style="zoom:67%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701010740490-994040095.png" alt="image-20230701010739230" />
 
    上图含义：当 /order/update 请求单机达到 每秒1000 请求量的阈值时，就会对 /order/query 进行限流，从而避免影响 /order/update 资源
 
@@ -10781,7 +10782,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 2. **链路模式：** 请求链路访问的是哪个资源，就点击哪个资源的流控按钮进行配置
 
-   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701011442949-2124782434.png" alt="image-20230701011441588" style="zoom:67%;" />
+   <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701011442949-2124782434.png" alt="image-20230701011441588" />
    
    上图含义：只有来自 /user/queryGoods 链路的请求来访问 /order/queryGoods 资源时，每秒请求量达到1000，就会对 /user/queryGoods 进行限流
 
@@ -10804,7 +10805,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 >
 >    同一个root资源指的是：
 >
->    <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701014516195-545720538.png" alt="image-20230701014514323" style="zoom:67%;" />
+>    <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701014516195-545720538.png" alt="image-20230701014514323" />
 
 
 
@@ -10820,7 +10821,7 @@ java -Dserver.port=8090 -jar sentinel-dashboard-1.8.1.jar
 
 **分类**
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701014736593-1780186698.png" alt="image-20230701014735316" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701014736593-1780186698.png" alt="image-20230701014735316" />
 
 1. **快速失败**：达到阈值后，新的请求会被立即拒绝并抛出 FlowException异常。是默认的处理方式
 2. **warm up**：预热模式，对超出阈值的请求同样是拒绝并抛出异常。但这种模式阈值会动态变化，从一个较小值逐渐增加到最大阈值
@@ -10853,7 +10854,7 @@ warm up也叫**预热模式**，是应对服务冷启动的一种方案
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701015810163-235886151.png" alt="image-20230701015808477" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701015810163-235886151.png" alt="image-20230701015808477" />
 
 
 
@@ -10871,13 +10872,13 @@ warm up也叫**预热模式**，是应对服务冷启动的一种方案
 
 而排队等待则是让所有请求进入一个队列中，然后按照阈值允许的时间间隔依次执行。后来的请求必须等待前面执行完成，如果请求预期的等待时间超出最大时长，则会被拒绝
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701021827938-48306738.png" alt="image-20230701021826754" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701021827938-48306738.png" alt="image-20230701021826754" />
 
 QPS = 5，那么 1/5(个/ms) = 200(个/ms)，意味着每200ms处理1个队列中的请求；timeout = 2000，意味着**预期等待时长**超过2000ms的请求会被拒绝并抛出异常
 
 那什么叫做预期等待时长呢？
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701022552990-2084402102.png" alt="image-20230701022551052" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701022552990-2084402102.png" alt="image-20230701022551052" />
 
 如果使用队列模式做流控，所有进入的请求都要排队，以固定的200ms的间隔执行，QPS会变的很平滑
 
@@ -10899,15 +10900,15 @@ QPS = 5，那么 1/5(个/ms) = 200(个/ms)，意味着每200ms处理1个队列�
 >
 > **注意事项**：热点参数限流对默认的SpringMVC资源无效，需要利用@SentinelResource注解标记资源，例如：
 >
-> <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701121246681-1500235555.png" alt="image-20230701121244611" style="zoom:67%;" />
+> <img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701121246681-1500235555.png" alt="image-20230701121244611" />
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023409228-1581920767.png" alt="image-20230701023349080" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023409228-1581920767.png" alt="image-20230701023349080" />
 
 但是配置时不要通过上面按钮点击配置，会有BUG，而是通过下图中的方式：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023747870-1133268354.png" alt="image-20230701023746175" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023747870-1133268354.png" alt="image-20230701023746175" />
 
 
 
@@ -10915,7 +10916,7 @@ QPS = 5，那么 1/5(个/ms) = 200(个/ms)，意味着每200ms处理1个队列�
 
 **所谓的参数值指的是**：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023139319-2063828243.png" alt="image-20230701023138057" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701023139319-2063828243.png" alt="image-20230701023138057" />
 
 id参数值会有变化，热点参数限流会根据参数值分别统计QPS
 
@@ -10931,7 +10932,7 @@ id参数值会有变化，热点参数限流会根据参数值分别统计QPS
 
 就是基础设置，没有加入高级设置的情况
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701121801661-838481950.png" alt="image-20230701121800057" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701121801661-838481950.png" alt="image-20230701121800057" />
 
 上图含义：对于来访问hot资源的请求，每1秒**相同参数值**的请求数不能超过10000
 
@@ -10949,7 +10950,7 @@ id参数值会有变化，热点参数限流会根据参数值分别统计QPS
 
 而在实际开发中，可能部分商品是热点商品，例如秒杀商品，我们希望这部分商品的QPS限制与其它商品不一样，高一些。那就需要配置热点参数限流的高级选项了
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701122406512-675478864.png" alt="image-20230701122405067" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701122406512-675478864.png" alt="image-20230701122405067" />
 
 上图含义：对于来访问hot资源的请求，id=110时的QPS阈值为30000，id=4132443时的QPS阈值为50000，id为其他的则QPS阈值为10000
 
@@ -11119,7 +11120,7 @@ public class OrderService {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701215706517-1071618767.png" alt="image-20210716123036937" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701215706517-1071618767.png" alt="image-20210716123036937" />
 
 
 
@@ -11129,7 +11130,7 @@ public class OrderService {
 
 在添加限流规则时，可以选择两种阈值类型：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701223109157-1720665438.png" alt="image-20230701223024446" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701223109157-1720665438.png" alt="image-20230701223024446" />
 
 
 
@@ -11145,7 +11146,7 @@ public class OrderService {
 
 断路器控制熔断和放行是通过状态机来完成的：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701224956810-101544858.png" alt="image-20230701224942874" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701224956810-101544858.png" alt="image-20230701224942874" />
 
 断路器熔断策略有三种：慢调用、异常比例、异常数
 
@@ -11169,7 +11170,7 @@ public class OrderService {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701233832865-1796001964.png" alt="image-20230701233817345" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701233832865-1796001964.png" alt="image-20230701233817345" />
 
 上图含义：
 
@@ -11189,7 +11190,7 @@ public class OrderService {
 
 1. **异常比例**：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701234156895-1334365124.png" alt="image-20230701234145913" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701234156895-1334365124.png" alt="image-20230701234145913" />
 
 上图含义：在1s内，若是请求数量不低于100个，且异常比例不低于0.08(即：100*0.08=8个有异常)，则触发熔断，熔断时长达到1s就进入half-open状态
 
@@ -11197,7 +11198,7 @@ public class OrderService {
 
 2. **异常数：**直接敲定有多少个异常数量就触发熔断
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701234617472-1975223605.png" alt="image-20230701234559086" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230701234617472-1975223605.png" alt="image-20230701234559086" />
 
 
 
@@ -11216,7 +11217,7 @@ public class OrderService {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702163746947-2048469173.png" alt="image-20230702163745507" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702163746947-2048469173.png" alt="image-20230702163745507" />
 
 - 资源名：就是受保护的资源，例如 /order/{orderId}
 
@@ -11226,7 +11227,7 @@ public class OrderService {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702163847319-229518068.png" alt="image-20230702163846680" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702163847319-229518068.png" alt="image-20230702163846680" />
 
 
 
@@ -11234,7 +11235,7 @@ public class OrderService {
 
 但是上图中怎么区分请求是从网关来的还是浏览器来的？在微服务中的想法是所有请求只能走网关，然后由网关路由到具体的服务，直接访问服务应该阻止才对，像下面直接跳过网关去访问服务，应该不行才对
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702185116027-9908147.png" alt="image-20230702185115299" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702185116027-9908147.png" alt="image-20230702185115299" />
 
 
 
@@ -11253,7 +11254,7 @@ public class OrderService {
 
 下图中的名字怎么定义？
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702184508966-522606338.png" alt="image-20230702184506257" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702184508966-522606338.png" alt="image-20230702184506257" />
 
 
 
@@ -11305,11 +11306,11 @@ public class RequestInterceptor implements RequestOriginParser {
 
 2. 在网关中根据2中 parseOrigin() 的逻辑添加相应的东西
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702191131516-1120198898.png" alt="image-20230702191129751" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702191131516-1120198898.png" alt="image-20230702191129751" />
 
 3. 添加流控规则：不要在簇点链路中选择相应服务来配置授权，会有BUG
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702215010222-522341457.png" alt="image-20230702215009306" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702215010222-522341457.png" alt="image-20230702215009306" />
 
 经过上面的操作之后，要进入服务就只能通过网关路由过来了，不是从网关过来的就无法访问服务
 
@@ -11439,7 +11440,7 @@ public class SentinelExceptionHandler implements BlockExceptionHandler {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702220035218-1832066945.png" alt="image-20230702220034454" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702220035218-1832066945.png" alt="image-20230702220034454" />
 
 
 
@@ -11449,7 +11450,7 @@ public class SentinelExceptionHandler implements BlockExceptionHandler {
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702220314078-2136869.png" alt="image-20230702220313630" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702220314078-2136869.png" alt="image-20230702220313630" />
 
 
 
@@ -11529,11 +11530,11 @@ git clone https://github.com/alibaba/Sentinel.git
 
 3. 添加nacos支持。在sentinel-dashboard的test包下，已经编写了对nacos的支持，我们需要将其拷贝到src/main/java/com/alibaba/csp/sentinel/dashboard/rule 下
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702233651740-1927616371.png" alt="image-20230702233650568" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230702233651740-1927616371.png" alt="image-20230702233650568" />
 
 4. 修改nacos地址，让其读取application.properties中的配置
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703000723173-852016594.png" alt="image-20230703000721756" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703000723173-852016594.png" alt="image-20230703000721756" />
 
 5. 在sentinel-dashboard的application.properties中添加nacos地址配置
 
@@ -11543,15 +11544,15 @@ nacos.addr=127.0.0.1:8848	# ip和port改为自己想要的即可
 
 6. 配置nacos数据源
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703003437293-2039227035.png" alt="image-20230703003435769" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703003437293-2039227035.png" alt="image-20230703003435769" />
 
 7. 修改前端
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703003936123-1555282183.png" alt="image-20230703003934857" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703003936123-1555282183.png" alt="image-20230703003934857" />
 
 8. 重现编译打包Sentinel-Dashboard模块
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703004156789-343598019.png" alt="image-20230703004155921" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230703004156789-343598019.png" alt="image-20230703004155921" />
 
 9. 重现启动sentinel即可
 
@@ -11590,7 +11591,7 @@ Sentinel实现限流、隔离、降级、熔断等功能，本质要做的就是
 
 下图在官网有：https://github.com/alibaba/Sentinel/wiki
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723143337398-1360870863.png" alt="image-20210925092845529" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723143337398-1360870863.png" alt="image-20210925092845529" />
 
 
 
@@ -11617,7 +11618,7 @@ Sentinel实现限流、隔离、降级、熔断等功能，本质要做的就是
 
 Sentinel中的簇点链路是由一个个的Node组成的，Node是一个接口，包括下面的实现：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723143500701-1355263115.png" alt="image-20210925103029924" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723143500701-1355263115.png" alt="image-20210925103029924" />
 
 
 
@@ -11715,7 +11716,7 @@ public Order queryOrderById(Long orderId) {
 
 打开sentinel控制台，查看簇点链路：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723144105513-1678389171.png" alt="image-20210925113122759" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723144105513-1678389171.png" alt="image-20210925113122759" />
 
 
 
@@ -11725,7 +11726,7 @@ public Order queryOrderById(Long orderId) {
 
 通过给方法添加@SentinelResource注解的形式来标记资源：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723144900547-367632476.png" alt="image-20210925141507603" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723144900547-367632476.png" alt="image-20210925141507603" />
 
 
 
@@ -11733,13 +11734,13 @@ public Order queryOrderById(Long orderId) {
 
 Sentinel依赖中有自动装配相关的东西，spring.factories声明需要就是自动装配的配置类，内容如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145044650-1462953243.png" alt="image-20210925115740281" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145044650-1462953243.png" alt="image-20210925115740281" />
 
 
 
 我们来看下`SentinelAutoConfiguration`这个类：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145132619-1405484885.png" alt="image-20210925141553785" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145132619-1405484885.png" alt="image-20210925141553785" />
 
 
 
@@ -11855,23 +11856,23 @@ Context又是在何时完成初始化的？
 
 进入SentinelWebAutoConfiguration这个类：可以直接搜，也可以去Sentinel依赖的Spring.factories中找
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145605631-1703952710.png" alt="image-20210925115824345" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145605631-1703952710.png" alt="image-20210925115824345" />
 
 
 
 WebMvcConfigurer是SpringMVC自定义配置用到的类，可以配置HandlerInterceptor
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145645099-1637729768.png" alt="image-20210925115946064" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145645099-1637729768.png" alt="image-20210925115946064" />
 
 
 
 `SentinelWebInterceptor`的声明如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145729062-533815876.png" alt="image-20210925120119030" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145729062-533815876.png" alt="image-20210925120119030" />
 
 发现继承了`AbstractSentinelInterceptor`这个类。
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145729524-2075570147.png" alt="image-20210925120221883" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723145729524-2075570147.png" alt="image-20210925120221883" />
 
 
 
@@ -11988,7 +11989,7 @@ protected static Context trueEnter(String name, String origin) {
 
 ### 综合流程
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723175127318-95614513.png" alt="image-20230723175127601" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230723175127318-95614513.png" alt="image-20230723175127601" />
 
 
 
@@ -12076,7 +12077,7 @@ Seata事务管理中有三个重要的角色：
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230705233840468-213285774.png" alt="image-20230705233836478" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230705233840468-213285774.png" alt="image-20230705233836478" />
 
 
 
@@ -12225,11 +12226,11 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 5. 启动seat-server
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706001014284-1512828995.png" alt="image-20230706001012905" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706001014284-1512828995.png" alt="image-20230706001012905" />
 
 6. 验证是否成功
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706001336504-412458505.png" alt="image-20230706001335257" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706001336504-412458505.png" alt="image-20230706001335257" />
 
 
 
@@ -12298,11 +12299,11 @@ XA 规范 是 X/Open 组织定义的分布式事务处理（DTP，Distributed Tr
 
 1. 正常情况：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706142942006-763984510.png" alt="image-20230706142940811" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706142942006-763984510.png" alt="image-20230706142940811" />
 
 2. 异常情况：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706143016616-1907949140.png" alt="image-20230706143016059" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706143016616-1907949140.png" alt="image-20230706143016059" />
 
 一阶段：
 
@@ -12324,7 +12325,7 @@ XA 规范 是 X/Open 组织定义的分布式事务处理（DTP，Distributed Tr
 
 Seata对原始的XA模式做了简单的封装和改造，以适应自己的事务模型
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706143212037-1460622248.png" alt="image-20230706143211225" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706143212037-1460622248.png" alt="image-20230706143211225" />
 
 
 
@@ -12372,7 +12373,7 @@ seata:
 
 2. 给发起全局事务的入口方法添加 `@GlobalTransactional` 注解。就是要开启事务的方法，如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706144215962-1798496890.png" alt="image-20230706144212402" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706144215962-1798496890.png" alt="image-20230706144212402" />
 
 3. 重启服务即可成功实现XA模式了
 
@@ -12392,7 +12393,7 @@ AT模式同样是分阶段提交的事务模型，不过却弥补了XA模型中�
 
 基本架构图：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706144506965-443367842.png" alt="image-20230706144505339" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706144506965-443367842.png" alt="image-20230706144505339" />
 
 
 
@@ -12411,7 +12412,7 @@ RM阶段一的工作：
 
 流程图如下：
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706145424746-1612481270.png" alt="image-20230706145423923" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706145424746-1612481270.png" alt="image-20230706145423923" />
 
 
 
@@ -12439,7 +12440,7 @@ AT模式与XA模式的区别是什么？
 
 - **全局锁：** 由TC记录当前正在执行数据的事务，该事务持有全局锁，具备执行权
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706145945005-1394340454.png" alt="image-20230706145943940" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706145945005-1394340454.png" alt="image-20230706145943940" />
 
 
 
@@ -12459,7 +12460,7 @@ AT模式与XA模式的区别是什么？
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706152038191-864543402.png" alt="AT模式脏写解决方式" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230706152038191-864543402.png" alt="AT模式脏写解决方式" />
 
 
 
@@ -12550,7 +12551,7 @@ TCC模式与AT模式非常相似，每阶段都是独立事务，不同的是TCC
 
 举例说明三个方法：一个扣减用户余额的业务。假设账户A原来余额是100，需要余额扣减30元
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230805212324909-129384588.png" alt="image-20230805212324076" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202308/2421736-20230805212324909-129384588.png" alt="image-20230805212324076" />
 
 
 
@@ -12560,7 +12561,7 @@ TCC模式与AT模式非常相似，每阶段都是独立事务，不同的是TCC
 
 ### TCC模式的架构
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230707133410708-343026245.png" alt="image-20230707133410426" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230707133410708-343026245.png" alt="image-20230707133410426" />
 
 
 
@@ -12602,7 +12603,7 @@ TCC的缺点是什么？
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230707133832213-1995370184.png" alt="image-20230707133831809" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230707133832213-1995370184.png" alt="image-20230707133831809" />
 
 
 
@@ -12869,7 +12870,7 @@ Saga模式是SEATA提供的长事务解决方案。也分为两个阶段：
 
 
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230708123823966-1360469057.png" alt="image-20230708123817123" style="zoom:67%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202307/2421736-20230708123823966-1360469057.png" alt="image-20230708123817123" />
 
 Saga 是一种补偿协议，Saga 正向服务与补偿服务也需要业务开发者实现。在 Saga 模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。
 
