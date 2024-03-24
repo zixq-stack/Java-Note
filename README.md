@@ -259,8 +259,7 @@ MongoDB:
 ORM：
 
 - [精通hibernate【美.艾里特 著 刘平利 译】](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/ORM/%E7%B2%BE%E9%80%9Ahibernate%E3%80%90%E7%BE%8E.%E8%89%BE%E9%87%8C%E7%89%B9%20%E8%91%97%20%E5%88%98%E5%B9%B3%E5%88%A9%20%E8%AF%91%E3%80%91.mobi)。文件格式：mobi
-
-
+- [通用Mapper【tk.mapper】](https://github.com/zixq-stack/Java-Note/tree/master/%E6%A1%86%E6%9E%B6/ORM/%E9%80%9A%E7%94%A8Mapper)。文件格式：md
 
 
 
