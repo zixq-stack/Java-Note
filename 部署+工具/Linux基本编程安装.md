@@ -1323,7 +1323,137 @@ docker-compose ps
 docker-compose logs -f [服务名1] [服务名2]
 ```
 
-有兴趣的可以去了解Dockerfile自定义镜像
 
 
+# RabbitMQ安装
+
+查看自己的Linux版本
+
+```shell
+uname -a
+```
+
+![image](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240504162903638-75699466.png)
+
+
+
+**1、下载erlang，上传到服务器**：因RabbitMQ是基于这玩意儿写的，本人上传路径 `/usr/local/rabbitmq`
+
+下载地址：https://github.com/rabbitmq/erlang-rpm/releases ， 选择自己需要的版本即可，本文选择的是 erlang-23.3.4.8-1.el7.x86_64.rpm
+
+> RabbitMQ和Erlang的版本对应关系链接地址 https://www.rabbitmq.com/which-erlang.html
+
+注意一个问题：要看是基于什么Linux的版本
+
+![image-20240504163107914](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240504162943472-293665137.png)
+
+
+
+**2、安装erlang**
+
+```bash
+rpm -ivh erlang-23.3.4.8-1.el7.x86_64.rpm
+```
+
+> **提示**
+>
+> 需要保证自己的Linux中有rpm命令，没有的话，执行`yum install rpm`指令即可安装rpm
+
+
+
+**3、安装Rabbitmq需要的依赖**
+
+```bash
+yum install socat -y
+```
+
+
+
+**4、下载RabbitMQ，上传到服务器，安装**：本人上传地址`/usr/local/rabbitmq`
+
+GitHub下地址https://github.com/rabbitmq/rabbitmq-server/releases ， 选择自己要的版本即可，本文选择的是 rabbitmq-server-3.9.15-1l7.noarch.rpm
+
+```bash
+rpm -ivh rabbitmq-server-3.9.15-1.el7.noarch.rpm
+```
+
+**5、启动RabbitMQ**
+
+```bash
+# 启动服务
+/sbin/service rabbitmq-server start
+
+# 停止服务
+/sbin/service rabbitmq-server stop
+
+# 查看启动状态
+/sbin/service rabbitmq-server status
+
+# 开启开机自启
+chkconfig rabbitmq-server on
+```
+
+**6、安装web管理插件**
+
+```bash
+# 1、停止RabbitMQ服务
+service rabbitmq-server stop   # 使用上面5中的命令 /sbin/service rabbitmq-server stop也行
+
+# 2、安装插件
+rabbitmq-plugins enable rabbitmq_management
+
+# 3、开启RabbitMQ服务
+service rabbitmq-server start
+```
+
+目录浏览器访问 ip:15672 还不行，需要创建用户
+
+> 目前默认用户名/密码：guest，权限是administrator，所以可以直接执行下面指令的最后一步
+
+```bash
+# 查看当前用户 / 角色有哪些
+rabbitmqctl list_users
+
+# 删除用户
+rabbitmqctl delete_user 用户名
+
+# 添加用户
+rabbitmqctl add_user 用户名 密码
+
+# 设置用户角色
+rabbitmqctl set_user_tags 用户名 administrator
+
+# 设置用户权限	ps：guest角色就是没有这一步
+rabbitmqctl set_permissions -p "/" 用户名 ".*" ".*" ".*"
+# 设置用户权限指令解释
+			set_permissions [-p <vhostpath>] <user> <conf> <write> <read>
+```
+
+现在就可以使用 ip:15672 访问了
+
+要是访问不了，注意防火墙的事
+
+```bash
+# 查看防火墙状态
+systemctl status firewalld
+
+# 关闭防火墙
+systemctl stop firewalld
+
+# 一劳永逸 禁用防火墙
+systemctl disable firewalld
+
+# ============================================
+
+# 当然：上面的方式不建议用，可以用如下的方式
+
+# 6379端口号是否开放
+firewall-cmd --query-port=6379/tcp
+
+# 开放6379端口
+firewall-cmd --permanent --add-port=6379/tcp
+
+#重启防火墙(修改配置后要重启防火墙)
+firewall-cmd --reload
+```
 
