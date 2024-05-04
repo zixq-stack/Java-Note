@@ -1457,3 +1457,124 @@ firewall-cmd --permanent --add-port=6379/tcp
 firewall-cmd --reload
 ```
 
+
+
+
+
+
+
+
+
+# Python安装
+
+系统自带了一个Python 2.7.5
+
+![image-20240504174019534](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240504173855930-2118591284.png)
+
+退出上述交互界面指令：
+
+```bash
+exit()	或 ctrl + d
+```
+
+现在主流都是 Python3 ，所以接下来再装⼀个 Python3 ，打造⼀个共存的环境
+
+
+
+**1、准备安装包**：[Python官网下载](https://www.python.org/downloads/source/)，本文选择的是 Python-3.10.14.tgz
+
+**2、上传，解压**：本人上传路径 `/root`
+
+```bash
+tar zxvf Python-3.10.14.tgz
+```
+
+**3、安装依赖**
+
+```bash
+yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlitedevel readline-devel tk-devel gcc make
+```
+
+**4、编译安装**
+
+```bash
+# 进入解压目录
+cd /root/Python-3.10.14
+
+# prefix 改为自己的
+./configure prefix=/usr/local/python3
+
+# 编译安装
+make && make install
+```
+
+**5、添加软连接**：将刚刚安装⽣成的⽬录 /usr/local/python3 ⾥的 python3 可执⾏⽂件做⼀份软链接，链接到 /usr/bin 下，⽅便后续使⽤python3
+
+```bash
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+
+ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+```
+
+**6、验证**：输入`python3 `，即可查看 Python3 版本的安装结果
+
+而输入 `python`，依然还是 python 2.7.5 环境，实现了共存
+
+![image-20240504175348978](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240504175224695-931580506.png)
+
+
+
+
+
+# NodeJS安装
+
+**1、下载安装包**：官网地址 https://nodejs.org/dist/，本文选择的是 node-v16.20.2-linux-x64.tar.gz 
+
+**2、上传，解压，重命名**：本人上传路径 `/usr/local`
+
+```bash
+# 解压
+tar -zxvf node-v16.20.2-linux-x64.tar.gz
+
+# 重命名
+mv node-v16.20.2-linux-x64 node16
+```
+
+**3、配置环境变量**
+
+```bash
+# 编辑文件
+vim ~/.bash_profile
+
+
+# 在文件尾部加入如下内容	路径改为自己的
+# Nodejs
+export PATH=/usr/local/node16/bin:$PATH
+```
+
+**4、让环境生效**
+
+```bash
+source ~/.bash_profile
+```
+
+**5、验证**
+
+```bash
+node -v
+
+npm version
+
+npx -v
+```
+
+
+
+
+
+
+
+
+
+
+
