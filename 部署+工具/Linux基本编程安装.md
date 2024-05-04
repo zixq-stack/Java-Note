@@ -77,7 +77,26 @@
 
 
 
+# Linux中各目录解读
 
+1. `/` (Root，根目录)：所有其他目录的根
+2. `/bin` (Binaries，二进制文件)：包含基本命令行程序
+3. `/boot` (Boot，启动)：包含启动系统所需的文件
+4. `/dev` (Devices，设备)：包含设备文件
+5. `/etc` (Etcetera，等等)：包含系统配置文件
+6. `/home`：用户的家目录通常位于此，例如 `/home/username`
+7. `/lib` (Library，库)：包含系统程序所需的库文件
+8. `/media`：用于挂载媒体设备
+9. `/mnt` (Mount，挂载)：用于临时挂载文件系统
+10. `/opt` (Optional，可选)：包含额外的应用程序，即类似Windows中我们安装程序自定义目录所在地
+11. `/proc` (Processes，进程)：包含系统进程的信息
+12. `/root`：超级用户的家目录
+13. `/sbin` (System Binaries，系统二进制文件)：包含系统级别的基本命令
+14. `/srv` (Service，服务)：包含服务运行所需的数据
+15. `/sys`：包含系统硬件信息和状态
+16. `/tmp` (Temporary，临时)：包含临时文件
+17. `/usr` (Unix Software Resource，Unix操作系统资源)：包含大量应用程序和文件，即类似Windows中的 C:\Program Files (x86)
+18. `/var` (Variable，变量)：包含在运行时改变大小的文件，如日志文件
 
 
 
@@ -1458,6 +1477,50 @@ firewall-cmd --reload
 ```
 
 
+
+
+
+
+
+## 使用Docker安装
+
+**1、查看自己的docker容器中是否已有了rabbitmq这个名字的镜像**
+
+```shell
+docker images
+
+# 有的话就删除镜像
+docker rmi 镜像ID
+```
+
+
+
+
+**2、拉取RabbitMQ镜像 并 启动Docker容器**
+
+```shell
+# 5672:5672 是消息之间通讯的端口  15672:15672 是管理界面的端口
+# \ 表示命令拼接，就是换行，接着读取命令
+# -e RABBITMQ_DEFAULT_USER=zixieqing 直接设置了登录的用户名，下一个同理，设置登录密码
+docker run -it --rm --name rabbitmq \
+ -e RABBITMQ_DEFAULT_USER=zixieqing \
+ -e RABBITMQ_DEFAULT_PASS=072413 \
+ -p 5672:5672 -p 15672:15672 \
+ --hostname mq1 \
+ -d \
+ rabbitmq:3.9-management
+```
+
+
+
+**3、查看Docker容器是否启动**
+
+```shell
+docker ps
+```
+
+
+再次在浏览器进行访问，使用设置的用户名和密码就可以吃鸡了
 
 
 
