@@ -293,6 +293,10 @@ ORM：
 
 # 部署+工具
 
+[Linux基本编程环境安装](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Linux%E5%9F%BA%E6%9C%AC%E7%BC%96%E7%A8%8B%E5%AE%89%E8%A3%85.md)
+
+
+
 Linux：
 
 - [Linux【入门版】](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Linux/Linux%E3%80%90%E5%85%A5%E9%97%A8%E7%89%88%E3%80%91.pdf)。文件格式：PDF
