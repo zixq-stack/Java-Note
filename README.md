@@ -217,7 +217,7 @@ MongoDB:
 
 [我编程，我快乐－程序员职业规划之道 【@人民邮电出版社：美.Chad Fowler 著 于梦瑄 译】](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/%E6%88%91%E7%BC%96%E7%A8%8B%EF%BC%8C%E6%88%91%E5%BF%AB%E4%B9%90%EF%BC%8D%E7%A8%8B%E5%BA%8F%E5%91%98%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92%E4%B9%8B%E9%81%93%20%E3%80%90%40%E4%BA%BA%E6%B0%91%E9%82%AE%E7%94%B5%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E7%BE%8E.Chad%20Fowler%20%E8%91%97%20%E4%BA%8E%E6%A2%A6%E7%91%84%20%E8%AF%91%E3%80%91.pdf)。文件格式：PDF
 
-[UML建模、设计原则](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/UML%E3%80%81%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99%E3%80%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)。文件格式：md
+[UML建模、设计原则](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/UML%E3%80%81%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99.md)。文件格式：md
 
 [Head-First设计模式【中文版】](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/Head-First%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%90%E4%B8%AD%E6%96%87%E7%89%88%E3%80%91.pdf)。文件格式：PDF
 
