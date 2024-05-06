@@ -37,20 +37,24 @@ Java 多线程与并发：
 
 - [Java 多线程与并发【@pdai】](https://github.com/zixq-stack/Java-Note/blob/master/Java/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91/Java%20%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91%E3%80%90%40pdai%E3%80%91.md)。文件格式：md
 - [实战Java高并发程序设计【@电子工业出版社：葛一鸣+郭超 著】](https://github.com/zixq-stack/Java-Note/blob/master/Java/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91/%E5%AE%9E%E6%88%98Java%E9%AB%98%E5%B9%B6%E5%8F%91%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E3%80%90%40%E7%94%B5%E5%AD%90%E5%B7%A5%E4%B8%9A%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E8%91%9B%E4%B8%80%E9%B8%A3%2B%E9%83%AD%E8%B6%85%20%E8%91%97%E3%80%91.pdf)。文件格式：PDF
-- [深入理解高并发编程【@冰河技术 - 第2版】](https://github.com/zixq-stack/Java-Note/blob/master/Java/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E9%AB%98%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%90%40%E5%86%B0%E6%B2%B3%E6%8A%80%E6%9C%AF%20-%20%E7%AC%AC2%E7%89%88%E3%80%91.pdf)。文件格式：PDF
 
 
 
 [Netty权威指南【@电子工业出版社：李林锋 著】](https://github.com/zixq-stack/Java-Note/blob/master/Java/Netty%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%90%40%E7%94%B5%E5%AD%90%E5%B7%A5%E4%B8%9A%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E6%9D%8E%E6%9E%97%E9%94%8B%20%E8%91%97%E3%80%91.pdf)。文件格式：PDF
 
+
+
 [BIO、NIO、AIO](https://github.com/zixq-stack/Java-Note/blob/master/Java/BIO%E3%80%81NIO%E3%80%81AIO.md)。文件格式：md
+
+
 
 JVM（Java虚拟机）：
 
 - [JVM 整理【个人编写版】](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/JVM%20%E6%95%B4%E7%90%86.md)。文件格式：md
 - [深入理解Java内存模型【@程晓明】](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E3%80%90%40%E7%A8%8B%E6%99%93%E6%98%8E%E3%80%91.pdf)。文件格式：PDF
 - [深入理解Java虚拟机：JVM高级特性与最佳实践【@周志明 - 第3版】](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%EF%BC%9AJVM%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E3%80%90%40%E5%91%A8%E5%BF%97%E6%98%8E%20-%20%E7%AC%AC3%E7%89%88%E3%80%91.pdf)。文件格式：PDF
-- [JVM【@宋红康】](https://github.com/zixq-stack/Java-Note/tree/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/JVM%E3%80%90%40%E5%AE%8B%E7%BA%A2%E5%BA%B7%E3%80%91)。文件格式：md
+
+
 
 [Java日志框架](https://github.com/zixq-stack/Java-Note/blob/master/Java/Java%20%E6%97%A5%E5%BF%97%E6%A1%86%E6%9E%B6%E6%95%B4%E7%90%86.md)。文件格式：md
 
@@ -73,8 +77,6 @@ JVM（Java虚拟机）：
 [Spring Boot 整合](https://github.com/zixq-stack/Java-Note/blob/master/Spring/Spring%20Boot%20%E6%95%B4%E5%90%88.md)。文件格式：md
 
 [Spring Cloud 整合](https://github.com/zixq-stack/Java-Note/blob/master/Spring/Spring%20Cloud%20%E6%95%B4%E5%90%88.md)。文件格式：md
-
-[高并发手册【@楼仔】](https://github.com/zixq-stack/Java-Note/blob/master/Spring/%E9%AB%98%E5%B9%B6%E5%8F%91%E6%89%8B%E5%86%8C%E3%80%90%40%E6%A5%BC%E4%BB%94%E3%80%91.pdf)。文件格式：PDF
 
 
 
@@ -215,7 +217,7 @@ MongoDB:
 
 [我编程，我快乐－程序员职业规划之道 【@人民邮电出版社：美.Chad Fowler 著 于梦瑄 译】](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/%E6%88%91%E7%BC%96%E7%A8%8B%EF%BC%8C%E6%88%91%E5%BF%AB%E4%B9%90%EF%BC%8D%E7%A8%8B%E5%BA%8F%E5%91%98%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92%E4%B9%8B%E9%81%93%20%E3%80%90%40%E4%BA%BA%E6%B0%91%E9%82%AE%E7%94%B5%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E7%BE%8E.Chad%20Fowler%20%E8%91%97%20%E4%BA%8E%E6%A2%A6%E7%91%84%20%E8%AF%91%E3%80%91.pdf)。文件格式：PDF
 
-[UML建模、设计原则、设计模式](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/UML%E3%80%81%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99%E3%80%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)。文件格式：md
+[UML建模、设计原则](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/UML%E3%80%81%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99%E3%80%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)。文件格式：md
 
 [Head-First设计模式【中文版】](https://github.com/zixq-stack/Java-Note/blob/master/%E6%96%B9%E6%B3%95%E8%AE%BA/Head-First%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E3%80%90%E4%B8%AD%E6%96%87%E7%89%88%E3%80%91.pdf)。文件格式：PDF
 
