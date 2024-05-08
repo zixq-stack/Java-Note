@@ -6759,6 +6759,8 @@ btrace 进程ID 脚本文件名
 
 ### IDEA本地调试和远程调试
 
+> 直接去这里：[IDEA本地调试和远程调试](https://github.com/zixq-stack/Java-Note/blob/master/Java/IDEA%20%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95%E5%92%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95.md)
+
 
 
 # Java应用在线调试Arthas整理
