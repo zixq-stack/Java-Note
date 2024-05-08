@@ -33,6 +33,10 @@
 
 # Java
 
+[IDEA本地调试和远程调试](https://github.com/zixq-stack/Java-Note/blob/master/Java/IDEA%20%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95%E5%92%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95.md)
+
+
+
 Java 多线程与并发：
 
 - [Java 多线程与并发【@pdai】](https://github.com/zixq-stack/Java-Note/blob/master/Java/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91/Java%20%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91%E3%80%90%40pdai%E3%80%91.md)。文件格式：md
@@ -51,6 +55,7 @@ Java 多线程与并发：
 JVM（Java虚拟机）：
 
 - [JVM 整理【个人编写版】](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/JVM%20%E6%95%B4%E7%90%86.md)。文件格式：md
+- [Arthas在线调试整理](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/Arthas%20%E6%95%B4%E7%90%86.md)
 - [深入理解Java内存模型【@程晓明】](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E3%80%90%40%E7%A8%8B%E6%99%93%E6%98%8E%E3%80%91.pdf)。文件格式：PDF
 - [深入理解Java虚拟机：JVM高级特性与最佳实践【@周志明 - 第3版】](https://github.com/zixq-stack/Java-Note/blob/master/Java/JVM%EF%BC%9AJava%E8%99%9A%E6%8B%9F%E6%9C%BA/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%EF%BC%9AJVM%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E3%80%90%40%E5%91%A8%E5%BF%97%E6%98%8E%20-%20%E7%AC%AC3%E7%89%88%E3%80%91.pdf)。文件格式：PDF
 
