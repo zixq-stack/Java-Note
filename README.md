@@ -13,14 +13,6 @@
 
 
 
-> **基操**
->
-> GitHub中可以对仓库的单文件下载（浏览器安装插件即可），不会的自行百度
-
-
-
-
-
 # Go语言
 
 [Go语言编程【@人民邮电出版社：许式伟 等著】](https://github.com/zixq-stack/Java-Note/blob/master/Go%E8%AF%AD%E8%A8%80/Go%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8B%E3%80%90%40%E4%BA%BA%E6%B0%91%E9%82%AE%E7%94%B5%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E8%AE%B8%E5%BC%8F%E4%BC%9F%20%E7%AD%89%E8%91%97%E3%80%91.mobi)。文件格式：mobi
