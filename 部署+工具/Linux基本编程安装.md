@@ -297,6 +297,14 @@ mvn -v
 
 # MySQL安装
 
+docker安装的方式：
+
+```bash
+docker run --name mysql80 -p 3306:3306 -v /usr/local/docker-mysql80/conf:/etc/mysql/conf.d -v /usr/local/docker-mysql80/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=072413mcs -d mysql:8.0.27 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+```
+
+
+
 **1、准备安装包**：[MySQL安装包官网下载](https://downloads.mysql.com/archives/community/)，一般选择MySQL57，新版尝鲜就可以了
 
 **2、卸载系统自带的Mariadb（如果有）**
@@ -1599,7 +1607,7 @@ ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
 
 # NodeJS安装
 
-**1、下载安装包**：官网地址 https://nodejs.org/dist/，本文选择的是 node-v16.20.2-linux-x64.tar.gz 
+**1、下载安装包**：官网地址 https://nodejs.org/dist/ 本文选择的是 node-v16.20.2-linux-x64.tar.gz 
 
 **2、上传，解压，重命名**：本人上传路径 `/usr/local`
 
