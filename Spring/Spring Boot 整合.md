@@ -39,7 +39,7 @@
 
 
 
-# 了解yml语法
+# 了解YAML语法
 
 这玩意儿的语法就像下面的类与属性的关系一样，层层递进的。
 
@@ -442,96 +442,240 @@ public class CustomValidation {
 
 
 
+# YAML多环境配置：Spring Profiles
 
+## 采用 `---` 分隔符
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# **yml多环境配置**
-
-1. **不推荐使用**
+> **提示**
+>
+> 此种方式不推荐使用
+>
+> 缺点：放在一个配置文件中，内容过多，不易修改
 
 **![image](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175008717-1872484781.png)**
 
 
 
-**配置内容如下：**
+配置方式如下：
 
 ```yaml
-# 端口号	即启动之后不再是8080
+# 通用配置
+
 server:
-	port: 8081
+  port: 1111
 
-# 想切换（使用）那套环境配置
+
 spring:
-	profiles:
-		active: dev
-	# 给当前程序起个名字
-    application:
-		name: application-name
+  application:
+    name: application-name  # 应用名称
+  profiles:
+    active: dev # 激活那套环境配置
 
-# 通过 --- 把多套环境隔开
+# 采用 --- 分隔符分开多套配置
 ---
 
-server:
-	port: 8082
-
-# 给配置环境起一个名字	测试环境 test	开发环境 dev	线上环境 prod
+# dev开发环境配置
 spring:
-	profiles: dev
+  config:
+    activate:
+      on-profile: dev # 当前环境配置叫什么名字
+server:
+  port: 2222
 
 ---
 
+# test测试环境配置
+
 server:
-	port: 8083
+  port: 3333
+
+spring:
+  config:
+    activate:
+      on-profile: test # 当前环境配置叫什么名字
+
+---
+
+# prod 生产（线上）环境配置
+server:
+  port: 4444
+
+spring:
+  config:
+    activate:
+      on-profile: prod # 当前环境配置叫什么名字
 ```
 
 
 
-2. **推荐使用：采用多个yml文件。**
+## 多个yml配置文件
 
-- **`application.yml` 公用配置，且定义使用那套环境配置（`spring.profiles.active`）。**
-- **`application-test.yml` 就是测试环境的配置。**
-- **`appilication-dev.yml` 就是开发环境的配置。**
-- **`appilication-prod.yml` 就是生产环境配置。**
+> 推荐使用
 
-
-
-
+- `application.yml` 公用配置，且定义使用那套环境配置（`spring.profiles.active`）
+- `application-test.yml`  测试环境配置
+- `appilication-dev.yml` 开发环境配置
+- `appilication-prod.yml` 生产环境配置
 
 
 
-# **设置默认首页**
 
-**这是Spring Boot + thmeleaf响应式编程的技术，现在前后端分离，这种东西其实没什么鸟用。**
 
-## **页面在static目录中时**
+## profiles之分组 group
 
-**直接在controller中编写跳转地址即可。**
+依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+
+
+
+
+![image-20240527013113296](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527024449711-321599343.png)
+
+
+
+
+
+`application.yml`
+
+```yaml
+# 通用环境配置 + 激活那一套配置（这套环境需要的另外配置文件）
+spring:
+  profiles:
+    group:
+      dev: devCustom,devDB
+    active: dev
+```
+
+`application-dev.yml`
+
+```yaml
+# 开发环境配置
+server:
+  port: 10086
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+```
+
+`application-devCustom.yml`
+
+```yaml
+# 开发环境自定义相关配置
+minio:
+  endpoint: http://localhost:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucketName: test-bucket
+```
+
+`application-devDB.yml`
+
+```yaml
+# 开发环境的数据库相关配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring_boot_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 072413mcs
+```
+
+
+
+
+
+## Spring Profiles的小知识点
+
+> 让bean属于特定的环境。假设一个场景：一个普通的bean，只在开发期间有效，其他环境无效
+
+```java
+@Component
+@Profile("dev")
+public class DevDatasourceConfig{
+
+}
+```
+
+> 反过来看：假设一个bean除了在开发期间无效，在其他环境（如test、prod）有效。@Profile支持NOT操作，只需要在前面加上 **!** 符号。例如 !dev, 就可以将dev环境排除
+
+```java
+@Component
+@Profile("!dev")
+// @Profile(value={"dev & local"})
+public class DevDatasourceConfig{
+
+}
+```
+
+
+
+> Spring profiles属性通过maven配置文件声明激活
+
+```xml
+<profiles>
+    <profile>
+        <id>dev</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <properties>
+            <spring.profiles.active>dev</spring.profiles.active>
+        </properties>
+    </profile>
+    <profile>
+        <id>prod</id>
+        <properties>
+            <spring.profiles.active>prod</spring.profiles.active>
+        </properties>
+    </profile>
+</profiles>
+```
+
+
+
+> 编译打包时，通过以下动态参数传递，直接指定profile属性，开发不需要改动任何代码。**这种方式在实际开发中经常使用，编译打包完成后，直接交付给运维团队**
+
+```bash
+mvn clean package -Pprod
+```
+
+
+
+
+
+
+
+
+
+# 设置默认首页
+
+> 这是Spring Boot + thmeleaf响应式编程的技术，现在前后端分离，这种东西其实没什么鸟用
+
+## 页面在static目录中时
+
+直接在controller中编写跳转地址即可
 
 **![image-20240302182025901](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302181941937-87962381.png)**
 
 
 
-## **页面在templates模板引擎中时**
+## 页面在templates模板引擎中时
 
 **![image-20240302182054258](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302182011037-1057293264.png)**
 
 
 
 
-1. **这种需要导入相应的启动器**
+1. 这种需要导入相应的启动器
 
 ```xml
 <dependency>
@@ -540,7 +684,7 @@ server:
 </dependency>
 ```
 
-2. **编写controller**
+2. 编写controller
 
 **![image-20240302182127163](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302182043360-1821138867.png)**
 
@@ -548,7 +692,7 @@ server:
 
 
 
-# **简单认识thymeleaf**
+# 简单认识thymeleaf
 
 > **这是 Spring Boot + thymeleaf 响应式编程的技术，现在前后端分离，这种东西其实没什么鸟用。**
 >
@@ -556,39 +700,43 @@ server:
 
 
 
-## **什么是thymeleaf？**
+## 什么是thymeleaf？
 
-**一张图看明白：**
+一张图看明白：
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175000836-622436900.png)**
 
 
+
 **解读：**
-- **前端交给我们的页面，是html页面。如果是我们以前开发，我们需要把他们转成jsp页面，jsp好处就是当我们查出一些数据转发到JSP页面以后，我们可以用jsp轻松实现数据的显示，及交互等。**
 
-- **jsp支持非常强大的功能，包括能写Java代码，但是，Spring Boot是以jar的方式，不是war，第二，我们用的还是嵌入式的Tomcat，所以，Spring Boot现在默认是不支持jsp的。**
+- 前端交给我们的页面，是html页面。如果是我们以前开发，我们需要把他们转成jsp页面，jsp好处就是当我们查出一些数据转发到JSP页面以后，我们可以用jsp轻松实现数据的显示，及交互等
 
-- **那不支持jsp，如果我们直接用纯静态页面的方式，那给我们开发会带来非常大的麻烦，那怎么办？**
+- jsp支持非常强大的功能，包括能写Java代码，但是，Spring Boot是以jar的方式，不是war，第二，我们用的还是嵌入式的Tomcat，所以，Spring Boot现在默认是不支持jsp的
+
+- 那不支持jsp，如果我们直接用纯静态页面的方式，那给我们开发会带来非常大的麻烦，那怎么办？
 
 
 
 **Spring Boot推荐使用模板引擎：**
 
 - **模板引擎，jsp就是一个模板引擎，还有用的比较多的FreeMaker、Velocity，再多的模板引擎，他们的思想都是一样的，Spring Boot推荐使用thymeleaf。**
-
-  - **模板引擎的作用就是我们来写一个页面模板，比如有些值，是动态的，我们写一些表达式。而这些值从哪来？就是我们在后台封装一些数据。然后把这个模板和这个数据交给模板引擎，模板引擎按照我们封装的数据把这表达式解析出来、填充到我们指定的位置，然后把这个数据最终生成一个我们想要的内容从而最后显示出来，这就是模板引擎。**
-
-  - **不管是jsp还是其他模板引擎，都是这个思想。只不过，不同模板引擎之间，他们可能语法有点不一样。其他的就不介绍了，这里主要介绍一下Spring Boot给我们推荐的Thymeleaf模板引擎，这模板引擎，是一个高级语言的模板引擎，他的这个语法更简单。而且功能更强大。**
-
+- 模板引擎的作用就是我们来写一个页面模板，比如有些值，是动态的，我们写一些表达式。而这些值从哪来？就是我们在后台封装一些数据。然后把这个模板和这个数据交给模板引擎，模板引擎按照我们封装的数据把这表达式解析出来、填充到我们指定的位置，然后把这个数据最终生成一个我们想要的内容从而最后显示出来，这就是模板引擎
+  
+- 不管是jsp还是其他模板引擎，都是这个思想。只不过，不同模板引擎之间，他们可能语法有点不一样。其他的就不介绍了，这里主要介绍一下Spring Boot给我们推荐的Thymeleaf模板引擎，这模板引擎，是一个高级语言的模板引擎，他的这个语法更简单。而且功能更强大
 
 
-## **thymeleaf的取数据方式**
 
-**官网中有说明**
+## thymeleaf的取数据方式
+
+官网中有说明
 
 **![image-20240302182330364](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302182246166-1123492903.png)**
 
-**提取出来看一下，从而在Spring Boot中演示一下。**
+
+
+提取出来看一下，从而在Spring Boot中演示一下
+
 ```txt
 简单的表达：
 	变量表达式： ${...}
@@ -600,7 +748,7 @@ server:
 
 
 
-## **Spring Boot中使用thymeleaf**
+## Spring Boot中使用thymeleaf
 
 ```xml
 <dependency>
@@ -612,47 +760,51 @@ server:
 
 
 
-**怎么使用thymeleaf?**
+怎么使用thymeleaf？
 
-**这个问题换言之就是：html文件应该放到什么目录下。**
+这个问题换言之就是：html文件应该放到什么目录下
 
-**前面我们已经导入了依赖，那么按照Spring Boot的原理（自行百度），底层会帮我们导入相应的东西，并做了相应的配置，那么就去看一下源码，从而知道我们应该把文件放在什么地方。**
+前面我们已经导入了依赖，那么按照Spring Boot的原理（自行百度），底层会帮我们导入相应的东西，并做了相应的配置，那么就去看一下源码，从而知道我们应该把文件放在什么地方
 
 > **提示：**
 >
-> **Spring Boot中和配置相关的都在 `xxxxxProperties `文件中、**
+> Spring Boot中和配置相关的都在 `xxxxxProperties `文件中
 
-**因此：去看一下thymeleaf对应的thymeleafProperties文件。**
+因此：去看一下thymeleaf对应的thymeleafProperties文件
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175003967-1766791787.png)**
 
 
-**那就来建一个。**
+
+那就来建一个
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175017912-171050566.png)**
 
 
-**编写controller，让其跳到templates目录的页面中去。**
+
+编写controller，让其跳到templates目录的页面中去
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175007241-1580966564.png)**
 
 
-**测试**
+
+测试
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175001585-1795430014.png)**
 
 
-**成功跳过去了**
+
+成功跳过去了
 
 
 
 
 
 
-## **延伸：传输数据**
-### **开胃菜**
+## 延伸：传输数据
+### 开胃菜
 
-**参照官网来。这里只演示 变量表达式： `${...}` ，其他的都是一样的原理。**
+参照官网来。这里只演示 变量表达式： `${...}` ，其他的都是一样的原理
 
 ```txt
 简单的表达：
@@ -665,24 +817,25 @@ server:
 
 
 
-1. **编写后台，存入数据**
+1. 编写后台，存入数据
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175031794-1367110087.png)**
 
 
-2. **在前台获取数据**
+2. 在前台获取数据
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175008757-945985051.png)**
 
 
-**表空间约束链接如下，这个在thymeleaf官网中有。**
+
+表空间约束链接如下，这个在thymeleaf官网中有
 
 ```xml
 xmlns:th="http://www.thymeleaf.org"
 ```
 
 
-3. **测试**
+3. 测试
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175001636-1477911296.png)**
 
@@ -690,23 +843,23 @@ xmlns:th="http://www.thymeleaf.org"
 
 
 
-### **开整**
+### 开整
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175002954-598686399.png)**
 
 
 
-1. **后台**
+1. 后台
 
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175050839-17972432.png)**
 
-2. **前台**
+2. 前台
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175053697-1419555787.png)**
 
 
-3. **测试**
+3. 测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175002258-2037318457.png)**
 
@@ -715,33 +868,35 @@ xmlns:th="http://www.thymeleaf.org"
 
 
 
-# **静态资源处理方式**
+# 静态资源处理方式
 
-**在前面玩了thymeleaf，在resources中还有一个目录是static**
+在前面玩了thymeleaf，在resources中还有一个目录是static
 
 **![image-20240302182754048](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302182710254-1217446704.png)**
 
 
 
-**那么就来研究一下静态资源：Spring Boot底层是怎么去装配静态资源的？都在`WebMvcAutoConfiguration`有答案，去看一下。**
+那么就来研究一下静态资源：Spring Boot底层是怎么去装配静态资源的？都在`WebMvcAutoConfiguration`有答案，去看一下
 
 **![image-20240302182851921](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302182808250-179658090.png)**
+
+
 
 **通过上述的源码发现两个东西：`webjars` 和 `getStaticLocations()`。**
 
 
 
 
-## **webjars的方式处理静态资源**
+## webjars的方式处理静态资源
 
 **webjars的官网：https://www.webjars.org/all**
 
-**进去之后里面就是各种各样的jar包。**
 
 
 
 
-**使用jQuery做演示： 导入jQuery的依赖**
+
+使用jQuery做演示： 导入jQuery的依赖
 
 ```xml
 <dependency>
@@ -755,19 +910,19 @@ xmlns:th="http://www.thymeleaf.org"
 
 
 
-**导入之后：发现多了这么一个jar包，现在我们去直接访问一下。**
+导入之后：发现多了这么一个jar包，现在我们去直接访问一下
 
 **![image-20240302183012722](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302182928777-632012800.png)**
 
 
 
-**是可以直接访问的，为什么？**
+是可以直接访问的，为什么？
 
 **![image-20240302183047142](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302183003482-90318942.png)**
 
 
 
-**`getStaticLocations()`点进去看一下。发现是如下这么一个方法。**
+`getStaticLocations()`点进去看一下。发现是如下这么一个方法
 
 ```java
 public String[] getStaticLocations() {
@@ -775,7 +930,7 @@ public String[] getStaticLocations() {
 }
 ```
 
-**查看`staticLocations`。**
+查看`staticLocations`
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175016217-144752930.png)**
 
@@ -796,55 +951,58 @@ public String[] getStaticLocations() {
 "classpath:/public/"
 ```
 
-**发现有四种方式可以放静态资源，那就来测试一下。**
+发现有四种方式可以放静态资源，那就来测试一下
 
 
 
 
-### **resources / static / public的优先级**
+### resources / static / public的优先级
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175046891-1781366529.png)**
 
 
 
-**测试**
+测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175002734-932834382.png)**
+
 
 
 **发现resources下的优先级最高。**
 
 
 
-**删掉resources中的资源文件，继续测试**
+删掉resources中的资源文件，继续测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175002700-457202988.png)**
+
 
 
 **发现static目录其次。**
 
 
 
-### **总结：resources、static、public优先级**
+### 总结：resources、static、public优先级
 
-**优先级为：resources > static > public**
+>  优先级为：resources > static > public
 
 
 
 **资源放置建议：**
-1. **public：放置公有的资源，如：img、js、css....**
-2. **static：放置静态访问的页面，如：登录、注册....**
-3. **resources：应该说是templates，放置动态资源，如：用户管理.....**
+
+1. **public**：放置公有的资源，如：img、js、css....
+2. **static**：放置静态访问的页面，如：登录、注册....
+3. **resources**：应该说是templates，放置动态资源，如：用户管理.....
 
 
 
 
 
 
-# **整合JDBC、Druid、Druid实现日志监控**
-## **整合JDBC、Druid**
+# 整合JDBC、Druid、Druid实现日志监控
+## 整合JDBC、Druid
 
-1. **依赖**
+依赖
 
 ```xml
 <dependency>
@@ -866,7 +1024,7 @@ public String[] getStaticLocations() {
 </dependency>
 ```
 
-2. **编写`application.yml`**
+2. 编写`application.yml`
 
 ```yml
 spring:
@@ -879,16 +1037,16 @@ spring:
     password: "072413"
 ```
 
-3. **测试**
+3. 测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175058056-1534675927.png)**
 
 
 
 
-## **整合Druid**
+## 整合Druid
 
-1. **依赖**
+1. 依赖
 
 ```xml
 <!--要玩druid的话，需要导入下面这个依赖 -->
@@ -900,12 +1058,12 @@ spring:
 ```
 
 
-2. **修改yml文件**
+2. 修改yml文件
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175012476-1748499888.png)**
 
 
-3. **测试**
+3. 测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175055269-1131268208.png)**
 
@@ -913,10 +1071,10 @@ spring:
 
 
 
-## **Druid实现日志监控**
+## Druid实现日志监控
 
 > **重要提示：**
-> **需要web启动器支持。**
+> 需要web启动器支持
 
 ```xml
 <!--
@@ -930,7 +1088,7 @@ spring:
 </dependency>
 ```
 
-1. **编写配置**
+1. 编写配置
 
 ```java
 import com.alibaba.druid.support.http.StatViewServlet;
@@ -973,9 +1131,7 @@ public class DruidConfig {
 }
 ```
 
-2. **测试**
-
-**输入用户名、密码即可进入。**
+2. 测试：输入用户名、密码即可进入
 
 **![image-20240302183733938](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302183650402-953709846.png)**
 
@@ -986,11 +1142,11 @@ public class DruidConfig {
 
 
 
-# **整合Mybatis**
+# 整合Mybatis
 
-## **xml版**
+## xml版
 
-1. **导入依赖**
+1. 依赖
 
 ```xml
 <!--
@@ -1022,7 +1178,7 @@ public class DruidConfig {
 ```
 
 
-2. **编写实体**
+2. 编写实体
 
 ```java
 import lombok.AllArgsConstructor;
@@ -1043,7 +1199,7 @@ public class User implements Serializable {
 ```
 
 
-3. **编写dao / mapper层**
+3. 编写dao / mapper层
 
 ```java
 import cn.xiegongzi.entity.User;
@@ -1067,17 +1223,19 @@ public interface IUserMapper {
 
 
 
-4. **编写xml的sql语句**
+4. 编写xml的sql语句
 
 **![image-20240302184059173](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302184015499-1211712076.png)**
 
 
+
+
 > **注意点：**
-> **dao层/mapper和xml的同包同名问题。**
+> dao层/mapper和xml的同包同名问题
 
 
 
-5. **编写yml**
+5. 编写yml
 
 ```yml
 # 编写连接池
@@ -1108,20 +1266,20 @@ logging:
 		cn.xiegongzi.mapper: debug
 ```
 
-**关于日志去这里：[Java日志框架体系整理](https://www.cnblogs.com/xiegongzi/p/16293103.html)**
+关于日志去这里：[Java日志框架体系整理](https://www.cnblogs.com/xiegongzi/p/16293103.html)
 
 
 
-6. **测试**
+6. 测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175054649-362225526.png)**
 
 
 
 
-## **注解版**
+## 注解版
 
-> **直接在dao层 / mapper的接口方法头上用`@insert("sql语句")` 、 `@delete("sql语句")` 、 `@update("sql语句") `、` @select("sql语句")`注解。**
+> 直接在dao层 / mapper的接口方法头上用`@insert("sql语句")` 、 `@delete("sql语句")` 、 `@update("sql语句") `、` @select("sql语句")`注解
 
 
 
@@ -1134,15 +1292,15 @@ logging:
 
 
 
-# **整合PageHelper分页插件**
+# 整合PageHelper分页插件
 
 > **PageHelper分页的本质：**
 >
-> **将数据库中满足条件的所有数据查出来，然后通过配置的 `startPage(page, limit)` 条件将数据截取出来，最后装入PageInfo对象中。**
+> 将数据库中满足条件的所有数据查出来，然后通过配置的 `startPage(page, limit)` 条件将数据截取出来，最后装入PageInfo对象中
 
 
 
-1. **依赖**
+1. 依赖
 
 ```xml
 <dependency>
@@ -1152,7 +1310,7 @@ logging:
 </dependency>
 ```
 
-2. **测试**
+2. 测试
 
 ```java
 @Test
@@ -1176,11 +1334,11 @@ void pageHelperTest(){
 
 
 
-# **集成Swagger**
+# 集成Swagger
 
-**理论知识滤过，自行百度百科swagger是什么。**
+理论知识滤过，自行百度百科swagger是什么
 
-**swagger的常见注解和解读网址： https://blog.csdn.net/loli_kong/article/details/108103746**
+swagger的常见注解和解读网址： https://blog.csdn.net/loli_kong/article/details/108103746
 
 
 
@@ -1188,17 +1346,17 @@ void pageHelperTest(){
 
 - **[OpenAPI](https://www.openapis.org/)**
 
-**是一个组织（OpenAPI Initiative），他们指定了一个如何描述HTTP API的规范（OpenAPI Specification）。既然是规范，那么谁想实现都可以，只要符合规范即可。**
+是一个组织（OpenAPI Initiative），他们指定了一个如何描述HTTP API的规范（OpenAPI Specification）。既然是规范，那么谁想实现都可以，只要符合规范即可
 
 - **[Swagger](https://swagger.io/)**
 
-**它是[SmartBear](https://smartbear.com/) 这个公司的一个开源项目，里面提供了一系列工具，包括著名的 `swagger-ui`。`swagger`是早于OpenApi的，某一天`swagger`将自己的API设计贡献给了OpenApi，然后由其标准化了。**
+它是[SmartBear](https://smartbear.com/) 这个公司的一个开源项目，里面提供了一系列工具，包括著名的 `swagger-ui`。`swagger`是早于OpenApi的，某一天`swagger`将自己的API设计贡献给了OpenApi，然后由其标准化了
 
 
 
 
 
-1. **导入依赖**
+1. 依赖
 
 ```xml
 <!--swagger所需要的依赖-->
@@ -1244,7 +1402,7 @@ void pageHelperTest(){
 ```
 
 
-2. **编写swagger配置文件**
+2. 编写swagger配置文件
 
 ```java
 import org.springframework.context.annotation.Bean;
@@ -1297,7 +1455,7 @@ public class SwaggerConfig {
 ```
 
 
-3. **编写yml文件**
+3. 编写yml文件
 
 ```yml
 spring:
@@ -1309,7 +1467,7 @@ spring:
     password: "072413"
 ```
 
-4. **编写实体类**
+4. 编写实体类
 
 ```java
 import io.swagger.annotations.ApiModel;
@@ -1350,7 +1508,7 @@ public class User implements Serializable {
 ```
 
 
-5. **编写mapper**
+5. 编写mapper
 
 
 ```java
@@ -1369,12 +1527,12 @@ public interface IUserMapper {
 ```
 
 
-6. **编写service接口和实现类**
+6. 编写service接口和实现类
 
 **![image-20240302191600548](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302191517443-1050007233.png)**
 
 
-7. **编写controller**
+7. 编写controller
 
 ```java
 package cn.xiegongzi.controller;
@@ -1418,7 +1576,7 @@ public class UserController {
 ```
 
 
-8. **测试**
+8. 测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175009102-1640396763.png)**
 
@@ -1430,28 +1588,30 @@ public class UserController {
 
 
 
-# **集成Swagger增强版：Knife4j**
+# 集成Swagger增强版：Knife4j
 
-**[官方文档](https://doc.xiaominfo.com/docs/quick-start)**
+官方文档](https://doc.xiaominfo.com/docs/quick-start)
+
+
 
 > **注意：**
 >
-> **Spring Boot版本不一样使用上有区别，本文中采用的是Spring Boot 3.x，至于Spring Boot 2.x的使用和注意事项请看上述官方文档。**
+> Spring Boot版本不一样使用上有区别，本文中采用的是Spring Boot 3.x，至于Spring Boot 2.x的使用和注意事项请看上述官方文档
 
 
 
 **对于Spring Boot 3：**
 
-- **Spring Boot 3 只支持OpenAPI3规范。**
-- **Knife4j提供的starter已经引用 [springdoc-openapi](https://springdoc.org/) 的jar，需注意避免jar包冲突。**
-- **JDK版本必须 >= 17。**
-- **Demo请参考：[knife4j-spring-boot3-demo](https://gitee.com/xiaoym/swagger-bootstrap-ui-demo/tree/master/knife4j-spring-boot3-demo)**
+- Spring Boot 3 只支持OpenAPI3规范
+- Knife4j提供的starter已经引用 [springdoc-openapi](https://springdoc.org/) 的jar，需注意避免jar包冲突
+- **JDK版本必须 >= 17**
+- Demo请参考：[knife4j-spring-boot3-demo](https://gitee.com/xiaoym/swagger-bootstrap-ui-demo/tree/master/knife4j-spring-boot3-demo)
 
 
 
-## **安装**
+## 安装
 
-1. **Maven**
+1. Maven
 
 ```xml
 <dependency>
@@ -1462,18 +1622,18 @@ public class UserController {
 </dependency>
 ```
 
-2. **Gradle**
+2. Gradle
 
 ```gradle
 implementation("com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.4.0")
 ```
 
-> **引入之后，其余的配置可完全参考springdoc-openapi的项目说明，Knife4j只提供了增强部分，如果要启用Knife4j的增强功能，可以在配置文件中进行开启.**
+> 引入之后，其余的配置可完全参考springdoc-openapi的项目说明，Knife4j只提供了增强部分，如果要启用Knife4j的增强功能，可以在配置文件中进行开启
 
 
-## **配置**
+## 配置
 
-**编写配置类**
+编写配置类
 
 ```java
 import io.swagger.v3.oas.models.OpenAPI;
@@ -1518,13 +1678,13 @@ public class Knife4jConfig {
 ```
 
 
-### **增强功能配置**
-**上面配置类配好之后，可以通过YAML配置文件进行Knife4j增强功能配置。**
+### 增强功能配置
+上面配置类配好之后，可以通过YAML配置文件进行Knife4j增强功能配置
 
 
 > **重要提示**
 >
-> **Knife4j 自4.0版本，配置属性元数据全部改由`spring-boot-configuration-processor`自动生成，因此之前版本的驼峰命名全部修改成了横杠(`-`)代替。**
+> Knife4j 自4.0版本，配置属性元数据全部改由`spring-boot-configuration-processor`自动生成，因此之前版本的驼峰命名全部修改成了横杠(`-`)代替
 
 ```yaml
 knife4j:
@@ -1599,9 +1759,9 @@ knife4j:
 
 
 
-## **注解示例**
+## 注解示例
 
-### **实体类注解：@Schema**
+### 实体类注解：`@Schema`
 
 ```java
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -1627,7 +1787,7 @@ public class UserRegisterDto {
 
 
 
-### **Controller层注解：@Tag 和 @Operation 及  @Parameters**
+### Controller层注解：`@Tag` 和 `@Operation` 及  `@Parameters`
 
 ```java
 @Tag(name = "body参数接口")
@@ -1659,7 +1819,9 @@ public class BodyController {
 }
 ```
 
-**最后，访问Knife4j的文档地址：http://ip:port/doc.html 即可查看文档。**
+
+
+最后，访问Knife4j的文档地址：http://ip:port/doc.html 即可查看文档
 
 
 
@@ -1667,31 +1829,31 @@ public class BodyController {
 
 
 
-# **集成SpringDoc**
+# 集成SpringDoc
 
-**上面都整了Swagger、Knife4j了，那就顺便把SpringDoc也一起弄了吧。**
+上面都整了Swagger、Knife4j了，那就顺便把SpringDoc也一起弄了吧
 
 
 
 - **[Springfox](https://github.com/springfox/springfox)**
 
-**是Spring生态的一个开源库，是Swagger与OpenApi规范的具体实现。我们使用它就可以在spring中生成API文档。以前基本上是行业标准，目前最新版本可以支持 Swagger2, Swagger3 以及 OpenAPI3 三种格式。但是其从 2020年7月14号就不再更新了，不支持springboot3，所以业界都在不断的转向我们今天要谈论的另一个库Springdoc，新项目就不要用了**
+是Spring生态的一个开源库，是Swagger与OpenApi规范的具体实现。我们使用它就可以在spring中生成API文档。以前基本上是行业标准，目前最新版本可以支持 Swagger2, Swagger3 以及 OpenAPI3 三种格式。但是其从 2020年7月14号就不再更新了，不支持springboot3，所以业界都在不断的转向我们今天要谈论的另一个库Springdoc，新项目就不要用了
 
 - **[Springdoc](https://springdoc.org/index.html#getting-started)**
 
-**算是后起之秀，带着继任Springfox的使命而来。其支持OpenApi规范，支持Springboot3，新项目就可以直接用这个。**
+算是后起之秀，带着继任Springfox的使命而来。其支持OpenApi规范，支持Springboot3，新项目就可以直接用这个
 
 
 
 > **提示：**
 >
-> **SpringDoc支持 Java Bean Validation API 的注解，如：`@NotNull`。**
+> SpringDoc支持 Java Bean Validation API 的注解，如：`@NotNull`
 
 
 
 
 
-1. **依赖：其实引入依赖访问 http://server:port/context-path/swagger-ui.html  就可以使用，如http://localhost:8080/swagger-ui.html 。只是使用的都是默认值而已。**
+1. 依赖：其实引入依赖访问 http://server:port/context-path/swagger-ui.html  就可以使用，如http://localhost:8080/swagger-ui.html 。只是使用的都是默认值而已
 
 ```xml
 <dependency>
@@ -1703,7 +1865,7 @@ public class BodyController {
 
 
 
-2. **配置文档信息和分组情况**
+2. 配置文档信息和分组情况
 
 ```java
 @Configuration
@@ -1746,33 +1908,35 @@ public class SpringDocConfig {
 
 
 
-## **常用注解说明**
+## 常用注解说明
 
-| **注解**            | **含义**                                                     | **示例**                                                     |
-| :------------------ | :----------------------------------------------------------- | ------------------------------------------------------------ |
-| **@Tag**            | **用在controller类上，描述此controller的信息**               | **`@Tag(name = "用户接口")`**                                |
-| **@Operation**      | **用在controller的方法里，描述此api的信息。<br />`@Parameter`以及`@ApiResponse`都可以配置在它里面。** | **`@Operation(summary = "添加用户")`**                       |
-| **@Parameter**      | **用在controller方法里的参数上，描述参数信息**               | **`(@Parameter(description = "用户id")`<br />`@PathVariable Integer id)`** |
-| **@Parameters**     | **用在controller方法里的参数上。@Parameter的批量参数添加**   | **![image-20240302212102631](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302212018269-1972795544.png)** |
-| **@ApiResponse**    | **用在controller方法的返回值上**                             | **![image-20240302212031377](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302211947739-84466403.png)** |
-| **@ApiResponses**   | **用在controller方法的返回值上**                             | **见@ApiResponse示例**                                       |
-| **@Schema**         | **用于Entity / VO / DTO / BO，以及其属性上**                 | **`@Schema(description = "搜索条件实体类")`<br />或属性<br />`@Schema(description = "结束时间")`<br />支持Bean校验注解<br />`@NotNull`    ` @Min(18)`     `@Max(35)`等** |
-| **@Hidden**         | **用在各种地方，用于隐藏其api**                              |                                                              |
-| **@ResponseStatus** | **统一异常处理。<br /><br />统一异常处理中，每个方法会捕捉对应的异常，只要我们使用`@ResponseStatus`来标记这些方法，springdoc就会自动生成相应的文档** | **` @ExceptionHandler(value = Exception.class)`<br />`@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)`** |
-
-
+| 注解            | 含义                                                         | 示例                                                         |
+| :-------------- | :----------------------------------------------------------- | ------------------------------------------------------------ |
+| @Tag            | 用在controller类上，描述此controller的信息                   | **`@Tag(name = "用户接口")`**                                |
+| @Operation      | 用在controller的方法里，描述此api的信息。<br />`@Parameter`以及`@ApiResponse`都可以配置在它里面。 | **`@Operation(summary = "添加用户")`**                       |
+| @Parameter      | 用在controller方法里的参数上，描述参数信息                   | **`(@Parameter(description = "用户id")`<br />`@PathVariable Integer id)`** |
+| @Parameters     | 用在controller方法里的参数上。`@Parameter`的批量参数添加     | **![image-20240302212102631](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302212018269-1972795544.png)** |
+| @ApiResponse    | 用在controller方法的返回值上                                 | **![image-20240302212031377](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302211947739-84466403.png)** |
+| @ApiResponses   | 用在controller方法的返回值上                                 | 见@ApiResponse示例                                           |
+| @Schema         | 用于Entity / VO / DTO / BO，以及其属性上                     | `@Schema(description = "搜索条件实体类")`<br />或属性<br />`@Schema(description = "结束时间")`<br />支持Bean校验注解<br />`@NotNull`    ` @Min(18)`     `@Max(35)`等 |
+| @Hidden         | 用在各种地方，用于隐藏其api                                  |                                                              |
+| @ResponseStatus | 统一异常处理。<br /><br />统一异常处理中，每个方法会捕捉对应的异常，只要我们使用`@ResponseStatus`来标记这些方法，springdoc就会自动生成相应的文档 | **` @ExceptionHandler(value = Exception.class)`<br />`@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)`** |
 
 
 
-## **认证**
 
-**针对的是：服务需要认证后才能调用，例如使用了Spring Security，或者自己写了个Filter 来实现认证功能。**
 
-**这种情况当从`swagger-ui`调用API时会返回401。**
+## 认证
 
-**希望能够正常调用API：使用`@SecurityScheme` 定义一个安全模式。可以定义全局的，也可以针对某个controller定义类级别的。**
+针对的是：服务需要认证后才能调用，例如使用了Spring Security，或者自己写了个Filter 来实现认证功能
 
-1. **启动类添加`@SecurityScheme`注解。**
+这种情况当从`swagger-ui`调用API时会返回401
+
+希望能够正常调用API：使用`@SecurityScheme` 定义一个安全模式。可以定义全局的，也可以针对某个controller定义类级别的
+
+
+
+1. 启动类添加`@SecurityScheme`注解
 
 ```java
 // 定义一个名为api_token的安全模式，并指定其使用HTTP Bearer的方式
@@ -1783,7 +1947,7 @@ public class SpringDocConfig {
 @SpringBootApplication
 ```
 
-2. **使此安全模式生效。**
+2. 使此安全模式生效
 
 ```java
 @Configuration
@@ -1807,9 +1971,9 @@ public class SpringDocConfig {
 }
 ```
 
-3. **声明是否需要认证：使用`@SecurityRequirements()`来设置。**
+3. 声明是否需要认证：使用`@SecurityRequirements()`来设置
 
-**默认情况下按照上面两步设置后，整个应用程序的API就会生效，但是有的API是不需要认证的，例如登录。**
+默认情况下按照上面两步设置后，整个应用程序的API就会生效，但是有的API是不需要认证的，例如登录
 
 ```java
 @RestController
@@ -1831,25 +1995,15 @@ public class AuthController {
 
 
 
+# 集成JPA
 
-
-
-
-
-
-
-
-
-
-# **集成JPA**
-
-1. **数据库信息**
+1. 数据库信息
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175007274-1617914336.png)**
 
 
 
-2. **导入依赖**
+2. 导入依赖
 
 ```xml
 <!--导入jpa需要的依赖-->
@@ -1906,7 +2060,7 @@ public class AuthController {
 ```
 
 
-3. **编写yml文件**
+3. 编写yml文件
 
 ```yml
 spring:
@@ -1938,7 +2092,7 @@ spring:
 
 
 
-4. **编写实体类**
+4. 编写实体类
 
 ```java
 import lombok.Data;
@@ -1981,7 +2135,7 @@ public class ZiXieQing implements Serializable {
 ```
 
 
-**附：`@Column` 注解中可以支持的属性**
+附：`@Column` 注解中可以支持的属性
 
 ```java
 @Target({ElementType.METHOD, ElementType.FIELD})
@@ -2010,7 +2164,7 @@ public @interface Column {
 ```
 
 
-5. **编写mapper**
+5. 编写mapper
 
 ```java
 import cn.xiegongzi.entity.ZiXieQing;
@@ -2035,29 +2189,29 @@ public interface ZiXieQingMapper extends JpaRepository<ZiXieQing , Integer> {
 }
 ```
 
-**附：`JpaRepository` 中提供的方法。**
+附：`JpaRepository` 中提供的方法
 
 **![image-20240302214422172](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302214338279-1462679227.png)**
 
 
 
-6. **编写service接口和实现类**
+6. 编写service接口和实现类
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175046099-159198996.png)**
 
 
-7. **编写controller**
+7. 编写controller
 
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175042371-1913794712.png)**
 
 
-8. **测试**
+8. 测试
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175053144-1520015985.png)**
 
 
-9. **现在去看一下数据库**
+9. 现在去看一下数据库
 
 **![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175006116-286370178.png)**
 
@@ -2069,12 +2223,12 @@ public interface ZiXieQingMapper extends JpaRepository<ZiXieQing , Integer> {
 
 # **集成Mybatis-Plus**
 
-**mybatis-plus官网地址：https://baomidou.com/guide/**
+mybatis-plus官网地址：https://baomidou.com/guide/
 
 
 
 
-1. **导入依赖**
+1. 导入依赖
 
 ```xml
 <!--mybatis-plus需要的依赖-->
@@ -2091,7 +2245,7 @@ public interface ZiXieQingMapper extends JpaRepository<ZiXieQing , Integer> {
 ```
 
 
-2. **编写yml**
+2. 编写yml
 
 ```yml
 spring:
@@ -2116,16 +2270,16 @@ mybatis-plus:
 ```
 
 > **注意点：**
-> **别把mybatis和mybatis-plus一起集成到spring中，否则：很容易出问题，虽然：mybatis-plus是mybatis的增强版，既然是增强版，那么就不会抛弃它原有的东西，只会保留原有的东西，然后新增功能，但是：==mybatis和mybatis-plus集成到一起之后很容易造成版本冲突==**
+> 别把mybatis和mybatis-plus一起集成到spring中，否则：很容易出问题，虽然：mybatis-plus是mybatis的增强版，既然是增强版，那么就不会抛弃它原有的东西，只会保留原有的东西，然后新增功能，但是：==mybatis和mybatis-plus集成到一起之后很容易造成版本冲突==
 
-**因此：对于单个系统模块/单个系统来说，建议二者只选其一集成。**
+因此：对于单个系统模块/单个系统来说，建议二者只选其一集成
 
-**PS：当然事情不是绝对的 我说的是万一，只是操作不当很容易触发错误而已，但是:二者一起集成也是可以的，当出现报错时可以解决掉，不延伸了 ，这不是这里该做的事情。**
-
-
+PS：当然事情不是绝对的 我说的是万一，只是操作不当很容易触发错误而已，但是:二者一起集成也是可以的，当出现报错时可以解决掉，不延伸了 ，这不是这里该做的事情
 
 
-3. **编写实体类**
+
+
+3. 编写实体类
 
 ```java
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -2153,7 +2307,7 @@ public class User implements Serializable {
 ```
 
 
-4. **编写mapper**
+4. 编写mapper
 
 
 ```java
@@ -2175,12 +2329,12 @@ public interface IUserMapper extends BaseMapper<User> {
 ```
 
 
-**附：`BaseMapper<T>` 提供的方法如下：**
+附：`BaseMapper<T>` 提供的方法如下：
 
 **![image-20240302214638479](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302214555065-856783457.png)**
 
 
-5. **测试**
+5. 测试
 
 
 **![image-20240302214705872](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302214622016-1964904951.png)**
@@ -2192,27 +2346,29 @@ public interface IUserMapper extends BaseMapper<User> {
 
 
 
-# **进程本地缓存技术：Ehcache**
+# 进程本地缓存技术：Ehcache
 
-**进程本地缓存：最典型的情况 项目中整一个全局map。**
+进程本地缓存：最典型的情况 项目中整一个全局map
 
-**还有一种比较流行的是`Caffeine`这个东西要更简单、更好一点。**
+还有一种比较流行的是`Caffeine`这个东西要更简单、更好一点
 
-**Caffeine官网GitHub地址：https://github.com/ben-manes/caffeine**
-**Caffeine快速入手网址：http://www.mydlq.club/article/56/ 这个网址中的第二种集成方式和下面玩的Ehcache注解的含义一样，而且不需要借助xml文件，而ehcache需要借助xml文件。**
+Caffeine官网GitHub地址：https://github.com/ben-manes/caffeine
+Caffeine快速入手网址：http://www.mydlq.club/article/56/
 
-
-
-## **Ehcache介绍**
-
-**Ehacahe是一个比较成熟的Java缓存框架，最早从hibernate发展而来，是进程中的缓存系统，它提供了用内存、磁盘文件存储，以及分布式存储方式等多种灵活的cache管理方案。**
+- 这个网址中的第二种集成方式和下面玩的Ehcache注解的含义一样，而且不需要借助xml文件，而ehcache需要借助xml文件
 
 
 
-## **Ehcache常用注解**
-### **@CacheConfig注解**
+## Ehcache介绍
 
-> **用于标注在类上，可以存放该类中所有缓存的公有属性（如：设置缓存名字）。**
+Ehacahe是一个比较成熟的Java缓存框架，最早从hibernate发展而来，是进程中的缓存系统，它提供了用内存、磁盘文件存储，以及分布式存储方式等多种灵活的cache管理方案
+
+
+
+## Ehcache常用注解
+### `@CacheConfig` 注解
+
+> 用于标注在类上，可以存放该类中所有缓存的公有属性（如：设置缓存名字）
 
 ```java
 @CacheConfig(cacheNames = "users")
@@ -2221,14 +2377,14 @@ public class UserService{
 }
 ```
 
-**当然：这个注解其实可以使用`@Cacheable`来代替。**
+当然：这个注解其实可以使用`@Cacheable`来代替
 
 
 
 
-### **@Cacheable注解（读数据时）：用得最多**
+### `@Cacheable` 注解（读数据时）：用得最多
 
-> **应用到读取数据的方法上，如：查找数据的方法，使用了之后可以做到先从本地缓存中读取数据，若是没有，则再调用此注解下的方法去数据库中读取数据，当然：还可以将数据库中读取的数据放到用此注解配置的指定缓存中。**
+> 应用到读取数据的方法上，如：查找数据的方法，使用了之后可以做到先从本地缓存中读取数据，若是没有，则再调用此注解下的方法去数据库中读取数据，当然：还可以将数据库中读取的数据放到用此注解配置的指定缓存中
 
 ```java
 @Cacheable(value = "user", key = "#userId")
@@ -2237,53 +2393,53 @@ User selectUserById( Integer userId );
 
 
 
-**`@Cacheable` 注解的属性：**
+`@Cacheable` 注解的属性：
 
-- **`value`、`cacheNames`**
-  - **这两个参数其实是等同的( acheNames为Spring 4新增的，作为value的别名)。**
-  - **这两个属性的作用：用于指定缓存存储的集合名。**
-
-
-
-
-- **`key` 作用：缓存对象存储在Map集合中的key值。**
+- `value`、`cacheNames`
+  - 这两个参数其实是等同的( acheNames为Spring 4新增的，作为value的别名)
+  - 这两个属性的作用：用于指定缓存存储的集合名
 
 
 
 
-- **`condition`  作用：缓存对象的条件。 即：只有满足这里面配置的表达式条件的内容才会被缓存，如：`@Cache( key = "#userId",condition="#userId.length() < 3"` 这个表达式表示只有当userId长度小于3的时候才会被缓存。**
+- `key` 作用：缓存对象存储在Map集合中的key值
 
 
 
 
-- **`unless` 作用：另外一个缓存条件。 它不同于condition参数的地方在于此属性的判断时机（此注解中编写的条件是在函数被`调用之后`才做判断，所以：这个属性可以通过封装的result进行判断）。**
+- `condition`  作用：缓存对象的条件。 即：只有满足这里面配置的表达式条件的内容才会被缓存，如：`@Cache( key = "#userId",condition="#userId.length() < 3"` 这个表达式表示只有当userId长度小于3的时候才会被缓存
+
+
+
+
+- `unless` 作用：另外一个缓存条件。 它不同于condition参数的地方在于此属性的判断时机（此注解中编写的条件是在函数被`调用之后`才做判断，所以：这个属性可以通过封装的result进行判断）
 
 
 
 
 - **`keyGenerator`**
-  - **作用：用于指定key生成器。 若需要绑定一个自定义的key生成器，我们需要去实现`org.springframewart.cahce.intercceptor.KeyGenerator`接口，并使用该参数来绑定。**
-  - **注意点：该参数与上面的key属性是互斥的。**
+  - 作用：用于指定key生成器。 若需要绑定一个自定义的key生成器，我们需要去实现`org.springframewart.cahce.intercceptor.KeyGenerator`接口，并使用该参数来绑定
+  - 注意点：该参数与上面的key属性是互斥的
 
 
 
 
-- **`cacheManager` 作用：指定使用哪个缓存管理器。 也就是当有多个缓存器时才需要使用。**
+- `cacheManager` 作用：指定使用哪个缓存管理器。 也就是当有多个缓存器时才需要使用
 
 
 
 
 - **`cacheResolver`**
-  - **作用：指定使用哪个缓存解析器。**
-  - **需要通过`org.springframewaork.cache.interceptor.CacheResolver`接口来实现自己的缓存解析器。**
+  - 作用：指定使用哪个缓存解析器
+  - 需要通过`org.springframewaork.cache.interceptor.CacheResolver`接口来实现自己的缓存解析器
 
 
 
 
 
-### **@CachePut注解 (写数据时)**
+### `@CachePut` 注解 (写数据时)
 
-> **用在写数据的方法上，如：新增 / 修改方法，调用方法时会自动把对应的数据放入缓存，`@CachePut` 的参数和 `@Cacheable` 差不多。**
+> 用在写数据的方法上，如：新增 / 修改方法，调用方法时会自动把对应的数据放入缓存，`@CachePut` 的参数和 `@Cacheable` 差不多
 
 ```java
 @CachePut(value="user", key = "#userId")
@@ -2296,23 +2452,23 @@ public User save(User user) {
 
 
 
-### **@CacheEvict注解 (删除数据时)**
+### `@CacheEvict` 注解 (删除数据时)
 
-> **用在删除数据的方法上，调用方法时会从缓存中移除相应的数据。**
+> 用在删除数据的方法上，调用方法时会从缓存中移除相应的数据
 
 ```java
 @CacheEvict(value = "user", key = "#userId")
 void delete( Integer userId);
 ```
 
-**这个注解除了和 `@Cacheable` 一样的参数之外，还有另外两个参数：**
-- **`allEntries`： 默认为false，当为true时，会移除缓存中该注解该属性所在的方法的所有数据。**
-- **`beforeInvocation`：默认为false，在调用方法之后移除数据，当为true时，会在调用方法之前移除数据。**
+这个注解除了和 `@Cacheable` 一样的参数之外，还有另外两个参数：
+- `allEntries`： 默认为false，当为true时，会移除缓存中该注解该属性所在的方法的所有数据
+- `beforeInvocation`：默认为false，在调用方法之后移除数据，当为true时，会在调用方法之前移除数据
 
 
 
 
-### **@Cacheing组合注解：推荐**
+### `@Cacheing` 组合注解：推荐
 ```java
 // 将userId、username、userAge放到名为user的缓存中存起来
 @Caching(
@@ -2330,10 +2486,10 @@ void delete( Integer userId);
 
 
 
-## **Spring Boot集成Ehcache**
-### **配置Ehcache**
+## Spring Boot集成Ehcache
+### 配置Ehcache
 
-1. **依赖**
+1. 依赖
 
 ```xml
 <dependency>
@@ -2347,7 +2503,7 @@ void delete( Integer userId);
 ```
 
 
-2. **在`application.yml`配置文件中加入配置**
+2. 在`application.yml`配置文件中加入配置
 
 ```yml
 cache:
@@ -2357,7 +2513,7 @@ cache:
 ```
 
 
-3. **在主启动类开启缓存功能**
+3. 在主启动类开启缓存功能
 
 ```java
 @SpringBootAllication
@@ -2369,7 +2525,7 @@ public class Starter {
 }
 ```
 
-4. **编写`ehcache.xml`配置文件。在`resources`目录下新建`ehcache.xml`，并编写如下内容：**
+4. 编写`ehcache.xml`配置文件。在`resources`目录下新建`ehcache.xml`，并编写如下内容：
 
 ```xml
 <ehcache name="myCache">
@@ -2431,13 +2587,13 @@ public class Starter {
 
 
 
-### **在项目中使用Ehcache**
+### 在项目中使用Ehcache
 
-**使用常用的`@Cacheable`注解举例。**
+使用常用的`@Cacheable`注解举例
 
 
 
-1. **查询条件是单个时（service实现类中直接开注解）**
+1. 查询条件是单个时（service实现类中直接开注解）
 
 ```java
 // 这里的value值就是前面xml中配置的哪个cache name值
@@ -2448,9 +2604,9 @@ public User queryUserByUsername(String username) {
 ```
 
 
-2. **查询条件是多个时（service实现类中直接开注解）**
+2. 查询条件是多个时（service实现类中直接开注解）
 
-> **本质：字符串的拼接**
+> 本质：字符串的拼接
 
 ```java
 // 这里的UserDAO.username+就是封装的UserDAO，里面的属性有username、userage、userPhone
@@ -2829,25 +2985,25 @@ public class OssService {
 
 
 
-# **定时任务**
-## **小顶堆数据结构**
+# 定时任务
+## 小顶堆数据结构
 
-**就是一个完全二叉树，同时这个二叉树遵循一个规则，根节点存的值永远小于两个子节点存的值。**
+> 就是一个完全二叉树，同时这个二叉树遵循一个规则，根节点存的值永远小于两个子节点存的值
 
 **<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175008989-138560699.png" alt="image" style="zoom:67%;" />**
 
 
 
-**树结构只是一种逻辑结构，因此：数据还是要存起来的，而这种小顶堆就是采用了数组。**
+树结构只是一种逻辑结构，因此：数据还是要存起来的，而这种小顶堆就是采用了数组
 
 **![image](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175003484-73068869.png)**
 
 
 
-**即：数组下标为0的位置不放值，然后把树结构的数据放在对应位置。**
+即：数组下标为0的位置不放值，然后把树结构的数据放在对应位置
 
 - **树结构数据转成数组数据的规律：从上到下、从左到右，即：根节点、左孩子节点、右孩子节点（对照上面两个图来看）。**
-- **这种存储方式找父节点也好找，就是数组中( 当前数值的下标值 % 2  ) ，这种算法的原理：就是利用二叉树的深度 和 存放数据个数的关系（ 数列 ），即：顶层最多可以放多少个数据？2的0次方；第二层最多可以存放多少个数据？2的1次方...........**
+- 这种存储方式找父节点也好找，就是数组中( 当前数值的下标值 % 2  ) ，这种算法的原理：就是利用二叉树的深度 和 存放数据个数的关系（ 数列 ），即：顶层最多可以放多少个数据？2的0次方；第二层最多可以存放多少个数据？2的1次方...........
 
 
 
@@ -2863,23 +3019,29 @@ public class OssService {
 
 
 
-## **时间轮算法**
+## 时间轮算法
 
 **<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175007953-1532439253.png" alt="image" style="zoom:67%;" />**
 
 
 
-### **基础型时间轮**
+### 基础型时间轮
 
-- **模仿时钟，24个刻度( 数组，每一个刻度作为数组的下标 ），每一个刻度后面就是一个链表，这个链表中放对应的定时任务，到了指定时间点就把后面链表中的任务全部遍历出来执行。**
-- **缺点：当要弄年、月、秒这种就又要再加轮子，这样就很复杂了，因此：此种方式只适合记一天24小时的定时任务，涉及到年月秒就不行了。**
-
+模仿时钟，24个刻度( 数组，每一个刻度作为数组的下标 ），每一个刻度后面就是一个链表，这个链表中放对应的定时任务，到了指定时间点就把后面链表中的任务全部遍历出来执行
 
 
-### **round型时间轮**
 
-- **在前面基础型时间轮的基础上，在每一个刻度的位置再加一个round值（ 每个刻度后面还是一个链表存定时任务 ），round值记录的就是实际需求的值，如：一周，那round值就为7，当然这个round值可以是1，也可以是30....，每一次遍历时钟数组的那24个刻度时，遍历到某一个刻度，那么就让round值减1，知道round值为0时，就表示24数组中当前这个刻度存的定时任务该执行了。**
-- **缺点：需要让round值减1，那么就是需要对时间轮进行遍历，如：定时任务应该是4号执行，但是3号遍历时间轮时，定时任务并不执行，而此时也需要遍历时间轮从而让round值减1，这浪费了性能。**
+缺点：当要弄年、月、秒这种就又要再加轮子，这样就很复杂了，因此：此种方式只适合记一天24小时的定时任务，涉及到年月秒就不行了
+
+
+
+### round型时间轮
+
+在前面基础型时间轮的基础上，在每一个刻度的位置再加一个round值（ 每个刻度后面还是一个链表存定时任务 ），round值记录的就是实际需求的值，如：一周，那round值就为7，当然这个round值可以是1，也可以是30....，每一次遍历时钟数组的那24个刻度时，遍历到某一个刻度，那么就让round值减1，知道round值为0时，就表示24数组中当前这个刻度存的定时任务该执行了。
+
+
+
+缺点：需要让round值减1，那么就是需要对时间轮进行遍历，如：定时任务应该是4号执行，但是3号遍历时间轮时，定时任务并不执行，而此时也需要遍历时间轮从而让round值减1，这浪费了性能
 
 
 
@@ -2887,27 +3049,28 @@ public class OssService {
 
 ### **分量时间轮**
 
-- **后续的定时任务框架就是基于这个做的，如：Spring中有一个`@Scheduleed( cron = "x x x x ...." )`注解，它的这个cron时间表达式就是基于这种分量时间轮。**
-
-- **使用多个轮子：**
-  - **如：一个时间轮记录小时0 - 24，而另一个轮子记录天数0 - 30天。**
-  - **先遍历天伦中的刻度，若今天是0 -30中要执行定时任务的那一天，那么天轮的刻度指向的就是时轮。**
-  - **然后再去遍历时轮中对应的那个刻度，从而找到这个刻度后面的链表，将链表遍历出来，执行定时任务。**
+后续的定时任务框架就是基于这个做的，如：Spring中有一个`@Scheduleed( cron = "x x x x ...." )`注解，它的这个cron时间表达式就是基于这种分量时间轮
 
 
 
+使用多个轮子：
+
+- 如：一个时间轮记录小时0 - 24，而另一个轮子记录天数0 - 30天
+- 先遍历天伦中的刻度，若今天是0 -30中要执行定时任务的那一天，那么天轮的刻度指向的就是时轮
+- 然后再去遍历时轮中对应的那个刻度，从而找到这个刻度后面的链表，将链表遍历出来，执行定时任务
 
 
 
 
-## **Timer**
 
-- **底层原理就是：小顶堆，只是它的底层用了一个taskQueue任务队列来充当小顶堆中的哪个数组，存取找的逻辑都是和小顶堆一样的。**
+## Timer
 
-- **有着弊端：**
-  - **`schedule()`  API真正的执行时间 取决 上一个任务的结束时间。会出现：少执行了次数。**
-  - **`scheduleAtFixedRate()`  API想要的是严格按照预设时间 12:00:00   12:00:02  12:00:04，但是最终结果是：执行时间会乱。**
-  - **底层调的是`run()`，也就是单线程。缺点：任务阻塞( 阻塞原因：任务超时 )。**
+> 底层原理就是：小顶堆，只是它的底层用了一个taskQueue任务队列来充当小顶堆中的哪个数组，存取找的逻辑都是和小顶堆一样的
+
+有着弊端：
+- `schedule()`  API真正的执行时间 取决 上一个任务的结束时间。会出现：少执行了次数
+- `scheduleAtFixedRate()`  API想要的是严格按照预设时间 12:00:00   12:00:02  12:00:04，但是最终结果是：执行时间会乱
+- 底层调的是`run()`，也就是单线程。缺点：任务阻塞( 阻塞原因：任务超时 )
 
 
 
@@ -2969,11 +3132,11 @@ class FooTimerTask extends TimerTask {
 
 
 
-## **定时任务线程池**
+## 定时任务线程池
 
-- **原理：timer + 线程池执行来做到的。**
+> 原理：timer + 线程池执行来做到的
 
-- **如下的`Executors.newScheduledThreadPool(5);`创建线程池的方法在高并发情况下，最好别用。**
+如下的`Executors.newScheduledThreadPool(5);`创建线程池的方法在高并发情况下，最好别用
 
 
 
@@ -3033,54 +3196,57 @@ class Task implements Runnable{
 
 
 
-## **Spring Task：@Scheduled注解实现**
+## Spring Task：@Scheduled注解实现
 
-- **这玩意儿是Spring提供的，即Spring Task。官网：https://docs.spring.io/spring-framework/reference/6.1-SNAPSHOT/integration/scheduling.html**
-- **缺点就是其定时时间不能动态更改，它适用于具有固定任务周期的任务。**
+> 这玩意儿是Spring提供的，即[Spring Task](https://docs.spring.io/spring-framework/reference/6.1-SNAPSHOT/integration/scheduling.html)
+
+缺点就是其定时时间不能动态更改，它适用于具有固定任务周期的任务
 
 
 
 > **注意点：**
 >
-> **要在相应的代码中使用`@Scheduled`注解来进行任务配置，那么就需要在主启动类上加上`@EnableScheduling // 开启定时任务`注解。**
+> 要在相应的代码中使用`@Scheduled`注解来进行任务配置，那么就需要在主启动类上加上`@EnableScheduling // 开启定时任务`注解
 
-
+<br />
 
 > **`@Scheduled` 这个注解的几个属性**
 
-- **`fixedRate`：表示任务执行之间的时间间隔，具体是指两次任务的开始时间间隔，即第二次任务开始时，第一次任务可能还没结束。**
-- **`fixedDelay`：表示任务执行之间的时间间隔，具体是指本次任务结束到下次任务开始之间的时间间隔。**
-- **`initialDelay`：表示首次任务启动的延迟时间。**
-- **`cron 表达式`：秒 分 小时 日 月 周 年 。**
+- `fixedRate`：表示任务执行之间的时间间隔，具体是指两次任务的开始时间间隔，即第二次任务开始时，第一次任务可能还没结束
+- `fixedDelay`：表示任务执行之间的时间间隔，具体是指本次任务结束到下次任务开始之间的时间间隔
+- `initialDelay`：表示首次任务启动的延迟时间
+- `cron 表达式`：秒 分 小时 日 月 周 年 
+
+<br />
 
 
 
-> **cron表达式说明：可以直接浏览器搜索“cron表达式在线工具”，生成表达式复制粘贴。**
+> cron表达式说明：可以直接浏览器搜索“cron表达式在线工具”，生成表达式复制粘贴
 
 **<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175005341-442719966.png" alt="image" style="zoom:67%;" />**
 
 
 
-**上图通配符含义**
+上图通配符含义
 
 | **通配符**         | **意义**                                                     |
 | ------------------ | ------------------------------------------------------------ |
-| **`?`**            | **表示不指定值，即不关心某个字段的取值时使用<br />需要注意的是，月份中的日期和星期可能会起冲突，因此在配置时这两个得有一个是`?`** |
-| **`*`**            | **表示所有值，例如:在秒的字段上设置 * ,表示每一秒都会触发**  |
-| **`,`**            | **用来分开多个值，例如在周字段上设置 "MON,WED,FRI" 表示周一，周三和周五触发** |
-| **`-`**            | **表示区间，例如在秒上设置 "10-12",表示 10,11,12秒都会触发** |
-| **`/`**            | **用于递增触发，如在秒上面设置"5/15" 表示从5秒开始，每增15秒触发(5,20,35,50)** |
-| **`#`**            | **序号(表示每月的第几个周几)，例如在周字段上设置"6#3"表示在每月的第三个周六，(用<br/>在母亲节和父亲节再合适不过了)** |
-| **`L`**            | **表示最后的意思<br />在日字段设置上，表示当月的最后一天(依据当前月份，如果是二月还会自动判断是否是润年<br />在周字段上表示星期六，相当于"7"或"SAT"（注意周日算是第一天）<br />如果在"L"前加上数字，则表示该数据的最后一个。例如在周字段上设置"6L"这样的格式,则表<br/>示"本月最后一个星期五"** |
-| **`W`**            | **表示离指定日期的最近工作日(周一至周五)<br />例如在日字段上设置"15W"，表示离每月15号最近的那个工作日触发。如果15号正好是周六，则找最近的周五(14号)触发, 如果15号是周未，则找最近的下周一(16号)触发，如果15号正好在工作日(周一至周五)，则就在该天触发<br />如果指定格式为 "1W",它则表示每月1号往后最近的工作日触发。如果1号正是周六，则将在3号下周一触发。(注，"W"前只能设置具体的数字,不允许区间"-")** |
-| **`L` 和 `W`组合** | **如果在日字段上设置"LW",则表示在本月的最后一个工作日触发(一般指发工资 )** |
+| **`?`**            | **表示不指定值**，即不关心某个字段的取值时使用<br />需要注意的是，月份中的日期和星期可能会起冲突，因此在配置时这两个得有一个是`?` |
+| **`*`**            | **表示所有值**，例如:在秒的字段上设置 * ,表示每一秒都会触发  |
+| **`,`**            | **用来分开多个值**，例如在周字段上设置 "MON,WED,FRI" 表示周一，周三和周五触发 |
+| **`-`**            | **表示区间**，例如在秒上设置 "10-12",表示 10,11,12秒都会触发 |
+| **`/`**            | **用于递增触发**，如在秒上面设置"5/15" 表示从5秒开始，每增15秒触发(5,20,35,50) |
+| **`#`**            | **序号（表示每月的第几个周几）**，例如在周字段上设置"6#3"表示在每月的第三个周六，(用<br/>在母亲节和父亲节再合适不过了) |
+| **`L`**            | **表示最后的意思**<br />在日字段设置上，表示当月的最后一天(依据当前月份，如果是二月还会自动判断是否是润年<br />在周字段上表示星期六，相当于"7"或"SAT"（注意周日算是第一天）<br />如果在"L"前加上数字，则表示该数据的最后一个。例如在周字段上设置"6L"这样的格式,则表<br/>示"本月最后一个星期五" |
+| **`W`**            | **表示离指定日期的最近工作日（周一至周五）**<br />例如在日字段上设置"15W"，表示离每月15号最近的那个工作日触发。如果15号正好是周六，则找最近的周五(14号)触发, 如果15号是周未，则找最近的下周一(16号)触发，如果15号正好在工作日(周一至周五)，则就在该天触发<br />如果指定格式为 "1W",它则表示每月1号往后最近的工作日触发。如果1号正是周六，则将在3号下周一触发。(注，"W"前只能设置具体的数字,不允许区间"-") |
+| **`L` 和 `W`组合** | **如果在日字段上设置"LW",则表示在本月的最后一个工作日触发（一般指发工资）)** |
 | **`周字段的设置`** | **若使用英文字母是不区分大小写的 ，即 MON 与mon相同**        |
 
 
 
 
 
-> **cron表达式举例**
+> cron表达式举例
 
 ```json
 “0 0 12 * * ?”				每天中午12点触发
@@ -3112,22 +3278,22 @@ class Task implements Runnable{
 
 > **注意点：**
 >
-> **cron表达式中“年”不可以跨年，默认是当前年执行（即：想每2年执行一次做不到），所以一般情况下“年”可以不指定，即：cron表达式只写6位即可。**
+> cron表达式中“年”不可以跨年，默认是当前年执行（即：想每2年执行一次做不到），所以一般情况下“年”可以不指定，即：cron表达式只写6位即可
 
 
 
-## **Redis实现：分布式定时任务**
+## Redis实现：分布式定时任务
 
-**前面的方式都是单机的。**
+前面的方式都是单机的
 
 
 
-### **zset实现**
+### zset实现
 
-> **逻辑**
+> 逻辑
 
-1. **将定时任务存放到 ZSet 集合中，并且将过期时间存储到 ZSet 的 Score 字段中。**
-2. **通过一个无线循环来判断当前时间内是否有需要执行的定时任务，如果有则进行执行。**
+1. 将定时任务存放到 ZSet 集合中，并且将过期时间存储到 ZSet 的 Score 字段中
+2. 通过一个无线循环来判断当前时间内是否有需要执行的定时任务，如果有则进行执行
 
 ```java
 import redis.clients.jedis.Jedis;
@@ -3181,21 +3347,21 @@ public class DelayQueueExample {
 
 
 
-### **键空间实现**
+### 键空间实现
 
-> **逻辑**
+> 逻辑
 
-1. **给所有的定时任务设置一个过期时间。**
+1. 给所有的定时任务设置一个过期时间
 
-2. **等到了过期之后，我们通过订阅过期消息就能感知到定时任务需要被执行了，此时我们执行定时任务即可。**
+2. 等到了过期之后，我们通过订阅过期消息就能感知到定时任务需要被执行了，此时我们执行定时任务即可
 
 
 
 > **注意点：**
 >
-> **默认情况下 Redis 是不开启键空间通知的，需要我们通过 `config set notify-keyspace-events Ex` 的命令手动开启。**
+> 默认情况下 Redis 是不开启键空间通知的，需要我们通过 `config set notify-keyspace-events Ex` 的命令手动开启
 
-**开启之后定时任务的代码如下：**
+开启之后定时任务的代码如下：
 
 ```java
 import redis.clients.jedis.Jedis;
@@ -3233,9 +3399,9 @@ public class TaskExample {
 
 
 
-## **Quartz 任务调度**
+## Quartz 任务调度
 
-**组成结构图如下：需要时自行摸索即可。**
+组成结构图如下：需要时自行摸索即可
 
 **<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175010243-618701512.png" alt="image" style="zoom:67%;" />**
 
@@ -3245,9 +3411,9 @@ public class TaskExample {
 
 
 
-### **简单示例**
+### 简单示例
 
-1. **依赖**
+1. 依赖
 
 ```xml
 <dependency>
@@ -3256,7 +3422,7 @@ public class TaskExample {
 </dependency>
 ```
 
-2. **定义job**
+2. 定义job
 
 ```java
 public class MyJob implements Job {
@@ -3278,7 +3444,7 @@ public class MyJob implements Job {
 }
 ```
 
-3. **编写QuartzConfig**
+3. 编写QuartzConfig
 
 ```java
 public class QuartzConfig {
@@ -3329,11 +3495,13 @@ public class QuartzConfig {
 
 
 
-# **集成支付宝支付**
+# 集成支付宝支付
 
-**官网地址：https://open.alipay.com/api**
+官网地址：https://open.alipay.com/api
 
-**选择自己需要的方式：本文示例选择“手机网站支付”，其他的都是差不多的。**
+
+
+选择自己需要的方式：本文示例选择“手机网站支付”，其他的都是差不多的
 
 **![image-20240305180322826](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305180236240-1765340961.png)**
 
@@ -3341,41 +3509,39 @@ public class QuartzConfig {
 
 
 
-## **申请与其条件**
+## 申请与其条件
 
-**支持的账号类型：[支付宝企业账号](https://opendocs.alipay.com/common/02kkum)、[支付宝个人账号](https://opendocs.alipay.com/common/02kg61)。**
+支持的账号类型：[支付宝企业账号](https://opendocs.alipay.com/common/02kkum)、[支付宝个人账号](https://opendocs.alipay.com/common/02kg61)
 
-**签约申请提交材料要求：**
+签约申请提交材料要求：
 
-- **提供网站地址，网站能正常访问且页面显示完整，网站需要明确经营内容且有完整的商品信息。**
-- **网站必须通过 ICP 备案，且备案主体需与支付宝账号主体一致。若网站备案主体与当前账号主体不同时需上传授权函。**
-- **个人账号申请，需提供营业执照，且支付宝账号名称需与营业执照主体一致。**
+- 提供网站地址，网站能正常访问且页面显示完整，网站需要明确经营内容且有完整的商品信息
+- 网站必须通过 ICP 备案，且备案主体需与支付宝账号主体一致。若网站备案主体与当前账号主体不同时需上传授权函
+- 个人账号申请，需提供营业执照，且支付宝账号名称需与营业执照主体一致
 
 
 
 > **提示**
 >
-> **需按照要求提交材料，若部分材料不合格，收款额度将受到限制（单笔收款 ≤ 2000 元，单日收款 ≤ 20000 元）。若签约时未能提供相关材料（如营业执照），请在合约生效后的 30 天内补全，否则会影响正常收款。**
+> 需按照要求提交材料，若部分材料不合格，收款额度将受到限制（单笔收款 ≤ 2000 元，单日收款 ≤ 20000 元）。若签约时未能提供相关材料（如营业执照），请在合约生效后的 30 天内补全，否则会影响正常收款
 
 
 
 **费率**
 
-| **收费模式** | **费率**      |
-| ------------ | ------------- |
-| **单笔收费** | **0.6%-1.0%** |
+| 收费模式 | 费率          |
+| -------- | ------------- |
+| 单笔收费 | **0.6%-1.0%** |
 
-
-
-**特殊行业费率为 1.0%，非特殊行业费率为 0.6%。特殊行业包含：休闲游戏、网络游戏点卡、游戏渠道代理、游戏系统商、网游周边服务、交易平台、网游运营商（含网页游戏）等。**
-
+特殊行业费率为 1.0%，非特殊行业费率为 0.6%。特殊行业包含：休闲游戏、网络游戏点卡、游戏渠道代理、游戏系统商、网游周边服务、交易平台、网游运营商（含网页游戏）等
 
 
 
 
-## **接入准备**
 
-**官方文档：https://opendocs.alipay.com/open/203/107084?pathHash=a33de091**
+## 接入准备
+
+官方文档：https://opendocs.alipay.com/open/203/107084?pathHash=a33de091
 
 **整体流程：**
 
@@ -3383,7 +3549,7 @@ public class QuartzConfig {
 
 
 
-**为了提供数据传输的安全性，在进行传输的时候需要对数据进行加密：**
+为了提供数据传输的安全性，在进行传输的时候需要对数据进行加密
 
 **常见的加密方式：** 
 
@@ -3413,11 +3579,11 @@ public class QuartzConfig {
 
 
 
-## **手机端网站支付接入流程**
+## 手机端网站支付接入流程
 
-**官方文档：https://opendocs.alipay.com/open/203/105285?pathHash=ada1de5b**
+官方文档：https://opendocs.alipay.com/open/203/105285?pathHash=ada1de5b
 
-**系统交互流程图：**
+系统交互流程图：
 
 **![image-20230709164753985](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305181925562-536306967.png)**
 
@@ -3429,15 +3595,15 @@ public class QuartzConfig {
 
 
 
-## **示例**
+## 示例
 
-**支付宝支付一般都是下面这样，本文做的是简单示例**
+支付宝支付一般都是下面这样，本文做的是简单示例
 
 **![image-20240305201729868](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240305201643283-1953480071.png)**
 
 
 
-1. **依赖**
+1. 依赖
 
 ```xml
 <dependency>
@@ -3446,7 +3612,7 @@ public class QuartzConfig {
 </dependency>
 ```
 
-2. **YAML配置：resources目录下新建 `application-alipay.yml`**
+2. YAML配置：resources目录下新建 `application-alipay.yml`
 
 ```yaml
 com:
@@ -3459,11 +3625,11 @@ com:
     notify_payment_url: http://zixieqing.demo.com/api/order/alipay/callback/notify	# 支付宝调用的我们自己服务接口的地址		也叫异步回调
 ```
 
-> **关于 return_payment_url 和 notify_payment_url：这两个东西都是支付宝支付来调用我们自己的东西，这都需要使用到域名，这样支付宝支付才可以调用到，公司中使用的就是公司的域名，自己要的话要么买个域名，要么就去搞内网穿透之类的。**
+> 关于 return_payment_url 和 notify_payment_url：
+>
+> - 这两个东西都是支付宝支付来调用我们自己的东西，这都需要使用到域名，这样支付宝支付才可以调用到，公司中使用的就是公司的域名，自己要的话要么买个域名，要么就去搞内网穿透之类的
 
-
-
-**提示：记得在在`application-dev.yml`文件中导入2中的配置**
+提示：记得在在`application-dev.yml`文件中导入2中的配置
 
 ```yaml
 spring:
@@ -3471,7 +3637,7 @@ spring:
     import: application-alipay.yml
 ```
 
-3. **读取 `application-alipay.yml`中的配置**
+3. 读取 `application-alipay.yml`中的配置
 
 ```java
 @Data
@@ -3492,7 +3658,7 @@ public class AlipayProperties {
 }
 ```
 
-**记得在启动类上加上 `@EnableConfigurationProperties` 注解**
+记得在启动类上加上 `@EnableConfigurationProperties` 注解
 
 ```java
 @EnableConfigurationProperties(value = { AlipayProperties.class })
@@ -3500,7 +3666,7 @@ public class AlipayProperties {
 
 
 
-4. **配置AlipayClient**
+4. 配置AlipayClient
 
 ```java
 @Configuration
@@ -3529,7 +3695,7 @@ public class AlipayConfiguration {
 
 
 
-5. **下单支付服务**
+5. 下单支付服务
 
 ```java
 /**
@@ -3599,7 +3765,7 @@ public class AlipayServiceImpl implements AlipayService {
 }
 ```
 
-**上述涉及的PaymentInfoService：**
+上述涉及的PaymentInfoService：
 
 ```java
 /**
@@ -3656,9 +3822,11 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 
 
 
-> **要了解Spring Cloud去这里：https://www.cnblogs.com/xiegongzi/p/17858107.html**
+> 要了解Spring Cloud去这里：https://www.cnblogs.com/xiegongzi/p/17858107.html
 
-**PaymentInfo实体类：**
+
+
+PaymentInfo实体类：
 
 ```java
 @Data
@@ -3699,7 +3867,7 @@ public class PaymentInfo extends BaseEntity {	// BaseEntity是基本的id、创�
 
 
 
-6. **在网关中记得配置支付的路由**
+6. 在网关中记得配置支付的路由
 
 ```yaml
 spring:
@@ -3714,7 +3882,7 @@ spring:
 
 
 
-7. **notify_payment_url 异步回调我们自己的服务接口**
+7. notify_payment_url 异步回调我们自己的服务接口
 
 ```java
 @Controller
@@ -3789,32 +3957,40 @@ public class AlipayController {
 
 
 
-# **自定义starter**
+# 自定义starter
 
-**以前在没有使用`starter`时，我们在项目中需要引入新功能，步骤一般是这样的：**
+以前在没有使用`starter`时，我们在项目中需要引入新功能，步骤一般是这样的：
 
-- **在maven仓库找该功能所需jar包**
-- **在maven仓库找该jar所依赖的其他jar包**
-- **配置新功能所需参数**
+- 在maven仓库找该功能所需jar包
+- 在maven仓库找该jar所依赖的其他jar包
+- 配置新功能所需参数
 
-**以上这种方式会带来三个问题：**
 
-1. **如果依赖包较多，找起来很麻烦，容易找错，而且要花很多时间。**
-2. **各依赖包之间可能会存在版本兼容性问题，项目引入这些jar包后，可能没法正常启动。**
-3. **如果有些参数没有配好，启动服务也会报错，没有默认配置。**
 
-**「为了解决这些问题，Spring Boot的`starter`机制应运而生」。**
+以上这种方式会带来三个问题：
 
-**starter机制带来这些好处：**
+1. 如果依赖包较多，找起来很麻烦，容易找错，而且要花很多时间
+2. 各依赖包之间可能会存在版本兼容性问题，项目引入这些jar包后，可能没法正常启动
+3. 如果有些参数没有配好，启动服务也会报错，没有默认配置
 
-1. **它能启动相应的默认配置。**
-2. **它能够管理所需依赖，摆脱了需要到处找依赖 和 兼容性问题的困扰。**
-3. **自动发现机制，将spring.factories文件中配置的类，自动注入到spring容器中。**
-4. **遵循“约定大于配置”的理念。**
 
-**在业务工程中只需引入starter包，就能使用它的功能**
 
-**一张图总结starter的几个要素：**
+「为了解决这些问题，Spring Boot的`starter`机制应运而生」
+
+
+
+starter机制带来这些好处：
+
+1. 它能启动相应的默认配置
+2. 它能够管理所需依赖，摆脱了需要到处找依赖 和 兼容性问题的困扰
+3. 自动发现机制，将spring.factories文件中配置的类，自动注入到spring容器中
+4. 遵循“约定大于配置”的理念
+
+
+
+在业务工程中只需引入starter包，就能使用它的功能
+
+一张图总结starter的几个要素：
 
 **![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312194035411-1918590677.png)**
 
@@ -3822,9 +3998,9 @@ public class AlipayController {
 
 
 
-## **示例**
+## 示例
 
-1. **创建id-generate-starter工程，pom配置如下：**
+1. 创建id-generate-starter工程，pom配置如下：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -3850,21 +4026,23 @@ public class AlipayController {
 
 
 
-2. **创建id-generate-spring-boot-autoconfigure工程**
+2. 创建id-generate-spring-boot-autoconfigure工程
 
 **![image-20240312194500866](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312194408851-1149356482.png)**
 
-**该项目当中包含：**
-
-- **pom.xml**
-- **spring.factories**
-- **IdGenerateAutoConfiguration**
-- **IdGenerateService**
-- **IdProperties**
 
 
+该项目当中包含：
 
-**pom.xml配置如下：**
+- pom.xml
+- spring.factories
+- IdGenerateAutoConfiguration
+- IdGenerateService
+- IdProperties
+
+
+
+pom.xml配置如下：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -3915,13 +4093,17 @@ public class AlipayController {
 </project>
 ```
 
-**spring.factories配置如下：**
+
+
+spring.factories配置如下：
 
 ```java
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.sue.IdGenerateAutoConfiguration
 ```
 
-**IdGenerateAutoConfiguration类：**
+
+
+IdGenerateAutoConfiguration类：
 
 ```java
 @ConditionalOnClass(IdProperties.class)
@@ -3939,7 +4121,9 @@ public class IdGenerateAutoConfiguration {
 }
 ```
 
-**IdGenerateService类：**
+
+
+IdGenerateService类：
 
 ```java
 public class IdGenerateService {
@@ -3956,7 +4140,9 @@ public class IdGenerateService {
 }
 ```
 
-**IdProperties类：**
+
+
+IdProperties类：
 
 ```java
 @ConfigurationProperties(prefix = IdProperties.PREFIX)
@@ -3979,7 +4165,7 @@ public class IdProperties {
 
 
 
-**这样在业务项目中引入自定义starter依赖:**
+这样在业务项目中引入自定义starter依赖：
 
 ```xml
 <dependency>
@@ -3989,7 +4175,9 @@ public class IdProperties {
 </dependency>
 ```
 
-**就能使用注入使用IdGenerateService的功能了**
+
+
+就能使用注入使用IdGenerateService的功能了
 
 ```java
 @Autowired
@@ -4002,53 +4190,59 @@ private IdGenerateService idGenerateService;
 
 > **提示**
 >
-> **SpringBoot 2.7以前是spring.factories，而SpringBoot 2.7 - SpringBoot 3.0是spring.factories 和 META0INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports二者兼容，SpringBoot 3.0以后只能通过 META0INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports**
+> SpringBoot 2.7以前是spring.factories，而SpringBoot 2.7 - SpringBoot 3.0是spring.factories 和 META0INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports二者兼容，SpringBoot 3.0以后只能通过 META0INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
 
 **![image-20240521162013581](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240521162015480-826412483.png)**
 
 
 
-**此时xxx-spring-boot-autoconfigure模块通过如下方式配置即可：**
+此时xxx-spring-boot-autoconfigure模块通过如下方式配置即可：
 
 **![image-20240521162049451](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240521162051344-1215630886.png)**
 
 
 
-**然后在xxx-spring-boot-starter模块的pom.xml中引入上面的xxx-spring-boot-autoconfigure坐标即可**
+然后在xxx-spring-boot-starter模块的pom.xml中引入上面的xxx-spring-boot-autoconfigure坐标即可
 
 
 
 
 
-# **项目启动时的附加功能**
+# 项目启动时的附加功能：CommandLineRunner 与 ApplicationRunner
 
-**有时候我们需要在项目启动时定制化一些附加功能，比如：加载一些系统参数、完成初始化、预热本地缓存等，该怎么办？**
-
-**好消息是`springboot`提供了：**
-
-- **CommandLineRunner 接口**
-- **ApplicationRunner 接口**
-
-**这两个接口帮助我们实现以上需求。**
-
-**在`SpringApplication`类的`callRunners`方法中，能看到这两个接口的具体调用：**
-
-**![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312195434910-209369253.png)**
+有时候我们需要在项目启动时定制化一些附加功能，比如：加载一些系统参数、完成初始化、预热本地缓存等，该怎么办？
 
 
 
-**两个接口有什么区别？**
+好消息是`Spring Boot`提供了：
 
-- **CommandLineRunner接口中run方法的参数为String数组**
-- **ApplicationRunner中run方法的参数为ApplicationArguments，该参数包含了String数组参数 和 一些可选参数。**
+- CommandLineRunner 接口
+- ApplicationRunner 接口
 
 
 
-## **示例**
+这两个接口帮助我们实现以上需求
 
-**以`ApplicationRunner`接口为例：**
 
-> **实现`ApplicationRunner`接口，重写`run`方法，在该方法中实现自己定制化需求。**
+
+在`SpringApplication`类的`callRunners`方法中，能看到这两个接口的具体调用：
+
+**![image-20240527133951798](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527133954098-1925053592.png)**
+
+
+
+两个接口有什么区别？
+
+- CommandLineRunner接口中run方法的参数为String数组
+- ApplicationRunner中run方法的参数为ApplicationArguments，该参数包含了String数组参数 和 一些可选参数
+
+
+
+## 示例：ApplicationRunner
+
+以`ApplicationRunner`接口为例：
+
+> 实现`ApplicationRunner`接口，重写`run`方法，在该方法中实现自己定制化需求
 
 ```java
 @Component
@@ -4066,31 +4260,798 @@ public class TestRunner implements ApplicationRunner {
 
 
 
-> **问题：如果项目中有多个类实现了`ApplicationRunner`接口，它们的执行顺序要怎么指定？**
+> 问题：如果项目中有多个类实现了`ApplicationRunner`接口，它们的执行顺序要怎么指定？
 
-**答案是使用`@Order(n)`注解，n的值越小越先执行。当然也可以通过`@Priority`注解指定顺序。**
-
-**Spring Boot项目启动时主要流程是这样的：**
-
-**![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240312195347904-1545874409.png)**
+答案是使用`@Order(n)`注解，n的值越小越先执行。当然也可以通过`@Priority`注解指定顺序
 
 
 
+Spring Boot项目启动时主要流程是这样的：
 
+**![image-20240527205039714](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527205042705-1650878497.png)**
 
 
 
 
 
-# **附加：Spring 事务失效场景**
+# ApplicationContextInitializer
 
-**这个玩意儿是Spring的，想了想在这里也放一章节吧。**
+> ApplicationContextInitializer：通俗理解，IOC容器对象创建完成后执行，可以对上下文环境做一些操作，通常用于需要对应用程序上下文进行编程初始化的web应用程序中，例如根据上下文环境注册属性源、激活概要文件等
+>
+> 
+>
+> 实质理解：这个类的主要目的就是在ConfigurableApplicationContext类型（或者子类型）的ApplicationContext做refresh之前，允许我们对ConfigurableApplicationContext的实例做进一步的设置或者处理
 
-**需要同时写入多张表的数据。为了保证操作的原子性（要么同时成功，要么同时失败），避免数据不一致的情况，我们一般都会用到Spring事务（也会选择其他事务框架）。**
+实现思路：
 
-**spring事务用起来贼爽，就用一个简单的注解：`@Transactional`，就能轻松搞定事务。而且一直用一直爽。**
+1. 自定义类，实现ApplicationContextInitializer接口，重写 initialize 方法
+2. 在resources/META-INF/spring.factories配置文件中配置自定义的类
 
-**但如果使用不当，它也会坑人于无形。**
+
+
+自定义类：实现ApplicationContextInitializer接口，重写 initialize 方法
+
+```java
+package com.zixq.context;
+
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+
+import java.util.HashMap;
+
+/**
+ * <p>
+ *  IOC容器对象创建完成后执行，对上下文环境做一些操作, 例如运行环境属性注册等
+ *      自定义类，实现ApplicationContextInitializer接口，重写 initialize 方法
+ *      在resources/META-INF/spring.factories配置文件中配置自定义的类
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+public class AppContext implements ApplicationContextInitializer {
+    @Override
+    public void initialize(ConfigurableApplicationContext context) {
+        // 要添加的环境属性
+        HashMap<String, Object> envProperties = new HashMap<>();
+        envProperties.put("JAVA8", "D:\\Install\\JDK\\JDK8");
+
+        // 获取环境变量
+        ConfigurableEnvironment environment = context.getEnvironment();
+
+        // 将环境属性注入context上下文
+        // addLast 加在最后、addFirst、addBefore、addAfter..........，有多个环境属性，所以可以根据情况设置顺序
+        environment.getPropertySources().addLast(new MapPropertySource("JAVA_HOME", envProperties));
+    }
+}
+```
+
+
+
+`resources/META-INF/spring.factories`
+
+```properties
+# 类全限定名=自定义类的全限定名 ctrl + alt + 空格 可以进行补全
+#
+# 这个spring.factories文件不要也是可以的，  下面的key-value也可以直接放在 application.properties 中，
+#       这种方式是通过DelegatingApplicationContextInitializer这个初始化类中的initialize方法获取到application.properties中
+#       context.initializer.classes对应的类并执行对应的initialize方法
+#
+# spring.factories 这个加载过程是在SpringApplication中的getSpringFactoriesInstances()方法中直接加载并实例后执行对应的initialize方法
+org.springframework.context.ApplicationContextInitializer=com.zixq.context.AppContext
+```
+
+
+
+除了 spring.factories 和 application.propeties 外，还有一种方式：
+
+```java
+@SpringBootApplication
+public class ConfigServer {
+    public static void main(String[] args) {
+        SpringApplication springApplication = new SpringApplication(ConfigServer.class);
+
+        // 添加自定义的 ApplicationContextInitializer 实现类的实例(注册ApplicationContextInitializer)
+        SpringApplication.addInitializers(new AppContext());
+
+        ConfigurableApplicationContext context = springApplication.run(args);
+
+        context.close();
+    }
+}
+```
+
+
+
+验证：
+
+```java
+package com.zixq;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+
+@SpringBootApplication
+public class ApplicationContextInitializerApp {
+
+    public static void main(String[] args) {
+        ConfigurableApplicationContext context = SpringApplication.run(ApplicationContextInitializerApp.class, args);
+
+        // 验证添加的环境属性是否成功
+        String envProperties = context.getEnvironment().getProperty("JAVA_HOME");
+        System.out.println("envProperties = " + envProperties);     // 结果 envProperties = D:\Install\JDK\JDK8
+    }
+
+}
+```
+
+
+
+
+
+
+
+## ApplicationContextInitializer执行顺序
+
+Spring Boot中自带的DelegatingApplicationContextInitializer类的排序值为0，是Spring Boot自带的ApplicationContextInitializer中排序最小，最先执行的类。(如果ApplicationContextInitializer没有实现Orderd接口，那么其排序值默认是最大，最后执行)
+
+所以可以得到其执行顺序如下：
+
+1. 如果我们通过DelegatingApplicationContextInitializer委托来执行我们自定义的ApplicationContextInitializer，那么我们自定义的ApplicationContextInitializer的顺序一定是在系统自带的其他ApplicationContextInitializer之前执行
+
+2. 如果我们通过SpringApplication实例对象调用addInitializers方法加入自定义的ApplicationContextInitializer，那么Spring Boot自带的ApplicationContextInitializer会先按顺序执行，再执行我们手动添加的自定义ApplicationContextInitializer(按照添加顺序执行)，最后执行Spring Boot自带的其他ApplicationContextInializer
+
+3. 如果我们创建自己的spring.factories文件，添加配置加入我们自定义的ApplicationContextInitializer，那么我们自定义的ApplicationContextInitializer会和Spring Boot自带的ApplicationContextInitializer放在一起进行排序执行
+
+
+
+
+
+# ApplicationListener
+
+> 监听容器发布的事件，允许程序员执行自己的代码，完成事件驱动开发，它可以监听容器初始化完成（ApplicationReadyEvent）、初始化失败（ApplicationFailedEvent）等事件
+>
+> 通常情况下可以用于监听器加载资源、开启定时任务、获取Spring容器对象等
+
+实现思路：
+
+1. 自定义类，实现ApplicationListener接口，重写 onApplicationEvent 方法
+2. 在resources/META-INF/spring.factories配置文件中配置自定义的类
+
+
+
+自定义类：实现ApplicationListener接口，重写 onApplicationEvent 方法
+
+```java
+package com.zixq.listener;
+
+import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.web.servlet.DispatcherServlet;
+
+/**
+ * <p>
+ * 监听容器发布的事件，允许程序员执行自己的代码，完成事件驱动开发，
+ *      它可以监听容器初始化完成（ApplicationReadyEvent）、初始化失败（ApplicationFailedEvent）等事件
+ * 通常情况下可以用于监听器加载资源、开启定时任务等
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+public class CustomAppListener implements ApplicationListener {
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        // IOC容器初始化完成后
+        if (event instanceof ApplicationReadyEvent) {
+            log.info("{}：初始化完成", this.getClass().getSimpleName());
+        }
+        // IOC容器初始化失败后
+        if (event instanceof ApplicationFailedEvent) {
+            log.info("{}：初始化完", this.getClass().getSimpleName());
+        }
+    }
+}
+
+
+
+/**
+ * 还可以获取Spring IOC容器中的Bean对象，添加相应泛型即可（ContextRefreshedEvent）
+ *      这种方式获取Bean是建议的，但是利用这种方式注册Bean不建议
+ *      
+ * ContextRefreshedEvent 是一个事件，它会在 Spring容器初始化完成 之后被触发，所以监听器就会在 spring容器初始化完成之后开始监听，就是所谓的全局监听
+ */
+@Log4j2
+class GetIocBean implements ApplicationListener<ContextRefreshedEvent> {
+
+    /**
+     * 此处为获取Spring 容器对象
+     * 也可以在这里面实现定时任务    如 new Thread(new TimerRunner()).start();    TimerRunner为自定义定时任务
+     * @param event 要监听的事件
+     */
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        DispatcherServlet DispatcherServlet = (DispatcherServlet) event.getApplicationContext().getBean("dispatcherServlet");
+        log.info("{}：初始化完成", DispatcherServlet.getClass().getSimpleName());
+    }
+}
+```
+
+
+
+`resources/META-INF/spring.factories`
+
+```properties
+org.springframework.context.ApplicationListener=com.zixq.listener.CustomAppListener,com.zixq.listener.GetIocBean
+```
+
+
+
+验证结果：
+
+```json
+[           main] com.zixq.listener.GetIocBean             : DispatcherServlet：初始化完成
+[           main] com.zixq.ApplicationListenerApp          : Started ApplicationListenerApp in 1.314 seconds (process running for 1.752)
+[           main] com.zixq.listener.CustomAppListener      : CustomAppListener：初始化完成
+```
+
+
+
+
+
+> 那Spring还有哪些内置事件？
+
+| 事件                  | 说明                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| ContextRefreshedEvent | ApplicationContext 被初始化或刷新时，该事件被发布。这也可以在 ConfigurableApplicationContext接口中使用 refresh() 方法来发生。此处的初始化是指：所有的Bean被成功装载，后处理Bean被检测并激活，所有Singleton Bean 被预实例化，ApplicationContext容器已就绪可用 |
+| ContextStartedEvent   | 当使用 ConfigurableApplicationContext （ApplicationContext子接口）接口中的 start() 方法启动 ApplicationContext 时，该事件被发布。你可以调查你的数据库，或者你可以在接受到这个事件后重启任何停止的应用程序 |
+| ContextStoppedEvent   | 当使用 ConfigurableApplicationContext 接口中的 stop() 停止 ApplicationContext 时，发布这个事件。你可以在接受到这个事件后做必要的清理的工作 |
+| ContextClosedEvent    | 当使用 ConfigurableApplicationContext 接口中的 close() 方法关闭 ApplicationContext 时，该事件被发布。一个已关闭的上下文到达生命周期末端；它不能被刷新或重启 |
+| RequestHandledEvent   | 这是一个 web-specific 事件，告诉所有 bean HTTP 请求已经被服务。只能应用于使用DispatcherServlet的Web应用。在使用Spring作为前端的MVC控制器时，当Spring处理用户请求结束后，系统会自动触发该事件 |
+
+
+
+
+
+## 监听自定义事件
+
+实现思路：
+
+1. 自定义事件 extends ApplicationEvent
+2. 监听器 implements ApplicationListener
+3. 触发事件
+
+
+
+自定义事件 `extends ApplicationEvent`
+
+```java
+package com.zixq.event;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.context.ApplicationEvent;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * <p>
+ * 自定义事件 extends ApplicationEvent
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+
+@Getter
+@Setter
+public class MyEvent extends ApplicationEvent {
+
+    private String time = new SimpleDateFormat("hh:mm:ss").format(new Date());
+    private String msg;
+
+    public MyEvent(Object source, String msg) {
+        super(source);
+        this.msg = msg;
+    }
+
+    public MyEvent(Object source) {
+        super(source);
+    }
+}
+```
+
+监听器 `implements ApplicationListener`
+
+```java
+package com.zixq.listener;
+
+import com.zixq.event.MyEvent;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.web.servlet.DispatcherServlet;
+
+/**
+ * <p>
+ * 监听容器发布的事件，允许程序员执行自己的代码，完成事件驱动开发，
+ *      它可以监听容器初始化完成（ApplicationReadyEvent）、初始化失败（ApplicationFailedEvent）等事件
+ * 通常情况下可以用于监听器加载资源、开启定时任务等
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+public class CustomAppListener implements ApplicationListener {
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+       // ...........................
+
+        // 监听自定义事件
+        if (event instanceof MyEvent) {
+            MyEvent myEvent = (MyEvent) event;
+            log.info("监听到了：{} 事件。时间：{}，信息：{}",
+                    myEvent, myEvent.getTime(), myEvent.getMsg());
+        }
+    }
+}
+```
+
+触发事件
+
+```java
+package com.zixq;
+
+import com.zixq.event.MyEvent;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+
+@SpringBootApplication
+public class ApplicationListenerApp {
+    public static void main(String[] args) {
+        ConfigurableApplicationContext context = SpringApplication.run(ApplicationListenerApp.class, args);
+        MyEvent myEvent = new MyEvent("customEvent", "道，不可道也，恒道也，顺其自然，无为即为");
+        // 发布事件
+        context.publishEvent(myEvent);
+    }
+}
+```
+
+还有一种触发事件的方式
+
+```java
+@SpringBootApplication
+public class TaskApplication implements CommandLineRunner {
+    
+    public static void main(String[] args) {
+        SpringApplication.run(TaskApplication.class, args);
+    }
+
+    @Resource
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void run(String... args) throws Exception {
+        
+        MyEvent myEvent = new MyEvent("customEvent", "道，不可道也，恒道也，顺其自然，无为即为");
+        // 发布事件
+        applicationContext.publishEvent(event);
+    }
+}
+```
+
+结果
+
+```json
+监听到了：com.zixq.event.MyEvent[source=customEvent] 事件。时间：05:19:14，信息：道，不可道也，恒道也，顺其自然，无为即为
+```
+
+
+
+
+
+
+
+## @EventListener 注解：事件监听
+
+自定义事件、事件触发都是一样的，只是将监听器写法改一下就可以了
+
+```java
+@Log4j2
+public class MyTask {
+    @EventListener
+    public void MyEventListener(MyEvent event) {
+        MyEvent myEvent = (MyEvent) event;
+        log.info("监听到了：{} 事件。事件：{}，信息：{}",
+                myEvent, myEvent.getTime(), myEvent.getMsg());
+    }
+
+    @EventListener
+    public void ContextRefreshedEventListener(MyEvent event) {
+        log.info("监听到 ContextRefreshedEvent...");
+    }
+}
+```
+
+
+
+# BeanFactory
+
+> Bean容器的顶层接口，提供Bean对象的创建、配置、依赖注入等功能
+
+BeanFactory提供的一些API
+
+![image-20240527142333964](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527142334785-1935781102.png)
+
+
+
+
+
+常见实现类：
+
+- DefaultListableBeanFactory  + DefaultSingletonBeanRegistry
+- AnnotationConfigServletWebApplicationContext
+
+![image-20240527142231996](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527142235142-479260484.png)
+
+
+
+![image-20240527142247924](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527142248131-1644849926.png)
+
+
+
+
+
+
+
+# BeanDefinition
+
+> BeanDefinition，即Bean定义：指的是用于描述Bean，包括Bean的名称，Bean的属性，Bean的行为，实现的接口，添加的注解等等
+>
+> Spring中，Bean在创建之前，都需要封装成对应的BeanDefinition，然后根据BeanDefinition进一步创建Bean对象
+
+BeanDefinition接口提供的一些方法
+
+![image-20240527182358154](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527182358899-1716764031.png)
+
+
+
+继承关系
+
+![image-20240527182502142](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527182502726-1383038147.png)
+
+
+
+
+
+
+
+# Bean工厂后置处理器：BeanFactoryPostProcessor
+
+> Bean工厂后置处理器，当BeanFactory准备好了后【Bean初始化之前】，会调用该接口的postProcessBeanFactory方法，**经常用于新增BeanDefinition**
+
+使用：
+
+![image-20240527183444538](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527183446368-1739798542.png)
+
+
+
+常见实现类：
+
+| 实现类名                                  | 作用                                            |
+| ----------------------------------------- | ----------------------------------------------- |
+| ConfigurationClassPostProcessor           | 扫描启动类所在包下的注解                        |
+| ServltComponentRegisteringPostProcessor   | 扫描`@WebServlet`、`@WebFilter`、`@WebListener` |
+| CachingMetadataReaderFactoryPostProcessor | 配置ConfigurationClassPostProcessor             |
+| ConfigurationWarningsPostProcessor        | 配置警告提示                                    |
+
+
+
+
+
+# 感知接口：Aware
+
+> 感知接口，Spring提供的一种机制，通过实现该接口，重写方法，可以感知Spring应用程序执行过程中的一些变化。Spring会判断当前的Bean有没有实现Aware接口，如果实现了，会在特定的时机回调接口对应的方法
+
+常见子接口：
+
+| **子接口名**         | **作用**               |
+| -------------------- | ---------------------- |
+| BeanNameAware        | Bean名称的感知接口     |
+| BeanClassLoaderAware | Bean类加载器的感知接口 |
+| BeanFactoryAware     | Bean工厂的感知接口     |
+
+使用：
+
+![image-20240527183921981](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527183922839-1209354550.png)
+
+
+
+
+
+
+
+# 对象初始化 和 对象销毁：InitializingBean/DisposableBean
+
+> InitializingBean：初始化接口，当Bean被实例化好后，会回调里面的函数，经常用于做一些加载资源的工作销毁接口
+>
+> DisposableBean：对象销毁接口，当Bean被销毁之前，会回调里面的函数，经常用于做一些释放资源的工作
+>
+> 注意：
+>
+> - `@PostConstruct`注解的方式初始化对象会先于实现InitializingBean
+> - `@PreDestroy`注解的方式销毁对象会先于实现DisposableBean
+
+![image-20240527193527306](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527193529513-932014819.png)
+
+
+
+
+
+
+
+# Bean后置处理器：BeanPostProcessor
+
+> Bean的后置处理器，当Bean对象初始化之前以及初始化之后，会回调该接口对应的方法
+>
+> - postProcessBeforeInitialization:  Bean对象初始化之前调用
+>
+> - postProcessAfterInitialization:  Bean对象初始化之后调用
+
+```java
+/** 
+ * 需要时实现该接口（记得加@Component），重写下列两个方法即可
+ */
+public interface BeanPostProcessor {
+    /** 
+     * Bean初始化之前会调用
+     * @params bean 实例化的bean
+     * @params beanName 实例化的bean名字
+     */
+    @Nullable
+    default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+
+    
+    /** 
+     * Bean初始化之后会调用
+     */
+    @Nullable
+    default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+}
+```
+
+常见实现类：
+
+| **实现类名**                         | **作用**                        |
+| ------------------------------------ | ------------------------------- |
+| AutowiredAnnotationBeanPostProcessor | 用来完成依赖注入                |
+| AbstractAutoProxyCreator             | 用来完成代理对象的创建          |
+| AbstractAdvisingBeanPostProcessor    | 将Aop中的通知作用于特定的Bean上 |
+
+
+
+# Spring Boot启动流程
+
+大纲流程：
+
+1. `new SpringApplication()`
+
+- 确认web应用的类型
+- 加载ApplicationContextInitializer
+- 加载ApplicationListener
+- 记录主启动类（用于主启动类包扫描）
+
+2. `run()`
+
+- 准备环境对象Environment，用于加载系统属性等等
+- 打印Banner
+- 实例化容器Context
+- 准备容器，为容器设置Environment、BeanFactoryPostProcessor，并加载主类对应的BeanDefinition
+- 刷新容器（创建Bean实例）
+- 返回容器
+
+
+
+源码跟踪：
+
+![image-20240527201932713](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240527201938536-2133528074.png)
+
+
+
+文字总结：总分总描述
+
+总：SpringBoot启动，其本质就是加载各种配置信息，然后初始化IOC容器并返回
+
+分：在其启动的过程中会做这么几个事情
+
+1. 首先，当我们在启动类执行SpringApplication.run这行代码的时候，在它的方法内部其实会做两个事情
+
+1）、创建SpringApplication对象；
+
+2）、执行run方法
+
+```java
+public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+    return (new SpringApplication(primarySources)).run(args);
+}
+```
+
+
+
+2. 其次，在创建SpringApplication对象的时候，在它的构造方法内部主要做3个事情。
+
+1）、确认web应用类型，一般情况下是Servlet类型，这种类型的应用，将来会自动启动一个tomcat
+
+2）、从spring.factories配置文件中，加载默认的ApplicationContextInitializer和ApplicationListener
+
+3）、记录当前应用的主启动类，将来做包扫描使用
+
+```java
+public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+
+    // ..............................
+    
+    // 确认web应用类型
+    this.webApplicationType = WebApplicationType.deduceFromClasspath();
+
+    // ..................
+    
+    // 从spring.factories配置文件中，加载默认的ApplicationContextInitializer和ApplicationListener
+    this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class));
+    this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class));
+    
+    // 记录当前应用的主启动类，将来做包扫描使用
+    this.mainApplicationClass = this.deduceMainApplicationClass();
+}
+```
+
+
+
+3. 最后，对象创建好了以后，再调用该对象的run方法，在run方法的内部主要做4个事情
+
+1）、准备Environment对象，它里面会封装一些当前应用运行环境的参数，比如环境变量等等
+
+2）、实例化容器，这里仅仅是创建ApplicationContext对象
+
+3）、容器创建好了以后，会为容器做一些准备工作，比如为容器设置Environment、BeanFactoryPostProcessor后置处理器，并且加载主类对应的Definition
+
+4）、刷新容器，就是我们常说的referesh，在这里会真正的创建Bean实例
+
+```java
+public ConfigurableApplicationContext run(String... args) {
+
+    // .........................
+
+    try {
+        ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+        // 准备Environment对象，它里面会封装一些当前应用运行环境的参数，比如环境变量等等
+        ConfigurableEnvironment environment = this.prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+        Banner printedBanner = this.printBanner(environment);
+        // 实例化容器，这里仅仅是创建ApplicationContext对象
+        context = this.createApplicationContext();
+        context.setApplicationStartup(this.applicationStartup);
+        // 容器创建好之后，进行准备工作 
+        // 为容器设置Environment、BeanFactoryPostProcessor后置处理器，并且加载主类对应的Definition
+        this.prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+        // 刷新容器，就是常说的referesh，在这里会真正的创建Bean实例
+        this.refreshContext(context);
+        this.afterRefresh(context, applicationArguments);
+        startup.started();
+        
+        // ............................
+    } catch (Throwable var10) {
+        throw this.handleRunFailure(context, var10, listeners);
+    }
+
+    try {
+        if (context.isRunning()) {
+            listeners.ready(context, startup.ready());
+        }
+
+        // 返回容器
+        return context;
+    } catch (Throwable var9) {
+        throw this.handleRunFailure(context, var9, (SpringApplicationRunListeners)null);
+    }
+}
+```
+
+
+
+总：总结一下，其实SpringBoot启动的时候核心就两步，创建SpringApplication对象以及run方法的调用，在run方法中会真正的实例化容器，并创建容器中需要的Bean实例，最终返回
+
+
+
+
+
+
+
+
+
+# IOC容器初始化流程
+
+大纲流程：核心在 `AbstractApplicationContext.refresh()` 中
+
+1. 准备BeanFactory（DefaultListableBeanFactory）
+
+- 设置ClassLoader
+- 设置Environment
+
+2. 扫描要放入容器中的Bean，得到对应的BeaDefinition(只扫描，并不创建)
+
+3. 注册BeanPostProcessor
+
+4. 处理国际化
+
+5. 初始化事件多播器ApplicationEventMulticaster
+
+6. 启动tomcat
+
+7. 绑定事件监听器和事件多播器
+
+8. 实例化非懒加载的单例Bean
+
+9. 扫尾工作，比如清空实例化时占用的缓存等
+
+
+
+源码跟踪：
+
+![IOC初始化流程](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240528010148233-1070652143.png)
+
+
+
+
+
+文字描述：总分总
+
+总: IOC容器的初始化，核心工作是在AbstractApplicationContext.refresh方法中完成的
+
+分：在refresh方法中主要做了这么几件事
+
+1）、准备BeanFactory，在这一块需要给BeanFacory设置很多属性，比如类加载器、Environment等
+
+2）、执行BeanFactory后置处理器，这一阶段会扫描要放入到容器中的Bean信息，得到对应的BeanDefinition（注意，这里只扫描，不创建）
+
+3）、是注册BeanPostProcesor，我们自定义的BeanPostProcessor就是在这一个阶段被加载的, 将来Bean对象实例化好后需要用到
+
+4）、启动tomcat
+
+5）、实例化容器中实例化非懒加载的单例Bean, 这里需要说的是，多例Bean和懒加载的Bean不会在这个阶段实例化，将来用到的时候再创建
+
+6）、当容器初始化完毕后，再做一些扫尾工作，比如清除缓存等
+
+
+
+总：总结一下，在IOC容器初始化的的过程中，首先得准备并执行BeanFactory后置处理器，其次得注册Bean后置处理器,并启动tomcat，最后需要借助于BeanFactory完成Bean的实例化
+
+
+
+
+
+# 附加：Spring 事务失效场景
+
+这个玩意儿是Spring的，想了想在这里也放一章节吧
+
+需要同时写入多张表的数据。为了保证操作的原子性（要么同时成功，要么同时失败），避免数据不一致的情况，我们一般都会用到Spring事务（也会选择其他事务框架）
+
+spring事务用起来贼爽，就用一个简单的注解：`@Transactional`，就能轻松搞定事务。而且一直用一直爽
+
+但如果使用不当，它也会坑人于无形
 
 **![img](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302220705922-1362921420.jpg)**
 
@@ -4098,13 +5059,13 @@ public class TestRunner implements ApplicationRunner {
 
 
 
-## **事务不生效**
+## 事务不生效
 
-### **访问权限问题**
+### 访问权限问题
 
-**Java的访问权限主要有四种：private、default、protected、public，它们的权限从左到右，依次变大。**
+Java的访问权限主要有四种：`private、default、protected、public`，它们的权限从左到右，依次变大
 
-**在开发过程中，把某些事务方法，定义了错误的访问权限，就会导致事务功能出问题。**
+在开发过程中，把某些事务方法，定义了错误的访问权限，就会导致事务功能出问题
 
 ```java
 @Service
@@ -4118,9 +5079,9 @@ public class UserService {
 }
 ```
 
-**上述代码就会导致事务失效，因为Spring要求被代理方法必须是`public`的。**
+上述代码就会导致事务失效，因为Spring要求被代理方法必须是`public`的
 
-**在 `AbstractFallbackTransactionAttributeSource` 类的 `computeTransactionAttribute` 方法中有个判断，如果目标方法不是public，则`TransactionAttribute`返回null，即不支持事务。**
+在 `AbstractFallbackTransactionAttributeSource` 类的 `computeTransactionAttribute` 方法中有个判断，如果目标方法不是public，则`TransactionAttribute`返回null，即不支持事务
 
 ```java
 protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
@@ -4165,9 +5126,9 @@ protected TransactionAttribute computeTransactionAttribute(Method method, @Nulla
 
 
 
-### **方法用final修饰**
+### 方法用final修饰
 
-**有时候，某个方法不想被子类重新，这时可以将该方法定义成final的。普通方法这样定义是没问题的，但如果将事务方法定义成final就会导致事务失效。**
+有时候，某个方法不想被子类重新，这时可以将该方法定义成final的。普通方法这样定义是没问题的，但如果将事务方法定义成final就会导致事务失效
 
 ```java
 @Service
@@ -4181,19 +5142,19 @@ public class UserService {
 }
 ```
 
-**因为Spring事务底层使用了AOP帮我们生成代理类，在代理类中实现的事务功能。如果某个方法用final修饰了，那么在它的代理类中，就无法重写该方法，而添加事务功能。**
+因为Spring事务底层使用了AOP帮我们生成代理类，在代理类中实现的事务功能。如果某个方法用final修饰了，那么在它的代理类中，就无法重写该方法，而添加事务功能
 
 > **重要提示**
 >
-> **如果某个方法是static的，同样无法通过动态代理，变成事务方法。**
+> 如果某个方法是static的，同样无法通过动态代理，变成事务方法
 
 
 
 
 
-### **方法内部调用**
+### 方法内部调用
 
-**有时需要在某个Service类的某个事务方法中调用另外一个事务方法。**
+有时需要在某个Service类的某个事务方法中调用另外一个事务方法
 
 ```java
 @Service
@@ -4215,11 +5176,13 @@ public class UserService {
 }
 ```
 
-**上述代码就会导致事务失效，因为updateStatus方法拥有事务的能力是Spring AOP生成代理对象，但是updateStatus这种方法直接调用了this对象的方法，所以updateStatus方法不会生成事务。**
+上述代码就会导致事务失效，因为updateStatus方法拥有事务的能力是Spring AOP生成代理对象，但是updateStatus这种方法直接调用了this对象的方法，所以updateStatus方法不会生成事务
 
-**如果有些场景，确实想在同一个类的某个方法中，调用它自己的另外一个方法，该怎么办？**
 
-1. **第一种方式：新加一个Service方法。把`@Transactional`注解加到新Service方法上，把需要事务执行的代码移到新方法中。**
+
+如果有些场景，确实想在同一个类的某个方法中，调用它自己的另外一个方法，该怎么办？
+
+1. **第一种方式**：新加一个Service方法。把`@Transactional`注解加到新Service方法上，把需要事务执行的代码移到新方法中
 
 ```java
 @Servcie
@@ -4248,7 +5211,7 @@ public class ServiceA {
  }
 ```
 
-2. **第二种方式：在该Service类中注入自己。如果不想再新加一个Service类，在该Service类中注入自己也是一种选择。**
+2. **第二种方式**：在该Service类中注入自己。如果不想再新加一个Service类，在该Service类中注入自己也是一种选择
 
 ```java
 @Servcie
@@ -4270,15 +5233,15 @@ public class ServiceA {
  }
 ```
 
-**第二种做法会不会出现循环依赖问题？**
+第二种做法会不会出现循环依赖问题？
 
-**不会。Spring IOC内部的三级缓存保证了它，不会出现循环依赖问题。但有些坑，解放方式去参考：[Spring：如何解决循环依赖](https://mp.weixin.qq.com/s?__biz=MzkwNjMwMTgzMQ==&mid=2247490271&idx=1&sn=e4476b631c48882392bd4cd06d579ae9&source=41#wechat_redirect)**
+不会。Spring IOC内部的三级缓存保证了它，不会出现循环依赖问题。但有些坑，解放方式去参考：[Spring：如何解决循环依赖](https://mp.weixin.qq.com/s?__biz=MzkwNjMwMTgzMQ==&mid=2247490271&idx=1&sn=e4476b631c48882392bd4cd06d579ae9&source=41#wechat_redirect)
 
 
 
-> **循环依赖：就是一个或多个对象实例之间存在直接或间接的依赖关系，这种依赖关系构成了构成一个环形调用。**
+> 循环依赖：就是一个或多个对象实例之间存在直接或间接的依赖关系，这种依赖关系构成了构成一个环形调用
 
-**第一种情况：自己依赖自己的直接依赖。**
+**第一种情况：自己依赖自己的直接依赖**
 
 **![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223551265-333574175.png)**
 
@@ -4286,23 +5249,23 @@ public class ServiceA {
 
 
 
-**第二种情况：两个对象之间的直接依赖。**
+**第二种情况：两个对象之间的直接依赖**
 
 **![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223620257-597068237.png)**
 
 
 
-**第三种情况：多个对象之间的间接依赖。**
+**第三种情况：多个对象之间的间接依赖**
 
 **![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223639782-1608783316.png)**
 
 
 
-**前面两种情况的直接循环依赖比较直观，非常好识别，但是第三种间接循环依赖的情况有时候因为业务代码调用层级很深，不容易识别出来。**
+前面两种情况的直接循环依赖比较直观，非常好识别，但是第三种间接循环依赖的情况有时候因为业务代码调用层级很深，不容易识别出来。
 
 
 
-> **循环依赖的N种场景**
+> 循环依赖的N种场景
 
 **![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223739347-1215406426.png)**
 
@@ -4310,9 +5273,9 @@ public class ServiceA {
 
 
 
-3. **第三种方式：通过AopContent类。在该Service类中使用`AopContext.currentProxy()`获取代理对象。**
+3. **第三种方式**：通过AopContent类。在该Service类中使用AopContext.currentProxy()获取代理对象
 
-**上面第二种方式确实可以解决问题，但是代码看起来并不直观，还可以通过在该Service类中使用AOPProxy获取代理对象，实现相同的功能。**
+上面第二种方式确实可以解决问题，但是代码看起来并不直观，还可以通过在该Service类中使用AOPProxy获取代理对象，实现相同的功能
 
 ```java
 @Servcie
@@ -4336,21 +5299,21 @@ public class ServiceA {
 
 
 
-### **未被Spring托管**
+### 未被Spring托管
 
-**使用Spring事务的前提是：对象要被Spring管理，需要创建bean实例。**
+使用Spring事务的前提是：对象要被Spring管理，需要创建bean实例。
 
-**通常情况下，我们通过`@Controller`、`@Service`、`@Component`、`@Repository`等注解，可以自动实现bean实例化和依赖注入的功能。**
+通常情况下，我们通过`@Controller`、`@Service`、`@Component`、`@Repository`等注解，可以自动实现bean实例化和依赖注入的功能
 
-**但要是噼里啪啦敲完Service类，忘了加 `@Service` 注解呢？**
+但要是噼里啪啦敲完Service类，忘了加 `@Service` 注解呢？
 
-**那么该类不会交给Spring管理，它的方法也不会生成事务。**
-
-
+那么该类不会交给Spring管理，它的方法也不会生成事务
 
 
 
-### **多线程调用**
+
+
+### 多线程调用
 
 ```java
 @Service
@@ -4385,46 +5348,46 @@ public class RoleService {
 }
 ```
 
-**上述代码事务方法add中是另外一个线程调用的事务方法doOtherThing。**
+上述代码事务方法add中是另外一个线程调用的事务方法doOtherThing
 
-**这样会导致两个方法不在同一个线程中，获取到的数据库连接不一样，从而是两个不同的事务。如果想doOtherThing方法中抛了异常，add方法也回滚是不可能的。**
+这样会导致两个方法不在同一个线程中，获取到的数据库连接不一样，从而是两个不同的事务。如果想doOtherThing方法中抛了异常，add方法也回滚是不可能的
 
-**Spring事务其实是通过数据库连接来实现的。当前线程中保存了一个map，key是数据源，value是数据库连接。**
+Spring事务其实是通过数据库连接来实现的。当前线程中保存了一个map，key是数据源，value是数据库连接
 
 ```java
 private static final ThreadLocal<Map<Object, Object>> resources = 
     new NamedThreadLocal<>("Transactional resources");
 ```
 
-**我们说的同一个事务，其实是指同一个数据库连接，只有拥有同一个数据库连接才能同时提交和回滚。如果在不同的线程，拿到的数据库连接肯定是不一样的，所以是不同的事务。**
+我们说的同一个事务，其实是指同一个数据库连接，只有拥有同一个数据库连接才能同时提交和回滚。如果在不同的线程，拿到的数据库连接肯定是不一样的，所以是不同的事务
 
 
 
 
 
-### **表不支持事务**
+### 表不支持事务
 
-**MySQL 5之前，默认的数据库引擎是`myisam`。好处是：索引文件和数据文件是分开存储的，对于查多写少的单表操作，性能比innodb更好。**
+MySQL 5之前，默认的数据库引擎是`myisam`。好处是：索引文件和数据文件是分开存储的，对于查多写少的单表操作，性能比innodb更好
 
-**但有个很致命的问题是：`不支持事务`。如果需要跨多张表操作，由于其不支持事务，数据极有可能会出现不完整的情况。**
+但有个很致命的问题是：`不支持事务`。如果需要跨多张表操作，由于其不支持事务，数据极有可能会出现不完整的情况
 
 > **提示**
 >
-> **有时候我们在开发的过程中，发现某张表的事务一直都没有生效，那不一定是spring事务的锅，最好确认一下你使用的那张表，是否支持事务。**
+> 有时候我们在开发的过程中，发现某张表的事务一直都没有生效，那不一定是spring事务的锅，最好确认一下你使用的那张表，是否支持事务
 
 
 
 
 
-### **未开启事务**
+### 未开启事务
 
-**有时候，事务没有生效的根本原因是没有开启事务。**
+有时候，事务没有生效的根本原因是没有开启事务
 
-**看到这句话可能会觉得好笑。因为开启事务不是一个项目中，最最最基本的功能吗？为什么还会没有开启事务？**
+看到这句话可能会觉得好笑。因为开启事务不是一个项目中，最最最基本的功能吗？为什么还会没有开启事务？
 
-**如果使用的是Spring Boot项目，那很幸运。因为Spring Boot通过 `DataSourceTransactionManagerAutoConfiguration` 类，已经默默的帮忙开启了事务。自己所要做的事情很简单，只需要配置`spring.datasource`相关参数即可。**
+如果使用的是Spring Boot项目，那很幸运。因为Spring Boot通过 `DataSourceTransactionManagerAutoConfiguration` 类，已经默默的帮忙开启了事务。自己所要做的事情很简单，只需要配置`spring.datasource`相关参数即可
 
-**但如果使用的还是传统的Spring项目，则需要在`applicationContext.xml`文件中，手动配置事务相关参数。如果忘了配置，事务肯定是不会生效的。**
+*但如果使用的还是传统的Spring项目，则需要在`applicationContext.xml`文件中，手动配置事务相关参数。如果忘了配置，事务肯定是不会生效的
 
 ```xml
 <!-- 配置事务管理器 --> 
@@ -4447,7 +5410,7 @@ private static final ThreadLocal<Map<Object, Object>> resources =
 
 > **注意**
 >
-> **如果在pointcut标签中的切入点匹配规则配错了的话，有些类的事务也不会生效。**
+> 如果在pointcut标签中的切入点匹配规则配错了的话，有些类的事务也不会生效
 
 
 
@@ -4455,25 +5418,25 @@ private static final ThreadLocal<Map<Object, Object>> resources =
 
 
 
-## **事务不回滚**
+## 事务不回滚
 
-### **错误的传播特性**
+### 错误的传播特性
 
-**在使用`@Transactional`注解时，是可以指定`propagation`参数的。**
+在使用`@Transactional`注解时，是可以指定`propagation`参数的
 
-**该参数的作用是指定事务的传播特性，Spring目前支持7种传播特性：**
+该参数的作用是指定事务的传播特性，Spring目前支持7种传播特性：
 
-- **`REQUIRED` 如果当前上下文中存在事务，那么加入该事务，如果不存在事务，创建一个事务，这是默认的传播属性值。**
-- **`REQUIRES_NEW` 每次都会新建一个事务，并且同时将上下文中的事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。**
-- **`NESTED` 如果当前上下文中存在事务，则嵌套事务执行，如果不存在事务，则新建事务。**
-- **`SUPPORTS` 如果当前上下文存在事务，则支持事务加入事务，如果不存在事务，则使用非事务的方式执行。**
-- **`MANDATORY` 如果当前上下文中存在事务，否则抛出异常。**
-- **`NOT_SUPPORTED` 如果当前上下文中存在事务，则挂起当前事务，然后新的方法在没有事务的环境中执行。**
-- **`NEVER` 如果当前上下文中存在事务，则抛出异常，否则在无事务环境上执行代码。**
+- `REQUIRED` 如果当前上下文中存在事务，那么加入该事务，如果不存在事务，创建一个事务，这是默认的传播属性值。
+- `REQUIRES_NEW` 每次都会新建一个事务，并且同时将上下文中的事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。
+- `NESTED` 如果当前上下文中存在事务，则嵌套事务执行，如果不存在事务，则新建事务。
+- `SUPPORTS` 如果当前上下文存在事务，则支持事务加入事务，如果不存在事务，则使用非事务的方式执行。
+- `MANDATORY` 如果当前上下文中存在事务，否则抛出异常。
+- `NOT_SUPPORTED` 如果当前上下文中存在事务，则挂起当前事务，然后新的方法在没有事务的环境中执行。
+- `NEVER` 如果当前上下文中存在事务，则抛出异常，否则在无事务环境上执行代码。
 
 
 
-**如果我们在手动设置propagation参数的时候，把传播特性设置错了就会出问题。**
+如果我们在手动设置propagation参数的时候，把传播特性设置错了就会出问题
 
 ```java
 @Service
@@ -4488,7 +5451,7 @@ public class UserService {
 }
 ```
 
-**目前只有这三种传播特性才会创建新事务：REQUIRED，REQUIRES_NEW，NESTED。**
+目前只有这三种传播特性才会创建新事务：REQUIRED，REQUIRES_NEW，NESTED
 
 
 
@@ -4496,9 +5459,9 @@ public class UserService {
 
 
 
-### **自己吞了异常**
+### 自己吞了异常
 
-**事务不会回滚，最常见的问题是：开发者在代码中手动try...catch了异常。**
+事务不会回滚，最常见的问题是：开发者在代码中手动try...catch了异常
 
 ```java
 @Slf4j
@@ -4517,17 +5480,17 @@ public class UserService {
 }
 ```
 
-**这种情况下Spring事务当然不会回滚，因为开发者自己捕获了异常，又没有手动抛出，换句话说就是把异常吞掉了。**
+这种情况下Spring事务当然不会回滚，因为开发者自己捕获了异常，又没有手动抛出，换句话说就是把异常吞掉了
 
-**如果想要Spring事务能够正常回滚，必须抛出它能够处理的异常。如果没有抛异常，则Spring认为程序是正常的。**
-
-
+如果想要Spring事务能够正常回滚，必须抛出它能够处理的异常。如果没有抛异常，则Spring认为程序是正常的
 
 
 
-### **手动抛了别的异常**
 
-**即使开发者没有手动捕获异常，但如果抛的异常不正确，Spring事务也不会回滚。**
+
+### 手动抛了别的异常
+
+即使开发者没有手动捕获异常，但如果抛的异常不正确，Spring事务也不会回滚
 
 ```java
 @Slf4j
@@ -4547,7 +5510,7 @@ public class UserService {
 }
 ```
 
-**手动抛出了异常：Exception，事务同样不会回滚。**
+手动抛出了异常：Exception，事务同样不会回滚
 
 **因为Spring事务，默认情况下只会回滚`RuntimeException`（运行时异常）和`Error`（错误），对于普通的Exception（非运行时异常），它不会回滚。**
 
@@ -4557,9 +5520,9 @@ public class UserService {
 
 ### **自定义了回滚异常**
 
-**在使用`@Transactional`注解声明事务时，有时我们想自定义回滚的异常，Spring也是支持的。可以通过设置`rollbackFor`参数，来完成这个功能。**
+在使用`@Transactional`注解声明事务时，有时我们想自定义回滚的异常，Spring也是支持的。可以通过设置`rollbackFor`参数，来完成这个功能
 
-**但如果这个参数的值设置错了，就会引出一些莫名其妙的问题，**
+但如果这个参数的值设置错了，就会引出一些莫名其妙的问题
 
 ```java
 @Service
@@ -4573,9 +5536,9 @@ public class UserService {
 }
 ```
 
-**如果在执行上面这段代码，保存和更新数据时，程序报错了，抛了SqlException、DuplicateKeyException等异常。而BusinessException是我们自定义的异常，报错的异常不属于BusinessException，所以事务也不会回滚。**
+如果在执行上面这段代码，保存和更新数据时，程序报错了，抛了SqlException、DuplicateKeyException等异常。而BusinessException是我们自定义的异常，报错的异常不属于BusinessException，所以事务也不会回滚
 
-**即使rollbackFor有默认值，但阿里巴巴开发者规范中，还是要求开发者重新指定该参数。why？**
+即使rollbackFor有默认值，但阿里巴巴开发者规范中，还是要求开发者重新指定该参数。why？
 
 **因为如果使用默认值，一旦程序抛出了Exception，事务不会回滚，这会出现很大的bug。所以，建议一般情况下，将该参数设置成：Exception或Throwable。**
 
@@ -4583,7 +5546,7 @@ public class UserService {
 
 
 
-### **嵌套事务回滚多了**
+### 嵌套事务回滚多了
 
 ```java
 @Service
@@ -4614,13 +5577,13 @@ public class RoleService {
 }
 ```
 
-**这种情况使用了嵌套的内部事务，原本是希望调用`roleService.doOtherThing()`方法时，如果出现了异常，只回滚doOtherThing方法里的内容，不回滚 userMapper.insertUser里的内容，即回滚保存点。。但事实是，insertUser也回滚了。why？**
+这种情况使用了嵌套的内部事务，原本是希望调用`roleService.doOtherThing()`方法时，如果出现了异常，只回滚doOtherThing方法里的内容，不回滚 userMapper.insertUser里的内容，即回滚保存点。。但事实是，insertUser也回滚了。why？
 
-**因为doOtherThing方法出现了异常，没有手动捕获，会继续往上抛，到外层add方法的代理方法中捕获了异常。所以，这种情况是直接回滚了整个事务，不只回滚单个保存点。**
+因为doOtherThing方法出现了异常，没有手动捕获，会继续往上抛，到外层add方法的代理方法中捕获了异常。所以，这种情况是直接回滚了整个事务，不只回滚单个保存点
 
-**怎么样才能只回滚保存点？**
+怎么样才能只回滚保存点？
 
-**将内部嵌套事务放在try/catch中，并且不继续往上抛异常。这样就能保证，如果内部嵌套事务中出现异常，只回滚内部事务，而不影响外部事务。**
+将内部嵌套事务放在try/catch中，并且不继续往上抛异常。这样就能保证，如果内部嵌套事务中出现异常，只回滚内部事务，而不影响外部事务
 
 ```java
 @Slf4j
@@ -4650,13 +5613,13 @@ public class UserService {
 
 
 
-## **大事务问题**
+## 大事务问题
 
-**在使用Spring事务时，有个让人非常头疼的问题，就是大事务问题。**
+在使用Spring事务时，有个让人非常头疼的问题，就是大事务问题。
 
-**通常情况下，我们会在方法上`@Transactional`注解，填加事务功能，**
+通常情况下，我们会在方法上`@Transactional`注解，填加事务功能
 
-**但`@Transactional`注解，如果被加到方法上，有个缺点就是整个方法都包含在事务当中了。**
+但`@Transactional`注解，如果被加到方法上，有个缺点就是整个方法都包含在事务当中了
 
 ```java
 @Service
@@ -4692,22 +5655,22 @@ public class RoleService {
 }
 ```
 
-**上述代码，在UserService类中，其实只有这两行才需要事务：**
+上述代码，在UserService类中，其实只有这两行才需要事务：
 
 ```java
 roleService.save(userModel);
 update(userModel);
 ```
 
-**在RoleService类中，只有这一行需要事务：**
+在RoleService类中，只有这一行需要事务：
 
 ```java
 saveData(userModel);
 ```
 
-**而上面的写法会导致所有的query方法也被包含在同一个事务当中。**
+而上面的写法会导致所有的query方法也被包含在同一个事务当中
 
-**如果query方法非常多，调用层级很深，而且有部分查询方法比较耗时的话，会造成整个事务非常耗时，从而造成大事务问题。**
+如果query方法非常多，调用层级很深，而且有部分查询方法比较耗时的话，会造成整个事务非常耗时，从而造成大事务问题
 
 **![img](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302234336095-218612978.jpg)**
 
@@ -4715,13 +5678,13 @@ saveData(userModel);
 
 
 
-## **编程式事务**
+## 编程式事务
 
-**上面这些内容都是基于`@Transactional`注解的，主要说的是它的事务问题，我们把这种事务叫做：`声明式事务`。**
+上面这些内容都是基于`@Transactional`注解的，主要说的是它的事务问题，我们把这种事务叫做：`声明式事务`
 
-**其实，Spring还提供了另外一种创建事务的方式，即通过手动编写代码实现的事务，我们把这种事务叫做：`编程式事务`。**
+其实，Spring还提供了另外一种创建事务的方式，即通过手动编写代码实现的事务，我们把这种事务叫做：`编程式事务`
 
-**在Spring中为了支持编程式事务，专门提供了一个类：`TransactionTemplate`，在它的`execute()`方法中，就实现了事务的功能。**
+在Spring中为了支持编程式事务，专门提供了一个类：`TransactionTemplate`，在它的`execute()`方法中，就实现了事务的功能
 
 ```java
    @Autowired
@@ -4742,14 +5705,14 @@ saveData(userModel);
    }
 ```
 
-**相较于`@Transactional`注解声明式事务，我更建议大家使用，基于`TransactionTemplate`的编程式事务。主要原因如下：**
+相较于`@Transactional`注解声明式事务，我更建议大家使用，基于`TransactionTemplate`的编程式事务。主要原因如下：
 
-1. **避免由于Spring AOP问题，导致事务失效的问题。**
-2. **能够更小粒度的控制事务的范围，更直观。**
+1. 避免由于Spring AOP问题，导致事务失效的问题
+2. 能够更小粒度的控制事务的范围，更直观
 
 > **提示**
 >
-> **建议在项目中少使用`@Transactional`注解开启事务。但并不是说一定不能用它，如果项目中有些业务逻辑比较简单，而且不经常变动，使用`@Transactional`注解开启事务开启事务也无妨，因为它更简单，开发效率更高，但是千万要小心事务失效的问题。**
+> 建议在项目中少使用`@Transactional`注解开启事务。但并不是说一定不能用它，如果项目中有些业务逻辑比较简单，而且不经常变动，使用`@Transactional`注解开启事务开启事务也无妨，因为它更简单，开发效率更高，但是千万要小心事务失效的问题
 
 
 
@@ -4757,8 +5720,8 @@ saveData(userModel);
 
 ## **参考**
 
-- **https://mp.weixin.qq.com/s/D4q8pHa4Avv9wzr9wuVW_A**
-- **https://mp.weixin.qq.com/s/TM5TXVH6cQ42M-UikvlNgg**
+- https://mp.weixin.qq.com/s/D4q8pHa4Avv9wzr9wuVW_A
+- https://mp.weixin.qq.com/s/TM5TXVH6cQ42M-UikvlNgg
 
 
 
@@ -4768,15 +5731,15 @@ saveData(userModel);
 
 
 
-# **附加：自定义注解**
+# 附加：自定义注解
 
-**场景：记录日志。在方法执行前 / 后 / 环绕，将一些记录插入数据库。**
+> 场景：记录日志。在方法执行前 / 后 / 环绕，将一些记录插入数据库
+>
+> 使用Spring AOP做增强：前置增强、后置增强、环绕增强
 
-**使用Spring AOP做增强：前置增强、后置增强、环绕增强。**
 
 
-
-1. **依赖**
+1. 依赖
 
 ```xml
 <dependencies>
@@ -4793,7 +5756,7 @@ saveData(userModel);
 </dependencies>
 ```
 
-2. **自定义注解**
+2. 自定义注解
 
 ```java
 /**
@@ -4818,7 +5781,7 @@ public @interface Log {
 }
 ```
 
-**OperatorType枚举类：**
+OperatorType枚举类：
 
 ```java
 /**
@@ -4833,7 +5796,7 @@ public enum OperatorType {
 
 
 
-3. **增强逻辑：使用环绕增强做示例**
+3. 增强逻辑：使用环绕增强做示例
 
 ```java
 import com.zixieqing.spzx.log.annotation.Log;
@@ -4888,15 +5851,15 @@ public class LogAspect {
 
 > **提示**
 >
-> **有时需要在如上面LogAspect中操作数据库，但又不可能在LogAspect所在模块引入数据库相关的东西，那么可以采用：LogAspect所在模块定义操作数据库的service接口，然后在真正操作数据库的模块（如：xxx-manager）实现该接口操作数据库，最后在LogAspect中`装配`（`@Autowired` 或 `@resource`）其service接口类即可。**
+> 有时需要在如上面LogAspect中操作数据库，但又不可能在LogAspect所在模块引入数据库相关的东西，那么可以采用：LogAspect所在模块定义操作数据库的service接口，然后在真正操作数据库的模块（如：xxx-manager）实现该接口操作数据库，最后在LogAspect中`装配`（`@Autowired` 或 `@resource`）其service接口类即可
 
 
 
-4. **让增强逻辑能在其他业务服务中使用**
+4. 让增强逻辑能在其他业务服务中使用
 
-**想让LogAspect这个切面类在其他的业务服务中进行使用，那么就需要该切面类纳入到Spring容器中。Spring Boot默认会扫描和启动类所在包相同包中的bean以及子包中的bean**
+想让LogAspect这个切面类在其他的业务服务中进行使用，那么就需要该切面类纳入到Spring容器中。Spring Boot默认会扫描和启动类所在包相同包中的bean以及子包中的bean
 
-**本示例中，LogAspect切面类不满足扫描条件，因此无法直接在业务服务中进行使用。那么此时可以通过自定义注解进行实现，**
+本示例中，LogAspect切面类不满足扫描条件，因此无法直接在业务服务中进行使用。那么此时可以通过自定义注解进行实现
 
 ```java
 @Target({ElementType.TYPE})
@@ -4909,9 +5872,9 @@ public @interface EnableLogAspect {
 
 
 
-5. **使用**
+5. 使用
 
-**1）、在需要使用的业务服务中引入前面1 - 4模块所在。**
+1）、在需要使用的业务服务中引入前面1 - 4模块所在
 
 ```xml
  <dependency>
@@ -4921,7 +5884,7 @@ public @interface EnableLogAspect {
  </dependency>
 ```
 
-**2）、启动类加上4中自定义的`@EnableLogAspect  // 开启日志增强功能`**
+2）、启动类加上4中自定义的`@EnableLogAspect  // 开启日志增强功能`
 
 ```java
 @EnableLogAspect
@@ -4934,7 +5897,7 @@ public class ManagerApplication {
 }
 ```
 
-**3）、测试**
+3）、测试
 
 ```java
 @Log(title = "角色添加", businessType = 0)	// 添加自定义Log注解，设置属性
@@ -4955,22 +5918,22 @@ public Result saveSysRole(@RequestBody SysRole SysRole) {
 
 
 
-# **附加：Spring Boot线程池**
-## **场景**
+# 附加：Spring Boot线程池
+## 场景
 
-**提高一下插入表的性能优化，两张表，先插旧的表，紧接着插新的表，若是一万多条数据就有点慢了。**
-
-
-
-
-## **使用步骤**
-
-**用Spring提供的 `ThreadPoolExecutor` 封装的线程池 `ThreadPoolTaskExecutor` 直接使用注解启用**
+提高一下插入表的性能优化，两张表，先插旧的表，紧接着插新的表，若是一万多条数据就有点慢了
 
 
 
 
-1. **配置**
+## 使用步骤
+
+用Spring提供的 `ThreadPoolExecutor` 封装的线程池 `ThreadPoolTaskExecutor` 直接使用注解启用
+
+
+
+
+1. 配置
 
 ```java
 @Configuration
@@ -5011,8 +5974,7 @@ public class ExecutorConfig {
 }
 ```
 
-
-**`@Value` 取值配置是在 `application.properties` 或 `application.yml` 中的，如：application.properties配置的**
+`@Value` 取值配置是在 `application.properties` 或 `application.yml` 中的，如：application.properties配置的
 
 ```properties
 # 异步线程配置
@@ -5030,10 +5992,10 @@ async.executor.thread.name.prefix = async-service
 
 
 
-2. **Demo测试**
+2. Demo测试
 
 
-- **Service接口**
+- Service接口
 
 ```java
 public interface AsyncService {
@@ -5046,9 +6008,7 @@ public interface AsyncService {
 }
 ```
 
-
-
-- **Service实现类**
+- Service实现类
 
 ```java
 @Service
@@ -5070,7 +6030,7 @@ public class AsyncServiceImpl implements AsyncService {
 ```
 
 
-3. **在Controller层注入刚刚的Service即可**
+3. 在Controller层注入刚刚的Service即可
 
 ```java
 @Autowired
@@ -5082,17 +6042,17 @@ public void async(){
 }
 ```
 
-**使用测试工具测试即可看到相应的打印结果**
+使用测试工具测试即可看到相应的打印结果
 
 
 
 
 
-## **摸索一下**
+## 摸索一下
 
-**弄清楚线程池当时的情况，有多少线程在执行，多少在队列中等待？**
+弄清楚线程池当时的情况，有多少线程在执行，多少在队列中等待？
 
-**创建一个 `ThreadPoolTaskExecutor` 的子类，在每次提交线程的时候都将当前线程池的运行状况打印出来**
+创建一个 `ThreadPoolTaskExecutor` 的子类，在每次提交线程的时候都将当前线程池的运行状况打印出来
 
 ```java
 import org.slf4j.Logger;
@@ -5164,10 +6124,10 @@ public class VisiableThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
 ```
 
 
-**进过测试发现： `showThreadPoolInfo` 方法中将任务总数、已完成数、活跃线程数，队列大小都打印出来了，然后Override了父类的execute、submit等方法，在里面调用showThreadPoolInfo方法，这样每次有任务被提交到线程池的时候，都会将当前线程池的基本情况打印到日志中**
+进过测试发现： `showThreadPoolInfo` 方法中将任务总数、已完成数、活跃线程数，队列大小都打印出来了，然后Override了父类的execute、submit等方法，在里面调用showThreadPoolInfo方法，这样每次有任务被提交到线程池的时候，都会将当前线程池的基本情况打印到日志中
 
 
-**现在修改 `ExecutorConfig.java` 的 `asyncServiceExecutor` 方法，将 `ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor()` 改为 `ThreadPoolTaskExecutor executor = new VisiableThreadPoolTaskExecutor()`**
+现在修改 `ExecutorConfig.java` 的 `asyncServiceExecutor` 方法，将 `ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor()` 改为 `ThreadPoolTaskExecutor executor = new VisiableThreadPoolTaskExecutor()`
 
 ```java
 @Bean(name = "asyncServiceExecutor")
@@ -5193,7 +6153,7 @@ public class VisiableThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
     }
 ```
 
-**经最后测试得到的结果：提交任务到线程池的时候，调用的是 `submit(Callable task)` 这个方法，当前已经提交了3个任务，完成了3个，当前有0个线程在处理任务，还剩0个任务在队列中等待**
+经最后测试得到的结果：提交任务到线程池的时候，调用的是 `submit(Callable task)` 这个方法，当前已经提交了3个任务，完成了3个，当前有0个线程在处理任务，还剩0个任务在队列中等待
 
 
 
