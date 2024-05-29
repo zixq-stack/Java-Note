@@ -4736,7 +4736,7 @@ BeanDefinition接口提供的一些方法
 
 
 
-# Bean工厂后置处理器：BeanFactoryPostProcessor
+# BeanFactoryPostProcessor：Bean工厂后置处理器
 
 > Bean工厂后置处理器，当BeanFactory准备好了后【Bean初始化之前】，会调用该接口的postProcessBeanFactory方法，**经常用于新增BeanDefinition**
 
@@ -4759,7 +4759,7 @@ BeanDefinition接口提供的一些方法
 
 
 
-# 感知接口：Aware
+# Aware：感知接口
 
 > 感知接口，Spring提供的一种机制，通过实现该接口，重写方法，可以感知Spring应用程序执行过程中的一些变化。Spring会判断当前的Bean有没有实现Aware接口，如果实现了，会在特定的时机回调接口对应的方法
 
@@ -4781,7 +4781,7 @@ BeanDefinition接口提供的一些方法
 
 
 
-# 对象初始化 和 对象销毁：InitializingBean/DisposableBean
+# InitializingBean/DisposableBean：对象初始化 和 对象销毁
 
 > InitializingBean：初始化接口，当Bean被实例化好后，会回调里面的函数，经常用于做一些加载资源的工作销毁接口
 >
@@ -4800,7 +4800,7 @@ BeanDefinition接口提供的一些方法
 
 
 
-# Bean后置处理器：BeanPostProcessor
+# BeanPostProcessor：Bean后置处理器
 
 > Bean的后置处理器，当Bean对象初始化之前以及初始化之后，会回调该接口对应的方法
 >
@@ -5041,9 +5041,91 @@ public ConfigurableApplicationContext run(String... args) {
 
 
 
+# Bean生命周期
+
+> Bean生命周期分为：创建对象、初始化、使用对象、销毁对象，这里着重说明创建对象和初始化
+
+大纲流程：核心在 `AbstractAutowireCapableBeanFacotry.doCreateBean()` 中
+
+1. 创建对象
+
+1）、实例化（构造方法）
+
+2）、依赖注入
+
+2. 初始化
+
+1）、执行Aware接口回调
+
+2）、执行BeanPostProcessor. postProcessBeforeInitialization
+
+3）、执行InitializingBean回调（先执行`@PostConstruct`）
+
+4）、执行BeanPostProcessor. postProcessAfterInitialization
+
+3. 使用对象：每个人使用方式不同
+
+4. 销毁对象：执行DisposableBean回调（先执行`@PreDestory`）
 
 
-# 附加：Spring 事务失效场景
+
+
+
+源码跟踪：
+
+![image-20240528190221243](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240528190225270-1343952680.png)
+
+
+
+![image-20240528190332930](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240528190333773-740550805.png)
+
+
+
+
+
+文字总结：总分总
+
+总：Bean的生命周期总的来说有4个阶段，分别有创建对象，初始化对象，使用对象以及销毁对象，而且这些工作大部分是交给Bean工厂的doCreateBean方法完成的
+
+
+
+分：
+
+1. 首先，在创建对象阶段，先调用构造方法实例化对象，对象有了后会填充该对象的内容，其实就是处理依赖注入
+
+2. 其次，对象创建完毕后，需要做一些初始化的操作，在这里涉及到几个扩展点
+
+1）、执行Aware感知接口的回调方法
+
+2）、执行Bean后置处理器的postProcessBeforeInitialization方法
+
+3）、执行InitializingBean接口的回调，在这一步如果Bean中有标注了@PostConstruct注解的方法，会先执行它
+
+4）、执行Bean后置处理器的postProcessAfterInitialization
+
+把这些扩展点都执行完，Bean的初始化就完成了
+
+
+
+3. 接下来，在使用阶段就是程序员从容器中获取该Bean使用即可
+
+4. 最后，在容器销毁之前，会先销毁对象，此时会执行DisposableBean接口的回调，这一步如果Bean中有标注了@PreDestroy接口的函数，会先执行它
+
+
+
+总：总结一下，Bean的生命周期共包含四个阶段，其中初始化对象和销毁对象我们程序员可以通过一些扩展点执行自己的代码
+
+
+
+
+
+
+
+
+
+
+
+# Spring 事务失效场景
 
 这个玩意儿是Spring的，想了想在这里也放一章节吧
 
@@ -5079,7 +5161,7 @@ public class UserService {
 }
 ```
 
-上述代码就会导致事务失效，因为Spring要求被代理方法必须是`public`的
+上述代码就会导致事务失效，因为**Spring要求被代理方法必须是`public`的**
 
 在 `AbstractFallbackTransactionAttributeSource` 类的 `computeTransactionAttribute` 方法中有个判断，如果目标方法不是public，则`TransactionAttribute`返回null，即不支持事务
 
@@ -5142,7 +5224,7 @@ public class UserService {
 }
 ```
 
-因为Spring事务底层使用了AOP帮我们生成代理类，在代理类中实现的事务功能。如果某个方法用final修饰了，那么在它的代理类中，就无法重写该方法，而添加事务功能
+因为Spring事务底层使用了AOP帮我们生成代理类，在代理类中实现的事务功能。**如果某个方法用final修饰了，那么在它的代理类中，就无法重写该方法，而添加事务功能**
 
 > **重要提示**
 >
@@ -5171,7 +5253,7 @@ public class UserService {
 
     @Transactional
     public void updateStatus(UserModel userModel) {
-        doSameThing();
+        doSomeThing();
     }
 }
 ```
@@ -5239,40 +5321,6 @@ public class ServiceA {
 
 
 
-> 循环依赖：就是一个或多个对象实例之间存在直接或间接的依赖关系，这种依赖关系构成了构成一个环形调用
-
-**第一种情况：自己依赖自己的直接依赖**
-
-**![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223551265-333574175.png)**
-
-
-
-
-
-**第二种情况：两个对象之间的直接依赖**
-
-**![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223620257-597068237.png)**
-
-
-
-**第三种情况：多个对象之间的间接依赖**
-
-**![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223639782-1608783316.png)**
-
-
-
-前面两种情况的直接循环依赖比较直观，非常好识别，但是第三种间接循环依赖的情况有时候因为业务代码调用层级很深，不容易识别出来。
-
-
-
-> 循环依赖的N种场景
-
-**![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223739347-1215406426.png)**
-
-
-
-
-
 3. **第三种方式**：通过AopContent类。在该Service类中使用AopContext.currentProxy()获取代理对象
 
 上面第二种方式确实可以解决问题，但是代码看起来并不直观，还可以通过在该Service类中使用AOPProxy获取代理对象，实现相同的功能
@@ -5301,7 +5349,7 @@ public class ServiceA {
 
 ### 未被Spring托管
 
-使用Spring事务的前提是：对象要被Spring管理，需要创建bean实例。
+**使用Spring事务的前提是：对象要被Spring管理，需要创建bean实例**
 
 通常情况下，我们通过`@Controller`、`@Service`、`@Component`、`@Repository`等注解，可以自动实现bean实例化和依赖注入的功能
 
@@ -5352,7 +5400,7 @@ public class RoleService {
 
 这样会导致两个方法不在同一个线程中，获取到的数据库连接不一样，从而是两个不同的事务。如果想doOtherThing方法中抛了异常，add方法也回滚是不可能的
 
-Spring事务其实是通过数据库连接来实现的。当前线程中保存了一个map，key是数据源，value是数据库连接
+**Spring事务其实是通过数据库连接来实现的。当前线程中保存了一个map，key是数据源，value是数据库连接**
 
 ```java
 private static final ThreadLocal<Map<Object, Object>> resources = 
@@ -5414,10 +5462,6 @@ MySQL 5之前，默认的数据库引擎是`myisam`。好处是：索引文件�
 
 
 
-
-
-
-
 ## 事务不回滚
 
 ### 错误的传播特性
@@ -5433,6 +5477,22 @@ MySQL 5之前，默认的数据库引擎是`myisam`。好处是：索引文件�
 - `MANDATORY` 如果当前上下文中存在事务，否则抛出异常。
 - `NOT_SUPPORTED` 如果当前上下文中存在事务，则挂起当前事务，然后新的方法在没有事务的环境中执行。
 - `NEVER` 如果当前上下文中存在事务，则抛出异常，否则在无事务环境上执行代码。
+
+
+
+弄一张记忆图：
+
+![preview](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240528202941631-298995673.png)
+
+
+
+> **提示**
+>
+> 加入事务（REQUIRED）和嵌套事务（NESTED）的区别：
+>
+> 如果当前不存在事务，那么二者的行为是一样的；但如果当前存在事务，那么加入事务的事务传播级别在遇到异常之后，会将事务全部回滚；而嵌套事务在遇到异常时，只是执行了部分事务的回滚
+>
+> 嵌套事务之所以能回滚部分事务，是因为数据库中存在一个保存点的概念，嵌套事务相对于新建了一个保存点，如果出现异常了，那么只需要回滚到保存点即可，这样就实现了部分事务的回滚
 
 
 
@@ -5452,10 +5512,6 @@ public class UserService {
 ```
 
 目前只有这三种传播特性才会创建新事务：REQUIRED，REQUIRES_NEW，NESTED
-
-
-
-
 
 
 
@@ -5482,7 +5538,45 @@ public class UserService {
 
 这种情况下Spring事务当然不会回滚，因为开发者自己捕获了异常，又没有手动抛出，换句话说就是把异常吞掉了
 
-如果想要Spring事务能够正常回滚，必须抛出它能够处理的异常。如果没有抛异常，则Spring认为程序是正常的
+**如果想要Spring事务能够正常回滚，必须抛出它能够处理的异常。如果没有抛异常，则Spring认为程序是正常的**
+
+> Spring 事务处理的异常类型主要是基于异常是否是运行时异常，以及开发者在 `@Transactional` 配置中的定制。对于受检查异常，需要显式配置才会触发事务回滚。
+
+Spring 事务处理的异常类型细分
+
+1. 默认回滚规则：
+
+- Spring 默认情况下，如果事务方法抛出了未检查异常（即 RuntimeException 或其子类）或者 Error，事务会自动回滚
+
+- 对于受检查异常（即非 RuntimeException 的异常），事务通常不会自动回滚，除非在事务配置中特别指定了
+
+
+
+2. 自定义回滚规则：
+
+- 开发者可以通过在 `@Transactional` 注解中使用 rollbackFor 和 noRollbackFor 属性来自定义哪些异常应该触发回滚，哪些不应该
+
+- rollbackFor 指定一个异常类数组，当这些异常被抛出时，事务将回滚
+
+- noRollbackFor 指定一个异常类数组，当这些异常被抛出时，事务不会回滚
+
+
+
+3. 编程式事务管理：
+
+- 在编程式事务管理中，你可以手动调用 TransactionTemplate 或 PlatformTransactionManager 的 `setRollbackOnly()` 方法来指示事务应该回滚，无论是否抛出异常
+
+
+
+4. Spring MVC 异常处理：
+
+- 在 Spring MVC 中，可以使用 `@ExceptionHandler` 注解来处理特定的运行时异常，但这并不直接影响事务管理，除非这些异常导致了事务性的方法抛出异常
+
+
+
+5. 全局异常处理：
+
+- 可以创建一个继承自 HandlerExceptionResolver 或 AbstractHandlerExceptionResolver 的类，或者使用 `@ControllerAdvice` 与 `@ExceptionHandler` 结合，来集中处理所有控制器中的异常，这有助于提供更友好的用户反馈，但同样不影响事务的默认回滚规则
 
 
 
@@ -5541,8 +5635,6 @@ public class UserService {
 即使rollbackFor有默认值，但阿里巴巴开发者规范中，还是要求开发者重新指定该参数。why？
 
 **因为如果使用默认值，一旦程序抛出了Exception，事务不会回滚，这会出现很大的bug。所以，建议一般情况下，将该参数设置成：Exception或Throwable。**
-
-
 
 
 
@@ -5608,8 +5700,6 @@ public class UserService {
     }
 }
 ```
-
-
 
 
 
@@ -5690,7 +5780,7 @@ saveData(userModel);
    @Autowired
    private TransactionTemplate transactionTemplate;
    
-   ...
+   // ...
    
    public void save(final User user) {
        
@@ -5716,8 +5806,6 @@ saveData(userModel);
 
 
 
-
-
 ## **参考**
 
 - https://mp.weixin.qq.com/s/D4q8pHa4Avv9wzr9wuVW_A
@@ -5725,13 +5813,133 @@ saveData(userModel);
 
 
 
+# Spring的Bean循环依赖
+
+> 循环依赖：就是一个或多个对象实例之间存在直接或间接的依赖关系，这种依赖关系构成了构成一个环形调用
+
+**第一种情况：自己依赖自己的直接依赖**
+
+**![image-20240528193304655](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240528193306411-1637988776.png)**
+
+
+
+
+
+**第二种情况：两个对象之间的直接依赖**
+
+**![image-20240528193438025](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240528193438781-848481081.png)**
+
+
+
+**第三种情况：多个对象之间的间接依赖**
+
+**![image-20240528193504000](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240528193504688-125164316.png)**
+
+
+
+前面两种情况的直接循环依赖比较直观，非常好识别，但是第三种间接循环依赖的情况有时候因为业务代码调用层级很深，不容易识别出来。
+
+> 循环依赖的N种场景
+
+**![图片](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302223739347-1215406426.png)**
+
+
+
+
+
+在YAML中有这么一个配置：
+
+```yaml
+spring:
+  main:
+    allow-circular-references: true # 允许循环依赖，2.6.0版本开始默认不支持
+```
+
+> 配置生效时机： 
+>
+> 这个配置是在Spring容器初始化时起作用的，如果应用在启动时已经因为其他原因导致了异常，那么这个配置可能没有机会生效。确保没有其他错误阻碍了应用的正常启动
+
+
+
+以上是Spring循环依赖的一些基础知识，现在来看看源码
+
+源码中会涉及三个容器（本质都是Map）
+
+![image-20240529000037149](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240529000038758-2028061301.png)
+
+
+
+这三个容器也被称之为三级缓存，
+
+- singletonObjects 一级缓存：完整品Bean对象，即完成实例化，依赖注入、初始化的对象
+- earlySingletonObjects  二级缓存：半成品Bean对象，即完成实例化，但未完成依赖注入和初始化的对象
+- singletonFactories 三级缓存：该缓存最主要的作用就是用于动态代理的需要
+
+
+
+相关重要源码跟踪：核心在 `DefaultSingletonBeanRegistry` 这个类中
+
+![image-20240529001657133](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240529001701651-1908738655.png)
+
+
+
+
+
+文字总结：A依赖B，B依赖举例
+
+总：Bean的循环依赖指的是A依赖B，B又依赖A这样的依赖闭环问题，在Spring中，通过三个对象缓存区来解决循环依赖问题，这三个缓存区被定义到了DefaultSingletonBeanRegistry中，分别是singletonObjects用来存储创建完毕的Bean，earlySingletonObjecs用来存储未完成依赖注入的Bean，还有SingletonFactories用来存储创建Bean的ObjectFactory。假如说现在A依赖B，B依赖A，整个Bean的创建过程是这样的
+
+
+
+分：
+
+1）、首先，调用A的构造方法实例化A，当前的A还没有处理依赖注入，暂且把它称为半成品，此时会把半成品A封装到一个ObjectFactory中，并存储到springFactories缓存区
+
+2）、接下来，要处理A的依赖注入了，由于此时还没有B，所以得先实例化一个B，同样的，半成品B也会被封装到ObjectFactory中，并存储到springFactory缓存区
+
+3）、紧接着，要处理B的依赖注入了，此时会找到springFactories中A对应的ObjecFactory, 调用它的getObject方法得到刚才实例化的半成品A(如果需要代理对象,则会自动创建代理对象,将来得到的就是代理对象)，把得到的半成品A注入给B，并同时会把半成品A存入到earlySingletonObjects中，将来如果还有其他的类循环依赖了A，就可以直接从earlySingletonObjects中找到它了，那么此时springFactories中创建A的ObjectFactory也可以删除了
+
+4）、至此，B的依赖注入处理完了后，B就创建完毕了，就可以把B的对象存入到singletonObjects中了，并同时删除掉springFactories中创建B的ObjectFactory
+
+5）、B创建完毕后，就可以继续处理A的依赖注入了，把B注入给A，此时A也创建完毕了，就可以把A的对象存储到singletonObjects中，并同时删除掉earlySingletonObjects中的半成品A
+
+6）、截此为止，A和B对象全部创建完毕，并存储到了singletonObjects中，将来通过容器获取对象，都是从singletonObejcts中获取
+
+
+
+总：总结起来就是一句话，借助于DefaultSingletonBeanRegistry的三个缓存区可以解决循环依赖问题
+
+
+
+# 附加：Spring MVC执行流程
+
+> 核心都在 `DispatcherServlet.doDispatch(HttpServletRequest request, HttpServletResponse response)` 中
+
+通用图：
+
+![Spring MVC执行流程](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240529202903498-538637770.png)
+
+
+
+理解性记忆：夹带源码
+
+![Spring MVC执行流程](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240529203831898-1722350242.svg)
+
+
+
+源码跟踪：
+
+![image-20240529204049061](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240529204051531-95476928.png)
 
 
 
 
 
 
-# 附加：自定义注解
+
+
+
+# 附加：Spring Boot自定义注解
 
 > 场景：记录日志。在方法执行前 / 后 / 环绕，将一些记录插入数据库
 >
