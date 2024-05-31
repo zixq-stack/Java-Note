@@ -2550,6 +2550,13 @@ public class Starter {
                                                     缓存的元素有一个时间戳，当缓存容量满了，同时又需要腾出地方来缓存新的元素时，
                                                     那么现有缓存元素中的时间戳 离 当前时间最远的元素将被清出缓存
 
+        maxEntriesLocalHeap 是Ehcache配置中的一个关键参数，用于控制缓存中在JVM堆内存中最多可以存储多少个条目（entry）。
+                            这个参数直接影响了Ehcache的内存管理策略，确保缓存不会无限制地占用内存资源。
+                            当设置maxEntriesLocalHeap时，Ehcache会根据这个限制来决定何时从内存中移除不再使用的条目。
+                            如果缓存达到这个限制并且新的条目需要被添加，Ehcache会根据其内部的淘汰策略（默认是LRU，即最近最少使用的条目优先被淘汰）来选择哪些条目应该被移除：
+                                值为正整数：表示最多允许的条目数。一旦超过这个数量，新的条目将替换最不常使用的条目。
+                                值为0：表示不限制在堆内存中的条目数量。这可能会导致缓存无限增长，直到耗尽所有可用内存，因此在生产环境中通常不推荐。
+                                值为负数：表示不设置限制，但是请注意，这并不是真正的无限制，因为Ehcache本身和JVM都会对内存使用有自身的限制
     -->
     <defaultCache
             maxElementsInMemory="10000"
@@ -2558,17 +2565,14 @@ public class Starter {
             timeToLiveSeconds="120"
             maxElementsOnDisk="10000000"
             diskExpiryThreadIntervalSeconds="120"
-            memoryStoreEvictionPolicy="LRU"/>
+            memoryStoreEvictionPolicy="LRU"
+		   maxEntriesLocalHeap="2000"
+	/>
 
     <!--下面的配置是自定义缓存配置，可以复制粘贴，用多套
         name 起的缓存名
         overflowToDisk 当系统宕机时，数据是否保存到上面配置的<diskStore path = "D:/test/cache"/>磁盘中
         diskPersistent 是否缓存虚拟机重启期数据
-
-        另外的配置项：
-            clearOnFlush  内存数量最大时是否清除
-            diskSpoolBufferSizeMB 设置diskStore( 即：磁盘缓存 )的缓冲区大小，默认是30MB
-                                    每个Cache都应该有自己的一个缓冲区
     -->
     <cache
         name="users"
@@ -2580,6 +2584,12 @@ public class Starter {
         timeToLiveSeconds="300"
         memoryStoreEvictionPolicy="LRU"
     />
+
+    <!--另外的配置项：
+            clearOnFlush  内存数量最大时是否清除
+            diskSpoolBufferSizeMB 设置diskStore( 即：磁盘缓存 )的缓冲区大小，默认是30MB
+                                    每个Cache都应该有自己的一个缓冲区
+    -->
 </ehcache>
 ```
 
@@ -5939,7 +5949,7 @@ spring:
 
 
 
-# 附加：Spring Boot自定义注解
+# 附加：Spring Boot自定义注解之AOP Log
 
 > 场景：记录日志。在方法执行前 / 后 / 环绕，将一些记录插入数据库
 >
@@ -5950,107 +5960,301 @@ spring:
 1. 依赖
 
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-aop</artifactId>
-    </dependency>
-    
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <scope>provided</scope>
-    </dependency>
-</dependencies>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.mybatis.spring.boot</groupId>
+  <artifactId>mybatis-spring-boot-starter</artifactId>
+  <version>3.0.3</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jdbc</artifactId>
+</dependency>
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.47</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid-spring-boot-starter</artifactId>
+    <version>1.1.6</version>
+</dependency>
+
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+</dependency>
+<dependency>
+    <groupId>cn.hutool</groupId>
+    <artifactId>hutool-all</artifactId>
+    <version>5.8.20</version>
+</dependency>
 ```
 
-2. 自定义注解
+1. YAML配置
+
+```yaml
+server:
+  port: 10010
+
+# 项目名称配置 用于日志记录   也可以直接使用 spring.application.name
+project:
+  name: spring-boot3-AOP-log
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/aop_log?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: "072413"
+
+```
+
+2. 实体类
 
 ```java
+package com.zixq.entity;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
+
 /**
- * 自定义操作日志记录注解
+ * <p>
+ * 日志实体类
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
  */
 
-@Target({ElementType.METHOD})
+@Data
+@Accessors(chain = true)
+public class LogEntity implements java.io.Serializable {
+    
+    /**
+     * 主键
+     */
+    private Long id;
+    /**
+     * 模块名
+     */
+    private String module;
+    /**
+     * 用户名
+     */
+    private String username;
+    /**
+     * 操作类型：增删改查
+     */
+    private String operation;
+    /**
+     * 业务执行的耗时时长
+     */
+    private Long time;
+    /**
+     * 请求的ip地址
+     */
+    private String ip;
+    /**
+     * 请求方式（Get、Post....）、类名、方法名
+     */
+    private String method;
+    /**
+     * 参数：参数名 参数值
+     */
+    private String params;
+    /**
+     * 添加时间
+     */
+    private LocalDateTime createTime;
+}
+```
+
+4. 自定义注解
+
+```java
+package com.zixq.annotation;
+
+import com.zixq.CustomEnum.OperatorType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * <p>
+ * 自定义注解    用于方法执行前后进行日志记录
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Log {
 
-    // 模块名称
-    String title();
-    // 操作人类别
-    OperatorType operatorType() default OperatorType.MANAGE;
-    // 业务类型（0其它 1新增 2修改 3删除）
-    int businessType();
-    // 是否保存请求的参数
-    boolean isSaveRequestData() default true;
-    // 是否保存响应的参数
-    boolean isSaveResponseData() default true;
-    
+    /**
+     * 用户名
+     */
+    String username() default "系统";
+
+    /**
+     * 操作类型     增删改查、其他
+     */
+    OperatorType operation() default OperatorType.OTHER;
 }
 ```
 
 OperatorType枚举类：
 
 ```java
+package com.zixq.CustomEnum;
+
 /**
- * 操作人类别
+ * <p>
+ * 操作类型枚举
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
  */
 public enum OperatorType {
-    OTHER,		// 其他
-    MANAGE,		// 后台用户
-    MOBILE		// 手机端用户
+    ADD,		// 增
+    REMOVE,		// 删
+    UPDATE,		// 改
+    GET,        // 查
+    OTHER       // 其他
+    ;
 }
 ```
 
 
 
-3. 增强逻辑：使用环绕增强做示例
+5. 增强逻辑：使用环绕增强做示例
 
 ```java
-import com.zixieqing.spzx.log.annotation.Log;
-import lombok.extern.slf4j.Slf4j;
+package com.zixq.aspect;
+
+import cn.hutool.core.util.IdUtil;
+import com.zixq.annotation.Log;
+import com.zixq.entity.LogEntity;
+import com.zixq.mapper.LogMapper;
+import com.zixq.util.HttpContextUtils;
+import com.zixq.util.IpUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
- * 自定义注解 @log 增强逻辑
+ * Log注解的逻辑处理
  * </p>
  *
- * <p>@author : Zixq</p>
+ * <p>@author : ZiXieqing</p>
  */
 
-@Aspect
 @Component
-@Slf4j
+@Aspect
 public class LogAspect {
+    @Autowired
+    private LogMapper logMapper;
+
+    @Value("${project.name}")
+    private String projectName;
+    
+    
     /**
      * 环绕增强
      *      前置增强：@Before()
      *      后置增强：@After()
      *
-     * @param joinPoint 切点  可以获取目标方法的参数，返回值，异常信息等
-     * @param sysLog 自定义注解
-     * @return 业务方法执行状态
+     * @param joinPoint joinPoint 可以获取到目标方法的参数、返回值等一系列东西
+     *                  "@annotation(com.zixq.annotation.Log)" 是切点 pointcut
      */
-    @Around(value = "@annotation(sysLog)")
-    public Object doAroundAdvice(ProceedingJoinPoint joinPoint , Log sysLog) {
-        
-        Object proceed = null;
+    @Around("@annotation(com.zixq.annotation.Log)")
+    public void around(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        long beginTime = System.nanoTime();
+
         try {
             // 执行业务方法
-            proceed = joinPoint.proceed();
+            joinPoint.proceed();
         } catch (Throwable e) {
-            // 防止事务失效（自己吞了异常，导致Spring事务不能正常回滚）：
-            // 					手动抛出事务能处理的异常 RuntimeException，因Spring事务只能处理此种异常
-            // Spring事务不能处理exception、error
+            // 防止事务失效 抛出 RuntimeException
             throw new RuntimeException(e);
         }
 
-        // 返回执行结果
-        return proceed;
+        long endTime = System.nanoTime();
+
+        // 保存日志
+        saveLog(joinPoint, (endTime - beginTime));
+    }
+
+    /**
+     * 保存日志
+     *
+     * @param time 业务执行的时长
+     */
+    private void saveLog(ProceedingJoinPoint joinPoint, long time) {
+
+        LogEntity logEntity = new LogEntity();
+        logEntity.setId(IdUtil.getSnowflakeNextId());
+
+        HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
+        // 获取ip
+        String ipAddr = IpUtils.getIpAddr(request);
+        logEntity.setIp(ipAddr);
+
+        // 获取注解上的用户名、操作类型
+        MethodSignature method = (MethodSignature) joinPoint.getSignature();
+        Log logAnnotation = method.getMethod().getAnnotation(Log.class);
+        logEntity.setUsername(logAnnotation.username())
+                .setOperation(logAnnotation.operation().name());
+
+        // 获取请求参数 和 其值
+        Object[] argsValue = joinPoint.getArgs();    // 获取参数值
+        String[] parameterNames = method.getParameterNames();
+        if (argsValue != null && parameterNames != null) {
+            String params = "";
+            for (int i = 0; i < argsValue.length; i++) {
+                params += " " + parameterNames[i] + ": " + argsValue[i];
+            }
+            logEntity.setParams(params);
+        }
+
+        // 获取请求方式
+        String requestMethod = request.getMethod();
+
+        // 获取类名
+        String className = joinPoint.getTarget().getClass().getName();
+        // 获取方法名
+        String methodName = method.getName();
+        logEntity.setMethod(requestMethod + " " + className + "." + methodName + "()");
+
+        // 模块名、业务耗时、创建时间
+        logEntity.setModule(projectName)
+                .setTime(time)
+                .setCreateTime(LocalDateTime.now());
+
+        // 保存日志
+        logMapper.saveLog(logEntity);
     }
 }
 ```
@@ -6059,15 +6263,114 @@ public class LogAspect {
 
 > **提示**
 >
-> 有时需要在如上面LogAspect中操作数据库，但又不可能在LogAspect所在模块引入数据库相关的东西，那么可以采用：LogAspect所在模块定义操作数据库的service接口，然后在真正操作数据库的模块（如：xxx-manager）实现该接口操作数据库，最后在LogAspect中`装配`（`@Autowired` 或 `@resource`）其service接口类即可
+> 有时需要在如上面LogAspect中操作数据库，但又不可能在LogAspect所在模块引入数据库相关的东西，那么可以采用：
+>
+> - LogAspect所在模块定义操作数据库的service接口；
+> - 然后在真正操作数据库的模块（如：xxx-manager）实现该接口操作数据库；
+> - 最后在LogAspect中`装配`（`@Autowired` 或 `@resource`）其service接口类即可
 
 
 
-4. 让增强逻辑能在其他业务服务中使用
+涉及的两个工具类：
+
+```java
+package com.zixq.util;
+
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+/**
+ * <p>
+ * Http工具类
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+public class HttpContextUtils {
+    /**
+     * 获取HttpServletRequest
+     */
+    public static HttpServletRequest getHttpServletRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    }
+}
+```
+
+
+
+```java
+package com.zixq.util;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+/**
+ * <p>
+ * ip工具类
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+public class IpUtils {
+    /**
+     * 获取IP地址
+     *
+     * 使用Nginx等反向代理软件， 则不能通过request.getRemoteAddr()获取IP地址
+     * 如果使用了多级反向代理的话，X-Forwarded-For的值并不止一个，而是一串IP地址，X-Forwarded-For中第一个非unknown的有效IP字符串，则为真实IP地址
+     */
+    public static String getIpAddr(HttpServletRequest request) {
+
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : ip;
+    }
+}
+```
+
+
+
+6. Mapper
+
+```java
+package com.zixq.mapper;
+
+import com.zixq.entity.LogEntity;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * <p>
+ * log Mapper 接口
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Mapper
+public interface LogMapper {
+    /**
+     * 保存日志
+     */
+    @Insert("insert into log(id,module,username,operation,time,ip,method,params,create_time)" +
+            "values(#{id},#{module},#{username},#{operation},#{time},#{ip},#{method},#{params},#{createTime})")
+    void saveLog(LogEntity logEntity);
+}
+```
+
+
+
+7. 【可选】让增强逻辑能在其他业务服务中使用
 
 想让LogAspect这个切面类在其他的业务服务中进行使用，那么就需要该切面类纳入到Spring容器中。Spring Boot默认会扫描和启动类所在包相同包中的bean以及子包中的bean
 
-本示例中，LogAspect切面类不满足扫描条件，因此无法直接在业务服务中进行使用。那么此时可以通过自定义注解进行实现
+假如LogAspect切面类不满足扫描条件，那么无法直接在业务服务中进行使用。因此此时可以通过自定义注解进行实现
 
 ```java
 @Target({ElementType.TYPE})
@@ -6080,9 +6383,9 @@ public @interface EnableLogAspect {
 
 
 
-5. 使用
+8. 使用
 
-1）、在需要使用的业务服务中引入前面1 - 4模块所在
+1）、在需要使用的业务服务中引入前面1 - 4模块所在【不在同一模块的时候】
 
 ```xml
  <dependency>
@@ -6105,33 +6408,53 @@ public class ManagerApplication {
 }
 ```
 
-3）、测试
+3）、测试【在同一模块】
 
 ```java
-@Log(title = "角色添加", businessType = 0)	// 添加自定义Log注解，设置属性
-@PostMapping(value = "/saveSysRole")
-public Result saveSysRole(@RequestBody SysRole SysRole) {
-    sysRoleService.saveSysRole(SysRole) ;
-    return Result.build(null , ResultCodeEnum.SUCCESS) ;
+package com.zixq.controller;
+
+import com.zixq.CustomEnum.OperatorType;
+import com.zixq.annotation.Log;
+import com.zixq.entity.UserEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * <p>
+ * user controller
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@RestController
+@RequestMapping("user")
+public class UserController {
+
+    @Log(
+            username = "zixieqing",
+            operation = OperatorType.GET
+    )
+    @GetMapping("/get")
+    public void getUser() {
+        System.out.println("get user");
+    }
+
+    @Log(
+            username = "zixieqing",
+            operation = OperatorType.ADD
+    )
+    @PostMapping("/addUser")
+    public void addUser(@RequestBody UserEntity userEntity) {
+        System.out.println("userEntity = " + userEntity);
+    }
 }
-
-
-// 结果
-2023-07-19 14:09:32 [INFO ] com.zixieqing.spzx.common.aspect.LogAspect LogAspect...doAroundAdvice方法执行了角色添加
 ```
 
 
 
-
-
-
-
 # 附加：Spring Boot线程池
-## 场景
-
-提高一下插入表的性能优化，两张表，先插旧的表，紧接着插新的表，若是一万多条数据就有点慢了
-
-
+> **场景**
+>
+> 提高一下插入表的性能优化，两张表，先插旧的表，紧接着插新的表，若是一万多条数据就有点慢了
 
 
 ## 使用步骤
