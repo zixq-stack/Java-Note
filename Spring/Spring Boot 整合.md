@@ -1053,7 +1053,7 @@ spring:
 <dependency>
 	<groupId>com.alibaba</groupId>
 	<artifactId>druid-spring-boot-starter</artifactId>
-	<version>1.1.10</version>
+	<version>1.2.8</version>
 </dependency>
 ```
 
@@ -1061,6 +1061,52 @@ spring:
 2. 修改yml文件
 
 **![](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175012476-1748499888.png)**
+
+
+
+上面这个是上手的配置，实际使用是如下的配置方式：
+
+```yaml
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource # 指定数据源类型为Druid
+    driver-class-name: com.mysql.cj.jdbc.Driver # 根据你使用的数据库驱动来填写
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: your_username
+    password: your_password
+
+    # Druid 配置
+    druid:
+      # 初始化大小，最小连接池大小
+      initial-size: 5
+      # 最大活跃连接数
+      max-active: 20
+      # 最小空闲连接数
+      min-idle: 5
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,log4j
+      # 监控统计日志打印的格式，可以通过%format控制台输出格式
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+        # 允许清空StatViewServlet缓存
+        reset-enable: true
+```
 
 
 3. 测试
@@ -1072,6 +1118,8 @@ spring:
 
 
 ## Druid实现日志监控
+
+这个东西在上一节那个配置文件中已经弄了，这里弄的是通过代码编写的方式
 
 > **重要提示：**
 > 需要web启动器支持
@@ -2626,6 +2674,1039 @@ public User queryUserByUsername(UserDAO userDAO) {
 	return userMapper.selectUserByUserDAO(userDAO);
 }
 ```
+
+
+
+
+
+# JWT
+
+依赖
+
+```xml
+<dependency>
+  <groupId>com.auth0</groupId>
+  <artifactId>java-jwt</artifactId>
+  <version>4.4.0</version>
+</dependency>
+```
+
+测试
+
+```java
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * <p>
+ * JWT测试
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+
+@SpringBootTest
+public class JwtTest {
+
+    /**
+     * 密钥
+     */
+    private static final String SECRET = "41327498yfduihfuie3yr789eywqrfyhefuifhsdui";
+
+    /**
+     * 生成JWT令牌
+     */
+    @Test
+    public void createJwtTest() {
+        HashMap<String, Object> claim = new HashMap<>();
+        claim.put("id", 100L);
+        claim.put("username", "紫邪情");
+
+        String token = JWT.create()
+                .withClaim("user", claim.toString())    // payLoad 载荷：key-value 不敏感的业务数据
+                .withExpiresAt(new Date(System.currentTimeMillis() * 1000 * 3600 * 12))     // JWT 有效期
+                .sign(Algorithm.HMAC256(SECRET));// sign 签名（密钥加密）：验证 header + payload
+
+        System.out.println("token = " + token);
+        /*  JWT（JSON Web Token）由三部分组成
+            eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9        // header：记录令牌类型、签名算法等  {"alg": "HS256","type":"JWT"}
+            .eyJleHAiOjM2ODEyMDUxMTAwODE5MywidXNlciI6IntpZD0xMDAsIHVzZXJuYW1lPee0q-mCquaDhX0ifQ     // payload 载荷：携带不敏感的业务数据 {“id”:"username","Tom"}
+            .vEvIxjJhHx3VvMhbbrz1S6COT7D4oGV4WL1KGV8XYXY    // signature 签名：防止Token被篡改（加密得来） 用head+payload+算法（secret）密钥加密
+        */
+    }
+
+    /**
+     * 对JWT进行解密
+     */
+    @Test
+    public void jwtVerifyTest() {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9" +
+                ".eyJleHAiOjM2ODE5OTQ2NjYxMTM5MywidXNlciI6IntpZD0xMDAsIHVzZXJuYW1lPee0q-mCquaDhX0ifQ" +
+                ".A1O6WQ4WjT4UPRfSE52-h9U8WdkGyh__9a3cuvrCIzU";
+
+        // 通过 secret密钥 获取验证器
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
+        // 验证token
+        DecodedJWT verify = jwtVerifier.verify(token);
+
+        // 获取 head
+        String header = verify.getHeader();
+        System.out.println("header = " + header);   // header = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9￥
+        // 获取 payload
+        String payload = verify.getPayload();
+        System.out.println("payload = " + payload); // payload = eyJleHAiOjM2ODE5OTQ2NjYxMTM5MywidXNlciI6IntpZD0xMDAsIHVzZXJuYW1lPee0q-mCquaDhX0ifQ
+        // 获取 signature
+        String signature = verify.getSignature();
+        System.out.println("signature = " + signature); // signature = A1O6WQ4WjT4UPRfSE52-h9U8WdkGyh__9a3cuvrCIzU
+
+        // 获取所以 payload 载荷
+        Map<String, Claim> claims = verify.getClaims();
+        // 获取payload中指定key的value
+        Claim claim = claims.get("user");
+        System.out.println("claim = " + claim); // claim = com.auth0.jwt.impl.JsonNodeClaim@77d381e6
+        System.out.println("claim.asString() = " + claim.asString());   // claim.asString() = {id=100, username=紫邪情}
+
+        // JWTParser jwtParser = new JWTParser();
+        // jwtParser.parseHeader(String json);      // 解析header
+        // jwtParser.parsePayload(String json)        // 解析载荷payload
+    }
+}
+```
+
+
+
+# 集成 Apache Shiro
+
+## 介绍
+
+Apache Shiro官网：https://shiro.apache.org/
+
+Github地址：https://github.com/apache/shiro
+
+```bash
+git clone https://github.com/apache/shiro.git
+
+git checkout shiro-root-版本号
+```
+
+Apache Shiro 是一款 Java 安全框架，不依赖任何容器，可以运行在 Java SE 和 Java EE 项目中，它的主要作用是用来做身份认证、授权、会话管理、缓存和加密等操作
+
+和Spring Security的作用大概是一致的，但Spring Security由于其功能丰富而复杂，多用在大型项目中，而Shiro则适用于中小型项目中，上手快
+
+> **提示**
+>
+> 本内容中采用的环境是 SpringBoot 2.3.12.RELEASE + JDK8 + shiro-spring 1.13.0
+>
+> SpringBoot 3.x + JDK17 + shiro-spring 2.x 尝鲜时总会出现一些乱七八糟的问题，解决起来麻烦得要死，所以我就降了版本
+
+## 核心组件
+
+1）Subject（用户）：当前的操作用户，通过`Subject currentUser = SecurityUtils.getSubject()`获取
+
+2）SecurityManager（安全管理器）：Shiro 的核心部分，负责安全认证与授权
+
+3）Realms（数据源）：充当与安全管理间的桥梁，查找数据源进行验证和授权操作
+
+4）Authenticator（认证器)：用于认证，从 Realm 数据源取得数据之后执行认证流程处理。AuthenticationInfo存储用户的角色信息集合，核心方法是`doGetAuthenticationInfo`
+
+5）Authorizer（授权器)：用户访问控制授权，决定用户是否拥有执行指定操作的权限。AuthorizationInfo存储角色的权限信息集合，核心方法是`doGetAuthorizationInfo`
+
+6）SessionManager（会话管理器）：支持会话管理
+
+7）CacheManager（缓存管理器)：用于缓存认证授权信息
+
+8）Cryptography（加密组件）：提供了加密解密的工具包，用于密码的加密
+
+## Shiro认证：ini方式
+
+依赖
+
+```xml
+    <!-- shiro-spring 2.x 对应 SpringBoot 3.x -->
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-spring</artifactId>
+      <version>1.13.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mybatis.spring.boot</groupId>
+      <artifactId>mybatis-spring-boot-starter</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <!-- <version>5.1.47</version> -->
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <version>1.2.15</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+```
+
+ini文件配置
+
+```ini
+# 中括号用来标记类型     该处为：标记用户信息
+[users]
+紫邪情=072413
+```
+
+测试
+
+```java
+import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.realm.text.IniRealm;
+import org.apache.shiro.subject.Subject;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+/**
+ * <p>
+ * 测试
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+@SpringBootTest
+public class ApiTest {
+
+    /**
+     * shiro认证  ini方式
+     */
+    @Test
+    void authIniTest() {
+        // 安全管理器
+        DefaultSecurityManager securityManager = new DefaultSecurityManager();
+        SecurityUtils.setSecurityManager(securityManager);
+
+        // 设置 Realm 数据源
+        IniRealm iniRealm = new IniRealm("classpath:shiro-auth.ini");
+        securityManager.setRealm(iniRealm);
+
+        // 获取 Subject
+        Subject subject = SecurityUtils.getSubject();
+
+        // 登录
+        log.info("============未登录前的状态：{}=====================", subject.isAuthenticated());     // false
+        UsernamePasswordToken token = new UsernamePasswordToken("紫邪情", "072413");
+        subject.login(token);
+        log.info("============登录后的状态：{}=====================", subject.isAuthenticated());      // true
+
+        subject.logout();
+        log.info("============退出后的状态：{}=====================", subject.isAuthenticated());      // false
+    }
+}
+```
+
+## 分析源码
+
+给 `subject.login(token);` 打断点，DEBUG启动
+
+进入了 `DelegatingSubject`，本质就是 `Subject`，且利用了 `SecurityManager`
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164533360-1736924709.png)
+
+利用 `DefaultSecurityManager` 【这玩意儿是我们自己new的】 获取 `AuthenticationInfo` 这玩意儿存储了认证信息
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164533205-1728754933.png)
+
+开始去做 认证的事情
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164533510-1024447858.png)
+
+可以看到是利用了 `ModularRealmAuthenticator`【本质就是 Authenticator 认证器】 去做认证的事 可以看到 先获取 `Realms`【数据源】，然后根据获取的 Realms 数量走不同逻辑【目前ini文件是单个，因此看 `doSingleRealmAuthentication` 即可】
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164532567-505468302.png)
+
+获取 `AuthenticationInfo`
+
+![img1png](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164532704-1275972020.png)
+
+真正获取 `AuthenticationInfo` 的地方
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164624951-768879082.png)
+
+可以看到就是通过 `xxxxRealm.doGetAuthenticationInfo(AuthenticationToken token)` 获取AuthenticationInfo的
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164534023-1464357501.png)
+
+而 `xxxxRealm` 就是 `extends AuthorizingRealm`，至于 `doGetAuthenticationInfo(AuthenticationToken token)` 也是 `AuthorizingRealm` 中的
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164532877-1847293811.png)
+
+> **总结：shiro认证大体流程**
+>
+> Subject ——》SecurityManager ——》Authenticator ——》获取 Realms ——》 获取 AuthenticationInfo ——》`xxxxRealm.doGetAuthenticationInfo(AuthenticationToken token)` 获取AuthenticationInfo
+
+## shiro认证：自定义Realm
+
+YAML配置
+
+```yaml
+server:
+  port: 8732
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring-boot-study?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: zixieqing072413
+
+mybatis:
+  type-aliases-package: com.zixq.shiro.authentication.entity
+  configuration:
+    map-underscore-to-camel-case: true  # 开启驼峰命名映射  否则可能出现表和实体类对应时为null
+```
+
+自定义Realm
+
+```java
+import com.zixq.shiro.authentication.entity.UserEntity;
+import com.zixq.shiro.authentication.mapper.UserMapper;
+import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * <p>
+ * 自定义 Realm
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+public class UserRealm extends AuthorizingRealm {
+    
+    @Autowired
+    private UserMapper userMapper;
+
+    // 授权   角色权限
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        return null;
+    }
+
+
+    // 认证
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+
+        UsernamePasswordToken upToken = (UsernamePasswordToken) token;
+        String username = upToken.getUsername();
+        String password = new String((char[]) upToken.getPassword());
+
+        log.info("===============用户：{}，进入了：{}#doGetAuthenticationInfo() 进行认证，密码为：{}================",
+                username, this.getClass().getName(), password);
+
+        UserEntity userEntity = userMapper.selectByUname(username);
+
+        if (userEntity == null) {
+            throw new UnknownAccountException("用户不存在");
+        }
+        if (password.equals(userEntity.getPassword())) {
+            throw new IncorrectCredentialsException("用户名或密码错误");
+        }
+
+        log.info("==================认证完成=====================");
+
+        // 存储认证信息   若不需要使用Redis来缓存，那么principal可以不放userEntity，而是username
+        return new SimpleAuthenticationInfo(userEntity, password, userEntity.getId().toString());
+    }
+}
+```
+
+shiro config编写：将自定义Realm、SecurityManager串联起来
+
+```java
+import com.zixq.shiro.authentication.realm.UserRealm;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.LinkedHashMap;
+
+/**
+ * <p>
+ * shiro配置
+ *  配置：Realm、SecurityManager、ShiroFilterFactoryBean【根据业务情况选择】
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Configuration
+public class ShiroConfig {
+    
+    @Bean
+    public ShiroFilterFactoryBean filterFactoryBean() {
+        ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
+        filterFactoryBean.setSecurityManager(securityManager());
+        // 未登录用户则进入登录页
+        filterFactoryBean.setLoginUrl("/login");
+        // 登录成功跳转的页面
+        filterFactoryBean.setSuccessUrl("/index");
+        /* 配置不起作用
+         * 因为shiro源代码中判断了filter是否为AuthorizationFilter，只有perms，roles，ssl，rest，port才是属于AuthorizationFilter
+         * 而anon，authcBasic，auchc，user是AuthenticationFilter，所以unauthorizedUrl设置后不起作用
+         *
+         * 解决方式：在全局异常中捕获 AuthorizationException ，然后返回指定页面即可
+         *  */
+        // 未授权跳转的页面
+        filterFactoryBean.setUnauthorizedUrl("/403");
+
+        // 过滤器链     编写顺序很重要，是依次执行的     所以要注意
+        LinkedHashMap<String, String> filterChainMap = new LinkedHashMap<>();
+        /* 常用 authc、anno   对应的是不同的过滤器  具体的可以在 org.apache.shiro.web.filter.mgt.DefaultFilter 中查看
+        *
+        * authc     只有认证了才能访问
+        * anno      无需认证即可访问
+        * perm      具有“记住我”功能才能用
+        * roles     具有对应的角色才可访问
+        * user      是对应的操作用户才可访问
+        *
+        *  */
+        filterChainMap.put("/sys/*", "authc");
+        filterFactoryBean.setFilterChainDefinitionMap(filterChainMap);
+
+        return filterFactoryBean;
+    }
+
+    @Bean
+    public DefaultWebSecurityManager securityManager() {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        securityManager.setRealm(userRealm());
+
+        return securityManager;
+    }
+
+    @Bean
+    public UserRealm userRealm() {
+        return new UserRealm();
+    }
+}
+```
+
+controller
+
+```java
+import com.zixq.shiro.authentication.entity.Result;
+import com.zixq.shiro.authentication.util.MD5Utils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * <p>
+ * user controller
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@RestController
+@RequestMapping("user")
+public class UserController {
+
+    @PostMapping("/login")
+    public Result login(String username, String password) {
+
+        Subject subject = SecurityUtils.getSubject();
+
+        if (!subject.isAuthenticated()) {
+            // 加密密码
+            password = MD5Utils.encrypt(username, password);
+            try {
+                UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+                subject.login(token);
+            } catch (UnknownAccountException e) {
+                return Result.error(e.getMessage());
+            } catch (IncorrectCredentialsException e) {
+                return Result.error(e.getMessage());
+            }
+        }
+
+        return Result.success(username + "：认证成功");
+    }
+}
+```
+
+MD5工具类
+
+```java
+import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.util.ByteSource;
+
+/**
+ * 加密工具类		shiro中快速加密MD5Pwd API就使用的是SimpleHash类
+ *
+ * shiro中加密流程：程序将明文通过加密方式加密，存到数据库的是密文，
+ * 				  登录时将密文取出来，再通过shiro将用户输入的密码进行加密对比，一样则成功，不一样则失败
+ * 				  但是：平时加密都是自己写的算法，所以这个功能就直接提到这里来了
+ */
+public class MD5Utils {
+    
+	private static final String SALT = "zixieqing";
+
+	private static final String ALGORITH_NAME = "md5";
+
+	/**
+	 * 迭代次数	类似 MD5(MD5)，依次类推	次数越多越复杂越不易被破解
+	 */
+	private static final int HASH_ITERATIONS = 2;
+
+	public static String encrypt(String pswd) {
+		return new SimpleHash(ALGORITH_NAME, pswd, ByteSource.Util.bytes(SALT), HASH_ITERATIONS).toHex();
+	}
+
+	public static String encrypt(String username, String pswd) {
+
+		return new SimpleHash(
+				ALGORITH_NAME,
+				pswd,
+				ByteSource.Util.bytes(username + SALT),
+				HASH_ITERATIONS
+		).toHex();
+	}
+}
+```
+
+
+
+## shiro 授权：ini方式
+
+ini配置文件
+
+```ini
+[users]
+紫邪情=072413,dev
+# 权限表达式     资源:操作   * 代码所有      多个用 逗号, 隔开
+[roles]
+dev==user:select,user:delete
+```
+
+测试
+
+```java
+import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.realm.text.IniRealm;
+import org.apache.shiro.subject.Subject;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.LinkedList;
+
+/**
+ * <p>
+ * 测试
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+
+@Log4j2
+@SpringBootTest
+public class ApiTest {
+
+    @Test
+    void authorizationIniTest() {
+        // 安全管理器
+        DefaultSecurityManager securityManager = new DefaultSecurityManager();
+        SecurityUtils.setSecurityManager(securityManager);
+
+        // 设置 Realm
+        IniRealm iniRealm = new IniRealm("classpath:shiro-auth.ini");
+        securityManager.setRealm(iniRealm);
+
+        // 获取 Subject
+        Subject subject = SecurityUtils.getSubject();
+
+        // 登录
+        UsernamePasswordToken token = new UsernamePasswordToken("紫邪情", "072413");
+        subject.login(token);
+
+        LinkedList<String> roles = new LinkedList<>();
+        roles.add("admin");
+        roles.add("dev");
+
+        log.info("==========授权校验======={}============",
+                subject.isPermitted("user:select","user:delete","user:add"));    // [true, true, false]
+
+        log.info("======角色校验======={}================", subject.hasRoles(roles));       // [false, true]
+    }
+}
+```
+
+## shiro 授权：自定义Realm
+
+YAML配置：和上面认证的配置一样
+
+自定义 Realm
+
+```java
+import com.zixq.shiro.authorization.entity.PermissionEntity;
+import com.zixq.shiro.authorization.entity.RoleEntity;
+import com.zixq.shiro.authorization.entity.UserEntity;
+import com.zixq.shiro.authorization.mapper.UserMapper;
+import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+
+/**
+ * <p>
+ * 自定义 Realm
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+public class UserRealm extends AuthorizingRealm {
+    
+    @Autowired
+    private UserMapper userMapper;
+
+    // 授权   角色权限
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+
+        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+
+        UserEntity userEntity = (UserEntity) SecurityUtils.getSubject().getPrincipal();
+
+        // UserEntity userEntity = userMapper.selectByUname(username);
+
+        log.info("========授权校验==============用户：{}，进入了：{}，进行授权校验",
+                userEntity.getUsername(), this.getClass().getName());
+
+        // 获取角色信息
+        List<RoleEntity> roleList = userMapper.selectRoleByUid(userEntity.getId());
+        LinkedHashSet<String> roleSet = new LinkedHashSet<>();
+        for (RoleEntity roleEntity : roleList) {
+            roleSet.add(roleEntity.getRoleName());
+        }
+
+        // 获取权限信息
+        List<PermissionEntity> permissionList = userMapper.selectPermissionByUid(userEntity.getId());
+        LinkedHashSet<String> permissionSet = new LinkedHashSet<>();
+        for (PermissionEntity permissionEntity : permissionList) {
+            permissionSet.add(permissionEntity.getPName());
+        }
+
+        // 添加角色信息
+        authorizationInfo.setRoles(roleSet);
+        // 添加权限信息
+        authorizationInfo.setStringPermissions(permissionSet);
+
+        log.info("================授权校验完成，并已存入authorizationInfo中====================");
+
+        return authorizationInfo;
+    }
+
+
+    // 认证
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+
+        UsernamePasswordToken upToken = (UsernamePasswordToken) token;
+        String username = upToken.getUsername();
+        String password = new String((char[]) upToken.getPassword());
+
+        log.info("===============用户：{}，进入了：{}#doGetAuthenticationInfo() 进行认证，密码为：{}================",
+                username, this.getClass().getName(), password);
+
+        UserEntity userEntity = userMapper.selectByUname(username);
+
+        if (userEntity == null) {
+            throw new UnknownAccountException("用户不存在");
+        }
+        if (password.equals(userEntity.getPassword())) {
+            throw new IncorrectCredentialsException("用户名或密码错误");
+        }
+
+        log.info("==================认证完成=====================");
+
+        // 存储认证信息   若不需要使用Redis来缓存，那么principal可以不放userEntity，而是username
+        return new SimpleAuthenticationInfo(userEntity, password, userEntity.getId().toString());
+    }
+}
+```
+
+shiro config配置
+
+```java
+import com.zixq.shiro.authorization.realm.UserRealm;
+import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+
+import java.util.LinkedHashMap;
+
+/**
+ * <p>
+ * shiro配置
+ *  配置：Realm、SecurityManager、ShiroFilterFactoryBean【根据业务情况选择】
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+@Configuration
+public class ShiroConfig {
+
+    @Bean
+    public ShiroFilterFactoryBean filterFactoryBean() {
+
+        // 查看shiro的初始化时间    验证是否比spring快
+        log.info("========进入了：{}#filterFactoryBean()", this.getClass().getName());
+
+        ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
+        filterFactoryBean.setSecurityManager(securityManager());
+        // 未登录用户则进入登录页
+        filterFactoryBean.setLoginUrl("/login");
+        // 登录成功跳转的页面
+        filterFactoryBean.setSuccessUrl("/index");
+        /* 配置不起作用
+         * 因为shiro源代码中判断了filter是否为AuthorizationFilter，只有perms，roles，ssl，rest，port才是属于AuthorizationFilter
+         * 而anon，authcBasic，auchc，user是AuthenticationFilter，所以unauthorizedUrl设置后不起作用
+         *
+         * 解决方式：在全局异常中捕获 AuthorizationException ，然后返回指定页面即可
+         *  */
+        // 未授权跳转的页面
+        filterFactoryBean.setUnauthorizedUrl("/403");
+
+        // 过滤器链     编写顺序很重要，是依次执行的     所以要注意
+        LinkedHashMap<String, String> filterChainMap = new LinkedHashMap<>();
+        /* 常用 authc、anno   对应的是不同的过滤器  具体的可以在 org.apache.shiro.web.filter.mgt.DefaultFilter 中查看
+         *
+         * authc     只有认证了才能访问
+         * anno      无需认证即可访问
+         * perm      具有“记住我”功能才能用
+         * roles     具有对应的角色才可访问
+         * user      是对应的操作用户才可访问
+         *
+         *  */
+        filterChainMap.put("/sys/*", "authc");
+        filterFactoryBean.setFilterChainDefinitionMap(filterChainMap);
+
+        return filterFactoryBean;
+    }
+
+    @Bean
+    public DefaultWebSecurityManager securityManager() {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        securityManager.setRealm(userRealm());
+
+        return securityManager;
+    }
+
+    @Bean
+    public UserRealm userRealm() {
+        return new UserRealm();
+    }
+
+
+
+
+    // ================================授权配置================================
+    // ======== bean(DefaultAdvisorAutoProxyCreator(可选) 和 AuthorizationAttributeSourceAdvisor)即可实现此功能 ==========
+
+    /**
+     * Shiro生命周期处理器
+     */
+    @Bean
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
+    }
+
+    /***
+     * 授权所用配置：开启Shiro的注解(如@RequiresRoles、@RequiresPermissions),需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证
+     */
+    @Bean
+    @DependsOn({"lifecycleBeanPostProcessor"})
+    public DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
+        return defaultAdvisorAutoProxyCreator;
+    }
+
+    // =====================上面两个不配置也行，我使用时没配置也可以===================
+
+    /***
+     * 使授权注解起作用 不想配置可以在pom文件中加入
+     * <dependency>
+     *  <groupId>org.springframework.boot</groupId>
+     *  <artifactId>spring-boot-starter-aop</artifactId>
+     *</dependency>
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(){
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager());
+        return authorizationAttributeSourceAdvisor;
+    }
+}
+```
+
+controller
+
+```java
+import com.zixq.shiro.authorization.entity.Result;
+import com.zixq.shiro.authorization.util.MD5Utils;
+import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * <p>
+ * user controller
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+@RestController
+@RequestMapping("user")
+public class UserController {
+
+    @PostMapping("/login")
+    public Result login(@RequestParam("username") String username,
+                        @RequestParam("password") String password) {
+
+        Subject subject = SecurityUtils.getSubject();
+
+        if (!subject.isAuthenticated()) {
+            // 加密密码
+            password = MD5Utils.encrypt(username, password);
+            try {
+                UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+                subject.login(token);
+
+                // 手动调研授权校验的API
+                log.info("=======授权校验================{}", subject.isPermitted("user:select"));
+            } catch (UnknownAccountException e) {
+                return Result.error(e.getMessage());
+            } catch (IncorrectCredentialsException e) {
+                return Result.error(e.getMessage());
+            }
+        }
+
+        return Result.success(username + "：认证成功");
+    }
+
+    @RequiresRoles({"dev"})     // 角色
+    @RequiresPermissions({"user:select","user:update"})   // 权限
+    @GetMapping("/edit")
+    public Result edit() {
+        return Result.success("能查询和编辑用户信息");
+    }
+}
+```
+
+测试
+
+1)、先认证
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164533023-273533819.png)
+
+2)、再授权校验
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164533070-1029629716.png)
+
+## shiro使用Redis缓存
+
+> **提示**
+>
+> 当前内容是在前面认证授权的基础添加内容
+
+依赖
+
+```xml
+    <!-- shiro-spring 2.x 对应 SpringBoot 3.x -->
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-spring</artifactId>
+      <version>1.13.0</version>
+      <!--  注意分析一下依赖    我这里测试通过如下方式没问题，但不排除依赖就有问题【不兼容】  -->
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-beanutils</artifactId>
+          <groupId>commons-beanutils</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- shiro-redis  注意版本问题  使用 shiro-redis 2.x 版本时出现了一些各种API调用的异常【不兼容】 -->
+    <dependency>
+      <groupId>org.crazycake</groupId>
+      <artifactId>shiro-redis</artifactId>
+      <version>3.1.0</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>shiro-core</artifactId>
+          <groupId>org.apache.shiro</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+```
+
+YAML配置
+
+```yaml
+server:
+  port: 6575
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring-boot-study?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: zixieqing072413
+  redis:
+    host: localhost
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+    timeout: 0
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.zixq.shiro.authorization.entity
+```
+
+shiro config：在前面认证授权的基础上加上redis相关配置，主要是利用 SecurityManager将RedisCacheManager集成进去，前面玩ini认证看源码 知道一个顺序是 Subject ——》SecurityManager ——》Realm，所以这里就好理解了
+
+```java
+import com.zixq.shiro.redis.realm.UserRealm;
+import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.serializer.ObjectSerializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Log4j2
+@Configuration
+public class ShiroConfig {
+    @Bean
+    public DefaultWebSecurityManager securityManager() {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        securityManager.setRealm(userRealm());
+        // 将redis配置集成进来
+        securityManager.setCacheManager(redisCacheManager());
+
+        return securityManager;
+    }
+
+
+    // ============================================缓存配置===============================================
+    public RedisCacheManager redisCacheManager() {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager());
+        // 配置缓存过期时间 单位：秒    默认：1800
+        redisCacheManager.setExpire(30);
+        // 设置 cache key 拼接的前缀
+        redisCacheManager.setKeyPrefix("cache:");
+        /* 可以篡改 value的序列化方式     shiro默认是 ObjectSerializer   即JDK序列化
+         * 自定义序列化 implements RedisSerializer<T>
+         * 重写  序列化 byte[] serialize(T var1) 和 反序列化 T deserialize(byte[] var1) 即可 */
+        redisCacheManager.setValueSerializer(new ObjectSerializer());
+
+        return redisCacheManager;
+    }
+
+    // 这里嫌麻烦可以直接放在上面 redisCacheManager 中new出来配置即可
+    public RedisManager redisManager() {
+        RedisManager redisManager = new RedisManager();
+        /* 配置缓存过期时间     这个是我自己 shiro-redis 2.4.2.1-RELEASE 版本时使用的，
+         * 但出现了 CacheException： tried  to access method ......returnSource() 异常
+         * shiro-redis 3.x 中 这个setExpire是放到了 RedisCacheManager 中
+         * */
+        // redisManager.setExpire(30);
+
+        return redisManager;
+    }
+}
+```
+
+测试
+
+![img1png](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164533398-148138775.png)
+
+可以看到redis value的默认序列化就是JDK序列化
+
+![imgpng](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240607164533607-1535750285.png)
+
+
 
 
 

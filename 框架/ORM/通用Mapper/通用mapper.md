@@ -1,33 +1,28 @@
-## 1、简单认识通用mapper
+# 简单认识通用mapper
 
-#### 1.1、了解mapper
+## 了解mapper
 
-- **作用：**就是为了帮助我们自动的生成sql语句
-- 通用mapper是MyBatis的一个插件，是pageHelper的同一个作者进行开发的
-- **作者gitee地址：**https://gitee.com/free
-- **github地址：**https://github.com/abel533/Mapper
-- **通用mapper官网地址：**https://gitee.com/free/Mapper
-- **通用mapper文档介绍地址：**https://gitee.com/free/Mapper/wikis/Home
+**作用：**就是为了帮助我们自动的生成sql语句
 
+通用mapper是MyBatis的一个插件，是pageHelper的同一个作者进行开发的
 
+**作者gitee地址：**https://gitee.com/free
 
-#### 1.2、学习通用mapper需要的知识
+**github地址：**https://github.com/abel533/Mapper
 
-- Mybatis
-- Spring
+**通用mapper官网地址：**https://gitee.com/free/Mapper
+
+**通用mapper文档介绍地址：**https://gitee.com/free/Mapper/wikis/Home
 
 
 
+# 玩通用mapper
 
+## 准备工作
 
-## 2、玩通用mapper
-
-### 2.1、准备工作
-
-> **建测试表**
+**建测试表**
 
 ```sql
-
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户id',
   `user_name` varchar(20) DEFAULT NULL COMMENT '用户名',
@@ -41,14 +36,9 @@ insert  into `user`(`user_id`,`user_name`,`user_sex`,`user_salary`) values
 (1,'紫邪情','女',100.00),
 (2,'紫玲','女',50.00),
 (3,'张三','男',999.99);
-
 ```
 
-
-
-
-
-> **创建Spring项目 并 导入依赖**
+**创建Spring项目 并 导入依赖**
 
 ```xml
 <!--  spring整合mybatis的依赖  -->
@@ -127,11 +117,7 @@ insert  into `user`(`user_id`,`user_name`,`user_sex`,`user_salary`) values
 </dependencies>
 ```
 
-
-
-
-
-> **编写SSM框架整合的xml文件**
+**编写SSM框架整合的xml文件**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -204,28 +190,17 @@ insert  into `user`(`user_id`,`user_name`,`user_sex`,`user_salary`) values
 </beans>
 ```
 
-
-
-- **注意点：在扫描mapper层时，使用通用mapper覆盖mybatis，写法不太一样**
+> **注意点：在扫描mapper层时，使用通用mapper覆盖mybatis，写法不太一样**
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220413130519939-1442795967.png" alt="image" style="zoom:50%;" />
 
 
 
-- **我的项目结构如下**
+**建对应的实体类**
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220413130707473-912076240.png" alt="image" style="zoom:50%;" />
-
-
-
-
-
-> **建对应的实体类**
-
-- **注意点**：数据类型用包装类，因为包装类可以判断null值，这个涉及到通用mapper的原理，数据类型用包装类在MaBatis中就已经知道的事情
+> **注意点**：数据类型用包装类，因为包装类可以判断null值，这个涉及到通用mapper的原理，数据类型用包装类在MaBatis中就已经知道的事情
 
 ```java
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -237,58 +212,45 @@ public class UserEntity implements Serializable {
     private String userSex;
     private Double userSalary;
 }
-
 ```
 
+## 通用mapper基础API
 
-
-### 2.2、玩通用mapper的基础API
-
-> **先看一下通用mapper大概有哪些API**
+先看一下通用mapper大概有哪些API
 
 ```java
-
 // 这里接口直接继承通用mapper接口即可
 //    注意：泛型中的信息就是实体类
 public interface UserMapper extends Mapper<User> {		// 看源码，点mapper即可进入
     
 }
-
 ```
-
-
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412223350257-113535741.png" alt="image" style="zoom:50%;" />
 
 
 
-**看看BaseMapper**
+看看BaseMapper
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412223536994-2109219894.png" alt="image" style="zoom:50%;" />
 
 
 
-- 其他的都是差不多的套路，归纳起来其实就是增删查改的封装，然后做了不同的细分，需要继续查看的，那就往后挨个去点击
+其他的都是差不多的套路，归纳起来其实就是增删查改的封装，然后做了不同的细分，需要继续查看的，那就往后挨个去点击
 
 
 
+### 和select相关
 
-
-#### 2.2.1、和select相关
-
-##### 2.2.1、selectOne方法 和 @Table及@Column注解
+#### selectOne方法 和 @Table及@Column注解
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220412224058727-1585991322.png" alt="image" style="zoom:50%;" />
 
 
 
-> **编写测试类 并启动**
+编写测试类 并启动
 
 ```java
-
-package cn.zixieqing;
-
-
 import cn.zixieqing.entity.*;
 import cn.zixieqing.mapper.*;
 import org.junit.*;
@@ -313,19 +275,15 @@ public class MyTest {
         System.out.println(userMapper.selectOne(userEntity));
     }
 }
-
-
 ```
 
-
-
-- **出现报错：Table 'mapper_study.user_entity' doesn't exist**
+**出现报错：Table 'mapper_study.user_entity' doesn't exist**
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416171653584-1421493233.png" alt="image" style="zoom:50%;" />
 
 
 
-- **原因就是编写的实体类名叫做UserEntity，而数据库的表名叫做user，解决方式就是在实体类中加入@Table注释，注意此注解是import javax.persistence.*;包下的**
+**原因就是编写的实体类名叫做UserEntity，而数据库的表名叫做user，解决方式就是在实体类中加入@Table注释，注意此注解是import javax.persistence.*;包下的**
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416171948106-2075104792.png" alt="image" style="zoom:50%;" />
 
@@ -333,58 +291,58 @@ public class MyTest {
 
 
 
-- **另外的selectxxx方法直接一点就出来了，基本上都是见名知意，就算不知道的源码中也有解释，通用mapper就是国内人写的**
+另外的selectxxx方法直接一点就出来了，基本上都是见名知意，就算不知道的源码中也有解释，通用mapper就是国内人写的
 
 
 
-- **至于@Column注解就是见名知意，用来处理实体类的字段和数据库中的字段不一致的问题**
-  - 默认规则： 
-    - 实体类字段：驼峰式命名 
-    - 数据库表字段：使用“_”区分各个单词
+**至于`@Column`注解就是见名知意，用来处理实体类的字段和数据库中的字段不一致的问题**
+
+- 默认规则： 
+  - 实体类字段：驼峰式命名 
+  - 数据库表字段：使用`_`区分各个单词
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416173826269-1269992706.png" alt="image" style="zoom:50%;" />
 
 
 
-
-
-##### 2.2.2、观察日志总结selectOne方法
+#### 观察日志总结selectOne方法
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416172326778-492922714.png" alt="image" style="zoom:50%;" />
 
 
 
-- **selectOne()是将封装的实体类作为了WHERE子句的条件**
-  - 这里是使用了非空的值作为的WHERE子句
+**`selectOne()`是将封装的实体类作为了WHERE子句的条件**
+
+- 这里是使用了非空的值作为的WHERE子句
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416172613501-1483535000.png" alt="image" style="zoom:50%;" />
 
 - **在条件表达式中使用“=”进行比较**
-- **注意点：**要求必须返回<span style="color:blue">一个</span>实体类结果，如果有多个，则会抛出异常
 
 
 
+> **注意点：**要求必须返回<span style="color:blue">一个</span>实体类结果，如果有多个，则会抛出异常
 
 
 
+#### xxxByPrimaryKey方法 和 @Id注解
 
-##### 2.2.3、xxxByPrimaryKey方法 和 @Id注解
-
-> **测试**
+测试
 
 ```java
-
     @Test
     public void selectByPrimaryKey() {
         System.out.println(userMapper.selectByPrimaryKey(3));
     }
-
 ```
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174558536-1265840354.png" alt="image" style="zoom:50%;" />
 
-- **结果：发现将实体类的所有字段属性都作为WHERE子句的条件了**
-- **解决办法：给实体类中对应的数据库表的主键字段加上@Id注解**
+
+
+**结果：发现将实体类的所有字段属性都作为WHERE子句的条件了**
+
+**解决办法：给实体类中对应的数据库表的主键字段加上@Id注解**
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416174814745-2112149310.png" alt="image" style="zoom:50%;" />
 
@@ -396,27 +354,23 @@ public class MyTest {
 
 
 
-
-
-##### 2.2.4、xxxByPrimaryKey方法 和 @Id注解总结
+#### xxxByPrimaryKey方法 和 @Id注解总结
 
 > **@Id注解**
 
-- 为了将实体类字段属性和对应的数据库表主键做匹配
+为了将实体类字段属性和对应的数据库表主键做匹配
 
-- 原因：通用mapper在执行xxxByPrimaryKey方法时会出现两种情况：
+原因：通用mapper在执行xxxByPrimaryKey方法时会出现两种情况：
 
-  - 1、没有加@Id注解时，通用mapper会将实体类的所有属性作为联合主键来匹配数据库表的主键，故而会出现将实体类中的字段属性全部作为WHERE子句后面的条件字段
+1）、没有加`@Id`注解时，通用mapper会将实体类的所有属性作为联合主键来匹配数据库表的主键，故而会出现将实体类中的字段属性全部作为WHERE子句后面的条件字段
 
-    - ```sql
-      
-      SELECT user_id,user_name,user_sex,user_salary 
-      FROM user 
-      WHERE user_id = ? AND user_name = ? AND user_sex = ? AND user_salary = ?
-      
-      ```
+```sql
+SELECT user_id,user_name,user_sex,user_salary 
+FROM user 
+WHERE user_id = ? AND user_name = ? AND user_sex = ? AND user_salary = ?
+```
 
-  - 2、使用@Id主键将实体类中的字段属性和数据库表中的主键做明确匹配
+2）、使用`@Id`主键将实体类中的字段属性和数据库表中的主键做明确匹配
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416180054825-1736554194.png" alt="image" style="zoom:67%;" />
 
@@ -428,45 +382,38 @@ public class MyTest {
 
 > **xxxByPrimaryKey方法**
 
-- 需要使用@Id注解来让实体类中的字段属性和数据库表中的主键做明确匹配，否则：通用mapper默认将实体类的所有字段属性作为联合主键来进行匹配
+需要使用`@Id`注解来让实体类中的字段属性和数据库表中的主键做明确匹配，否则：通用mapper默认将实体类的所有字段属性作为联合主键来进行匹配
 
 
 
 
 
-##### 2.2.5、select方法
+#### select方法
 
-- **传什么，就用什么来拼接WHERE子句的条件**
+> **传什么，就用什么来拼接WHERE子句的条件**
 
-
-
-> **测试**
+测试
 
 ```java
-
     @Test
     public void select() {
         UserEntity userEntity = new UserEntity();
         userEntity.setUserName("紫邪情");
         System.out.println(userMapper.select(userEntity));
     }
-
 ```
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416181854269-143823458.png" alt="image" style="zoom:50%;" />
 
 
 
+### 和insert相关
 
+#### insert方法
 
-#### 2.2.2、和insert相关
-
-##### 2.2.2.1、insert方法
-
-> **测试**
+测试
 
 ```java
-
     @Test
     public void insertTest() {
 
@@ -477,16 +424,13 @@ public class MyTest {
         // 这个API会将null也拼接到SQL语句中
         System.out.println(userMapper.insert(userEntity));
     }
-
 ```
 
 
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220416233315357-1713515164.png" alt="image" style="zoom:50%;" />
 
-
-
-##### 2.2.2.2、insertSelective方法
+#### insertSelective方法
 
 ```java
     @Test
@@ -506,13 +450,11 @@ public class MyTest {
 
 
 
+#### @GeneratedValue注解
 
+**这个注解是为了让通用mapper再执行insert语句之后，把数据库中自动生成的主键值回填到实体类对象中**
 
-##### 2.2.2.3、@GeneratedValue注解
-
-- **这个注解是为了让通用mapper再执行insert语句之后，把数据库中自动生成的主键值回填到实体类对象中**
-
-- 官网文档介绍：https://gitee.com/free/Mapper/wikis/2.orm/2.3-generatedvalue
+官网文档介绍：https://gitee.com/free/Mapper/wikis/2.orm/2.3-generatedvalue
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417142812499-435107595.png" alt="image" style="zoom:67%;" />
 
@@ -520,14 +462,13 @@ public class MyTest {
 
 
 
-#### 2.2.3、和update相关
+### 和update相关
 
-##### 2.2.3.1、updateByPrimaryKeySelective方法
+#### updateByPrimaryKeySelective方法
 
-- 这个其实看一眼就知道了，**也就是：根据主键把不为null值的字段修改掉，即：set后面的字段就是实体类中不为null的字段**
+这个其实看一眼就知道了，**也就是：根据主键把不为null值的字段修改掉，即：set后面的字段就是实体类中不为null的字段**
 
 ```java
-
     @Test
     public void updateByPrimaryKeySelectiveTest() {
 
@@ -544,34 +485,27 @@ public class MyTest {
 
 
 
+### 和delete相关
 
+#### delete方法
 
+**切记：使用时，记得把实体类值传进去，否则：若是null的实体类，则：SQL语句就没有WHERE条件了，继而：变成全表的逻辑删除了**
 
-
-#### 2.2.4、和delete相关
-
-##### 2.2.4.1、delete方法
-
-- **切记：使用时，记得把实体类值传进去，否则：若是null的实体类，则：SQL语句就没有WHERE条件了，继而：变成全表的逻辑删除了**
-- **原理：还是一样的，使用非null的字段作为WHERE子句条件**
+**原理：还是一样的，使用非null的字段作为WHERE子句条件**
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220417134105619-1607172028.png" alt="image" style="zoom:50%;" />
 
 
 
+#### deleteByPrimaryKey方法
 
-
-##### 2.2.4.2、deleteByPrimaryKey方法
-
-- 见名知意，直接通过主键来删
+见名知意，直接通过主键来删
 
 ```java
-
     @Test
     public void deleteByPrimaryKeyTest() {
         userMapper.deleteByPrimaryKey(2);
     }
-
 ```
 
 
@@ -580,37 +514,28 @@ public class MyTest {
 
 
 
+### @Transient注解
 
-
-##### 
-
-#### 2.2.5、@Transient注解
-
-- 一般情况下，实体中的字段和数据库表中的字段是一一对应的，但是也有很多情况我们会在实体中增加一些额外的属性，这种情况下，就需要使用 `@Transient` 注解来告诉通用 Mapper 这不是表中的字段
+一般情况下，实体中的字段和数据库表中的字段是一一对应的，但是也有很多情况我们会在实体中增加一些额外的属性，这种情况下，就需要使用 `@Transient` 注解来告诉通用 Mapper 这不是表中的字段
 
 ```java
-
 @Transient
 private String otherThings; //非数据库表中字段
-
 ```
 
 
 
 
 
+## QBC查询
 
-
-### 2.3、QBC查询
-
-- QBC全称：query by criteria 也就是通过规则( criteria )来查询
+> QBC全称：query by criteria 也就是通过规则( criteria )来查询
 
 
 
-#### 2.3.1、Criteria对象
+### Criteria对象
 
 ```java
-
 public class ExampleTest {
 
     ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -645,7 +570,6 @@ public class ExampleTest {
         }
     }
 }
-
 ```
 
 
@@ -654,14 +578,11 @@ public class ExampleTest {
 
 
 
+### Example对象能调用的API
 
-
-#### 2.3.2、Example对象能调用的API
-
-##### 2.3.2.1、CreateCriteria()
+#### CreateCriteria()
 
 ```java
-
     @Test
     public void createCriteriaTest() {
 
@@ -685,7 +606,6 @@ public class ExampleTest {
         List<UserEntity> userEntities = userMapper.selectByExample(example);
         userEntities.forEach(System.out::println);
     }
-
 ```
 
 
@@ -696,10 +616,9 @@ public class ExampleTest {
 
 
 
-##### 2.3.2.2、orderBy( String property )排序
+#### orderBy(String property) 排序
 
 ```java
-
     @Test
     public void orderByTest() {
 
@@ -708,7 +627,6 @@ public class ExampleTest {
 
         userMapper.selectByExample(example).forEach(System.out::println);
     }
-
 ```
 
 
@@ -717,28 +635,21 @@ public class ExampleTest {
 
 
 
-
-
-
-
-##### 2.3.2.3、setDistinct( boolean isDistinct )去重
+#### setDistinct(boolean isDistinct) 去重
 
 ```java
-
     @Test
     public void setDistinctTest() {
         example.setDistinct(true);
         userMapper.selectByExample(example).forEach(System.out::println);
     }
-
 ```
 
 
 
-##### 2.3.2.4、selectProperties( String... properties )设置select后的字段
+#### selectProperties(String... properties) 设置select后的字段
 
 ```java
-
     // 设置拼接SQL的select后面的字段
     @Test
     public void selectPropertiesTest() {
@@ -748,15 +659,13 @@ public class ExampleTest {
 
         userMapper.selectByExample(example).forEach(System.out::println);
     }
-
 ```
 
 
 
-##### 2.3.2.5、excludeProperties(String... properties)设置select后不包含的字段
+#### excludeProperties(String... properties) 设置select后不包含的字段
 
 ```java
-
     // 设置select后不包含的字段
     @Test
     public void excludePropertiesTest() {
@@ -766,28 +675,19 @@ public class ExampleTest {
         
         userMapper.selectByExample(example).forEach(System.out::println);
     }
-
 ```
 
-
-
-- 其他的API直接用example点就出来了，都是见名知意的
-
+其他的API直接用example点就出来了，都是见名知意的
 
 
 
+## 通用mapper逆向工程
 
-
-
-### 2.4、通用mapper逆向工程
-
-#### 2.4.1、pom.xml配置
+### 依赖
 
 ```xml
 
-<!-- 注意：别少了这个依赖啊，下面plugins中的依赖，那只是插件需要的依赖
-            没有引入这个dependency的通用mapper依赖的话，那么生成的代码需要引入一些包，到时就是不存在，会报错的
--->
+<!-- 注意：别少了这个依赖 -->
 <dependencies>
     <dependency>
         <groupId>tk.mybatis</groupId>
@@ -795,9 +695,6 @@ public class ExampleTest {
         <version>4.0.0-beta3</version>
     </dependency>
 
-    <!-- 有些人可能会出现生成的mapper接口层报错，说的是：rowBounds不存在 查看import发现源码是引入的org.mybatis
-                但是目前我用得时候并没有报错，所以：为了以防万一还是加上这个org.mybatis依赖
-     -->
     <dependency>
         <groupId>org.mybatis</groupId>
         <artifactId>mybatis</artifactId>
@@ -842,23 +739,13 @@ public class ExampleTest {
         </plugin>
     </plugins>
 </build>
-
 ```
 
 
 
-- 若是出现上述报RowBounds不存在的原因在下面这里
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220418231204554-580370204.png" alt="image" style="zoom:50%;" />
-
-
-
-
-
-#### 2.4.2、generatorConfig.xml配置
+### generatorConfig.xml配置
 
 ```xml
-
 <!DOCTYPE generatorConfiguration
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
@@ -872,10 +759,9 @@ public class ExampleTest {
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
 
-        <!-- 通用mapper插件 -->
-        <!--
-            type 是通用mapper插件，这个可以配置在前面引入的那个外部配置文件中，即配置成如下：
-                mapper.plugin=tk.mybatis.mapper.generator.MapperPlugin
+        <!--  通用mapper插件
+            	type	是通用mapper插件，这个可以配置在前面引入的那个外部配置文件中，即配置成如下：
+                		mapper.plugin=tk.mybatis.mapper.generator.MapperPlugin
                 然后在这里使用${mapper.plugin}引入，这种方式方便管理
         -->
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
@@ -906,9 +792,9 @@ public class ExampleTest {
                              type="XMLMAPPER"/>
 
         <!-- 数据库表名 和 实体类生成关系
-            如果感觉每个表都配置麻烦，那么直接改变tableName的值即可，即：tableName="%"
-            但是：此种方式的默认规则是采用 _ 转驼峰命名，如：table_name  ——> TableName
-            可是：有时我们并不需要这样命名，此时就需要使用tableName 和 domainObjectName两个配置项一起来配置
+            	如果感觉每个表都配置麻烦，那么直接改变tableName的值即可，即：tableName="%"
+            	但是：此种方式的默认规则是采用 _ 转驼峰命名，如：table_name  ——> TableName
+            	可是：有时我们并不需要这样命名，此时就需要使用tableName 和 domainObjectName两个配置项一起来配置
                 tableName 数据库表名
                 domainObjectName  生成的实体类名
         -->
@@ -918,15 +804,11 @@ public class ExampleTest {
         </table>
     </context>
 </generatorConfiguration>
-
 ```
 
-
-
-> **引入的外部文件db.properties的配置**
+引入的外部文件db.properties的配置
 
 ```properties
-
 # 数据库配置
 jdbc.driver=com.mysql.jdbc.Driver
 # 注意：建议使用db.properties配置从而在generatorConfig.xml中引入的原因就在这里
@@ -948,28 +830,25 @@ jdbc.testConnection=true
 # 从而方便管理
 # mapper.plugin=tk.mybatis.mapper.generator.MapperPlugin
 # mapper.Mapper=tk.mybatis.mapper.common.Mapper
-
 ```
 
 
 
-#### 2.4.3、启动
+### 启动
 
-- **在 pom.xml 这一级目录**的命令行窗口执行 `mvn mybatis-generator:generate`即可
+**在 pom.xml 这一级目录**的命令行窗口执行 `mvn mybatis-generator:generate`即可
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220418225618856-1413625074.png)
 
-- **但是：注意生成的实体类中并没有无参和有参构造及toString()，可以自行加上**
+
+
+**但是：注意生成的实体类中并没有无参和有参构造及`toString()`，可以自行加上**
 
 
 
+### 简单测试一下API
 
-
-
-
-#### 2.4.4、简单测试一下API
-
-> **依赖**
+依赖
 
 ```xml
 <dependency>
@@ -995,23 +874,20 @@ jdbc.testConnection=true
 </dependency>
 ```
 
-
-
-> **log4j配置**
+log4j配置
 
 ```properties
-
-#将等级为DEBUG的日志信息输出到console和file这两个目的地，console和file的定义在下面的代码
+# 将等级为DEBUG的日志信息输出到console和file这两个目的地，console和file的定义在下面的代码
 log4j.rootLogger=DEBUG,console,file
 
-#控制台输出的相关设置
+# 控制台输出的相关设置
 log4j.appender.console = org.apache.log4j.ConsoleAppender
 log4j.appender.console.Target = System.out
 log4j.appender.console.Threshold=DEBUG
 log4j.appender.console.layout = org.apache.log4j.PatternLayout
 log4j.appender.console.layout.ConversionPattern=[%c]-%m%n
 
-#文件输出的相关设置
+# 文件输出的相关设置
 log4j.appender.file = org.apache.log4j.RollingFileAppender
 log4j.appender.file.File=./1og/xieGongZi.log
 log4j.appender.file.MaxFileSize=10mb
@@ -1019,21 +895,17 @@ log4j.appender.file.Threshold=DEBUG
 log4j.appender.file.layout=org.apache.log4j.PatternLayout
 log4j.appender.file.layout.ConversionPattern=[%p][%d{yy-MM-dd}][%c]‰m%n
 
-#日志输出级别
+# 日志输出级别
 log4j.logger.org.mybatis=DEBUG
 log4j.logger.java.sq1=DEBUG
 log4j.logger.java.sql.Statement=DEBUG
 log4j.logger.java.sql.ResultSet=DEBUG
 log4j.logger.java.sql.PreparedStatement=DEBUG
-
 ```
 
-
-
-> **mybatis-config.xml配置**
+mybatis-config.xml配置
 
 ```xml
-
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
@@ -1068,19 +940,11 @@ log4j.logger.java.sql.PreparedStatement=DEBUG
     </mappers>
 
 </configuration>
-
 ```
 
-
-
-
-
-
-
-> **测试**
+测试
 
 ```java
-
 @Test
 public void simpleTest() throws IOException {
 
@@ -1100,62 +964,44 @@ public void simpleTest() throws IOException {
 
     userMapper.selectAll().forEach(System.out::println);
 }
-
 ```
 
 
 
+## 自定义mapper
+
+**自定义mapper接口的作用：**根据实际需要自行重组mapper接口，即并不是通用mapper中的所有接口和方法都需要
 
 
-
-
-### 2.5、自定义mapper
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220419231618082-882876794.png" alt="image" style="zoom:50%;" />
 
 
 
-- **自定义mapper接口的作用：**根据实际需要自行重组mapper接口【 ps：即 并不是通用mapper中的所有接口和方法都需要 】
 
 
+### 玩一下自定义mapper接口
 
-
-
-
-
-#### 2.5.1、玩一下自定义mapper接口
-
-> **1、自定义自己要的mapper接口**
+1、自定义自己要的mapper接口
 
 ```java
-
-package cn.zixieqing.common;
-
-
 import tk.mybatis.mapper.common.*;
 
 
 public interface CustomMapper<T> extends BaseMapper<T> {
     // 这个自定义的mapper，想继承前面画的通用mapper中的哪个接口都可以
 }
-
 ```
 
-
-
-> **2、编写业务mapper**
+2、编写业务mapper
 
 ```java
-
-package cn.zixieqing.mapper;
-
 import cn.zixieqing.common.*;
 import cn.zixieqing.entity.*;
 
 
 public interface UserMapper extends CustomMapper<UserEntity> {
 }
-
 ```
 
 
@@ -1164,15 +1010,9 @@ public interface UserMapper extends CustomMapper<UserEntity> {
 
 
 
-- **注意点：别把自定义mapper和业务mapper放到一个包中，会报错**
+> **注意点：别把自定义mapper和业务mapper放到一个包中，会报错**
 
-
-
-
-
-
-
-> **3、修改applicationContext.xml文件的MapperScannerConfigurer配置**
+3、修改applicationContext.xml文件的MapperScannerConfigurer配置
 
 ```xml
 <!-- 4、扫描mapper层，整合通用mapper的唯一一个注意点
@@ -1193,9 +1033,7 @@ public interface UserMapper extends CustomMapper<UserEntity> {
 </bean>
 ```
 
-
-
-> **4、测试**
+4、测试
 
 ```java
 @Test
@@ -1213,17 +1051,13 @@ public void customMapperTest() {
 
 
 
-
-
-
-
 > **补充1、要是不想写applicationContext.xml中MapperScannerConfigurer的那个配置**
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421154919820-22316183.png" alt="image" style="zoom:50%;" />
 
 
 
-- **那把内容注释掉，在自定义mapper接口的地方加个注解@RegisterMapper就搞定了**
+那把内容注释掉，在自定义mapper接口的地方加个注解`@RegisterMapper`就搞定了
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155140599-1197616807.png" alt="image" style="zoom:50%;" />
 
@@ -1235,21 +1069,17 @@ public void customMapperTest() {
 
 ![image](https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155237204-834657686.png)
 
-
-
-- 一运行就会报错
+一运行就会报错
 
 ```json
-
 tk.mybatis.mapper.MapperException: java.lang.ClassCastException: sun.reflect.generics.reflectiveObjects.TypeVariableImpl cannot be cast to java.lang.Class
-
 ```
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155415899-1059970156.png" alt="image" style="zoom:50%;" />
 
 
 
-- 原因就是利用反射，获取类对象时失败，即：原因如下
+原因就是利用反射，获取类对象时失败，即：原因如下
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220421155640872-968692757.png" alt="image" style="zoom:50%;" />
 
@@ -1263,16 +1093,17 @@ tk.mybatis.mapper.MapperException: java.lang.ClassCastException: sun.reflect.gen
 
 
 
-### 2.6、了解通用mapper的二级缓存
+## 了解通用mapper的二级缓存
 
-- 一二级缓存的概念哪些就跳过了，MyBatis中已经见过了，这里玩通用mapper的配置
-- 测试：自行编写一个业务mapper，然后去实现mapper<T>，从而进行多次执行，会发现SQL执行了多次
+一二级缓存的概念哪些就跳过了，MyBatis中已经见过了，这里玩通用mapper的配置
+
+测试：自行编写一个业务mapper，然后去实现mapper<T>，从而进行多次执行，会发现SQL执行了多次
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425134328149-1580152425.png" alt="image" style="zoom:50%;" />
 
 
 
-- 注意：需要让mapper<T>中的实体类T实现Serializable接口，从而有用序列号，否则：会报错的
+注意：需要让`mapper<T>`中的实体类T实现Serializable接口，从而有用序列号，否则：会报错的
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425134756463-541871070.png" alt="image" style="zoom:50%;" />
 
@@ -1280,7 +1111,7 @@ tk.mybatis.mapper.MapperException: java.lang.ClassCastException: sun.reflect.gen
 
 
 
-> **修改mybatis-config.xml文件**
+1、修改mybatis-config.xml文件
 
 ```xml
 <settings>
@@ -1289,34 +1120,26 @@ tk.mybatis.mapper.MapperException: java.lang.ClassCastException: sun.reflect.gen
 </settings>
 ```
 
-
-
-> **在业务mapper接口中添加@CacheNamespace注解**
+2、在业务mapper接口中添加`@CacheNamespace`注解
 
 ```java
-
 @CacheNamespace
 public interface UserMapper extends Mapper<UserEntity> {
 }
-
 ```
 
-
-
-> **再次测试**
+3、再次测试
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425135220678-1997230277.png" alt="image" style="zoom:50%;" />
 
 
 
+## 类型处理器 typeHandler
 
+这里说的类型是简单类型和复杂类型，注意：和Java中说的基本类型和引用类型不是一回事，不是说基本类型就一定是简单类型，这里不用去考虑基本和引用的问题
 
+**简单类型和复杂类型可以参考一对一和一对多这两种**
 
-
-### 2.7、类型处理器 typeHandler
-
-- 这里说的类型是简单类型和复杂类型，注意：和Java中说的基本类型和引用类型不是一回事，不是说基本类型就一定是简单类型，这里不用去考虑基本和引用的问题
-- **简单类型和复杂类型可以参考一对一和一对多这两种**
 - **简单类型：**只有一个值
 - **复杂类型：**有多个值
 
@@ -1328,23 +1151,17 @@ public interface UserMapper extends Mapper<UserEntity> {
 
 
 
-- 而上面这种，对于userName来说，是无法进行CRUD的
+而上面这种，对于userName来说，是无法进行CRUD的
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425150839366-1771529095.png" alt="image" style="zoom:50%;" />
 
 
 
-- **这种情况就是复杂类型，而通用mapper默认是没处理的，就有点类似于在上述例子的userName上加了一个@Transient注解，从而忽略了该字段，从而造成的效果就是：去数据库中找对应的字段值时没找到，从数据库中找到数据，然后返还给对象时没有相应的对象可以接受**
+**这种情况就是复杂类型，而通用mapper默认是没处理的，就有点类似于在上述例子的userName上加了一个@Transient注解，从而忽略了该字段，从而造成的效果就是：去数据库中找对应的字段值时没找到，从数据库中找到数据，然后返还给对象时没有相应的对象可以接受**
 
 
 
 <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425151053463-1178427386.png" alt="image" style="zoom:50%;" />
-
-
-
-
-
-
 
 
 
@@ -1358,229 +1175,211 @@ public interface UserMapper extends Mapper<UserEntity> {
 
 
 
-- **具体操作流程如下：**
+**具体操作流程如下：**
 
-  - **1、创建一个类型处理器的类，然后实现TypeHandler<T>接口**，其中：T就是要处理的那个类型，如：上述例子的NameEntity
+1、**创建一个类型处理器的类，然后实现TypeHandler<T>接口**，其中：T就是要处理的那个类型，如：上述例子的NameEntity
 
-  - **2、实现里面的四个方法**
+2、**实现里面的四个方法**
 
-    - ```java
-      
-          @Override
-          public void setParameter(PreparedStatement preparedStatement, int i, NameEntity nameEntity, JdbcType jdbcType) throws SQLException {
-              
-          }
-      
-          @Override
-          public NameEntity getResult(ResultSet resultSet, String s) throws SQLException {
-              return null;
-          }
-      
-          @Override
-          public NameEntity getResult(ResultSet resultSet, int i) throws SQLException {
-              return null;
-          }
-      
-          @Override
-          public NameEntity getResult(CallableStatement callableStatement, int i) throws SQLException {
-              return null;
-          }
-      
-      ```
-
-  - 实例逻辑编写如下
-
-    - ```java
-      
-      public class NameHandler implements TypeHandler<NameEntity> {
-      
-          /**
-           * 这个方法就是：对象NameEntity ——> 数据库的流程规则，可以将其理解为序列化流程 但是完全不一样啊
-           * 只是说：像序列化一样把数据转成一个样
-           * @param ps
-           * @param i
-           * @param nameEntity
-           * @param jdbcType
-           * @throws SQLException
-           */
-          @Override
-          public void setParameter(PreparedStatement ps, int i, NameEntity nameEntity, JdbcType jdbcType) throws SQLException {
-      
-              // 1、验证NameEntity
-              if ( null == nameEntity) {
-                  return;
-              }
-      
-              // 2、取出nameEntity中的值
-              String firstName = nameEntity.getFirstName();
-              String lastName = nameEntity.getLastName();
-      
-              // 3、把取出的值 拼接成 一个字符串
-              // 自定义规则：使用 - 进行隔开
-              StringBuilder builder = new StringBuilder();
-              builder.append(firstName)
-                      .append("-")
-                      .append(lastName);
-      
-              // 4、拼接SQL的参数
-              ps.setString(i,builder.toString() );
-          }
-      
-          /**
-           * 这下面三个是重载，是为了解决：数据库 ——> 对象NameEntity的流程，类似于反序列化，把另一个东西转成正常需要的样子
-           * @param resultSet
-           * @param columnName
-           * @return
-           * @throws SQLException
-           */
-          @Override
-          public NameEntity getResult(ResultSet resultSet, String columnName ) throws SQLException {
-              // 1、从结果集ResultSet根据字段名取出字段值
-              String columnValue = resultSet.getString(columnName);
-      
-              // 2、验证columnValue
-              if ( null == columnValue || columnValue.length() == 0 || !columnValue.contains("-") ) {
-                  return null;
-              }
-              
-              // 3、根据“-”对columnValue进行拆分
-              String[] column = columnValue.split("-");
-              
-              // 4、把拆分之后的值 给到 对象的对应值
-              return new NameEntity().setFirstName( column[0] ).setLastName( column[1] );
-          }
-      
-          @Override
-          public NameEntity getResult(ResultSet resultSet, int i) throws SQLException {
-      
-              // 1、从结果集ResultSet根据字段名取出字段值
-              String columnValue = resultSet.getString(i);
-      
-              // 2、验证columnValue
-              if ( null == columnValue || columnValue.length() == 0 || !columnValue.contains("-") ) {
-                  return null;
-              }
-      
-              // 3、根据“-”对columnValue进行拆分
-              String[] column = columnValue.split("-");
-      
-              // 4、把拆分之后的值 给到 对象的对应值
-              return new NameEntity().setFirstName( column[0] ).setLastName( column[1] );
-          }
-      
-          @Override
-          public NameEntity getResult(CallableStatement cs, int i) throws SQLException {
-      
-      
-              // 1、从CallableStatement 根据 索引取出字段值
-              String columnValue = cs.getString(i);
-      
-              // 2、验证columnValue
-              if ( null == columnValue || columnValue.length() == 0 || !columnValue.contains("-") ) {
-                  return null;
-              }
-      
-              // 3、根据“-”对columnValue进行拆分
-              String[] column = columnValue.split("-");
-      
-              // 4、把拆分之后的值 给到 对象的对应值
-              return new NameEntity().setFirstName( column[0] ).setLastName( column[1] );
-          }
-      }
-      
-      
-      ```
-
-    - **3、注册类型处理器**
-
-      - **第一种( 字段级别 )：使用`@ColumnType(typeHandler = xxxx.class)`注解**
-
-      - <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160506676-2042913166.png" alt="image" style="zoom:50%;" />
-
-      - <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160846632-1978440946.png" alt="image" style="zoom:50%;" />
-
-        - 注意啊：我这里是改数据库了的，这是做的查询嘛，要是数据库中的数据没符合规范，那还是查不到
-        - <img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160955463-1305722015.png" alt="image" style="zoom:50%;" />
-
-      - **第二种( 全局配置 ）：在mybatis-config.xml中进行配置**
-
-      - ```xml
+```java
+    @Override
+    public void setParameter(PreparedStatement preparedStatement, int i, NameEntity nameEntity, JdbcType jdbcType) throws SQLException {
         
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <!DOCTYPE configuration
-                PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-                "http://mybatis.org/dtd/mybatis-3-config.dtd">
-        <configuration>
+    }
+
+    @Override
+    public NameEntity getResult(ResultSet resultSet, String s) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public NameEntity getResult(ResultSet resultSet, int i) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public NameEntity getResult(CallableStatement callableStatement, int i) throws SQLException {
+        return null;
+    }
+```
+
+实例逻辑编写如下
+
+```java
+public class NameHandler implements TypeHandler<NameEntity> {
+
+    /**
+     * 这个方法就是：对象NameEntity ——> 数据库的流程规则，可以将其理解为序列化流程 但是完全不一样啊
+     * 只是说：像序列化一样把数据转成一个样
+     * @param ps
+     * @param i
+     * @param nameEntity
+     * @param jdbcType
+     * @throws SQLException
+     */
+    @Override
+    public void setParameter(PreparedStatement ps, int i, NameEntity nameEntity, JdbcType jdbcType) throws SQLException {
+
+        // 1、验证NameEntity
+        if ( null == nameEntity) {
+            return;
+        }
+
+        // 2、取出nameEntity中的值
+        String firstName = nameEntity.getFirstName();
+        String lastName = nameEntity.getLastName();
+
+        // 3、把取出的值 拼接成 一个字符串
+        // 自定义规则：使用 - 进行隔开
+        StringBuilder builder = new StringBuilder();
+        builder.append(firstName)
+                .append("-")
+                .append(lastName);
+
+        // 4、拼接SQL的参数
+        ps.setString(i,builder.toString() );
+    }
+
+    /**
+     * 这下面三个是重载，是为了解决：数据库 ——> 对象NameEntity的流程，类似于反序列化，把另一个东西转成正常需要的样子
+     * @param resultSet
+     * @param columnName
+     * @return
+     * @throws SQLException
+     */
+    @Override
+    public NameEntity getResult(ResultSet resultSet, String columnName ) throws SQLException {
+        // 1、从结果集ResultSet根据字段名取出字段值
+        String columnValue = resultSet.getString(columnName);
+
+        // 2、验证columnValue
+        if ( null == columnValue || columnValue.length() == 0 || !columnValue.contains("-") ) {
+            return null;
+        }
         
-            <settings>
-                <setting name="logImpl" value="LOG4J"/>
-                <!--显示开启缓存-->
-                <setting name="cacheEnabled" value="true"/>
-            </settings>
+        // 3、根据“-”对columnValue进行拆分
+        String[] column = columnValue.split("-");
         
-            <typeAliases>
-                <package name="cn.xiegongzi.entity"/>
-            </typeAliases>
-        
-            <typeHandlers>
-                <!-- 
-                    handler 处理器位置
-                    javaType 要处理的是哪个对象
-                -->
-                <typeHandler handler="cn.zixieqing.handler.NameHandler" 
-                             javaType="cn.zixieqing.entity.NameEntity"/>
-            </typeHandlers>
-        
-        </configuration>
-        
-        ```
+        // 4、把拆分之后的值 给到 对象的对应值
+        return new NameEntity().setFirstName( column[0] ).setLastName( column[1] );
+    }
 
-      - 给用到该类型的地方添加`@Column`注解
+    @Override
+    public NameEntity getResult(ResultSet resultSet, int i) throws SQLException {
 
-        - ```java
-          
-          @Data
-          @AllArgsConstructor
-          @NoArgsConstructor
-          @Accessors(chain = true)
-          @Table(name = "user")
-          @ToString
-          public class UserEntity implements Serializable {
-          
-              private static final long serialVersionUID = -5580827379143778431L;
-          
-              private Integer userId;
-          
-              /**
-               * @Transient
-               *
-               * @ColumnType(typeHandler = NameHandler.class)
-               */
-              @Column
-              private NameEntity userName;
-          
-              private String userSex;
-          
-              private Double userSalary;
-          }
-          
-          ```
+        // 1、从结果集ResultSet根据字段名取出字段值
+        String columnValue = resultSet.getString(i);
+
+        // 2、验证columnValue
+        if ( null == columnValue || columnValue.length() == 0 || !columnValue.contains("-") ) {
+            return null;
+        }
+
+        // 3、根据“-”对columnValue进行拆分
+        String[] column = columnValue.split("-");
+
+        // 4、把拆分之后的值 给到 对象的对应值
+        return new NameEntity().setFirstName( column[0] ).setLastName( column[1] );
+    }
+
+    @Override
+    public NameEntity getResult(CallableStatement cs, int i) throws SQLException {
+
+
+        // 1、从CallableStatement 根据 索引取出字段值
+        String columnValue = cs.getString(i);
+
+        // 2、验证columnValue
+        if ( null == columnValue || columnValue.length() == 0 || !columnValue.contains("-") ) {
+            return null;
+        }
+
+        // 3、根据“-”对columnValue进行拆分
+        String[] column = columnValue.split("-");
+
+        // 4、把拆分之后的值 给到 对象的对应值
+        return new NameEntity().setFirstName( column[0] ).setLastName( column[1] );
+    }
+}
+```
 
 
 
+3、**注册类型处理器**
+
+**第一种( 字段级别 )：使用`@ColumnType(typeHandler = xxxx.class)`注解**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160506676-2042913166.png" alt="image" style="zoom:50%;" />
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160846632-1978440946.png" alt="image" style="zoom:50%;" />
 
 
 
+注意啊：我这里是改数据库了的，这是做的查询嘛，要是数据库中的数据没符合规范，那还是查不到
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202204/2421736-20220425160955463-1305722015.png" alt="image" style="zoom:50%;" />
 
 
 
+**第二种( 全局配置 ）：在mybatis-config.xml中进行配置**
 
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
 
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+        <!--显示开启缓存-->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
 
+    <typeAliases>
+        <package name="cn.xiegongzi.entity"/>
+    </typeAliases>
 
+    <typeHandlers>
+        <!-- 
+            handler 处理器位置
+            javaType 要处理的是哪个对象
+        -->
+        <typeHandler handler="cn.zixieqing.handler.NameHandler" 
+                     javaType="cn.zixieqing.entity.NameEntity"/>
+    </typeHandlers>
 
+</configuration>
+```
 
+给用到该类型的地方添加`@Column`注解
 
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Accessors(chain = true)
+@Table(name = "user")
+@ToString
+public class UserEntity implements Serializable {
+
+    private static final long serialVersionUID = -5580827379143778431L;
+
+    private Integer userId;
+
+    /**
+     * @Transient
+     *
+     * @ColumnType(typeHandler = NameHandler.class)
+     */
+    @Column
+    private NameEntity userName;
+
+    private String userSex;
+
+    private Double userSalary;
+}
+```
 
 
 
