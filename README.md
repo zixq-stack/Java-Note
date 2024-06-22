@@ -292,6 +292,12 @@ ORM：
 
 # 部署+工具
 
+[Maven 笔记整理](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Maven%20%E7%AC%94%E8%AE%B0.md)。文件格式：md
+
+[Git：廖雪峰](https://www.liaoxuefeng.com/wiki/896043488029600)
+
+[Nginx教程从入门到精通【@运维生存时间TTLSA出品】](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Nginx%E6%95%99%E7%A8%8B%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%E3%80%90%40%E8%BF%90%E7%BB%B4%E7%94%9F%E5%AD%98%E6%97%B6%E9%97%B4TTLSA%E5%87%BA%E5%93%81%E3%80%91.pdf)。文件格式：PDF
+
 [Linux基本编程环境安装](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Linux%E5%9F%BA%E6%9C%AC%E7%BC%96%E7%A8%8B%E5%AE%89%E8%A3%85.md)
 
 
@@ -318,9 +324,7 @@ Linux：
 
 
 
-[Nginx教程从入门到精通【@运维生存时间TTLSA出品】](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Nginx%E6%95%99%E7%A8%8B%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%E3%80%90%40%E8%BF%90%E7%BB%B4%E7%94%9F%E5%AD%98%E6%97%B6%E9%97%B4TTLSA%E5%87%BA%E5%93%81%E3%80%91.pdf)。文件格式：PDF
 
-[Git：廖雪峰](https://www.liaoxuefeng.com/wiki/896043488029600)
 
 
 
