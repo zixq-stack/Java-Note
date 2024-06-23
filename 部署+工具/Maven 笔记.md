@@ -150,6 +150,19 @@ mvn install 	# 安装到本地仓库
        <artifactId></artifactId>
        <!--依赖版本号-->
        <version></version>
+       <!--
+   		<type>pom</type>
+   		<scope>import</scope>
+   		只能用在 <dependencyManagement></dependencyManagement> 中
+   	-->
+       <!--类型：jar 则导入jar包	pom 导入的是一个父模块-->
+       <type></type>
+       <!--
+   		作用域：import 代表把父模块中的jar包导入进来
+   		为import时，dependency不参与依赖传递
+   				   只是把dependency需要的依赖都取过来，像个占位符一样替换了就行
+   	-->
+       <scope>import</scope>  
      </dependency>
    </dependencies>
    ```
@@ -166,7 +179,7 @@ mvn install 	# 安装到本地仓库
 
 A和C之间就是间接传递）
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240621205947834-240106627.png" alt="截屏2021-07-17 下午6.49.40" style="zoom:33%;" />
+<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240621205947834-240106627.png" alt="截屏2021-07-17 下午6.49.40"  />
 
 
 
@@ -227,7 +240,9 @@ A和C之间就是间接传递）
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240621205948809-1738593283.png" alt="截屏2021-07-17 下午7.10.15"  />
 
+还有两个：system、import
 
+- import：依赖项替换为指定 POM 的 `<dependencyManagement>`中的该依赖项。仅 `<dependencyManagement>` 部分中 pom 类型的依赖项支持此范围
 
 
 

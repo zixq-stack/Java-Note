@@ -2436,7 +2436,7 @@ public class UserService{
 
 ```java
 @Cacheable(value = "user", key = "#userId")
-User selectUserById( Integer userId );
+User selectUserById(Integer userId);
 ```
 
 
@@ -2444,7 +2444,7 @@ User selectUserById( Integer userId );
 `@Cacheable` 注解的属性：
 
 - `value`、`cacheNames`
-  - 这两个参数其实是等同的( acheNames为Spring 4新增的，作为value的别名)
+  - 这两个参数其实是等同的(acheNames为Spring 4新增的，作为value的别名)
   - 这两个属性的作用：用于指定缓存存储的集合名
 
 
@@ -2455,7 +2455,7 @@ User selectUserById( Integer userId );
 
 
 
-- `condition`  作用：缓存对象的条件。 即：只有满足这里面配置的表达式条件的内容才会被缓存，如：`@Cache( key = "#userId",condition="#userId.length() < 3"` 这个表达式表示只有当userId长度小于3的时候才会被缓存
+- `condition`  作用：缓存对象的条件。 即：只有满足这里面配置的表达式条件的内容才会被缓存，如：`@Cache(key = "#userId",condition="#userId.length() < 3")` 这个表达式表示只有当userId长度小于3的时候才会被缓存
 
 
 
@@ -2506,7 +2506,7 @@ public User save(User user) {
 
 ```java
 @CacheEvict(value = "user", key = "#userId")
-void delete( Integer userId);
+void delete(Integer userId);
 ```
 
 这个注解除了和 `@Cacheable` 一样的参数之外，还有另外两个参数：
@@ -4074,27 +4074,27 @@ public class OssService {
 
 
 
-
-
 # 定时任务
+
+
 ## 小顶堆数据结构
 
-> 就是一个完全二叉树，同时这个二叉树遵循一个规则，根节点存的值永远小于两个子节点存的值
+就是一个完全二叉树，同时这个二叉树遵循一个规则，根节点存的值永远小于两个子节点存的值。
 
-**<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175008989-138560699.png" alt="image" style="zoom:67%;" />**
-
-
-
-树结构只是一种逻辑结构，因此：数据还是要存起来的，而这种小顶堆就是采用了数组
-
-**![image](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175003484-73068869.png)**
+<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170431804-1662907001.png" alt="image"  />
 
 
 
-即：数组下标为0的位置不放值，然后把树结构的数据放在对应位置
+树结构只是一种逻辑结构，因此：数据还是要存起来的，而这种小顶堆就是采用了数组。
 
-- **树结构数据转成数组数据的规律：从上到下、从左到右，即：根节点、左孩子节点、右孩子节点（对照上面两个图来看）。**
-- 这种存储方式找父节点也好找，就是数组中( 当前数值的下标值 % 2  ) ，这种算法的原理：就是利用二叉树的深度 和 存放数据个数的关系（ 数列 ），即：顶层最多可以放多少个数据？2的0次方；第二层最多可以存放多少个数据？2的1次方...........
+![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170432436-1760421046.png)
+
+
+
+即：数组下标为0的位置不放值，然后把树结构的数据放在对应位置。
+
+- **树结构数据转成数组数据的规律：从上到下、从左到右**，即：根节点、左孩子节点、右孩子节点（对照上面两个图来看）。
+- 这种存储方式找父节点也好找，就是数组中(当前数值的下标值 % 2) ，这种算法的原理：就是利用二叉树的深度 和 存放数据个数的关系【数列】，即：顶层最多可以放多少个数据？2^0^；第二层最多可以存放多少个数据？2^1^...........
 
 
 
@@ -4102,9 +4102,9 @@ public class OssService {
 
 **这种小顶堆需要明白三个点：**
 
-- **存数据的方式： 上述提到了。**
-- **取数据的方式：从底向上。即：从最底层开始，若比找寻的值小，那就找父节点，父节点也比所找寻数值小，继续找父节点的父节点.，要是比父节点大，那就找相邻兄弟节点嘛.........依次类推，最后就可以找到所找寻的数据了。**
-- **存数据的方式：自底向上、逐渐上浮。即：从最底层开始，存的值 和 父节点相比，比父节点小的话，那存的值就是父节点存的值进行换位.....以此类推。**
+- **存数据的方式：** 上述提到了
+- **取数据的方式：从底向上。**即：从最底层开始，若比找寻的值小，那就找父节点，父节点也比所找寻数值小，继续找父节点的父节点.，要是比父节点大，那就找相邻兄弟节点嘛.........依次类推，最后就可以找到所找寻的数据了
+- **存数据的方式：自底向上、逐渐上浮**。即：从最底层开始，存的值 和 父节点相比，比父节点小的话，那存的值就是父节点存的值进行换位.....以此类推
 
 
 
@@ -4112,15 +4112,13 @@ public class OssService {
 
 ## 时间轮算法
 
-**<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175007953-1532439253.png" alt="image" style="zoom:67%;" />**
+<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170433115-695837669.png" alt="image"  />
 
 
 
 ### 基础型时间轮
 
-模仿时钟，24个刻度( 数组，每一个刻度作为数组的下标 ），每一个刻度后面就是一个链表，这个链表中放对应的定时任务，到了指定时间点就把后面链表中的任务全部遍历出来执行
-
-
+**模仿时钟，24个刻度(数组，每一个刻度作为数组的下标 ），每一个刻度后面就是一个链表，这个链表中放对应的定时任务，到了指定时间点就把后面链表中的任务全部遍历出来执行**
 
 缺点：当要弄年、月、秒这种就又要再加轮子，这样就很复杂了，因此：此种方式只适合记一天24小时的定时任务，涉及到年月秒就不行了
 
@@ -4128,9 +4126,7 @@ public class OssService {
 
 ### round型时间轮
 
-在前面基础型时间轮的基础上，在每一个刻度的位置再加一个round值（ 每个刻度后面还是一个链表存定时任务 ），round值记录的就是实际需求的值，如：一周，那round值就为7，当然这个round值可以是1，也可以是30....，每一次遍历时钟数组的那24个刻度时，遍历到某一个刻度，那么就让round值减1，知道round值为0时，就表示24数组中当前这个刻度存的定时任务该执行了。
-
-
+**在前面基础型时间轮的基础上，在每一个刻度的位置再加一个round值（ 每个刻度后面还是一个链表存定时任务 ），round值记录的就是实际需求的值，如：一周，那round值就为7，当然这个round值可以是1，也可以是30....，每一次遍历时钟数组的那24个刻度时，遍历到某一个刻度，那么就让round值减1，直到round值为0时，就表示24数组中当前这个刻度存的定时任务该执行了**
 
 缺点：需要让round值减1，那么就是需要对时间轮进行遍历，如：定时任务应该是4号执行，但是3号遍历时间轮时，定时任务并不执行，而此时也需要遍历时间轮从而让round值减1，这浪费了性能
 
@@ -4138,14 +4134,11 @@ public class OssService {
 
 
 
-### **分量时间轮**
+### 分量时间轮
 
-后续的定时任务框架就是基于这个做的，如：Spring中有一个`@Scheduleed( cron = "x x x x ...." )`注解，它的这个cron时间表达式就是基于这种分量时间轮
-
-
+**后续的定时任务框架就是基于这个做的，如：Spring中有一个`@Scheduleed(cron = "x x x x ....")`注解，它的这个cron时间表达式就是基于这种分量时间轮**
 
 使用多个轮子：
-
 - 如：一个时间轮记录小时0 - 24，而另一个轮子记录天数0 - 30天
 - 先遍历天伦中的刻度，若今天是0 -30中要执行定时任务的那一天，那么天轮的刻度指向的就是时轮
 - 然后再去遍历时轮中对应的那个刻度，从而找到这个刻度后面的链表，将链表遍历出来，执行定时任务
@@ -4154,24 +4147,62 @@ public class OssService {
 
 
 
-## Timer
-
-> 底层原理就是：小顶堆，只是它的底层用了一个taskQueue任务队列来充当小顶堆中的哪个数组，存取找的逻辑都是和小顶堆一样的
-
-有着弊端：
-- `schedule()`  API真正的执行时间 取决 上一个任务的结束时间。会出现：少执行了次数
-- `scheduleAtFixedRate()`  API想要的是严格按照预设时间 12:00:00   12:00:02  12:00:04，但是最终结果是：执行时间会乱
-- 底层调的是`run()`，也就是单线程。缺点：任务阻塞( 阻塞原因：任务超时 )
 
 
+## JDK之Thread实现：while-true-sleep
 
-**<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175016763-168850390.png" alt="image" style="zoom:67%;" />**
+> **提示**
+>
+> 1. 需要用`try...catch`捕获异常，否则如果出现异常，就直接退出循环，下次将无法继续执行了
+> 2. 该线程可以定义成`守护线程`，在后台默默执行即可
+
+```java
+public static void init() {
+    new Thread(() -> {
+        while (true) {	// 死循环
+            try {
+                // TODO doSameThing
+
+                Thread.sleep(1000 * 60 * 5);
+            } catch (Exception e) {
+                log.error(e);
+            }
+        }
+    }).start();
+}
+```
+
+> 这种方式做的定时任务，只能周期性执行，不能支持定时在某个时间点执行，无法应对一些较为复杂的场景
+
+**场景**：有时需要每隔10分钟去下载某个文件，或者每隔5分钟去读取模板文件生成静态html页面等等，一些简单的周期性任务场景
+
+
+
+
+
+## JDK之Timer实现
+
+> `Timer`类是JDK专门提供的定时器工具，用来在后台线程计划执行指定任务，在`java.util`包下，要跟`TimerTask`一起配合使用
+
+底层原理就是：小顶堆，只是它的底层用了一个taskQueue任务队列来充当小顶堆中的那个数组，存取找的逻辑都是和小顶堆一样的
+
+![图片](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170432771-2112795607.png)
+
+
+
+**有着弊端：**
+
+- **`schedule()`**  API真正的执行时间 取决 上一个任务的结束时间。会出现：少执行了次数
+- **`scheduleAtFixedRate()`**  API想要的是严格按照预设时间 12:00:00   12:00:02  12:00:04，但是最终结果是：执行时间会乱
+- **底层调的是`run()`，是单线程。缺点：任务阻塞(阻塞原因：任务超时)**
+
+
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170431981-1040739245.png" alt="image"  />
 
 
 
 ```java
-package com.tuling.timer;
-
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -4179,12 +4210,13 @@ import java.util.TimerTask;
 public class TimerTest {
 
     public static void main(String[] args) {
-        
-        Timer t = new Timer();	// 任务启动
-        
+
+        // 任务启动
+        Timer t = new Timer();
         for (int i=0; i<2; i++){
             TimerTask task = new FooTimerTask("foo"+i);
-            t.scheduleAtFixedRate(task,new Date(),2000);	// 任务添加   10s 5次   4 3
+            // 任务添加   10s 5次   4 3
+            t.scheduleAtFixedRate(task,new Date(),2000);
             /*
              * 预设的执行时间nextExecutorTime 12:00:00   12:00:02  12:00:04
              * schedule  真正的执行时间 取决上一个任务的结束时间  ExecutorTime   03  05  08  丢任务（少执行了次数）
@@ -4205,10 +4237,11 @@ class FooTimerTask extends TimerTask {
     }
 
     public void run() {
-        
         try {
             System.out.println("name="+name+",startTime="+new Date());
+
             Thread.sleep(3000);
+
             System.out.println("name="+name+",endTime="+new Date());
 
             // 因为是单线程，所以解决办法：使用线程池执行
@@ -4219,25 +4252,42 @@ class FooTimerTask extends TimerTask {
 }
 ```
 
+> **提示**
+>
+> 如果`TimerTask`抛出`RuntimeException`，Timer会停止所有任务的运行，所以阿里巴巴开发者规范中不建议使用它。
+
+
+
+主要包含的6个方法：
+
+- `schedule(TimerTask task, Date time)`, 指定任务task在指定时间time执行
+- `schedule(TimerTask task, long delay)`, 指定任务task在指定延迟delay后执行
+- `schedule(TimerTask task, Date firstTime,long period)`,指定任务task在指定时间firstTime执行后，进行重复固定延迟频率peroid的执行
+- `schedule(TimerTask task, long delay, long period)`, 指定任务task 在指定延迟delay 后，进行重复固定延迟频率peroid的执行
+- `scheduleAtFixedRate(TimerTask task,Date firstTime,long period)`, 指定任务task在指定时间firstTime执行后，进行重复固定延迟频率peroid的执行
+- `scheduleAtFixedRate(TimerTask task, long delay, long period)`, 指定任务task 在指定延迟delay 后，进行重复固定延迟频率peroid的执行
 
 
 
 
-## 定时任务线程池
-
-> 原理：timer + 线程池执行来做到的
-
-如下的`Executors.newScheduledThreadPool(5);`创建线程池的方法在高并发情况下，最好别用
 
 
 
-**<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175010877-861716498.png" alt="image" style="zoom:67%;" />**
+## 定时任务线程池：ScheduledExecutorService
+
+> `ScheduledExecutorService`是JDK1.5+版本引进的定时任务，是基于多线程的，该类位于`java.util.concurrent`并发包下。设计的初衷是为了解决`Timer`单线程执行，多个任务之间会互相影响的问题
+
+**原理：timer +线程池执行来做到的**
+
+如下的 `Executors.newScheduledThreadPool(5);` 创建线程池的方法在高并发情况下，最好别用
+
+
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170432521-1501848614.png" alt="image"  />
 
 
 
 ```java
-package com.tuling.pool;
-
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -4246,15 +4296,14 @@ import java.util.concurrent.TimeUnit;
 public class ScheduleThreadPoolTest {
 
     public static void main(String[] args) {
-        
         /*
-         * 这种线程池叫做垃圾（开个玩笑）	了解即可
          * 缺点：允许的请求队列长度为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM
+         *		不支持一些较复杂的定时规则
          * */
         ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
-        
-        for (int i=0; i<2; i++){
-            scheduledThreadPool.scheduleAtFixedRate(new Task("task-" + i), 0, 2, TimeUnit.SECONDS);
+
+        for (int i=0;i<2;i++){
+            scheduledThreadPool.scheduleAtFixedRate(new Task("task-"+i),0,2, TimeUnit.SECONDS);
         }
     }
 }
@@ -4269,13 +4318,13 @@ class Task implements Runnable{
     }
 
     public void run() {
-        
         try {
             System.out.println("name="+name+",startTime="+new Date());
-            
+
             Thread.sleep(3000);
-            
+
             System.out.println("name="+name+",endTime="+new Date());
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -4283,38 +4332,45 @@ class Task implements Runnable{
 }
 ```
 
+主要包含的4个方法：
+
+- `schedule(Runnable command,long delay,TimeUnit unit)`，带延迟时间的调度，只执行一次，调度之后可通过`Future.get()`阻塞直至任务执行完毕
+- `schedule(Callable<V> callable,long delay,TimeUnit unit)`，带延迟时间的调度，只执行一次，调度之后可通过`Future.get()`阻塞直至任务执行完毕，并且可以获取执行结果
+- `scheduleAtFixedRate`，表示以固定频率执行的任务，如果当前任务耗时较多，超过定时周期period，则当前任务结束后会立即执行
+- `scheduleWithFixedDelay`，表示以固定延时执行任务，延时是相对当前任务结束为起点计算开始时间
+
+
+
 
 
 
 
 ## Spring Task：@Scheduled注解实现
 
-> 这玩意儿是Spring提供的，即[Spring Task](https://docs.spring.io/spring-framework/reference/6.1-SNAPSHOT/integration/scheduling.html)
-
-缺点就是其定时时间不能动态更改，它适用于具有固定任务周期的任务
-
-
+这玩意儿是Spring提供的，即[Spring Task](https://docs.spring.io/spring-framework/reference/6.1-SNAPSHOT/integration/scheduling.html)
 
 > **注意点：**
 >
-> 要在相应的代码中使用`@Scheduled`注解来进行任务配置，那么就需要在主启动类上加上`@EnableScheduling // 开启定时任务`注解
+> 要在相应的代码中使用`@Scheduled(cron="cron表达式")`注解来进行任务配置，那么就需要在主启动类上加上`@EnableScheduling // 开启定时任务`注解
+>
+> `@Scheduled`的cron表达式的值可以弄到配置文件中，然后采用如` @Scheduled(cron = "${zixq.spring.task.cron}")`的形式读取
 
-<br />
 
-> **`@Scheduled` 这个注解的几个属性**
 
-- `fixedRate`：表示任务执行之间的时间间隔，具体是指两次任务的开始时间间隔，即第二次任务开始时，第一次任务可能还没结束
+**缺点：**默认单线程、不支持集群方式部署；其定时时间不能动态更改、不能做数据存储型定时任务，它适用于具有固定任务周期的任务
+
+
+
+> `@Scheduled` 这个注解的几个属性
+
+- `fixedRate `：表示任务执行之间的时间间隔，具体是指两次任务的开始时间间隔，所以第二次任务开始时，第一次任务可能还没结束
 - `fixedDelay`：表示任务执行之间的时间间隔，具体是指本次任务结束到下次任务开始之间的时间间隔
 - `initialDelay`：表示首次任务启动的延迟时间
-- `cron 表达式`：秒 分 小时 日 月 周 年 
-
-<br />
+- `cron 表达式`：秒 分 小时 日 月 周 年 。这个可以直接浏览器搜索“cron表达式在线工具”，生成表达式复制粘贴
 
 
 
-> cron表达式说明：可以直接浏览器搜索“cron表达式在线工具”，生成表达式复制粘贴
-
-**<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175005341-442719966.png" alt="image" style="zoom:67%;" />**
+<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170431810-243228857.png" alt="image"  />
 
 
 
@@ -4322,24 +4378,22 @@ class Task implements Runnable{
 
 | **通配符**         | **意义**                                                     |
 | ------------------ | ------------------------------------------------------------ |
-| **`?`**            | **表示不指定值**，即不关心某个字段的取值时使用<br />需要注意的是，月份中的日期和星期可能会起冲突，因此在配置时这两个得有一个是`?` |
-| **`*`**            | **表示所有值**，例如:在秒的字段上设置 * ,表示每一秒都会触发  |
-| **`,`**            | **用来分开多个值**，例如在周字段上设置 "MON,WED,FRI" 表示周一，周三和周五触发 |
-| **`-`**            | **表示区间**，例如在秒上设置 "10-12",表示 10,11,12秒都会触发 |
-| **`/`**            | **用于递增触发**，如在秒上面设置"5/15" 表示从5秒开始，每增15秒触发(5,20,35,50) |
-| **`#`**            | **序号（表示每月的第几个周几）**，例如在周字段上设置"6#3"表示在每月的第三个周六，(用<br/>在母亲节和父亲节再合适不过了) |
-| **`L`**            | **表示最后的意思**<br />在日字段设置上，表示当月的最后一天(依据当前月份，如果是二月还会自动判断是否是润年<br />在周字段上表示星期六，相当于"7"或"SAT"（注意周日算是第一天）<br />如果在"L"前加上数字，则表示该数据的最后一个。例如在周字段上设置"6L"这样的格式,则表<br/>示"本月最后一个星期五" |
-| **`W`**            | **表示离指定日期的最近工作日（周一至周五）**<br />例如在日字段上设置"15W"，表示离每月15号最近的那个工作日触发。如果15号正好是周六，则找最近的周五(14号)触发, 如果15号是周未，则找最近的下周一(16号)触发，如果15号正好在工作日(周一至周五)，则就在该天触发<br />如果指定格式为 "1W",它则表示每月1号往后最近的工作日触发。如果1号正是周六，则将在3号下周一触发。(注，"W"前只能设置具体的数字,不允许区间"-") |
-| **`L` 和 `W`组合** | **如果在日字段上设置"LW",则表示在本月的最后一个工作日触发（一般指发工资）)** |
-| **`周字段的设置`** | **若使用英文字母是不区分大小写的 ，即 MON 与mon相同**        |
-
-
+| **`?`**            | 表示不指定值，即不关心某个字段的取值时使用<br />需要注意的是，月份中的日期和星期可能会起冲突，因此在配置时这两个得有一个是`?` |
+| **`*`**            | 表示所有值，例如：在秒的字段上设置 `*`，表示每一秒都会触发   |
+| **`,`**            | 用来分开多个值，例如在周字段上设置 "MON,WED,FRI" 表示周一，周三和周五触发 |
+| **`-`**            | 表示区间，例如在秒上设置 "10-12",表示 10,11,12秒都会触发     |
+| **`/`**            | 用于递增触发，如在秒上面设置"5/15" 表示从5秒开始，每增15秒触发(5,20,35,50) |
+| **`#`**            | 序号(表示每月的第几个周几)，例如在周字段上设置"6#3"表示在每月的第三个周六，(用<br/>在母亲节和父亲节再合适不过了) |
+| **`L`**            | 表示最后的意思<br />在日字段设置上，表示当月的最后一天(依据当前月份，如果是二月还会自动判断是否是润年<br />在周字段上表示星期六，相当于"7"或"SAT"（注意周日算是第一天）<br />如果在"L"前加上数字，则表示该数据的最后一个。例如在周字段上设置"6L"这样的格式，则表<br/>示"本月最后一个星期五" |
+| **`W`**            | 表示离指定日期的最近工作日(周一至周五)<br />例如在日字段上设置"15W"，表示离每月15号最近的那个工作日触发。如果15号正好是周六，则找最近的周五(14号)触发, 如果15号是周未，则找最近的下周一(16号)触发，如果15号正好在工作日(周一至周五)，则就在该天触发<br />如果指定格式为 "1W",它则表示每月1号往后最近的工作日触发。如果1号正是周六，则将在3号下周一触发。(注，"W"前只能设置具体的数字,不允许区间"-") |
+| **`L` 和 `W`组合** | 如果在日字段上设置"LW",则表示在本月的最后一个工作日触发(一般指发工资) |
+| **`周字段的设置`** | 若使用英文字母是不区分大小写的 ，即 MON 与mon相同            |
 
 
 
 > cron表达式举例
 
-```json
+```txt
 “0 0 12 * * ?”				每天中午12点触发
 
 “0 15 10 ? * *”				每天上午10:15触发
@@ -4367,21 +4421,247 @@ class Task implements Runnable{
 0 11 4 * 1-3				每个月的4号和每个礼拜的礼拜一到礼拜三的早上11点
 ```
 
+
+
 > **注意点：**
 >
-> cron表达式中“年”不可以跨年，默认是当前年执行（即：想每2年执行一次做不到），所以一般情况下“年”可以不指定，即：cron表达式只写6位即可
+> cron表达式中“年”不可以跨年，默认是当前年执行（即：想每2年执行一次做不到），所以“年”可以不指定，即：cron表达式只写6位即可（Spring4以上的版本中，cron表达式包含6个参数）
 
 
 
-## Redis实现：分布式定时任务
-
-前面的方式都是单机的
 
 
+
+
+## Linux之crontab实现
+
+`crontab`需要`crond`服务支持，`crond`是`linux`下用来周期地执行某种任务的一个守护进程，在安装`linux`操作系统后，默认会安装`crond`服务工具，且`crond`服务默认就是自启动的。`crond`进程每分钟会定期检查是否有要执行的任务，如果有，则会自动执行该任务
+
+可以通过以下命令操作相关服务
+
+```bash
+# 查看运行状态
+service crond status
+# 启动服务
+service crond start
+# 关闭服务
+service crond stop
+# 重启服务
+service crond restart
+# 重新载入配置
+service crond reload
+```
+
+
+
+**使用`crontab`的优缺点：**
+
+- 优点：方便修改定时规则，支持一些较复杂的定时规则，通过文件可以统一管理配好的各种定时脚本
+- 缺点：如果定时任务非常多，不太好找，而且*要求操作系统必须是`linux`，否则无法执行*
+
+
+
+
+
+**场景**：临时统计线上的数据，然后导出到excel表格或其他地方中，这种需求有时较为复杂，光靠写SQL语句是无法满足需求的，这就需要写Java代码了。然后将该程序打成一个jar包，在线上环境执行
+
+
+
+
+
+### crontab语法
+
+crontab命令的基本格式如下：
+
+```bash
+crontab [参数] [文件名]
+```
+
+如果没有指定文件名，则接收键盘上输入的命令，并将它载入到`crontab`
+
+参数功能对照表如下：
+
+| 参数 |              功能               |
+| :--- | :-----------------------------: |
+| -u   |            指定用户             |
+| -e   |  编辑某个用户的crontab文件内容  |
+| -l   |  显示某个用户的crontab文件内容  |
+| -r   |     删除某用户的crontab文件     |
+| -i   | 删除某用户的crontab文件时需确认 |
+
+以上参数，如果没有使用`-u`指定用户，则默认使用的当前用户。
+
+通过`crontab -e`命令编辑文件内容，具体语法如下：
+
+```bash
+[分] [小时] [日期] [月] [星期] 具体任务
+
+# 示例	每天凌晨4点，定时执行tool.jar程序，并且把日志输出到tool.log文件中
+0 4 * * * /usr/local/java/jdk1.8/bin/java -jar /data/app/tool.jar > /logs/tool.log &
+```
+
+其中：
+
+- 分，表示多少分钟，范围：0-59
+- 小时，表示多少小时，范围：0-23
+- 日期，表示具体在哪一天，范围：1-31
+- 月，表示多少月，范围：1-12
+- 星期，表示多少周，范围：0-7，0和7都代表星期日
+
+还有一些特殊字符，比如：
+
+- `*`代表任何时间，比如：`*1***` 表示每天凌晨1点执行。
+- `/`代表每隔多久执行一次，比如：`*/5 ****` 表示每隔5分钟执行一次。
+- `,`代表支持多个，比如：`10 7,9,12 ***` 表示在每天的7、9、12点10分各执行一次。
+- `-`代表支持一个范围，比如：`10 7-9 ***` 表示在每天的7、8、9点10分各执行一次。
+
+
+
+
+
+## Spring Quartz 任务调度
+
+> `quartz`是`OpenSymphony`开源组织在`Job scheduling`领域的开源项目，是由Java开发的一个开源的任务日程管理系统
+>
+> 可以做如下事情：
+>
+> - 作业调度：调用各种框架的作业脚本，例如shell，hive等
+> - 定时任务：在某一预定的时刻，执行你想要执行的任务
+
+组成结构图如下：
+
+<img src="https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170432637-407412395.png" alt="image"  />
+
+
+
+quartz包含的主要接口如下：
+
+- `Scheduler` 代表调度容器，一个调度容器中可以注册多个JobDetail和Trigger
+- `Job` 代表工作，即要执行的具体内容
+- `JobDetail` 代表具体的可执行的调度程序，Job是这个可执行程调度程序所要执行的内容
+- `JobBuilder` 用于定义或构建JobDetail实例
+- `Trigger` 代表调度触发器，决定什么时候去调
+- `TriggerBuilder` 用于定义或构建触发器
+- `JobStore` 用于存储作业和任务调度期间的状态
+
+
+
+**使用`spring quartz`的优缺点：**
+
+- 优点：默认是多线程异步执行，单个任务时，在上一个调度未完成时，下一个调度时间到时，会另起一个线程开始新的调度，多个任务之间互不影响。支持复杂的`cron`表达式，它能被集群实例化，支持分布式部署
+- 缺点：相对于Spring Task实现定时任务成本更高，需要手动配置`Job 或 QuartzJobBean`、`JobDetail`和`Trigger`等。需要引入了第三方的`quartz`包，有一定的学习成本。不支持并行调度，不支持失败处理策略和动态分片的策略等
+
+
+
+**示例**：
+
+1）、依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-quartz</artifactId>
+</dependency>
+```
+
+2）、定义Job：创建真正的定时任务执行类。
+
+```java
+/**
+ * 创建真正的定时任务执行类
+ * 
+ * 还可以采用：extends QuartzJobBean，重写 executeInternal(JobExecutionContext context)
+ */
+public class MyJob implements Job {
+
+    private Logger log = LoggerFactory.getLogger(MyJob.class);
+
+	@Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        TriggerKey triggerKey = jobExecutionContext.getTrigger().getKey();
+
+        log.info("触发器：{},所属组：{},执行时间：{}，执行任务：{}",
+                triggerKey.getName(), 
+                triggerKey.getGroup(), 
+                dateFormat.format(new Date()), 
+                "hello SpringBoot Quartz...");
+    }
+}
+```
+
+3)、QuartzConfig：创建调度程序`JobDetail`和调度器`Trigger`。
+
+```java
+@Configuration
+public class QuartzConfig {
+
+    @Value("${zixq.spring.quartz.cron}")
+    private String testCron;
+
+	/**
+     * 创建定时任务
+     */
+    @Bean
+    public JobDetail jobDetail() {
+        return JobBuilder.newJob(MyJob.class)
+                .storeDurably()
+                .build();
+    }
+
+	/**
+     * 创建触发器
+     */
+    @Bean
+    public Trigger trigger01() {
+        SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
+                // 每一秒执行一次
+                .withIntervalInSeconds(1)
+                // 永久重复，一直执行下去
+                .repeatForever();
+
+        return TriggerBuilder.newTrigger()
+                /*
+                 * 参数1、trigger名字；
+                 * 参数2、当前这个trigger所属的组		参考时间轮存储任务，那个刻度后面是怎么存的任务
+                 */
+                .withIdentity("trigger01", "group1")
+                .withSchedule(scheduleBuilder)
+                // 哪一个job，上一个方法中bean注入
+                .forJob("jobDetail")
+                .build();
+    }
+
+
+	/**
+     * 每2秒触发一次任务
+     */
+    @Bean
+    public Trigger trigger02() {
+        return TriggerBuilder
+                .newTrigger()
+                .withIdentity("triiger02", "group1")
+                // cron时间表达式	可以弄到配置文件，然后采用 @Value 注解读取
+                .withSchedule(CronScheduleBuilder.cronSchedule("0/5 * * * * ? *"))	
+                .forJob("jobDetail")
+                .build();
+    }
+}
+```
+
+
+
+
+
+
+
+## 分布式定时任务：Redis实现
 
 ### zset实现
 
-> 逻辑
+> **逻辑**
 
 1. 将定时任务存放到 ZSet 集合中，并且将过期时间存储到 ZSet 的 Score 字段中
 2. 通过一个无线循环来判断当前时间内是否有需要执行的定时任务，如果有则进行执行
@@ -4440,11 +4720,11 @@ public class DelayQueueExample {
 
 ### 键空间实现
 
-> 逻辑
+> **逻辑**
 
-1. 给所有的定时任务设置一个过期时间
+1. **给所有的定时任务设置一个过期时间**
 
-2. 等到了过期之后，我们通过订阅过期消息就能感知到定时任务需要被执行了，此时我们执行定时任务即可
+2. **等到了过期之后，我们通过订阅过期消息就能感知到定时任务需要被执行了，此时我们执行定时任务即可**
 
 
 
@@ -4490,97 +4770,277 @@ public class TaskExample {
 
 
 
-## Quartz 任务调度
 
-组成结构图如下：需要时自行摸索即可
 
-**<img src="https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175010243-618701512.png" alt="image" style="zoom:67%;" />**
+## 分布式定时任务：xxl-job
 
 
 
+> `xxl-job`是大众点评（许雪里）开发的一个分布式任务调度平台，其核心设计目标是开发迅速、学习简单、轻量级、易扩展。现已开放源代码并接入多家公司线上产品线，开箱即用
+
+`xxl-job`框架对`quartz`进行了扩展，使用`mysql`数据库存储数据，并且内置jetty作为`RPC`服务调用
+
+主要特点如下：
+
+1. 有界面维护定时任务和触发规则，非常容易管理。
+2. 能动态启动或停止任务
+3. 支持弹性扩容缩容
+4. 支持任务失败报警
+5. 支持动态分片
+6. 支持故障转移
+7. Rolling实时日志
+8. 支持用户和权限管理
+
+
+
+**使用`xxl-job`的优缺点：**
+
+- 优点：有界面管理定时任务，支持弹性扩容缩容、动态分片、故障转移、失败报警等功能。它的功能非常强大，很多大厂在用，可以满足绝大多数业务场景
+- 缺点：和`quartz`一样，通过数据库分布式锁，来控制任务不能重复执行。在任务非常多的情况下，有一些性能问题
+
+
+
+管理界面：
+
+![图片](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170432078-861254288.png)
+
+
+
+整体架构图如下：![图片](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170431829-1569889821.png)
+
+
+
+使用quartz架构图如下：
+
+![图片](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170432766-292554220.png)
 
 
 
 
-### 简单示例
 
-1. 依赖
+
+
+**示例**：
+
+1）、`xxl-admin`管理后台部署和mysql脚本执行等这些前期准备工作，运维的事情
+
+2）、依赖
 
 ```xml
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-quartz</artifactId>
+   <groupId>com.xuxueli</groupId>
+   <artifactId>xxl-job-core</artifactId>
 </dependency>
 ```
 
-2. 定义job
+3）、在`applicationContext.properties`文件中配置参数：
+
+```properties
+xxl.job.admin.address: http://localhost:8088/xxl-job-admin/
+xxl.job.executor.appname: xxl-job-executor-sample
+xxl.job.executor.port: 8888
+xxl.job.executor.logpath: /data/applogs/xxl-job/
+```
+
+3）、创建HelloJobHandler类继承`IJobHandler`类：
 
 ```java
-public class MyJob implements Job {
-    private Logger log = LoggerFactory.getLogger(MyJob.class);
+@JobHandler(value = "helloJobHandler")
+@Component
+public class HelloJobHandler extends IJobHandler {
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        TriggerKey triggerKey = jobExecutionContext.getTrigger().getKey();
-
-        log.info("触发器：{},所属组：{},执行时间：{}，执行任务：{}",
-                triggerKey.getName(), 
-                triggerKey.getGroup(), 
-                dateFormat.format(new Date()), 
-                "hello Spring Boot Quartz...");
+    public ReturnT<String> execute(String param) {
+        System.out.println("XXL-JOB, Hello World.");
+        return SUCCESS;
     }
 }
 ```
 
-3. 编写QuartzConfig
+这样定时任务就配置好了。
+
+
+
+> **提示**
+>
+> 建议把定时任务单独部署到另外一个服务中，跟api服务分开。因为job大部分情况下，会对数据做批量操作，如果操作的数据量太大，可能会对服务的内存和cpu资源造成一定的影响
+
+
+
+
+
+
+
+## 分布式定时任务：elastic-job
+
+> `elastic-job`是当当网开发的弹性分布式任务调度系统，功能丰富强大，采用zookeeper实现分布式协调，实现任务高可用以及分片。它是专门为高并发和复杂业务场景开发
+>
+> `elastic-job`目前是`apache`的`shardingsphere`项目下的一个子项目，官网地址：http://shardingsphere.apache.org/elasticjob/。
+
+`elastic-job`在2.x之后，出了两个产品线：`Elastic-Job-Lite`和`Elastic-Job-Cloud`，而我们一般使用Elastic-Job-Lite就能够满足需求。Elastic-Job-Lite定位为轻量级无中心化解决方案，使用jar包的形式提供分布式任务的协调服务，外部仅依赖于Zookeeper
+
+
+
+主要特点如下：
+
+- 分布式调度协调
+- 弹性扩容缩容
+- 失效转移
+- 错过执行作业重触发
+- 作业分片一致性，保证同一分片在分布式环境中仅一个执行实例
+- 自诊断并修复分布式不稳定造成的问题
+- 支持并行调度
+
+
+
+**使用`elastic-job`的优缺点：**
+
+- 优点：支持分布式调度协调，支持分片，适合高并发，和一些业务相对来说较复杂的场景
+- 缺点：需要依赖于zookeeper，实现定时任务相对于`xxl-job`要复杂一些，要对分片规则非常熟悉
+
+
+
+整体架构图：
+
+![图片](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623170432165-417770787.png)
+
+
+
+
+
+
+
+**示例**：
+
+1）、依赖
+
+```xml
+<dependency>
+    <groupId>com.dangdang</groupId>
+    <artifactId>elastic-job-lite-core</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.dangdang</groupId>
+    <artifactId>elastic-job-lite-spring</artifactId>
+</dependency>
+```
+
+2)、在`applicationContext.properties`文件中配置参数：
+
+```properties
+spring.application.name=elasticjobDemo
+zk.serverList=localhost:2181
+zk.namespace=elasticjobDemo
+zixq.spring.elatisc.cron=0/5 * * * * ?
+# 定义分配项参数	一般用分片序列号和参数（用等号分隔），多个键值对用逗号分隔
+# 分片序列号从0开始，不可大于或等于作业分片总数
+zixq.spring.elatisc.itemParameters=0=A,1=B,2=C,3=D
+# 作业自定义参数
+zixq.spring.elatisc.jobParameters=test
+# 定义作业分片总数
+zixq.spring.elatisc.shardingTotalCount=4
+```
+
+3）、配置`zookeeper`
 
 ```java
-public class QuartzConfig {
+@Configuration
+@ConditionalOnExpression("'${zk.serverList}'.length() > 0")
+public class ZKConfig {
 
     @Bean
-    public JobDetail jobDetail() {
-        return JobBuilder.newJob(MyJob.class)
-                .storeDurably()
-                .build();
+    public ZookeeperRegistryCenter registry(@Value("${zk.serverList}") String serverList,
+                                            @Value("${zk.namespace}") String namespace) {
+        return new ZookeeperRegistryCenter(new ZookeeperConfiguration(serverList, namespace));
+    }
+}
+```
+
+4）、定义Job：实现`SimpleJob`接口
+
+```java
+public class TestJob implements SimpleJob {
+
+    @Override
+    public void execute(ShardingContext shardingContext){
+        System.out.println("ShardingTotalCount:" + shardingContext.getShardingTotalCount());
+        System.out.println("ShardingItem:" + shardingContext.getShardingItem());
+    }
+}
+```
+
+5）、配置任务
+
+```java
+@Configuration
+public class JobConfig {
+    /*
+     * 可以采用前面的方式
+     * 类加@ConfigurationProperties(prefix = "") + 启动类加@EnableConfigurationProperties(value = {xxxProperties.class}) 读取下列值
+     * */
+    @Value("${zixq.spring.elatisc.cron}")
+    private String cron;
+
+    @Value("${zixq.spring.elatisc.itemParameters}")
+    private  String shardingItemParameters;
+
+    @Value("${zixq.spring.elatisc.jobParameters}")
+    private String jobParameters;
+
+    @Value("${zixq.spring.elatisc.shardingTotalCount}")
+    private int shardingTotalCount;
+
+    @Autowired
+    private ZookeeperRegistryCenter registryCenter;
+
+    @Bean
+    public SimpleJob testJob() {
+        return new TestJob();
     }
 
     @Bean
-    public Trigger trigger01() {
-        SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
-                // 每一秒执行一次
-                .withIntervalInSeconds(1)
-                // 永久重复，一直执行下去
-                .repeatForever();
+    public JobScheduler simpleJobScheduler(final SimpleJob simpleJob) {
 
-        return TriggerBuilder.newTrigger()
-                // 参数1、trigger名字；参数2、当前这个trigger所属的组 - 参考时间轮存储任务，那个刻度后面是怎么存的任务
-                .withIdentity("trigger01", "group1")
-                .withSchedule(scheduleBuilder)
-                // 哪一个job，上一个方法中bean注入
-                .forJob("jobDetail")
-                .build();
+        return new SpringJobScheduler(simpleJob, registryCenter, 
+                                      getConfiguration(simpleJob.getClass(),
+                                                       cron, 
+                                                       shardingTotalCount, 
+                                                       shardingItemParameters, 
+                                                       jobParameters));
     }
 
     /**
-     * 每两秒触发一次任务
+     * 
+     * @param cron	cron表达式，定义触发规则
+     * @param shardingTotalCount	定义作业分片总数
+     * @param shardingItemParameters	定义分配项参数
+     *									一般用分片序列号和参数（用等号分隔），多个键值对用逗号分隔
+     *									分片序列号从0开始，不可大于或等于作业分片总数
+     @param jobParameters	作业自定义参数
      */
-    @Bean
-    public Trigger trigger02() {
-        return TriggerBuilder
-                .newTrigger()
-                .withIdentity("triiger02", "group1")
-                // cron时间表达式
-                .withSchedule(CronScheduleBuilder.cronSchedule("0/5 * * * * ? *"))
-                .forJob("jobDetail")
-                .build();
+    private geConfiguration getConfiguration(Class<? extends SimpleJob> jobClass,
+                                             String cron,
+                                             int shardingTotalCount,
+                                             String shardingItemParameters,
+                                             String jobParameters) {
+
+        JobCoreConfiguration simpleCoreConfig = JobCoreConfiguration
+            .newBuilder(jobClass.getName(), testCron, shardingTotalCount)
+            .shardingItemParameters(shardingItemParameters)
+            .jobParameter(jobParameters)
+            .build();
+
+        SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(
+            simpleCoreConfig, jobClass.getCanonicalName()
+        );
+
+        return LiteJobConfiguration
+            .newBuilder(simpleJobConfig)
+            .overwrite(true)
+            .build();
     }
 }
 ```
-
-
 
 
 
