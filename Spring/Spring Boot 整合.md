@@ -2782,6 +2782,219 @@ public class JwtTest {
 }
 ```
 
+JTW工具类：懒得写了，所以直接从别人哪里嫖的，来源 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue/blob/master/ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java)
+
+```java
+import com.zixq.common.constant.CacheConstants;
+import com.zixq.common.constant.Constants;
+import com.zixq.common.core.domain.model.LoginUser;
+import com.zixq.common.core.redis.RedisCache;
+import com.zixq.common.utils.ServletUtils;
+import com.zixq.common.utils.StringUtils;
+import com.zixq.common.utils.ip.AddressUtils;
+import com.zixq.common.utils.ip.IpUtils;
+import com.zixq.common.utils.uuid.IdUtils;
+import eu.bitwalker.useragentutils.UserAgent;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * token验证处理
+ */
+@Component
+public class TokenService {
+    private static final Logger log = LoggerFactory.getLogger(TokenService.class);
+
+    // 令牌自定义标识
+    @Value("${token.header}")
+    private String header;
+
+    // 令牌秘钥
+    @Value("${token.secret}")
+    private String secret;
+
+    // 令牌有效期（默认30分钟）
+    @Value("${token.expireTime}")
+    private int expireTime;
+
+    protected static final long MILLIS_SECOND = 1000;
+
+    protected static final long MILLIS_MINUTE = 60 * MILLIS_SECOND;
+
+    private static final Long MILLIS_MINUTE_TEN = 20 * 60 * 1000L;
+
+    @Autowired
+    private RedisCache redisCache;
+
+    /**
+     * 获取用户身份信息
+     *
+     * @return 用户信息
+     */
+    public LoginUser getLoginUser(HttpServletRequest request) {
+        // 获取请求携带的令牌
+        String token = getToken(request);
+        if (StringUtils.isNotEmpty(token)) {
+            try {
+                Claims claims = parseToken(token);
+                // 解析对应的权限以及用户信息    LOGIN_USER_KEY = login_user_key
+                String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+                String userKey = getTokenKey(uuid);
+                LoginUser user = redisCache.getCacheObject(userKey);
+                return user;
+            } catch (Exception e) {
+                log.error("获取用户信息异常'{}'", e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 设置用户身份信息
+     */
+    public void setLoginUser(LoginUser loginUser) {
+        if (StringUtils.isNotNull(loginUser) && StringUtils.isNotEmpty(loginUser.getToken())) {
+            refreshToken(loginUser);
+        }
+    }
+
+    /**
+     * 删除用户身份信息
+     */
+    public void delLoginUser(String token) {
+        if (StringUtils.isNotEmpty(token)) {
+            String userKey = getTokenKey(token);
+            redisCache.deleteObject(userKey);
+        }
+    }
+
+    /**
+     * 创建令牌
+     *
+     * @param loginUser 用户信息
+     * @return 令牌
+     */
+    public String createToken(LoginUser loginUser) {
+        String token = IdUtils.fastUUID();
+        loginUser.setToken(token);
+        setUserAgent(loginUser);
+        refreshToken(loginUser);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(Constants.LOGIN_USER_KEY, token);
+        return createToken(claims);
+    }
+
+    /**
+     * 验证令牌有效期，相差不足20分钟，自动刷新缓存
+     *
+     * @param loginUser
+     * @return 令牌
+     */
+    public void verifyToken(LoginUser loginUser) {
+        long expireTime = loginUser.getExpireTime();
+        long currentTime = System.currentTimeMillis();
+        if (expireTime - currentTime <= MILLIS_MINUTE_TEN) {
+            refreshToken(loginUser);
+        }
+    }
+
+    /**
+     * 刷新令牌有效期
+     *
+     * @param loginUser 登录信息
+     */
+    public void refreshToken(LoginUser loginUser) {
+        loginUser.setLoginTime(System.currentTimeMillis());
+        loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
+        // 根据uuid将loginUser缓存
+        String userKey = getTokenKey(loginUser.getToken());
+        redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+    }
+
+    /**
+     * 设置用户代理信息
+     *
+     * @param loginUser 登录信息
+     */
+    public void setUserAgent(LoginUser loginUser) {
+        UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
+        String ip = IpUtils.getIpAddr();
+        loginUser.setIpaddr(ip);
+        loginUser.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
+        loginUser.setBrowser(userAgent.getBrowser().getName());
+        loginUser.setOs(userAgent.getOperatingSystem().getName());
+    }
+
+    /**
+     * 从数据声明生成令牌
+     *
+     * @param claims 数据声明
+     * @return 令牌
+     */
+    private String createToken(Map<String, Object> claims) {
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .signWith(SignatureAlgorithm.HS512, secret).compact();
+        return token;
+    }
+
+    /**
+     * 从令牌中获取数据声明
+     *
+     * @param token 令牌
+     * @return 数据声明
+     */
+    private Claims parseToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
+     * 从令牌中获取用户名
+     *
+     * @param token 令牌
+     * @return 用户名
+     */
+    public String getUsernameFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.getSubject();
+    }
+
+    /**
+     * 获取请求token
+     *
+     * @param request
+     * @return token
+     */
+    private String getToken(HttpServletRequest request) {
+        String token = request.getHeader(header);
+        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
+            token = token.replace(Constants.TOKEN_PREFIX, "");
+        }
+        return token;
+    }
+
+    private String getTokenKey(String uuid) {
+        // LOGIN_TOKEN_KEY = login_tokens:
+        return CacheConstants.LOGIN_TOKEN_KEY + uuid;
+    }
+}
+```
+
 
 
 # 集成 Apache Shiro
@@ -3710,7 +3923,1734 @@ public class ShiroConfig {
 
 
 
+# Spring Security
 
+
+> [Spring Security](https://spring.io/projects/spring-security) 是一款提供**认证【Authentication】、授权【Authorization】、以及针对常见（网络）攻击的防御的框架**。它为保护命令式和反应式应用程序提供了一流的支持，是保护基于Spring的应用程序的事实标准
+
+
+> **环境**
+>
+> Spring Boot 2.6.15 + JDK8
+
+
+
+## 基本概念
+
+
+### 认证方式
+
+
+常见认证方式：
+
+1. 用户名密码认证：最基本的方式
+2. 基于令牌的认证：即JSON Web Token（JWT）
+3. 多因素认证（MFA）：要求用户提供多种类型的凭证，如密码、指纹，Token
+4. 基于证书的认证：用户或设备必须提供一个有效的数字证书来证明其身份，证书包含用户的公钥和一些标识信息，并由受信任的证书颁发机构（CA）签发
+
+
+
+SpringSecurity支持的认证方式：
+
+1. HTTP Basic认证：最简单的认证方式之一， Web 服务器和客户端之间进行认证的一种方式，只需要在请求头中携带相应的信息就可以认证成功。而且它是一种无状态登录，也就是 session 中并不会记录用户的登录信息。缺点：因为用户凭证（用户名/密码）只是简单的通过 Base64 编码之后就开始传送了，很容易被工具嗅探到，进而暴露用户信息。它主要适用于RESTful Web服务
+2. HTTP Digest认证：与Basic认证相比，Digest认证提供了更高的安全性，因为它使用摘要算法来传输凭据，而不是明文
+3. 表单认证：这是Web应用程序中最常见的认证方式。用户通过表单输入用户名和密码，然后这些信息被发送到服务器进行验证
+4. OAuth 2.0认证：一种开放标准，允许用户授权第三方应用程序访问其账户信息，而无需共享密码。常见的使用场景是社交媒体的登录。Spring Security通过集成Spring OAuth项目来支持OAuth 2.0
+5. OpenID Connect认证：基于OAuth 2.0的一个身份认证层，它允许应用程序通过安全的方式验证用户的身份，并获取关于用户的基本信息
+6. SAML 2.0认证：安全断言标记语言（SAML）是一种基于XML的开放标准，用于在身份提供者和服务提供商之间交换身份验证和授权数据。Spring Security可以与SAML 2.0兼容的身份提供商集成
+7. LDAP认证：轻量级目录访问协议（LDAP）是一种用于查询和修改目录服务的协议，如Active Directory。Spring Security可以通过LDAP服务器进行用户认证
+8. JAAS认证：Java认证和授权服务（JAAS）是Java平台的一个标准API，用于进行用户认证和访问控制。Spring Security可以与JAAS集成，以支持基于Java的认证机制
+9. 预身份验证：这是一种机制，其中用户的身份已经在应用程序的外部进行了验证，并且以某种方式传递给了应用程序。例如，在使用代理服务器或负载均衡器时，用户可能已经在这些组件上进行了身份验证。例如SSO. 需要继承于AbstractPreAuthenticatedProcessingFilter来获取相关认证信息进行认证
+10. X.509证书认证：在这种认证方式中，用户的身份通过客户端证书进行验证，该证书由受信任的证书颁发机构（CA）签发
+11. 自定义认证：Spring Security还允许开发人员实现自定义的认证机制，以适应特定的业务需求
+
+
+
+### 授权方式
+
+常见授权方式：
+
+1. 基于角色的访问控制（RBAC）：最常见的授权方式之一。在RBAC中，权限被分配给角色，而角色则被分配给用户。例如，一个系统可能有“管理员”、“编辑”和“读者”等角色，每个角色有不同的权限集合。用户根据其被分配的角色来获得相应的权限
+2. 基于属性的访问控制（ABAC）：访问决策基于请求者、资源、环境条件和策略的属性来动态计算的。ABAC提供了更细粒度的控制，因为它可以根据多个属性来允许或拒绝访问。例如：根据用户所属机构来授予权限
+3. 基于策略的访问控制（PBAC）：一种灵活的授权模型，它允许管理员定义策略来控制对资源的访问。这些策略可以基于时间、位置、用户行为或其他条件
+4. 访问控制列表（ACL）：它明确指定哪些用户或用户组可以访问特定的资源，以及他们可以执行哪些操作。ACL通常与文件系统或数据库等系统资源关联。参照Linux的文件权限管理
+5. 基于声明的访问控制（Claims-Based Access Control）：用户Principals的身份Identities被封装在一组声明Claims中，这些声明描述了用户的属性和权限。系统根据这些声明来做出授权决策。适用于大型系统
+6. 能力为基础的访问控制（CapBAC）：一种较新的授权模型，它强调赋予实体（如用户或进程）特定的“能力”，这些能力定义了它们可以执行的操作。CapBAC旨在减少权限管理的复杂性，并增强系统的安全性
+7. 强制访问控制（MAC）：是一种严格的访问控制策略，通常由系统强制执行，而不是由用户或进程控制。在MAC系统中，每个用户和对象都被分配一个安全级别，系统根据这些级别来允许或拒绝访问
+
+
+> Spring Security支持的授权方式：通常通过RBAC和ACL来实现，但也可以结合其他模型来提供灵活的授权解决方案。Spring Security进行了抽象，主要由 `UserDetailsService`、`UserDetails`、`GrantedAuthority` 三大接口来组织授权方式
+
+
+## 混个脸熟
+
+依赖
+
+```xml
+<!-- 集成Spring Security时注意Spring Boot的版本
+        建议采用 SpringBoot 2.3.12.RELEASE - 2.6.15 + JDK8
+ -->
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.6.15</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+controller
+
+```java
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * <p>
+ * 测试 Spring Security 是否生效
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@RestController
+@RequestMapping("user")
+public class TestController {
+
+    /**
+     * 测试  导入依赖启动访问该接口即可    即使用Spring-Security的默认配置
+     *
+     * 默认用户：user   密码：控制台日志提供得有    Using generated security password: 6be3b121-67c5-4c77-bd23-07e5d167edeb
+     */
+    @GetMapping("/test")
+    public String test() {
+        return "Hello Spring Security";
+    }
+}
+```
+
+> **SpringBoot 1.x 和 SpringBoot 2.x的注意点**
+
+```yaml
+# SpringBoot 1.x 版本需要使用如下配置让Spring Security生效
+# 2.x不需要、也不支持这么配置，而改用 Security配置类 或 启动类 中使用    @EnableWebSecurity  // 开启web security功能
+#security:
+#  basic:
+#    enabled: true
+```
+
+
+## 基于内存认证
+
+启动类开启Spring Security功能【可以直接放在Security的配置类中，但不建议】
+
+```java
+@EnableWebSecurity  // 开启web security功能
+```
+
+
+YAML配置
+
+```yaml
+server:
+  port: 5674
+
+# SpringBoot 1.x 版本需要使用如下配置让Spring Security生效
+# 2.x不需要、也不支持这么配置，而改用 Security配置类 或 启动类 中使用    @EnableWebSecurity  // 开启web security功能
+#security:
+#  basic:
+#    enabled: true
+
+spring:
+  security:
+    user:
+      name: zixieqing
+# 曾经的BUG重现：密码用字符串写法 不然登录不成功【会报Bad credentials】  SpringBoot 2.6.15 - 2.3.12.RELEASE 均有出现
+      password: "072413"
+      roles: dev
+```
+
+SecurityConfig 配置
+
+```java
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+/**
+ * <p>
+ * Spring Security 基础配置测试   当前这个类主要是对我们请求的url及权限规则的一些认证配置
+ *
+ *      WebSecurityConfigurerAdapter 抽象类，是权限管理启动的入口
+ *
+ *      extends WebSecurityConfigurerAdapter    我采用过的版本 SpringBoot 2.6.15 - 2.3.12.RELEASE 都可以使用这个
+ *      采用 Spring Boot 2.3.12.RELEASE 时 Spring Security 登录会很慢
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Configuration
+// @EnableWebSecurity  // 开启web security功能  可直接放在启动类上
+@EnableGlobalMethodSecurity(prePostEnabled = true)  // 开启方法安全认证【可注掉，本节还未使用】，可放在启动类上【不建议】
+                                                    // 即：使用了该注解，才能让controller之类的方法上 @PreAuthorize 等注解生效
+/* @PreAuthorize	@PostAuthorize等注解，为true，会拦截加了这些注解的地方 */
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${spring.security.user.name}")
+    private String username;
+
+    @Value("${spring.security.user.password}")
+    private String password;
+
+    @Value("${spring.security.user.roles}")
+    private String roles;
+
+    /**
+     * 基于内存认证
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+        /* 查看一下加密后的密码   打个断点    DEBUG进入
+         * passwordEncoder().encode(password) = $2a$10$Dj7JY8mJeztsUfS5teDtCeGWYvqSkpsaQ9iwSgJVIcUBbo71k5gdW
+         * 1、getSalt                              前29位是随机生成的salt  小于28  IllegalArgumentException("Invalid salt")
+         *                                         $2a$10$ 是为了一些验证的，7 - 29 位才是real_salt
+         * 2、生成最后的哈希值
+         *      BCrypt.hashpw(password, salt)      password被getBytes(UTF8)
+         *      BCrypt类   hashpw(byte[] passwordb, String salt, boolean for_check)
+         *      利用real_salt、进行 byte[] saltb = decode_base64(salt)
+         *      最后和中间过程拼接的 StringBuilder rs 就是 $....$，再进行encode_base64 即再给rs拼接东西，之后toString返回
+         * */
+        System.out.println("passwordEncoder().encode(password) = " + passwordEncoder().encode(password));
+
+        auth.inMemoryAuthentication()
+                .withUser(username)
+                .password(passwordEncoder().encode(password))
+                .roles(roles);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // 使用BCrypt加密密码
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+
+controller
+
+```java
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * <p>
+ * 测试 Spring Security 是否生效
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@RestController
+@RequestMapping("user")
+public class TestController {
+
+    /**
+     * 基于内存认证   测试Spring Security基本配置
+     */
+    @GetMapping("/basicConfigTest")
+    public String baseConfigTest() {
+        // 也可以识别HTML标签
+        return "<h1>Hi，老北鼻，恭喜你认证成功</h1>";
+    }
+}
+```
+
+
+
+## 自定义表单认证 + 链接数据库
+
+依赖
+
+```xml
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.15</version>
+    </parent>
+
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mybatis.spring.boot</groupId>
+      <artifactId>mybatis-spring-boot-starter</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+```
+
+
+### 前端
+
+> 可以自行编写 或 在网上找一个登录页面改造即可
+
+登录 `login.html`
+
+```html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=utf-8" />
+    <title>登录</title>
+    <link th:href='@{http://fonts.useso.com/css?family=Open+Sans:400,700}' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" th:href="@{http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css}">
+
+    <!--可无视-->
+    <link rel="stylesheet" th:href="@{static/css/normalize.css}" type="text/css" />
+
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 注意：样式是内联添加的，因为 Prefixfree 需要访问您的样式，并且如果它们位于本地磁盘上，则必须内联！ */
+        body {
+            font-family: "Open Sans", sans-serif;
+            height: 100vh;
+            background-size: cover;
+        }
+
+        @keyframes spinner {
+            0% {
+                transform: rotateZ(0deg);
+            }
+            100% {
+                transform: rotateZ(359deg);
+            }
+        }
+
+        .wrapper {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            min-height: 100%;
+            padding: 20px;
+            background: rgba(4, 40, 68, 0.85);
+        }
+
+        .login {
+            border-radius: 2px 2px 5px 5px;
+            padding: 10px 20px 20px 20px;
+            width: 90%;
+            max-width: 320px;
+            background: #ffffff;
+            position: relative;
+            padding-bottom: 80px;
+            box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3);
+        }
+        .login.loading button {
+            max-height: 100%;
+            padding-top: 50px;
+        }
+        .login.loading button .spinner {
+            opacity: 1;
+            top: 40%;
+        }
+        .login.ok button {
+            background-color: #8bc34a;
+        }
+        .login.ok button .spinner {
+            border-radius: 0;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            height: 20px;
+            animation: none;
+            transform: rotateZ(-45deg);
+        }
+        .login input {
+            display: block;
+            padding: 15px 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            transition: border-width 0.2s ease;
+            border-radius: 2px;
+            color: #ccc;
+        }
+        .login input + i.fa {
+            color: #fff;
+            font-size: 1em;
+            position: absolute;
+            margin-top: -47px;
+            opacity: 0;
+            left: 0;
+            transition: all 0.1s ease-in;
+        }
+        .login input:focus {
+            outline: none;
+            color: #444;
+            border-color: #2196F3;
+            border-left-width: 35px;
+        }
+        .login input:focus + i.fa {
+            opacity: 1;
+            left: 30px;
+            transition: all 0.25s ease-out;
+        }
+        .login a {
+            font-size: 0.8em;
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .login .title {
+            color: #444;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0 30px 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .login button {
+            width: 100%;
+            height: 100%;
+            padding: 10px 10px;
+            background: #2196F3;
+            color: #fff;
+            display: block;
+            border: none;
+            margin-top: 20px;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            max-height: 60px;
+            border: 0px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 2px 2px;
+            transform: rotateZ(0deg);
+            transition: all 0.1s ease-out;
+            border-bottom-width: 7px;
+        }
+        .login button .spinner {
+            display: block;
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            border: 4px solid #ffffff;
+            border-top-color: rgba(255, 255, 255, 0.3);
+            border-radius: 100%;
+            left: 50%;
+            top: 0;
+            opacity: 0;
+            margin-left: -20px;
+            margin-top: -20px;
+            animation: spinner 0.6s infinite linear;
+            transition: top 0.3s 0.3s ease, opacity 0.3s 0.3s ease, border-radius 0.3s ease;
+            box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2);
+        }
+        .login:not(.loading) button:hover {
+            box-shadow: 0px 1px 3px #2196F3;
+        }
+        .login:not(.loading) button:focus {
+            border-bottom-width: 4px;
+        }
+
+        footer {
+            display: block;
+            padding-top: 50px;
+            text-align: center;
+            color: #ddd;
+            font-weight: normal;
+            text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2);
+            font-size: 0.8em;
+        }
+        footer a, footer a:link {
+            color: #fff;
+            text-decoration: none;
+        }
+
+    </style>
+
+    <script th:src="@{static/js/prefixfree.min.js}"></script>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+    <!-- 注意： action="@{/user/login} 这个请求地址后面配置Spring Security时需要用到-->
+    <form class="login" method="POST" th:action="@{/user/login}">
+        <p class="title">Log in</p>
+        <!-- 注意：name="username" 这个username名字后面配置Spring Security需要用到 -->
+        <input type="text" name="username" placeholder="Username" autofocus/>
+        <i class="fa fa-user"></i>
+        <!-- 注意：name="password" 这个password名字后面配置Spring Security需要用到 -->
+        <input type="password" name="password" placeholder="Password" />
+        <i class="fa fa-key"></i>
+        <button>
+            <i class="spinner"></i>
+            <span class="state">立即登录</span>
+        </button>
+    </form>
+    <footer><a target="blank" href="https://www.cnblogs.com/xiegongzi">@紫邪情</a></footer>
+</div>
+
+
+<script type="text/javascript" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{static/js/index.js}"></script>
+
+</body>
+</html>
+```
+
+首页 `index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+<h1>首页</h1>
+</body>
+</html>
+```
+
+
+
+
+
+### 后端
+
+启动类添加注解
+
+```java
+@EnableWebSecurity      // 开启web security功能
+```
+
+
+YAML配置
+
+```yaml
+server:
+  port: 7983
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring-boot-study?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: "zixieqing072413"
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+```
+
+
+三张表：用户表、角色表、用户角色表。对应的用户、角色实体类自行创建，mapper、对应SQL略过
+
+![01](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623221507745-865869506.png)
+
+
+
+
+
+#### WebSecurityConfigurerAdapter 配置
+
+> WebSecurityConfigurerAdapter 抽象类是Spring Security的核心配置类，是权限管理启动的入口
+
+```java
+package com.zixq.security.browser;
+
+import com.zixq.handler.CustomAuthenticationAccessDeniedHandler;
+import com.zixq.handler.CustomLogoutSuccessHandler;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+/**
+ * <p>
+ * security config
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)  // 让 @PreAuthorize 等注解生效    不加则会发现 使用了@PreAuthorize却没拦截
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
+
+    @Autowired
+    private AuthenticationFailureHandler authenticationFailureHandler;
+    @Autowired
+    private CustomAuthenticationAccessDeniedHandler customAuthenticationAccessDeniedHandler;
+
+    @Autowired
+    private CustomLogoutSuccessHandler customLogoutSuccessHandler;
+
+    /**
+     * https请求拦截配置
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        log.info("=========进入了：{}#configure(HttpSecurity http)，http = {}========", this.getClass().getName(), http);
+
+        // 开启运行iframe嵌套页面
+        http.headers().frameOptions().disable();
+
+        // 1、权限认证设置
+        http.authorizeRequests()
+                .antMatchers("/login", "/register", "/static/**","/public/**").permitAll()  // 不拦截路由    SpringBoot默认就会从static或public中找静态资源
+                .anyRequest()   // 其他的所有请求
+                .authenticated()    // 都需要认证
+            .and()
+            // 2、form表单登录设置
+            .formLogin()
+                .loginPage("/login")                  // 自定义login页面的url 和后端的controller接口对应 本示例中是 MainController 中的
+                .usernameParameter("username")      // 接收的用户名参数名 和html中input type=“text” name="username" 名字保持一致 UsernamePasswordAuthenticationFilter中默认值就是username
+                .passwordParameter("password")      // 接收的密码参数名 和html中input type=“password” name="password" 名字保持一致  UsernamePasswordAuthenticationFilter中默认值就是password
+                /* 默认回到用户来自的页面，即form中action的地址，所以该处配置只要和form中action的地址相同即可，不用再另写一个 /user/login 的controller了
+                 * 因为Security不会将请求传给Spring MVC和我们的controller
+                 * */
+                .loginProcessingUrl("/user/login")       // 默认登录入口  对应前端form中action请求的地址
+                // .defaultSuccessUrl("/index")    // 登录成功后跳转的controller地址  若 AuthenticationSuccessHandler 这里面已经重定向了，则这里就可以不用配置了
+                // .failureUrl("/login?error=true")    // 认证失败请求的路径 同理 AuthenticationFailureHandler 配置，这里就可以不用配置，或者都不配置，改为响应错误信息即可
+                .successHandler(authenticationSuccessHandler)               // 成功后的结果处理器
+                .failureHandler(authenticationFailureHandler)               // 失败后的结果处理器
+            .and()
+            // 3、退出设置
+            .logout()
+                .logoutUrl("/logout")       // 退出url    后端接口地址
+                .logoutSuccessHandler(customLogoutSuccessHandler)     // 退出成功处理器
+                .permitAll()
+            .and()
+            // 4、自定义访问被拒绝的处理器
+            .exceptionHandling()
+                .accessDeniedHandler(customAuthenticationAccessDeniedHandler)
+            .and()
+            //默认都会产生一个hidden标签 里面有安全相关的验证 防止请求伪造 这边我们暂时不需要 可禁用掉
+            .csrf().disable()
+        ;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+
+#### handler 处理器：认证成功处理器、认证失败处理、退出成功处理器
+
+##### AuthenticationSuccessHandler 认证成功处理器
+
+```java
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Enumeration;
+
+/**
+ * <p>
+ * 认证成功的结果处理器
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+@Component
+public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        // 获取前端传到后端的全部参数
+        Enumeration<String> enu = request.getParameterNames();
+        while (enu.hasMoreElements()) {
+            String paraName = (String) enu.nextElement();
+
+            log.info("========进入了：{}#onAuthenticationSuccess()，参数-{}：{}=========",
+                    this.getClass().getName(), paraName, request.getParameter(paraName));
+        }
+
+        log.info("=======进入了：{}#onAuthenticationSuccess()，登录认证成功==========", this.getClass().getName());
+
+        // 这里写你登录成功后的逻辑，可以验证其他信息，如验证码等。
+        // response.setContentType("application/json;charset=UTF-8");
+        // JSONObject resultObj = new JSONObject();
+        // resultObj.put("code", HttpStatus.OK.value());
+        // resultObj.put("msg", "登录成功");
+        // resultObj.put("authentication", objectMapper.writeValueAsString(authentication));
+        // response.getWriter().write(resultObj.toString());
+
+        // 重定向
+        redirectStrategy.sendRedirect(request, response, "/index");
+    }
+}
+```
+
+##### AuthenticationFailureHandler 认证失败处理器
+
+```java
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * <p>
+ * 认证失败的结果处理器
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+@Component
+public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException, ServletException {
+
+        log.info("========进入了：{}#onAuthenticationFailure()=========", this.getClass().getName());
+
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().print(objectMapper.writeValueAsString(exception.getMessage()));
+        /* 或者重定向到错误页面
+         * 若采用这种方式，那么需要在 WebSecurityConfig 中使用 HttpSecurity.failureUrl(String authenticationFailureUrl)
+         * 配置失败请求的路径 需和这里的 login?error=true 保持一致*/
+        // redirectStrategy.sendRedirect(request, response, "/login?error=true");
+    }
+}
+```
+
+##### LogoutSuccessHandler 退出成功处理器
+
+```java
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * <p>
+ * 退出成功处理器
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+
+@Log4j2
+@Component
+public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Override
+    public void onLogoutSuccess(HttpServletRequest request,
+                                HttpServletResponse response,
+                                Authentication authentication) throws IOException, ServletException {
+
+        log.info("========进入了：{}#onLogoutSuccess，退出成功========", this.getClass().getName());
+
+        /* 这里面写退出成功的逻辑处理，如：清除必要的缓存呐之类的 */
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().print(objectMapper.writeValueAsString("退出成功"));
+    }
+}
+```
+
+
+
+##### AccessDeniedHandler 访问被拒绝处理器
+
+```java
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * <p>
+ * 自定义访问被拒绝的处理器
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Component
+public class CustomAuthenticationAccessDeniedHandler implements AccessDeniedHandler {
+    /**
+     * 访问被拒绝的处理器：直接重定向到指定页面也行
+     * 也可以直接选择在SecurityConfig中配置 http..failureUrl()
+     * 根据需要使用即可
+     */
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write("很抱歉，您没有该访问权限");
+    }
+}
+```
+
+
+
+#### controller
+
+```java
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+/**
+ * <p>
+ * main controller
+ * </p>
+ *
+ * <p>@author : ZiXieqing</p>
+ */
+@Log4j2
+@Controller
+public class MainController {
+    @GetMapping("/login")
+    public String loginPage(){
+        log.info("==========进入了：{}#loginPage()，请求路径为：/login，返回值为：'login'=========",
+                this.getClass().getName());
+        return "login";
+    }
+
+    @GetMapping("/index")
+    @PreAuthorize("hasAnyRole('DEV','ADMIN')")  // 里面是一个 SpEL表达式 名字区分大小写 DEV 和 Dev不一样   源码解析去 AuthorizationManagerBeforeMethodInterceptor
+    /*关于表达式的说明：
+    * 1、hasAnyRole() 和 hasAnyAuthority()
+    * hasAnyRole()  检查当前认证的用户是否具有指定角色中的至少一个 要求角色名称以ROLE_前缀开始，这是Spring Security的默认约定。
+    *               如果未按照约定命名角色，需要通过配置调整
+    *                   1、extends RoleVoter 重写 vote()，
+    *                   2、SecurityConfig中注入 DefaultWebSecurityExpressionHandler，注册自定义RoleVoter 如handler.setRoleVoter(new CustomRoleVoter())
+    * hasAnyAuthority() 更通用，不仅限于角色检查，也可以直接用于权限字符串的检查。它不假设任何命名约定，直接比较权限字符串
+    *
+    * 总结：
+    *       若应用权限体系主要基于角色，并遵循ROLE_前缀约定，那么hasAnyRole()更合适
+    *       如果权限设计更为灵活，包含非角色的权限字符串，应使用hasAnyAuthority()
+    *
+    * 2、hasPermission() 好 hasAnyAuthority()
+    * hasPermission()   用于检查当前用户是否拥有特定的权限。这里的“权限”是指业务层面的权限，比如读取某个资源、修改某个记录的能力等，而非仅仅局限于角色
+    *                   需要两个参数：如    @PreAuthorize("hasPermission(#resourceId, 'read')")
+    *                               第一个参数通常代表要访问的资源，第二个参数代表对该资源的操作权限
+    *                   同时需要自定义实现 PermissionEvaluator 接口
+    * hasAnyAuthority() 用于检查当前用户是否至少拥有提供的权限列表中的一个权限。这里的权限通常指的是角色或者简单的权限字符串，如"ROLE_ADMIN", "EDIT_POST"等
+    *
+    * 总结：
+    *       1、：hasPermission()提供了更细粒度的权限控制，适合复杂的应用场景；hasAnyAuthority()则适用于基于角色的简单权限管理
+    *       2、若需要根据具体的资源和操作来控制访问（比如根据数据库中的记录ID判断是否允许读取），应使用hasPermission()并实现自定义的PermissionEvaluator
+    *  */
+    public String index(){
+        log.info("======进入了：{}#index()，请求路径为：/index，需要的权限为：hasAnyRole('USER','ADMIN')。" +
+                        "返回值为：'index'=========", this.getClass().getName());
+        return "index";
+    }
+}
+```
+
+使用用户名和密码时：
+
+```java
+UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+
+AuthenticationContextHolder.setContext(authenticationToken);
+// 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
+Authentication authentication = authenticationManager.authenticate(authenticationToken);
+```
+
+
+
+### 测试
+
+成功示例：
+
+![02](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623221617389-535744381.png)
+
+
+
+失败示例：
+
+![image-20240618213658282](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623221347131-422732396.png)
+
+
+
+
+
+## 各方法注解 及其 应用场景
+
+```java
+/**
+ * 启用 @secured 注解: securedEnabled = true
+ * 会导入配置：SecuredMethodSecurityConfiguration
+ * 
+ * 启用 @PreAuthorize、@PostAuthorize、@PreFilter、@PostFilter：prePostEnabled = true
+ * 会导入配置：PrePostMethodSecurityConfiguration
+ * 
+ * 启用jsr250相关的安全注解：jsr250Enabled = true
+ * 会导入配置：Jsr250MethodSecurityConfiguration
+ * jsr250包括 @RolesAllowed、@PermitAll、@DenyAll
+ */
+@Configuration
+@EnableGlobalMethodSecurity(
+    securedEnabled = true, 
+    prePostEnabled = true, 
+    jsr250Enabled = true
+)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+}
+```
+
+
+各方法注解说明：
+
+| 注解                     | 应用场景                                                     | 实现原理                                         |
+| ------------------------ | ------------------------------------------------------------ | ------------------------------------------------ |
+| `@PreAuthorize`          | 用于在方法调用之前鉴权，支持方法入参作为表达式的一部分       | 基于SPEL表达式                                   |
+| `@PostAuthorize`         | 用于在方法调用之后鉴权，支持方法返回值作为表达式的一部分     | 基于SPEL表达式                                   |
+| `@PreFilter`             | 用于过滤方法入参                                             | 基于SPEL表达式                                   |
+| `@PostFilter`            | 用于过滤方法返回值                                           | 基于SPEL表达式                                   |
+| `@Secured`               | 配置需要满足的权限，可以是角色名或者权限                     | 基于AuthorityAuthorizationManager                |
+| JSR-250的`@PermitAll`    | 任何人都可以访问                                             | 基于lambda表达式实现的简单的AuthorizationManager |
+| JSR-250的`@DenyAll`      | 任何人都不能访问                                             | 基于lambda表达式实现的简单的AuthorizationManager |
+| JSR-250的`@RolesAllowed` | 配置需要满足的权限，可以是角色名或者权限。可以和`@Secured`相互取代 | 基于AuthorityAuthorizationManager                |
+
+
+
+### AuthorizationManagerBeforeMethodInterceptor
+
+```java
+public final class AuthorizationManagerBeforeMethodInterceptor
+		implements Ordered, MethodInterceptor, PointcutAdvisor, AopInfrastructureBean {
+    
+	/**
+	 * 构造器，需传入 Pointcut 和 AuthorizationManager<MethodInvocation>，以便校验权限
+	 *
+	 * Creates an instance.
+	 * @param pointcut the {@link Pointcut} to use
+	 * @param authorizationManager the {@link AuthorizationManager} to use
+	 */
+    public AuthorizationManagerBeforeMethodInterceptor(Pointcut pointcut,
+                                                       AuthorizationManager<MethodInvocation> authorizationManager) {
+        Assert.notNull(pointcut, "pointcut cannot be null");
+        Assert.notNull(authorizationManager, "authorizationManager cannot be null");
+        this.pointcut = pointcut;
+        this.authorizationManager = authorizationManager;
+    }
+
+    
+    /**
+     * 创建负责处理 @PreAuthorize 的增强
+     *
+     * Creates an interceptor for the {@link PreAuthorize} annotation
+     * @param authorizationManager the {@link PreAuthorizeAuthorizationManager} to use
+     * @return the interceptor
+     */
+    public static AuthorizationManagerBeforeMethodInterceptor preAuthorize(
+            PreAuthorizeAuthorizationManager authorizationManager) {
+        
+        AuthorizationManagerBeforeMethodInterceptor interceptor = new AuthorizationManagerBeforeMethodInterceptor(
+                AuthorizationMethodPointcuts.forAnnotations(PreAuthorize.class), authorizationManager);
+        interceptor.setOrder(AuthorizationInterceptorsOrder.PRE_AUTHORIZE.getOrder());
+        return interceptor;
+    }
+
+    
+    /**
+     * 创建负责处理 @Secured
+     *
+     * Creates an interceptor for the {@link Secured} annotation
+     * @param authorizationManager the {@link SecuredAuthorizationManager} to use
+     * @return the interceptor
+     */
+    public static AuthorizationManagerBeforeMethodInterceptor secured(
+            SecuredAuthorizationManager authorizationManager) {
+        
+        AuthorizationManagerBeforeMethodInterceptor interceptor = new AuthorizationManagerBeforeMethodInterceptor(
+                AuthorizationMethodPointcuts.forAnnotations(Secured.class), authorizationManager);
+        interceptor.setOrder(AuthorizationInterceptorsOrder.SECURED.getOrder());
+        return interceptor;
+    }
+
+    
+    /**
+     * 创建负责处理jsr250相关注解: @RolesAllow、@PermitAll、@DenyAll
+     *
+     * Creates an interceptor for the JSR-250 annotations
+     * @param authorizationManager the {@link Jsr250AuthorizationManager} to use
+     * @return the interceptor
+     */
+    public static AuthorizationManagerBeforeMethodInterceptor jsr250(Jsr250AuthorizationManager authorizationManager) {
+        AuthorizationManagerBeforeMethodInterceptor interceptor = new AuthorizationManagerBeforeMethodInterceptor(
+                AuthorizationMethodPointcuts.forAnnotations(RolesAllowed.class, DenyAll.class, PermitAll.class),
+                authorizationManager);
+        interceptor.setOrder(AuthorizationInterceptorsOrder.JSR250.getOrder());
+        return interceptor;
+    }
+
+    
+    /**
+	 * Determine if an {@link Authentication} has access to the {@link MethodInvocation}
+	 * using the configured {@link AuthorizationManager}.
+	 * @param mi the {@link MethodInvocation} to check
+	 * @throws AccessDeniedException if access is not granted
+	 */
+    @Override
+    public Object invoke(MethodInvocation mi) throws Throwable {
+        // 校验权限
+        attemptAuthorization(mi);
+        return mi.proceed();
+    }
+
+    
+    
+	static final Supplier<Authentication> AUTHENTICATION_SUPPLIER = () -> {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			throw new AuthenticationCredentialsNotFoundException(
+					"An Authentication object was not found in the SecurityContext");
+		}
+		return authentication;
+	};
+    
+    /**
+     * 授权校验
+     */
+    private void attemptAuthorization(MethodInvocation mi) {
+        
+        // 通过AuthorizationManager校验权限
+        AuthorizationDecision decision = this.authorizationManager.check(AUTHENTICATION_SUPPLIER, mi);
+
+        // 不通过就抛出访问拒绝异常
+        if (decision != null && !decision.isGranted()) {
+            throw new AccessDeniedException("Access Denied");
+        }
+    }
+}
+```
+
+从源码中可以发现三类注解只需要一个MethodInterceptor。而它们的不同之处则由AuthorizationManager这个同一接口进行统一调度，对应的：
+
+
+| 注解            | AuthorizationManager             |
+| --------------- | -------------------------------- |
+| `@PreAuthorize` | PreAuthorizeAuthorizationManager |
+| `@Secured`      | SecuredAuthorizationManager      |
+| jsr250的注解    | Jsr250AuthorizationManager       |
+
+
+
+> 至于 `*AuthorizationManager*` 的各个实现类：SecuredAuthorizationManager、Jsr250AuthorizationManager、PreAuthorizeAuthorizationManager就自行查看了
+
+
+
+
+
+### AuthorizationManagerAfterMethodInterceptor
+
+> 负责处理`@PostAuthorize`
+
+```java
+public final class AuthorizationManagerAfterMethodInterceptor
+		implements Ordered, MethodInterceptor, PointcutAdvisor, AopInfrastructureBean {
+
+	private final AuthorizationManager<MethodInvocationResult> authorizationManager;
+	
+	@Override
+	public Object invoke(MethodInvocation mi) throws Throwable {
+		// 先执行
+		Object result = mi.proceed();
+		// 再校验
+		attemptAuthorization(mi, result);
+		return result;
+	}
+	
+    
+    /**
+     * 授权校验
+     */
+	private void attemptAuthorization(MethodInvocation mi, Object result) {
+        
+        // 和 AuthorizationManagerBeforeMethodInterceptor 差不多
+		AuthorizationDecision decision = this.authorizationManager.check(AUTHENTICATION_SUPPLIER,
+				new MethodInvocationResult(mi, result));
+        
+		if (decision != null && !decision.isGranted()) {
+			throw new AccessDeniedException("Access Denied");
+		}
+	}
+}
+
+
+
+
+public final class PostAuthorizeAuthorizationManager implements AuthorizationManager<MethodInvocationResult> {
+
+	private PostAuthorizeExpressionAttributeRegistry registry = new PostAuthorizeExpressionAttributeRegistry();
+	
+    
+	/**
+	 * Determine if an {@link Authentication} has access to the returned object by
+	 * evaluating the {@link PostAuthorize} annotation that the {@link MethodInvocation}
+	 * specifies.
+	 * @param authentication the {@link Supplier} of the {@link Authentication} to check
+	 * @param mi the {@link MethodInvocationResult} to check
+	 * @return an {@link AuthorizationDecision} or {@code null} if the
+	 * {@link PostAuthorize} annotation is not present
+	 */
+	@Override
+	public AuthorizationDecision check(Supplier<Authentication> authentication, MethodInvocationResult mi) {
+		ExpressionAttribute attribute = this.registry.getAttribute(mi.getMethodInvocation());
+		if (attribute == ExpressionAttribute.NULL_ATTRIBUTE) {
+			return null;
+		}
+		EvaluationContext ctx = this.expressionHandler.createEvaluationContext(authentication.get(),
+				mi.getMethodInvocation());
+		this.expressionHandler.setReturnObject(mi.getResult(), ctx);
+		boolean granted = ExpressionUtils.evaluateAsBoolean(attribute.getExpression(), ctx);
+		return new ExpressionAttributeAuthorizationDecision(granted, attribute);
+	}
+}
+```
+
+
+
+
+
+### PreFilterAuthorizationMethodInterceptor
+
+> 负责处理`@PreFilter`注解的方法调用
+>
+> 
+>
+> 与`@PreAuthorize`类似，只是少了一层AuthorizationManager的封装。原因是AuthorizationManager是用来鉴权的，而`@PreFilter`不需要鉴权，只需要过滤参数即可，因此不会抛出访问异常
+
+```java
+public final class PreFilterAuthorizationMethodInterceptor
+		implements Ordered, MethodInterceptor, PointcutAdvisor, AopInfrastructureBean {
+
+	public PreFilterAuthorizationMethodInterceptor() {
+		// 默认处理的是 @PreFilter
+		this.pointcut = AuthorizationMethodPointcuts.forAnnotations(PreFilter.class);
+	}
+    
+	// ...
+
+	@Override
+	public Object invoke(MethodInvocation mi) throws Throwable {
+        
+		// 从属性注册器中获取到目标方法解析好的@PreFilter的相关属性信息。
+		PreFilterExpressionAttributeRegistry.PreFilterExpressionAttribute attribute = this.registry.getAttribute(mi);
+		if (attribute == PreFilterExpressionAttributeRegistry.PreFilterExpressionAttribute.NULL_ATTRIBUTE) {
+			return mi.proceed();
+		}
+        
+		// 创建SPEL的上下文
+		EvaluationContext ctx = this.expressionHandler.createEvaluationContext(AUTHENTICATION_SUPPLIER.get(), mi);
+        
+		// 从表达式上下文中获取需要过滤的目标
+		Object filterTarget = findFilterTarget(attribute.getFilterTarget(), ctx, mi);
+		// 根据SPEL表达式执行过滤
+		expressionHandler.filter(filterTarget, attribute.getExpression(), ctx);
+		// 执行目标方法
+		return mi.proceed();
+	}
+
+	// ...
+}
+```
+
+
+
+
+
+### PostFilterAuthorizationMethodInterceptor
+
+> 负责处理`@PostFilter`
+
+```java
+public final class PostFilterAuthorizationMethodInterceptor
+		implements Ordered, MethodInterceptor, PointcutAdvisor, AopInfrastructureBean {
+    
+	/* 这个注册器与PreAuthorizeExpressionAttributeRegistry类似，都继承同一个父类。
+	   只是解析的注解不一样，对应ExpressionAttribute稍稍不一样
+	   		前者记录有方法参数，后者记录有方法返回值 */
+	private PostFilterExpressionAttributeRegistry registry = new PostFilterExpressionAttributeRegistry();
+
+    
+	public PostFilterAuthorizationMethodInterceptor() {
+		this.pointcut = AuthorizationMethodPointcuts.forAnnotations(PostFilter.class);
+	}
+	
+    
+	/**
+	 * Filter a {@code returnedObject} using the {@link PostFilter} annotation that the
+	 * {@link MethodInvocation} specifies.
+	 * @param mi the {@link MethodInvocation} to check check
+	 * @return filtered {@code returnedObject}
+	 */
+	@Override
+	public Object invoke(MethodInvocation mi) throws Throwable {
+		// 先执行了方法，获得返回值
+		Object returnedObject = mi.proceed();
+		ExpressionAttribute attribute = this.registry.getAttribute(mi);
+		if (attribute == ExpressionAttribute.NULL_ATTRIBUTE) {
+			return returnedObject;
+		}
+        
+		// 创建SPEL的上下文
+		EvaluationContext ctx = this.expressionHandler.createEvaluationContext(AUTHENTICATION_SUPPLIER.get(), mi);
+        
+		// 根据SPEL表达式执行过滤
+		return expressionHandler.filter(returnedObject, attribute.getExpression(), ctx);
+	}
+}
+```
+
+
+
+
+
+## Spring Security 基本原理
+
+> 仅个人理解，仅供参考
+
+主要的过滤器链，过滤器链的调度是 `org.springframework.security.web.FilterChainProxy#doFilter(ServletRequest request, ServletResponse response)`
+
+在请求到来时，`FilterChainProxy`先遍历所有的SecurityFilterChain，然后找到匹配的SecurityFilterChain，遍历其中的Filter并调用doFilter方法，从而实现安全过滤器的逻辑
+
+DefaultSecurityFilterChain：是FilterChainProxy的助手，同时也是一个完整的安全过滤器链条。它为FilterChainProxy提供了满足某一路径条件所有Filter
+
+![Spring Security 核心过滤器链](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623221726613-1298970374.png)
+
+
+
+
+
+## Spring Security 认证校验流程
+
+总的说起来主要步骤就三步：
+
+1. 加载当前请求用户的用户信息【UserDetailsService#loadUserByUsername(String)】
+2. 若认证成功，则走认证成功处理器【AuthenticationSuccessHandler#onAuthenticationSuccess(HttpServletRequest, HttpServletResponse, Authentication)】
+3. 若认证失败，则走认证失败处理器【AuthenticationFailureHandler#onAuthenticationFailure(HttpServletRequest, HttpServletResponse, AuthenticationException)】
+
+稍微详细说一下的话，就下图
+
+![Spring Security 认证流程](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240623221754929-1000733528.png)
+
+
+
+## Spring Security 权限校验流程
+
+`FilterSecurityInterceptor` 负责执行实际的安全拦截操作，包括权限校验。它会在每个HTTP请求上应用访问控制列表(ACL)并利用AccessDecisionManager来做出是否允许访问的决定。流程如下：
+
+1. 用户尝试访问一个受保护的资源
+2. FilterSecurityInterceptor 拦截该请求，并从配置中获取与请求匹配的访问规则（如URL及其对应的权限）
+3. 它会检查当前用户（Authentication对象）是否已经过认证
+4. 然后，它收集所有相关的安全配置属性（ConfigAttribute），如角色或权限要求
+5. 最后，FilterSecurityInterceptor 调用 AccessDecisionManager 来决定用户是否有足够的权限访问该资源
+6. 根据 AccessDecisionManager 的决策结果，请求被允许继续或被拒绝
+
+
+
+权限过滤的入口：`AuthorizationFilter`
+
+```java
+public class AuthorizationFilter extends GenericFilterBean {
+
+	@Override
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
+
+		HttpServletRequest request = (HttpServletRequest) servletRequest;
+		HttpServletResponse response = (HttpServletResponse) servletResponse;
+		// 是否需要执行鉴权
+		if (this.observeOncePerRequest && isApplied(request)) {
+			chain.doFilter(request, response);
+			return;
+		}
+		// /error和异步请求不处理
+		if (skipDispatch(request)) {
+			chain.doFilter(request, response);
+			return;
+		}
+		// 是否已经执行过鉴权逻辑了
+		String alreadyFilteredAttributeName = getAlreadyFilteredAttributeName();
+		request.setAttribute(alreadyFilteredAttributeName, Boolean.TRUE);
+		try {
+			// 从SecurityContextHolder中获取凭证，并通过AuthorizationManager做出决策
+			this.authorizationManager.check(this::getAuthentication, request);
+		}
+		finally {
+			// 处理完业务逻辑后，为当前请求清理标识			
+			request.removeAttribute(alreadyFilteredAttributeName);
+		}
+	}
+}
+```
+
+`RequestMatcherDelegatingAuthorizationManager`
+
+```java
+public final class RequestMatcherDelegatingAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
+    
+	@Override
+	public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
+		// 遍历每一个已经登录好的路径，找到对应的AuthorizationManager<RequestAuthorizationContext>>
+		for (RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> mapping : this.mappings) {
+
+			RequestMatcher matcher = mapping.getRequestMatcher();
+			// 匹配当前请求
+			MatchResult matchResult = matcher.matcher(request);
+			if (matchResult.isMatch()) {
+				// 找到匹配的AuthorizationManager就直接调用check方法并返回鉴权结果
+				AuthorizationManager<RequestAuthorizationContext> manager = mapping.getEntry();
+				return manager.check(authentication,
+						new RequestAuthorizationContext(request, matchResult.getVariables()));
+			}
+		}
+		// 没有匹配的AuthorizationManager则返回拒绝当前请求
+		return DENY;
+	}
+}
+```
+
+
+
+> 在没有匹配的AuthorizationManager的情况下，默认是拒绝请求的
+>
+> 
+>
+> **总结**
+>
+> 1. 我们在配置中配置的url被封装成RequestMatcher，而hasRole被封装成AuthorityAuthorizationManager。进行注册，在请求过来时，便通过遍历所有注册好的RequestMatch进行匹配，存在匹配就调用`AuthorizationManager<RequestAuthorizationContext>#check`方法
+>
+> 2. 配置的链式调用，会跨越多个不同的类，最终又回到第一个对象的类型
+
+`FilterSecurityInterceptor`
+
+```java
+public class FilterSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
+    
+	public void invoke(FilterInvocation filterInvocation) throws IOException, ServletException {
+        
+		// ................
+        
+        // 获取当前请求URL应具有的权限 及 决策当前用户是否有权限访问
+		InterceptorStatusToken token = super.beforeInvocation(filterInvocation);
+		try {
+            // 这里面的核心是：SpringMVC 那一套
+			filterInvocation.getChain().doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
+		}
+		finally {
+			super.finallyInvocation(token);
+		}
+		super.afterInvocation(token, null);
+	}
+}
+```
+
+
+
+
+
+## Spring Security 使用验证码流程
+
+大体流程如下：
+
+1. 生成验证码，放入 `Session` 中
+
+```java
+@RestController
+public class ValidateController {
+    
+    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+
+    @GetMapping("/code/image")
+    public void createCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ImageCode imageCode = createImageCode();
+        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY_IMAGE_CODE, imageCode);
+        ImageIO.write(imageCode.getImage(), "jpeg", response.getOutputStream());
+    }
+}
+```
+
+2. 校验验证码
+
+```java
+import com.zixq.controller.ValidateController;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.social.connect.web.HttpSessionSessionStrategy;
+import org.springframework.social.connect.web.SessionStrategy;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Component
+public class ValidateCodeFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private AuthenticationFailureHandler authenticationFailureHandler;
+
+    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest httpServletRequest,
+                                    HttpServletResponse httpServletResponse,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        if (StringUtils.equalsIgnoreCase("/login", httpServletRequest.getRequestURI())
+                && StringUtils.equalsIgnoreCase(httpServletRequest.getMethod(), "post")) {
+            
+            try {
+                // 校验验证码
+                validateCode(new ServletWebRequest(httpServletRequest));
+            } catch (ValidateCodeException e) {
+                authenticationFailureHandler.onAuthenticationFailure(httpServletRequest, httpServletResponse, e);
+                return;
+            }
+        }
+        
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+    private void validateCode(ServletWebRequest servletWebRequest) throws ServletRequestBindingException {
+        // 从session中取出验证码
+        ImageCode codeInSession = (ImageCode) sessionStrategy.getAttribute(servletWebRequest, ValidateController.SESSION_KEY_IMAGE_CODE);
+        // 获取用户传递过来的验证码
+        String codeInRequest = ServletRequestUtils.getStringParameter(servletWebRequest.getRequest(), "imageCode");
+
+        if (StringUtils.isBlank(codeInRequest)) {
+            throw new ValidateCodeException("验证码不能为空！");
+        } else if (codeInSession == null) {
+            throw new ValidateCodeException("验证码不存在！");
+        } else if (codeInSession.isExpire()) {
+            sessionStrategy.removeAttribute(servletWebRequest, ValidateController.SESSION_KEY_IMAGE_CODE);
+            throw new ValidateCodeException("验证码已过期！");
+        } else if (!StringUtils.equalsIgnoreCase(codeInSession.getCode(), codeInRequest)) {
+            throw new ValidateCodeException("验证码不正确！");
+        }
+        
+        sessionStrategy.removeAttribute(servletWebRequest, ValidateController.SESSION_KEY_IMAGE_CODE);
+    }
+}
+```
+
+3. 让验证码过滤器生效：SecurityConfig中进行配置
+
+```java
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private ValidateCodeFilter validateCodeFilter;
+    
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加验证码校验过滤器
+    }
+}
+```
+
+
+
+## Spring Security 记住我功能
+
+做一个配置就可以了
+
+```java
+@Configuration
+public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private ValidateCodeFilter validateCodeFilter;
+
+    @Autowired
+    private UserDetailService userDetailService;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        jdbcTokenRepository.setCreateTableOnStartup(false);
+        return jdbcTokenRepository;
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // 记住我
+        http.rememberMe()
+            .tokenRepository(persistentTokenRepository()) // 配置 token 持久化仓库 PersistentTokenRepository 可使用InMemory内存、Jdbc
+            .tokenValiditySeconds(3600) // remember 过期时间，单为秒
+            .userDetailsService(userDetailService); // 处理自动登录逻辑
+    }
+}
+```
+
+
+
+
+
+## Spring Security之Session
+
+### Session超时 与 并发控制
+
+YAML配置
+
+```yaml
+# session超时设置
+server:
+  servlet:
+    session:
+      timeout: 3600	# 单位：秒
+```
+
+SecurityConfig配置
+
+```java
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    
+    @Autowired
+    private CustomSessionExpiredStrategy sessionExpiredStrategy;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        // 默认都会产生一个hidden标签 里面有安全相关的验证 防止请求伪造 这边我们暂时不需要 可禁用掉
+        http.csrf().disable()
+            // 4、Session配置
+            .sessionManagement()
+            .invalidSessionUrl("/session/invalid")     // session失效后跳转地址
+            .maximumSessions(1) // session并发数：同一时段只能有固定数量的账户登录
+            .maxSessionsPreventsLogin(true) // 当session数量达到最大session数时，不再允许同账号登录
+            .expiredSessionStrategy(customSessionExpiredStrategy)   // session在并发下失效后的处理策略
+    }
+}
+```
+
+CustomSessionExpiredStrategy：session在并发下失效后的处理策略
+
+```java
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.session.SessionInformationExpiredEvent;
+import org.springframework.security.web.session.SessionInformationExpiredStrategy;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+
+@Component
+public class CustomSessionExpiredStrategy implements SessionInformationExpiredStrategy {
+
+    @Override
+    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
+        HttpServletResponse response = event.getResponse();
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write("您的账号已经在别的地方登录，当前登录已失效。如果密码遭到泄露，请立即修改密码！");
+    }
+}
+```
+
+失效后跳转的controller路径：`/session/invalid`
+
+```java
+@RestController
+public class BrowserSecurityController {
+
+    @GetMapping("/session/invalid")
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String sessionInvalid(){
+        return "session已失效，请重新认证";
+    }
+}
+```
+
+
+
+
+
+### Session集群处理
+
+用户在A应用上登录认证了，后续通过负载均衡可能会把请求发送到B应用，而B应用服务器上并没有与该请求匹配的认证session信息，所以用户就需要重新进行认证。要解决这个问题，我们可以把session信息存储在第三方容器里（如Redis集群）
+
+依赖：
+
+```xml
+<dependency>
+  <groupId>org.springframework.session</groupId>
+  <artifactId>spring-session-data-redis</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+```
+
+YAML配置
+
+```yaml
+spring:
+  session:
+    store-type: redis	# 配置Session存储方式为Redis	可选项可参看源码 StoreType 枚举类
+
+# 本地环境下不配置也可以
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#    password: 123
+#    database: 0
+```
+
+
+
+> **提示**
+>
+> 存放到redis里的对象，必须是要序列化的，即必须实现 Serializable 接口，其属性如果是一个对象的话，也必须实现 Serializable 接口
+
+
+
+### Session其他操作
+
+SessionRegistry包含了一些使用的操作Session的方法，比如：
+
+踢出用户（让Session失效）：
+
+```java
+String currentSessionId = request.getRequestedSessionId();
+
+sessionRegistry.getSessionInformation(sessionId).expireNow();
+```
+
+获取所有Session信息：
+
+```java
+List<Object> principals = sessionRegistry.getAllPrincipals();
+```
 
 
 
