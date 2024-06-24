@@ -344,7 +344,9 @@ Linux：
 
 # 前端
 
-[VUE2 与 VUE3](https://github.com/zixq-stack/Java-Note/tree/master/%E5%89%8D%E7%AB%AF/Vue%E7%B3%BB%E5%88%97)。文件格式：md
+[Vue2](https://github.com/zixq-stack/Java-Note/blob/master/%E5%89%8D%E7%AB%AF/Vue%E7%B3%BB%E5%88%97/Vue2.md)。文件格式：md
+
+[Vue3](https://github.com/zixq-stack/Java-Note/blob/master/%E5%89%8D%E7%AB%AF/Vue%E7%B3%BB%E5%88%97/Vue3.md)。文件格式：md
 
 > 「前端全栈知识-不含上述的VUE系列」https://www.alipan.com/s/U3URqmoVftF
 >
