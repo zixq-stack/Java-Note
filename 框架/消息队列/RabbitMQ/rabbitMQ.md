@@ -4024,7 +4024,7 @@ public class MqConfig {
     /**
      * 正常队列 和 死信交换机 及 死信交换机 与 死信队列的routing key
      */
-    private static final String TTL_NORMAL_QUEUE_AND_DEAD_LETTER_EXCHANGE_AND_DEAD_LETTER_QUEUE_BIND = "YD";
+    private static final String BINDDING_KEY = "YD";
 
 
     /**
@@ -4052,7 +4052,7 @@ public class MqConfig {
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("x-dead-letter-exchange", TTL_DEAD_LETTER_EXCHANGE);
-        params.put("x-dead-letter-routing-key", TTL_NORMAL_QUEUE_AND_DEAD_LETTER_EXCHANGE_AND_DEAD_LETTER_QUEUE_BIND);
+        params.put("x-dead-letter-routing-key", BINDDING_KEY);
         params.put("x-message-ttl", 10 * 1000);
 
         // 构建队列 并 传入相应的参数
@@ -4080,7 +4080,7 @@ public class MqConfig {
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("x-dead-letter-exchange", TTL_DEAD_LETTER_EXCHANGE);
-        params.put("x-dead-letter-routing-key", TTL_NORMAL_QUEUE_AND_DEAD_LETTER_EXCHANGE_AND_DEAD_LETTER_QUEUE_BIND);
+        params.put("x-dead-letter-routing-key", BINDING_KEY);
         params.put("x-message-ttl", 40 * 1000);
 
         // 构建队列 并 传入相应的参数
@@ -4116,7 +4116,7 @@ public class MqConfig {
                                           @Qualifier("yExchange") DirectExchange yExchange) {
         return BindingBuilder.bind(queueD)
                 .to(yExchange)
-                .with(TTL_NORMAL_QUEUE_AND_DEAD_LETTER_EXCHANGE_AND_DEAD_LETTER_QUEUE_BIND);
+                .with(BINDING_KEY);
     }
 
 }
