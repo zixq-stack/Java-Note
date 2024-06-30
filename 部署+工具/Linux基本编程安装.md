@@ -1077,84 +1077,47 @@ chkconfig tomcat on
 
 # Docker安装
 
-> 可以通过 `yum install -y docker` 直接一键安装
+**1、安装**
 
-**1、安装yum工具**
+```bash
+yum install -y docker
 
-```shell
-yum install -y yum-utils device-mapper-persistent-data lvm2 --skip-broken
+# 查看安装结果
+docker version
 ```
 
+**2、开启服务**
 
+```bash
+systemctl start docker.service
+```
 
-**2、更新本地镜像源为阿里镜像源**
+**3、开启自启**
+
+```bash
+systemctl enable docker.service
+```
+
+**4、更新本地镜像源为阿里镜像源**
 
 - 参考阿里云的镜像加速文档：https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 
 ```shell
-yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-    
-sed -i 's/download.docker.com/mirrors.aliyun.com\/docker-ce/g' /etc/yum.repos.d/docker-ce.repo
+vim /etc/docker/daemon.json
 
-yum makecache fast
+
+{
+ "registry-mirrors": ["https://838ztoaf.mirror.aliyuncs.com"]
+}
 ```
 
+**5、重新加载配置、重启服务**
 
+```bash
+systemctl daemon-reload
 
-**3、安装docker**
-
-```shell
-yum install -y docker-ce
+systemctl restart docker.service
 ```
-
-
-
-**4、关闭防火墙**
-
-Docker应用需要用到各种端口，逐一去修改防火墙设置。非常麻烦，因此可以选择直接关闭防火墙，也可以开放需要的端口号，这里采用直接关闭防火墙
-
-```shell
-# 关闭
-systemctl stop firewalld
-# 禁止开机启动防火墙
-systemctl disable firewalld
-```
-
-
-
-**5、启动docker服务**
-
-```shell
-systemctl start docker
-```
-
-
-
-**6、开启开机自启**
-
-```shell
-systemctl enable docker
-```
-
-
-
-**7、测试是否成功**
-
-```shell
-docker ps
-```
-
-![截图](https://img2023.cnblogs.com/blog/2421736/202405/2421736-20240504140628552-2108109968.png)
-
-出现这个页面，则：说明安装成功
-
-或者是：
-
-```shell
-docker -v
-```
-
-出现docker版本号也表示成功
 
 
 

@@ -29,10 +29,9 @@
 
 ![截图](https://img2023.cnblogs.com/blog/2421736/202403/2421736-20240302175005756-1580797122.png)
 
-
 上面这玩意儿，我不想看到它。推荐一个网址：https://www.bootschool.net/ascii-art
 
- 在项目的resources资源目录下，新建一个banner.txt文件粘贴上述网址中复制的内容即可。
+ 在项目的resources资源目录下，新建一个`banner.txt`文件粘贴上述网址中复制的内容即可
 
 
 
@@ -2269,11 +2268,9 @@ public interface ZiXieQingMapper extends JpaRepository<ZiXieQing , Integer> {
 
 
 
-# **集成Mybatis-Plus**
+# 集成Mybatis-Plus
 
-mybatis-plus官网地址：https://baomidou.com/guide/
-
-
+> mybatis-plus官网地址：https://baomidou.com/guide/
 
 
 1. 导入依赖
@@ -2314,15 +2311,7 @@ mybatis-plus:
     auto-mapping-behavior: full
 # 如果使用了mybatis和mybatis-plus 那么这里就可以把mybatis的实现类xml集成进来
   mapper-locations: classpath:mapper/*.xml
-# 但是：最好别这种做，用了mybatis就别用mybatis-plus，二者最好只用其一
 ```
-
-> **注意点：**
-> 别把mybatis和mybatis-plus一起集成到spring中，否则：很容易出问题，虽然：mybatis-plus是mybatis的增强版，既然是增强版，那么就不会抛弃它原有的东西，只会保留原有的东西，然后新增功能，但是：==mybatis和mybatis-plus集成到一起之后很容易造成版本冲突==
-
-因此：对于单个系统模块/单个系统来说，建议二者只选其一集成
-
-PS：当然事情不是绝对的 我说的是万一，只是操作不当很容易触发错误而已，但是:二者一起集成也是可以的，当出现报错时可以解决掉，不延伸了 ，这不是这里该做的事情
 
 
 
@@ -2782,228 +2771,15 @@ public class JwtTest {
 }
 ```
 
-JTW工具类：懒得写了，所以直接从别人哪里嫖的，来源 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue/blob/master/ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java)
-
-```java
-import com.zixq.common.constant.CacheConstants;
-import com.zixq.common.constant.Constants;
-import com.zixq.common.core.domain.model.LoginUser;
-import com.zixq.common.core.redis.RedisCache;
-import com.zixq.common.utils.ServletUtils;
-import com.zixq.common.utils.StringUtils;
-import com.zixq.common.utils.ip.AddressUtils;
-import com.zixq.common.utils.ip.IpUtils;
-import com.zixq.common.utils.uuid.IdUtils;
-import eu.bitwalker.useragentutils.UserAgent;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-/**
- * token验证处理
- */
-@Component
-public class TokenService {
-    private static final Logger log = LoggerFactory.getLogger(TokenService.class);
-
-    // 令牌自定义标识
-    @Value("${token.header}")
-    private String header;
-
-    // 令牌秘钥
-    @Value("${token.secret}")
-    private String secret;
-
-    // 令牌有效期（默认30分钟）
-    @Value("${token.expireTime}")
-    private int expireTime;
-
-    protected static final long MILLIS_SECOND = 1000;
-
-    protected static final long MILLIS_MINUTE = 60 * MILLIS_SECOND;
-
-    private static final Long MILLIS_MINUTE_TEN = 20 * 60 * 1000L;
-
-    @Autowired
-    private RedisCache redisCache;
-
-    /**
-     * 获取用户身份信息
-     *
-     * @return 用户信息
-     */
-    public LoginUser getLoginUser(HttpServletRequest request) {
-        // 获取请求携带的令牌
-        String token = getToken(request);
-        if (StringUtils.isNotEmpty(token)) {
-            try {
-                Claims claims = parseToken(token);
-                // 解析对应的权限以及用户信息    LOGIN_USER_KEY = login_user_key
-                String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
-                String userKey = getTokenKey(uuid);
-                LoginUser user = redisCache.getCacheObject(userKey);
-                return user;
-            } catch (Exception e) {
-                log.error("获取用户信息异常'{}'", e.getMessage());
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 设置用户身份信息
-     */
-    public void setLoginUser(LoginUser loginUser) {
-        if (StringUtils.isNotNull(loginUser) && StringUtils.isNotEmpty(loginUser.getToken())) {
-            refreshToken(loginUser);
-        }
-    }
-
-    /**
-     * 删除用户身份信息
-     */
-    public void delLoginUser(String token) {
-        if (StringUtils.isNotEmpty(token)) {
-            String userKey = getTokenKey(token);
-            redisCache.deleteObject(userKey);
-        }
-    }
-
-    /**
-     * 创建令牌
-     *
-     * @param loginUser 用户信息
-     * @return 令牌
-     */
-    public String createToken(LoginUser loginUser) {
-        String token = IdUtils.fastUUID();
-        loginUser.setToken(token);
-        setUserAgent(loginUser);
-        refreshToken(loginUser);
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(Constants.LOGIN_USER_KEY, token);
-        return createToken(claims);
-    }
-
-    /**
-     * 验证令牌有效期，相差不足20分钟，自动刷新缓存
-     *
-     * @param loginUser
-     * @return 令牌
-     */
-    public void verifyToken(LoginUser loginUser) {
-        long expireTime = loginUser.getExpireTime();
-        long currentTime = System.currentTimeMillis();
-        if (expireTime - currentTime <= MILLIS_MINUTE_TEN) {
-            refreshToken(loginUser);
-        }
-    }
-
-    /**
-     * 刷新令牌有效期
-     *
-     * @param loginUser 登录信息
-     */
-    public void refreshToken(LoginUser loginUser) {
-        loginUser.setLoginTime(System.currentTimeMillis());
-        loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
-        // 根据uuid将loginUser缓存
-        String userKey = getTokenKey(loginUser.getToken());
-        redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
-    }
-
-    /**
-     * 设置用户代理信息
-     *
-     * @param loginUser 登录信息
-     */
-    public void setUserAgent(LoginUser loginUser) {
-        UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
-        String ip = IpUtils.getIpAddr();
-        loginUser.setIpaddr(ip);
-        loginUser.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
-        loginUser.setBrowser(userAgent.getBrowser().getName());
-        loginUser.setOs(userAgent.getOperatingSystem().getName());
-    }
-
-    /**
-     * 从数据声明生成令牌
-     *
-     * @param claims 数据声明
-     * @return 令牌
-     */
-    private String createToken(Map<String, Object> claims) {
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
-        return token;
-    }
-
-    /**
-     * 从令牌中获取数据声明
-     *
-     * @param token 令牌
-     * @return 数据声明
-     */
-    private Claims parseToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    /**
-     * 从令牌中获取用户名
-     *
-     * @param token 令牌
-     * @return 用户名
-     */
-    public String getUsernameFromToken(String token) {
-        Claims claims = parseToken(token);
-        return claims.getSubject();
-    }
-
-    /**
-     * 获取请求token
-     *
-     * @param request
-     * @return token
-     */
-    private String getToken(HttpServletRequest request) {
-        String token = request.getHeader(header);
-        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
-            token = token.replace(Constants.TOKEN_PREFIX, "");
-        }
-        return token;
-    }
-
-    private String getTokenKey(String uuid) {
-        // LOGIN_TOKEN_KEY = login_tokens:
-        return CacheConstants.LOGIN_TOKEN_KEY + uuid;
-    }
-}
-```
-
 
 
 # 集成 Apache Shiro
 
 ## 介绍
 
-Apache Shiro官网：https://shiro.apache.org/
-
-Github地址：https://github.com/apache/shiro
+> Apache Shiro官网：https://shiro.apache.org/
+>
+> Github地址：https://github.com/apache/shiro
 
 ```bash
 git clone https://github.com/apache/shiro.git
@@ -9103,7 +8879,7 @@ public class UserService {
 
 
 
-### **自定义了回滚异常**
+### 自定义了回滚异常
 
 在使用`@Transactional`注解声明事务时，有时我们想自定义回滚的异常，Spring也是支持的。可以通过设置`rollbackFor`参数，来完成这个功能
 
@@ -9297,7 +9073,7 @@ saveData(userModel);
 
 
 
-## **参考**
+## 参考
 
 - https://mp.weixin.qq.com/s/D4q8pHa4Avv9wzr9wuVW_A
 - https://mp.weixin.qq.com/s/TM5TXVH6cQ42M-UikvlNgg
