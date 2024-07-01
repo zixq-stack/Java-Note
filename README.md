@@ -332,7 +332,18 @@ Linux：
 
 # 面经+简历模板
 
-[简历模板](https://github.com/zixq-stack/Java-Note/tree/master/%E9%9D%A2%E7%BB%8F%E4%B8%8E%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF/%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF)。文件格式：doc
+[简历模板](https://github.com/zixq-stack/Java-Note/tree/master/%E9%9D%A2%E7%BB%8F%E4%B8%8E%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF/%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF)
+
+- 适合中文的简历模板收集（推荐，开源免费）：[https://github.com/dyweb/awesome-resume-for-chineseopen in new window](https://github.com/dyweb/awesome-resume-for-chinese)
+- 木及简历（推荐，部分免费） ： [https://www.mujicv.com/open in new window](https://www.mujicv.com/)
+- 简单简历（推荐，部分免费）：[https://easycv.cn/open in new window](https://easycv.cn/)
+- 极简简历（免费）： [https://www.polebrief.com/indexopen in new window](https://www.polebrief.com/index)
+- Markdown 简历排版工具（开源免费）：[https://resume.mdnice.com/open in new window](https://resume.mdnice.com/)
+- 站长简历（收费，支持 AI 生成）：[https://jianli.chinaz.com/open in new window](https://jianli.chinaz.com/)
+- typora+markdown+css 自定义简历模板 ：[https://github.com/Snailclimb/typora-markdown-resumeopen in new window](https://github.com/Snailclimb/typora-markdown-resume)
+- 超级简历（部分收费） ： https://www.wondercv.com/
+
+
 
 [面经：JavaGuide版](https://javaguide.cn/home.html)
 
