@@ -3900,16 +3900,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
-        /* 查看一下加密后的密码   打个断点    DEBUG进入
-         * passwordEncoder().encode(password) = $2a$10$Dj7JY8mJeztsUfS5teDtCeGWYvqSkpsaQ9iwSgJVIcUBbo71k5gdW
-         * 1、getSalt                              前29位是随机生成的salt  小于28  IllegalArgumentException("Invalid salt")
-         *                                         $2a$10$ 是为了一些验证的，7 - 29 位才是real_salt
-         * 2、生成最后的哈希值
-         *      BCrypt.hashpw(password, salt)      password被getBytes(UTF8)
-         *      BCrypt类   hashpw(byte[] passwordb, String salt, boolean for_check)
-         *      利用real_salt、进行 byte[] saltb = decode_base64(salt)
-         *      最后和中间过程拼接的 StringBuilder rs 就是 $....$，再进行encode_base64 即再给rs拼接东西，之后toString返回
-         * */
+        // 查看一下加密后的密码   打个断点    DEBUG进入
         System.out.println("passwordEncoder().encode(password) = " + passwordEncoder().encode(password));
 
         auth.inMemoryAuthentication()
@@ -4323,7 +4314,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         log.info("=========进入了：{}#configure(HttpSecurity http)，http = {}========", this.getClass().getName(), http);
 
-        // 开启运行iframe嵌套页面
+        /* 禁用 X-Frame-Options 响应头。下面是具体解释：
+         * X-Frame-Options 是一个 HTTP 响应头，用于防止网页被嵌入到其他网页的 <frame>、<iframe> 或 <object> 标签中，从而可以减少点击劫持攻击的风险
+		 */
         http.headers().frameOptions().disable();
 
         // 1、权限认证设置
@@ -4367,6 +4360,39 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 }
 ```
+
+上面的东西可以使用多次调用 `http.xxxxxx` 进行归类设置，方便阅读
+
+配置补充说明：
+
+```java
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)  // 让 @PreAuthorize 等注解生效
+											   // 不加则会发现 使用了@PreAuthorize却没拦截
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    /**
+     * anyRequest          |   匹配所有请求路径
+     * access              |   SpringEl表达式结果为true时可以访问
+     * anonymous           |   匿名可以访问【未登录可访问，已登录不可访问】
+     * denyAll             |   用户不能访问
+     * fullyAuthenticated  |   用户完全认证可以访问（非remember-me下自动登录）
+     * hasAnyAuthority     |   如果有参数，参数表示权限，则其中任何一个权限可以访问
+     * hasAnyRole          |   如果有参数，参数表示角色，则其中任何一个角色可以访问
+     * hasAuthority        |   如果有参数，参数表示权限，则其权限可以访问
+     * hasIpAddress        |   如果有参数，参数表示IP地址，如果用户IP和参数匹配，则可以访问
+     * hasRole             |   如果有参数，参数表示角色，则其角色可以访问
+     * permitAll           |   用户可以任意访问【登不登录都可以访问】
+     * rememberMe          |   允许通过remember-me登录的用户访问
+     * authenticated       |   用户登录后可访问
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.xxxxxxxx;
+    }
+}
+```
+
 
 
 #### handler 处理器：认证成功处理器、认证失败处理、退出成功处理器
@@ -5285,8 +5311,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
-
 ## Spring Security之Session
 
 ### Session超时 与 并发控制
@@ -5426,6 +5450,411 @@ sessionRegistry.getSessionInformation(sessionId).expireNow();
 
 ```java
 List<Object> principals = sessionRegistry.getAllPrincipals();
+```
+
+
+
+
+
+## Spring Security + JWT
+
+### controller
+
+```java
+/**
+ * 登录方法
+ *
+ * @param loginCommand 登录信息
+ * @return 结果
+ */
+@PostMapping("/login")
+public ResponseDTO<TokenDTO> login(@RequestBody LoginCommand loginCommand) {
+    // 生成令牌
+    String token = loginService.login(loginCommand);
+    SystemLoginUser loginUser = AuthenticationUtils.getSystemLoginUser();
+    CurrentLoginUserDTO currentUserDTO = userApplicationService.getLoginUserInfo(loginUser);
+
+    return ResponseDTO.ok(new TokenDTO(token, currentUserDTO));
+}
+```
+
+LoginService#login
+
+```java
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class LoginService {
+
+    private final TokenService tokenService;
+
+	private final AuthenticationManager authenticationManager;
+
+	/**
+     * 登录验证
+     *
+     * @param loginCommand 登录参数
+     * @return 结果
+     */
+    public String login(LoginCommand loginCommand) {
+        // 验证码开关
+        if (isCaptchaOn()) {
+            validateCaptcha(loginCommand.getUsername(), loginCommand.getCaptchaCode(), loginCommand.getCaptchaCodeKey());
+        }
+        // 用户验证
+        Authentication authentication;
+        // 解密
+        String decryptPassword = decryptPassword(loginCommand.getPassword());
+        try {
+            // 该方法会去调用UserDetailsServiceImpl#loadUserByUsername  校验用户名和密码  认证鉴权
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginCommand.getUsername(), decryptPassword));
+        } catch (BadCredentialsException e) {
+            ThreadPoolManager.execute(AsyncTaskFactory.loginInfoTask(loginCommand.getUsername(), LoginStatusEnum.LOGIN_FAIL,
+                MessageUtils.message("Business.LOGIN_WRONG_USER_PASSWORD")));
+            throw new ApiException(e, ErrorCode.Business.LOGIN_WRONG_USER_PASSWORD);
+        } catch (AuthenticationException e) {
+            ThreadPoolManager.execute(AsyncTaskFactory.loginInfoTask(loginCommand.getUsername(), LoginStatusEnum.LOGIN_FAIL, e.getMessage()));
+            throw new ApiException(e, ErrorCode.Business.LOGIN_ERROR, e.getMessage());
+        } catch (Exception e) {
+            ThreadPoolManager.execute(AsyncTaskFactory.loginInfoTask(loginCommand.getUsername(), LoginStatusEnum.LOGIN_FAIL, e.getMessage()));
+            throw new ApiException(e, Business.LOGIN_ERROR, e.getMessage());
+        }
+        // 把当前登录用户 放入上下文中
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 这里获取的loginUser是UserDetailsServiceImpl#loadUserByUsername方法返回的LoginUser
+        SystemLoginUser loginUser = (SystemLoginUser) authentication.getPrincipal();
+        recordLoginInfo(loginUser);
+        // 生成token
+        return tokenService.createTokenAndPutUserInCache(loginUser);
+    }
+
+
+    /**
+     * 记录登录信息
+     * @param loginUser 登录用户
+     */
+    public void recordLoginInfo(SystemLoginUser loginUser) {
+        ThreadPoolManager.execute(AsyncTaskFactory.loginInfoTask(loginUser.getUsername(), LoginStatusEnum.LOGIN_SUCCESS,
+            LoginStatusEnum.LOGIN_SUCCESS.description()));
+
+        SysUserEntity entity = redisCache.userCache.getObjectById(loginUser.getUserId());
+
+        entity.setLoginIp(ServletUtil.getClientIP(ServletHolderUtil.getRequest()));
+        entity.setLoginDate(DateUtil.date());
+        entity.updateById();
+    }
+}
+```
+
+AuthenticationUtils#getSystemLoginUser
+
+```java
+    /**
+     * 获取系统用户
+     **/
+    public static SystemLoginUser getSystemLoginUser() {
+        try {
+            return (SystemLoginUser) getAuthentication().getPrincipal();
+        } catch (Exception e) {
+            throw new ApiException(ErrorCode.Business.USER_FAIL_TO_GET_USER_INFO);
+        }
+    }
+
+
+    /**
+     * 获取Authentication
+     */
+    public static Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+```
+
+userApplicationService#getLoginUserInfo
+
+```java
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return 当前登录用户信息
+     */
+    public CurrentLoginUserDTO getLoginUserInfo(SystemLoginUser loginUser) {
+        CurrentLoginUserDTO permissionDTO = new CurrentLoginUserDTO();
+
+        permissionDTO.setUserInfo(new UserDTO(CacheCenter.userCache.getObjectById(loginUser.getUserId())));
+        permissionDTO.setRoleKey(loginUser.getRoleInfo().getRoleKey());
+        permissionDTO.setPermissions(loginUser.getRoleInfo().getMenuPermissions());
+
+        return permissionDTO;
+    }
+```
+
+
+
+### TokenService
+
+```java
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
+import com.zixq.common.constant.Constants.Token;
+import com.zixq.common.exception.ApiException;
+import com.zixq.common.exception.error.ErrorCode;
+import com.zixq.domain.common.cache.RedisCacheService;
+import com.zixq.infrastructure.user.web.SystemLoginUser;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.http.HttpServletRequest;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+/**
+ * token验证处理
+ *
+ * @author zixq
+ */
+@Component
+@Slf4j
+@Data
+@RequiredArgsConstructor
+public class TokenService {
+
+    /**
+     * 自定义令牌标识
+     */
+    @Value("${token.header}")
+    private String header;
+
+    /**
+     * 令牌秘钥
+     */
+    @Value("${token.secret}")
+    private String secret;
+
+    /**
+     * 自动刷新token的时间，当过期时间不足autoRefreshTime的值的时候，会触发刷新用户登录缓存的时间
+     * 比如这个值是20,   用户是8点登录的， 8点半缓存会过期， 当过8.10分的时候，就少于20分钟了，便触发
+     * 刷新登录用户的缓存时间
+     */
+    @Value("${token.autoRefreshTime}")
+    private long autoRefreshTime;
+
+    private final RedisCacheService redisCache;
+
+    /**
+     * 获取用户身份信息
+     *
+     * @return 用户信息
+     */
+    public SystemLoginUser getLoginUser(HttpServletRequest request) {
+        // 获取请求携带的令牌
+        String token = getTokenFromRequest(request);
+        if (StrUtil.isNotEmpty(token)) {
+            try {
+                Claims claims = parseToken(token);
+                // 解析对应的权限以及用户信息
+                String uuid = (String) claims.get(Token.LOGIN_USER_KEY);
+
+                return redisCache.loginUserCache.getObjectOnlyInCacheById(uuid);
+            } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException jwtException) {
+                log.error("parse token failed.", jwtException);
+                throw new ApiException(jwtException, ErrorCode.Client.INVALID_TOKEN);
+            } catch (Exception e) {
+                log.error("fail to get cached user from redis", e);
+                throw new ApiException(e, ErrorCode.Client.TOKEN_PROCESS_FAILED, e.getMessage());
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * 创建令牌
+     *
+     * @param loginUser 用户信息
+     * @return 令牌
+     */
+    public String createTokenAndPutUserInCache(SystemLoginUser loginUser) {
+        loginUser.setCachedKey(IdUtil.fastUUID());
+
+        redisCache.loginUserCache.set(loginUser.getCachedKey(), loginUser);
+
+        return generateToken(MapUtil.of(Token.LOGIN_USER_KEY, loginUser.getCachedKey()));
+    }
+
+    /**
+     * 当超过20分钟，自动刷新token
+     *
+     * @param loginUser 登录用户
+     */
+    public void refreshToken(SystemLoginUser loginUser) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime > loginUser.getAutoRefreshCacheTime()) {
+            loginUser.setAutoRefreshCacheTime(currentTime + TimeUnit.MINUTES.toMillis(autoRefreshTime));
+            // 根据uuid将loginUser存入缓存
+            redisCache.loginUserCache.set(loginUser.getCachedKey(), loginUser);
+        }
+    }
+
+
+    /**
+     * 从数据声明生成令牌
+     *
+     * @param claims 数据声明
+     * @return 令牌
+     */
+    private String generateToken(Map<String, Object> claims) {
+        return Jwts.builder()
+            .setClaims(claims)
+            .signWith(SignatureAlgorithm.HS512, secret).compact();
+    }
+
+    /**
+     * 从令牌中获取数据声明
+     *
+     * @param token 令牌
+     * @return 数据声明
+     */
+    private Claims parseToken(String token) {
+        return Jwts.parser()
+            .setSigningKey(secret)
+            .parseClaimsJws(token)
+            .getBody();
+    }
+
+    /**
+     * 从令牌中获取用户名
+     *
+     * @param token 令牌
+     * @return 用户名
+     */
+    private String getUsernameFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.getSubject();
+    }
+
+    /**
+     * 获取请求token
+     *
+     * @return token
+     */
+    private String getTokenFromRequest(HttpServletRequest request) {
+        String token = request.getHeader(header);
+        if (StrUtil.isNotEmpty(token) && token.startsWith(Token.PREFIX)) {
+            token = StrUtil.stripIgnoreCase(token, Token.PREFIX, null);
+        }
+        return token;
+    }
+}
+```
+
+3、JwtAuthenticationTokenFilter
+
+```java
+import com.zixq.infrastructure.user.AuthenticationUtils;
+import com.zixq.infrastructure.user.web.SystemLoginUser;
+import com.zixq.admin.customize.service.login.TokenService;
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+/**
+ * token过滤器 验证token有效性
+ * 继承OncePerRequestFilter类的话  可以确保只执行filter一次， 避免执行多次
+ *
+ * @author valarchie
+ */
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+
+    private final TokenService tokenService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+        throws ServletException, IOException {
+        SystemLoginUser loginUser = tokenService.getLoginUser(request);
+        if (loginUser != null && AuthenticationUtils.getAuthentication() == null) {
+            tokenService.refreshToken(loginUser);
+            // 如果没有将当前登录用户放入到上下文中的话，会认定用户未授权，返回用户未登陆的错误
+            putCurrentLoginUserIntoContext(request, loginUser);
+
+            log.debug("request process in jwt token filter. get login user id: {}", loginUser.getUserId());
+        }
+        chain.doFilter(request, response);
+    }
+
+
+    private void putCurrentLoginUserIntoContext(HttpServletRequest request, SystemLoginUser loginUser) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginUser,
+            null, loginUser.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+}
+```
+
+AuthenticationUtils#getAuthentication
+
+```java
+/**
+ * 获取Authentication
+ */
+public static Authentication getAuthentication() {
+    return SecurityContextHolder.getContext().getAuthentication();
+}
+```
+
+4、在SecurityConfig中配置
+
+```java
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor	// lombok
+public class SecurityConfig {
+
+    /**
+     * token认证过滤器
+     */
+    private final JwtAuthenticationTokenFilter jwtTokenFilter;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+
+        // 基于token，所以不需要session
+        httpSecurity.sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+    
+        /* 
+         * HttpSecurity addFilterBefore(Filter filter, Class<? extends Filter> beforeFilter)
+         *
+         * 添加JWT filter   需要一开始就通过token识别出登录用户 并放到上下文中   所以jwtFilter需要放前面
+         */
+        httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        return httpSecurity.build();
+    }
+}
 ```
 
 
