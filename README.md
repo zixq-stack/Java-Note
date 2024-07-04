@@ -25,6 +25,8 @@
 
 # Java
 
+[函数式编程【@B站UP主：三更草堂】](https://github.com/zixq-stack/Java-Note/blob/master/Java/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E3%80%90%40B%E7%AB%99UP%E4%B8%BB%EF%BC%9A%E4%B8%89%E6%9B%B4%E8%8D%89%E5%A0%82%E3%80%91.md)。文档格式：md
+
 [IDEA本地调试和远程调试](https://github.com/zixq-stack/Java-Note/blob/master/Java/IDEA%20%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95%E5%92%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95.md)。文件格式：md
 
 
