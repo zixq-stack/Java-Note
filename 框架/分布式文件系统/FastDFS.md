@@ -1,180 +1,183 @@
-# 1、FastDFS
+# 了解基础概念
 
-## 1.1、了解基础概念
+## 什么是分布式文件系统？
 
-### 1.1.1、什么是分布式文件系统？
+全称：Distributed File System，即简称的DFS
 
-- 全称：Distributed File System，即简称的DFS
-- 这个东西可以是一个软件，也可以说是服务器，和tomcat差不多，即相当于软件也相当于是服务器，这个软件就是用来管理文件的
-- 这个软件所管理的文件通常不是在一个服务器节点上，而是在多个服务器节点上
-- 服务器节点通过网络相连构成一个庞大的文件存储服务器集群，这些服务器都用于存储文件资源，通过分布式文件系统来管理这些服务器上的文件
+这个东西可以是一个软件，也可以说是服务器，和tomcat差不多，即相当于软件也相当于是服务器，这个软件就是用来管理文件的
 
+这个软件所管理的文件通常不是在一个服务器节点上，而是在多个服务器节点上
 
-
-### 1.1.2、传统文件系统 和 分布式文件系统对比
-
-**传统文件系统**
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531130933679-2059297028.png" alt="image" style="zoom:67%;" />
-
-- **缺点**
-  - 所有的文件都存放在一台计算机中，如果这台计算机挂彩了，那么就会导致整个服务不可用（ 文件不能上传和下载了 )
-  - 如果这台计算机磁盘损坏了，那么会丢失所有的文件
-  - 这台计算机的磁盘空间非常有限，很容易到达磁盘的上限，导致无法上传文件
+服务器节点通过网络相连构成一个庞大的文件存储服务器集群，这些服务器都用于存储文件资源，通过分布式文件系统来管理这些服务器上的文件
 
 
 
-- **回顾玩servlet时的文件上传和下载**
+## 传统文件系统 和 分布式文件系统对比
 
-  **文件上传**
+### 传统文件系统
 
-  - 假如前端轰HTML写法是如下的样子：
-
-  ```html
-  <div id="image">
-      <label for="">标题图片:</label>
-      <input type="file" id="file" name="file" >
-      <img src="" alt="" width="100px" height="150px">
-  </div>
-  ```
-  
-  - JS写法如下：
-
-  ```javascript
-  // 当图片发生改变时 —— 也就是用户点击file框，上传文件时
-  $("#file").on( 'change' , function () {
-  
-      // 创建一个FormData空对象，就相当于是伪造了一个form表单
-      let formData = new FormData();
-  
-      // 这个FromData对象就用来装文件内容
-      // 文件的files属性本质是个数组
-      let files = $("#file").prop("files");
-      formData.append("upFile" , files[0] );
-  
-      $.ajax( {
-  
-          url: '/ajax/upload.do',
-          type: 'post',
-          data: formData,
-          dataType: 'json',
-  
-          cache: false,    // 上传文件不需要缓存
-          contentType: false,      // 不需要对内容类型进行处理  因为内容是一个FormData对象
-          processData: false,       // 不需要对数据进行处理，因为上面的data是一个FormData对象
-  
-          // 后台返回的格式 ：
-          // { "errno":"0" , "data":[ {"alt":"1633528500498.jpg" , "url":"/upload/2021-10-06/1633528500498.jpg"} ] }
-          success: function (info) {
-              info.data.forEach( function (data) {
-  
-                  // $("#image img").remove();
-                  // $("#image").append( ' <img src=" '+data.url+' " alt="" width="100px" height="150px"> ' )
-  
-                  /*
-                       注掉的这种是：html中没有img标签时使用
-                       因为：使用下面这种方法的情景是 —— 页面本来就有一个img框（ 即：初始页面上这个file本身有一张图片 ），所以下面这种可以做到图片改变时把图片的路径换掉，也就是图片渲染（ 也是数据回填 的思想 ）
-                       但是：如果页面一开始file的位置是不应该有图片的，是后面用户选了之后才出现图片预览效果，那么：就使用注释掉的这种方法：追加
-  	*/
-  
-                  $("#image img").attr("src" , data.url );
-              });
-          }
-      } );
-  
-  })
-  ```
-  
-  - 那么后端的low代码如下：
-  
-  ```java
-  import com.alibaba.fastjson.JSON;
-  
-  import javax.servlet.ServletException;
-  import javax.servlet.annotation.MultipartConfig;
-  import javax.servlet.annotation.WebServlet;
-  import javax.servlet.http.HttpServlet;
-  import javax.servlet.http.HttpServletRequest;
-  import javax.servlet.http.HttpServletResponse;
-  import javax.servlet.http.Part;
-  import java.io.File;
-  import java.io.IOException;
-  import java.time.LocalDate;
-  import java.util.ArrayList;
-  import java.util.Collection;
-  import java.util.Date;
-  import java.util.HashMap;
-  
-  
-  // @MultipartConfig 注解就是文件注解，要获取前端的文件信息，必须加这个注解，不然做的所有事情都是无用功
-  @MultipartConfig
-  @WebServlet("/ajax/upload.do")
-  public class UploadServlet extends HttpServlet {
-  
-      @Override
-      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, 
-      IOException {
-  
-          /*
-  		 *   想要构建的是这么一个玩意儿
-  		 *       "errno":0 data:[ { url:"图片地址“ } , { alt:"图片说明“ } , { href:"null" } ]
-  		 *
-  		 * */
-  
-          ArrayList<Object> list = new ArrayList<>();
-  
-          Collection<Part> parts = req.getParts();   // 这是获取前台上传的文件
-  
-          for (Part part : parts) {
-  
-              // 先构建 data:[ { } , { } ]中的[ { } , { } ]
-  
-              // 获取文件的全路径
-              // 但是：不同浏览器的这个全路径都不一样，所以需要截取从而自定义文件名
-              String filePath = part.getSubmittedFileName();  
-              // System.out.println(filePath);
-              // 截取文件的后缀名
-              int subFileName = filePath.lastIndexOf(".");
-              String fileSuffix = filePath.substring(subFileName);
-  
-              // 自己给文件重新定义一个名字，并规定存放的地方
-              String timeStr = LocalDate.now().toString();
-  
-              // 获取当前项目的一个指定文件夹名字，用来保存文件 注意：getRealPath这是获取的当前项目的全路径，即：从盘符开始的路径
-              String proPathName = this.getServletContext().getRealPath("/upload/" + timeStr );
-              File file = new File(proPathName);
-              if ( !file.exists() ){
-                  file.mkdirs();
-              }
-  
-              // 拼接文件后缀名并保存文件
-              long timeStamp = new Date().getTime();
-              part.write(proPathName + "/" + timeStamp + fileSuffix );
-  
-              HashMap<String, String> map = new HashMap<>();
-              map.put( "url" , "/upload/" + timeStr + "/" + timeStamp + fileSuffix );
-              map.put( "alt" , timeStamp + fileSuffix );
-              map.put( "href" , null );
-              list.add(map);
-          }
-  
-          // 再构建"errno":0 data:[ { url:"图片地址“ } , { alt:"图片说明“ } , { href:"null" } ]
-          HashMap<String, Object> map = new HashMap<>();
-          map.put("errno", "0");
-          map.put("data", list);
-  
-          resp.getWriter().print( JSON.toJSONString(map) );
-      }
-  }
-  ```
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531132604814-61556119.png" alt="image" style="zoom:67%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531130933679-2059297028.png" alt="image"  />
 
 
 
-**文件下载**
+**缺点**
 
-- 后端low代码如下
+- 所有的文件都存放在一台计算机中，如果这台计算机挂彩了，那么就会导致整个服务不可用（ 文件不能上传和下载了 )
+- 如果这台计算机磁盘损坏了，那么会丢失所有的文件
+- 这台计算机的磁盘空间非常有限，很容易到达磁盘的上限，导致无法上传文件
+
+
+
+#### 回顾玩servlet时的文件上传和下载
+
+##### 文件上传
+
+假如前端轰HTML写法是如下的样子：
+
+```html
+<div id="image">
+    <label for="">标题图片:</label>
+    <input type="file" id="file" name="file" >
+    <img src="" alt="" width="100px" height="150px">
+</div>
+```
+
+JS写法如下：
+
+```javascript
+// 当图片发生改变时		也就是用户点击file框，上传文件时
+$("#file").on('change' , function() {
+
+    // 创建一个FormData空对象，就相当于是伪造了一个form表单
+    let formData = new FormData();
+
+    // 这个FromData对象就用来装文件内容
+    // 文件的files属性本质是个数组
+    let files = $("#file").prop("files");
+    formData.append("upFile" , files[0]);
+
+    $.ajax({
+
+        url: '/ajax/upload.do',
+        type: 'post',
+        data: formData,
+        dataType: 'json',
+
+        cache: false,    		// 上传文件不需要缓存
+        contentType: false,      // 不需要对内容类型进行处理  因为内容是一个FormData对象
+        processData: false,      // 不需要对数据进行处理，因为上面的data是一个FormData对象
+
+        // 后台返回的格式 ：
+        // {"errno":"0" , "data":[{"alt":"1633528500498.jpg" , "url":"/upload/2021-10-06/1633528500498.jpg"}]}
+        success: function (info) {
+            info.data.forEach(function (data) {
+
+                // $("#image img").remove();
+                // $("#image").append('<img src=" '+data.url+' " alt="" width="100px" height="150px">')
+
+                /*
+                     注掉的这种是：html中没有img标签时使用
+                     因为：使用下面这种方法的情景是 页面本来就有一个img框	即：初始页面上这个file本身有一张图片），所以下面这种可以做到图片改变时把图片的路径换掉，也就是图片渲染 即数据回填
+                     但是：如果页面一开始file的位置是不应该有图片的，是后面用户选了之后才出现图片预览效果，那么：就使用注释掉的这种方法：追加
+	*/
+
+                $("#image img").attr("src" , data.url);
+            });
+        }
+    });
+})
+```
+
+那么后端的low代码如下：
+
+```java
+import com.alibaba.fastjson.JSON;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+
+
+// @MultipartConfig 文件注解
+@MultipartConfig
+@WebServlet("/ajax/upload.do")
+public class UploadServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, 
+    IOException {
+
+        /*
+		 *   想要构建的是这么一个玩意儿
+		 *       "errno":0 data:[{ url:"图片地址“} , {alt:"图片说明“} , {href:"null"}]
+		 *
+		 * */
+
+        ArrayList<Object> list = new ArrayList<>();
+
+        Collection<Part> parts = req.getParts();   // 这是获取前台上传的文件
+
+        for (Part part : parts) {
+
+            // 先构建 data:[{ } , { }]中的[{ } , { }]
+
+            // 获取文件的全路径
+            // 但是：不同浏览器的这个全路径都不一样，所以需要截取从而自定义文件名
+            String filePath = part.getSubmittedFileName();  
+            // System.out.println(filePath);
+            // 截取文件的后缀名
+            int subFileName = filePath.lastIndexOf(".");
+            String fileSuffix = filePath.substring(subFileName);
+
+            // 自己给文件重新定义一个名字，并规定存放的地方
+            String timeStr = LocalDate.now().toString();
+
+            // 获取当前项目的一个指定文件夹名字，用来保存文件 注意：getRealPath这是获取的当前项目的全路径，即：从盘符开始的路径
+            String proPathName = this.getServletContext().getRealPath("/upload/" + timeStr );
+            File file = new File(proPathName);
+            if (!file.exists()){
+                file.mkdirs();
+            }
+
+            // 拼接文件后缀名并保存文件
+            long timeStamp = new Date().getTime();
+            part.write(proPathName + "/" + timeStamp + fileSuffix );
+
+            HashMap<String, String> map = new HashMap<>();
+            map.put("url" , "/upload/" + timeStr + "/" + timeStamp + fileSuffix);
+            map.put("alt" , timeStamp + fileSuffix);
+            map.put("href" , null);
+            list.add(map);
+        }
+
+        // 再构建"errno":0 data:[{url:"图片地址“} , {alt:"图片说明“} , {href:"null"}]
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("errno", "0");
+        map.put("data", list);
+
+        resp.getWriter().print(JSON.toJSONString(map));
+    }
+}
+```
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531132604814-61556119.png" alt="image"  />
+
+
+
+##### 文件下载
+
+后端low代码如下
 
 ```java
 import javax.servlet.ServletException;
@@ -202,29 +205,29 @@ public class downFileInClientServlet extends HttpServlet {
         String FileRealPath = "D:\\JavaTrainStudy\\servlet\\out\\production\\study06-httpServletResponse\\loginbg.png";
 
         // 2、告知浏览器要下载的文件名是什么？
-        String fileName = FileRealPath.substring( FileRealPath.lastIndexOf("\\") + 1 );
+        String fileName = FileRealPath.substring(FileRealPath.lastIndexOf("\\") + 1);
 
         // 3、让浏览器支持文件下载
         // Content-Disposition这个就是让浏览器支持文件下载
-        // URLEncoder.encode（ String s , String enc ) 是为了以防文件名是中文名，这样就设置编码格式了，让浏览器能够解析这个中文文件名
+        // URLEncoder.encode（String s , String enc) 以防文件名是中文名，设置编码格式
         resp.setHeader("Content-Disposition" , "attachment ; filename=" + URLEncoder.encode(fileName , "utf-8"));
 
         // 4、获取输入、输出流对象 并 把服务器中的文件输出到浏览器上
-        FileInputStream fis = new FileInputStream( FileRealPath );
+        FileInputStream fis = new FileInputStream(FileRealPath);
         ServletOutputStream os = resp.getOutputStream();
 
         // 创建缓冲区
         int len = 0 ;
         byte[] buffer = new byte[1024];
-        while ( ( len = fis.read( buffer ) )  > 0 ){
-            os.write( buffer , 0 , len);
+        while ((len = fis.read(buffer))  > 0){
+            os.write(buffer , 0 , len);
         }
 
         // 5、关闭流管道
-        if ( os != null ){
+        if (os != null){
             os.close();
         }
-        if ( fis != null ){
+        if (fis != null){
             fis.close();
         }
 
@@ -232,13 +235,17 @@ public class downFileInClientServlet extends HttpServlet {
 }
 ```
 
-<img src="https://img2023.cnblogs.com/blog/2421736/202312/2421736-20231221142526114-107010715.png" alt="image-20231221142524560" style="zoom:67%;" />
 
 
 
-**分布式文件系统**
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531133554497-813437547.png" alt="image" style="zoom:67%;" />
+### 分布式文件系统
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531133554497-813437547.png" alt="image"  />
+
+
+
+
 
 - **优点**
   - 解决了传统方式的单点故障问题
@@ -250,110 +257,101 @@ public class downFileInClientServlet extends HttpServlet {
 
 
 
-## 1.2、认识FastDFS
+# 认识FastDFS
 
-> **补充：常见的分布式文件系统**
-
-- **FastDFS**、GFS、**HDFS**、Lustre 、Ceph 、GridFS 、mogileFS、TFS
-
-
+> 常见的分布式文件系统
+>
+> - **FastDFS**、GFS、**HDFS**、Lustre 、Ceph 、GridFS 、mogileFS、TFS
 
 
 
-### 1.2.1、了解FastDFS
+## 了解FastDFS
 
-- **官网：https://github.com/happyfish100/fastdfs** 
-- FastDFS是一个开源的轻量级分布式文件系统，为互联网应用量身定做，简单、灵活、高效，采用C语言开发，由阿里巴巴开发并开源
-- FastDFS对文件进行管理，功能包括：文件存储、文件同步( 指的是：文件系统 和 数据备份之间的同步 )、文件上传、文件下载、文件删除等
-- FastDFS解决了大容量文件存储的问题
-- FastDFS特别适合以文件为载体的在线服务，如相册网站、文档网站、图片网站、视频网站等
-- FastDFS充分考虑了冗余备份、线性扩容等机制，并注重高可用、高性能等指标，使用FastDFS很容易搭建一套高性能的文件服务器集群提供文件上传、下载等服务
-  - 冗余备份：指的是文件系统中存的文件 和 数据备份中存的文件完全一致的问题
-    - <img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531140634652-1681210056.png" alt="image" style="zoom:67%;" />
-  - 线性扩容：文件系统 和 数据备份不断增加呗( 就是上图中再加几份嘛 ），和水平扩容类似
+> 官网：https://github.com/happyfish100/fastdfs
 
+FastDFS是一个开源的轻量级分布式文件系统，为互联网应用量身定做，简单、灵活、高效，采用C语言开发，由阿里巴巴开发并开源
 
+FastDFS对文件进行管理，功能包括：文件存储、文件同步(文件系统 和 数据备份之间的同步)、文件上传、文件下载、文件删除等
 
-### 1.2.2、FastDFS的组成结构
+FastDFS解决了大容量文件存储的问题
 
-- **由两大部分构成，一个是客户端，一个是服务端**
-  - **客户端：**指我们的程序，比如我们的Java程序去连接FastDFS、操作FastDFS，那我们的Java程序就是一个客户端。FastDFS提供专有API访问，目前提供了C、Java和PHP几种编程语言的API，用来访问FastDFS文件系统
-  - **服务端由两个部分构成：一个是跟踪器（tracker），一个是存储节点（storage）**
-    - **跟踪器 tracker：**这个玩意儿类似于Erueka / zookeeper注册中心，**起到一个调度的作用**。它是在内存中记录集群中存储节点storage的状态信息，是前端Client和后端存储节点storage的枢纽，因为相关信息全部在内存中，Tracker server的性能非常高，一个较大的集群（比如上百个group，group指的就是：文件系统 和 数据备份的组合，这二者就是一个group）中有3台就足够了
-    - **存储节点 storage：用于存储文件**，包括文件和文件属性（meta data，如：文件名、文件大小、文件后缀...）都保存到存储服务器磁盘上。以及完成文件管理的所有功能：文件存储、文件同步和提供文件访问( 上传、下载、删除 )等
+FastDFS特别适合以文件为载体的在线服务，如相册网站、文档网站、图片网站、视频网站等
 
 
 
+FastDFS充分考虑了冗余备份、线性扩容等机制，并注重高可用、高性能等指标，使用FastDFS很容易搭建一套高性能的文件服务器集群提供文件上传、下载等服务
+
+冗余备份：指的是文件系统中存的文件 和 数据备份中存的文件完全一致的问题
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531140634652-1681210056.png" alt="image"  />
 
 
-# 2、开始玩FastDFS
 
-## 2.1、安装FastDFS
+线性扩容：文件系统 和 数据备份不断增加呗(就是上图中再加几份嘛），和水平扩容类似
 
-- **<span style = "color:blue">注：我的系统是centos 7</span>**
 
-- **安装需要的依赖环境 gcc、libevent、libevent-devel**
 
-```linux
+## FastDFS的组成结构
+
+> 由两大部分构成，一个是客户端，一个是服务端
+
+**客户端：**指我们的程序，比如我们的Java程序去连接FastDFS、操作FastDFS，那我们的Java程序就是一个客户端。FastDFS提供专有API访问，目前提供了C、Java和PHP几种编程语言的API，用来访问FastDFS文件系统
+
+
+
+**服务端由两个部分构成：一个是跟踪器（tracker），一个是存储节点（storage）**
+
+- **跟踪器 tracker：**这玩意儿类似于Erueka / zookeeper注册中心，**起到一个调度的作用**。它是在内存中记录集群中存储节点storage的状态信息，是前端Client和后端存储节点storage的枢纽，因为相关信息全部在内存中，Tracker server的性能非常高，一个较大的集群（比如上百个group，group指的就是：文件系统 和 数据备份的组合，这二者就是一个group）中有3台就足够了
+- **存储节点 storage：用于存储文件**，包括文件和文件属性（meta data，如：文件名、文件大小、文件后缀...）都保存到存储服务器磁盘上。以及完成文件管理的所有功能：文件存储、文件同步和提供文件访问(上传、下载、删除)等
+
+
+
+# 开始玩FastDFS
+
+## 安装FastDFS
+
+> **提示**
+>
+> 我的系统是centos 7
+
+1、**安装需要的依赖环境 gcc、libevent、libevent-devel**
+
+```bash
 
 yum install gcc libevent libevent-devel -y
 
 ```
 
+2、**安装公共函数库libfastcommon 和 fastDFS压缩包**
 
+自行去前面官网中进行下载，当然：官网的wiki中有在线拉取命令
 
-- **安装公共函数库libfastcommon 和 fastDFS压缩包**
-  - 自行去前面官网中进行下载，当然：官网的wiki中有在线拉取命令
+解压编译公共函数库libfastcommon
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531151515193-138524580.png" alt="image" style="zoom:67%;" />
-
-
-
-- **加压公共函数库libfastcommon**
-
-```linux
-
+```bash
 tar -zxvf libfastcommon-1.0.36.tar.gz
 
-```
-
-- 进入libfastcommon，执行里面的make.sh，编译公共函数
-
-```linux
+# 进入libfastcommon，执行里面的make.sh，编译公共函数
 
 ./make.sh 
 
 # 当然：可以把命令进行合并 执行如下命名 就是编译并安装
 ./make.sh && ./make.sh install
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531152212821-846136292.png" alt="image" style="zoom:67%;" />
-
-- 安装公共函数
+3、安装公共函数
 
 ```linux
-
 ./make.sh install
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531152401205-116210948.png" alt="image" style="zoom:67%;" />
+4、**解压缩`fastdfs-5.11.tar.gz`压缩包**
 
-
-
-- **解压缩`fastdfs-5.11.tar.gz`压缩包**
-
-```linux
-
+```bash
 tar -zxvf fastdfs-5.11.tar.gz
 
-```
 
-- 进入解压之后的文件，使用`make sh`进行编译
-
-```linux
-
+# 进入解压目录，编译
 ./make.sh
 
 # 一样的可以用组合命令 即：编译并安装
@@ -361,46 +359,29 @@ tar -zxvf fastdfs-5.11.tar.gz
 
 ```
 
-- 安装
+检查是否安装成功，进入如下的目录即可
 
 ```linux
-
-./make.sh install
-
-```
-
-
-
-- **检查是否安装成功，进入如下的目录即可**
-
-```linux
-
 cd /usr/bin
-
 ```
 
-- 往后找，出现这些fdfs开头的文件就表示成功（ 这些文件就是fastDFS的相关命令 )
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531153158850-1837925811.png" alt="image" style="zoom:67%;" />
+往后找，出现这些fdfs开头的文件就表示成功（这些文件就是fastDFS的相关命令)
 
 
 
-- **fastDFS配置文件所在地，进入如下目录即可**
-- **想要让fastDFS的配置文件生效，那么就需要放到下面的这个目录中**
+fastDFS配置文件所在地，进入如下目录即可。想要让fastDFS的配置文件生效，那么就需要放到下面的这个目录中
 
-```linux
-
+```bas
 cd /etc/fdfs
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531153601182-198451142.png" alt="image" style="zoom:67%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531153601182-198451142.png" alt="image"  />
 
 
 
-- **拷贝两个配置文件到`etc/fdfs`中，这两个配置文件在解压的fastDFS的conf中，一个叫`http.conf`，一个叫`mime.types`**
+拷贝两个配置文件到`etc/fdfs`中，这两个配置文件在解压的fastDFS的conf中，一个叫`http.conf`，一个叫`mime.types`
 
-```linux
+```bash
 # 供nginx访问使用
 cp http.conf /etc/fdfs
 
@@ -409,64 +390,55 @@ cp mime.types /etc/fdfs
 
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531155849016-1117685090.png" alt="image" style="zoom:67%;" />
 
 
 
-## 2.2、启动FastDFS
 
-- 这个玩意儿不可以直接启动，因为默认的配置文件中有一些关于文件目录的配置是不存在的，因此：只要直接启动就会报错
+## 启动FastDFS
+
+> 这玩意儿不可以直接启动，因为默认的配置文件中有一些关于文件目录的配置是不存在的，因此：只要直接启动就会报错
+
+### 修改配置文件
+
+要修改的文件就两个
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531160843547-962705415.png" alt="image"  />
 
 
 
-### 2.2.1、修改配置文件
+以防万一，因此：将上面的文件拷贝一份
 
-- 要修改的文件就两个
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531160843547-962705415.png" alt="image" style="zoom:67%;" />
-
-- 以防万一，因此：将上面的文件拷贝一份
-
-```linux
-
+```bash
 /etc/fdfs
 
 mv storage.conf.sample ./storage.conf
 
 mv tracker.conf.sample ./tracker.conf
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531162036373-1222382368.png" alt="image" style="zoom:67%;" />
 
 
+#### 修改tracker.conf
 
-#### 2.2.1.1、修改tracker.conf
+在这个配置文件中有一个`base_path`配置，指向的是fastDFS作者余庆的地址，而我们自己的linux中并没有这个目录，因此：做修改
 
-- 在这个配置文件中有一个`base_path`配置，指向的是fastDFS作者余庆的地址，而我们自己的linux中并没有这个目录，因此：做修改
-
-```conf
-
+```bash
 vim tracker.conf
 
 # 搜索此配置
 /base_path
 
-# 改成的值，也可以自定义自己的目录（ 注意：需要保证这个目录必须存在，没存在那就需要创建 ）
+# 改成的值，也可以自定义自己的目录	注意：需要保证这个目录必须存在，没存在那就需要创建
 base_path=/opt/fastdfs/tracker
-
 ```
 
-- **注意：需要保证这个目录必须存在，没存在那就需要创建**
 
 
+#### 修改storage.conf
 
-#### 2.2.1.2、修改storage.conf
+需要改的内容如下
 
-- 需要改的内容如下
-
-```conf
-
+```bash
 # storage存储数据目录
 base_path=/opt/fastdfs/storage
 
@@ -475,33 +447,25 @@ store_path0=/opt/fastdfs/storage/files
 
 # 注册当前存储节点的跟踪器地址
 tracker_server=服务器ip:22122
-	
 ```
 
+**注意：要是前面的那三个目录没有的话，记得创建，若指向的是已经创建好的目录，那就不用创建了**
 
-
-- **注意：要是前面的那三个目录没有的话，记得创建，若指向的是已经创建好的目录，那就不用创建了**
-
-```linux
-
+```bash
 mkdir -p /opt/fastdfs/tracker
 
 mkdir -p /opt/fastdfs/storage
 
 mkdir -p /opt/fastdfs/storage/files
-
 ```
 
 
 
+### 开启fastDFS
 
+在任意目录下，执行如下的命令即可
 
-### 2.2.2、开启fastDFS
-
-- 在任意目录下，执行如下的命令即可
-
-```linux
-
+```bash
 # 启动tracker 要想看fdfs_trackerd的命令用法，那直接输入fdfs_trackerd就可以弹出其用法了
 # 如：要关闭tracker，则命令为：fdfs_trackerd /etc/fdfs/tracker.conf stop
 # 开启 | 重启就是把stop改成start | restart即可
@@ -510,152 +474,134 @@ fdfs_trackerd /etc/fdfs/tracker.conf
 
 # 启动storage 同样的，看命令用户就直接输入fdfs_storaged
 fdfs_storaged /etc/fdfs/storage.conf
-
-
 ```
 
-
-
-- **查看是否启动成功**
+查看是否启动成功
 
 ```linux
-
 ps -ef | grep fdfs
-
 ```
 
-- 如下图表示启动成功
+如下图表示启动成功
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531164935428-59444575.png" alt="image" style="zoom:67%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531164935428-59444575.png" alt="image"  />
 
-- **但是上面的启动会有坑儿，所以需要确认一把**
 
-```linux
 
+**但是上面的启动会有坑儿，所以需要确认一把**
+
+```bash
 # 查看日志文件是否有报ERROR
 cd /opt/fastdfs/storage/logs/storage.log
-
 ```
 
-- **若是发现日志中报的是如下信息**
+若是发现日志中报的是如下信息
 
-```json
-
+```bash
 ERROR - file: storage_ip_changed_dealer.c, line: 180, connect to tracker server 服务器ip:22122 fail, errno: 110, error info: Connection timed out
 
-即：链接超时
-
+# 即：链接超时
 ```
 
-- 这种情况一般都是22122端口没开放
+这种情况一般都是22122端口没开放
 
-```linux
-
+```bash
 # 开放22122端口
 firewall-cmd --zone=public --add-port=22122/tcp --permanent
 
 # 重启防火墙
 systemctl restart firewalld.service
-
-# 当然：要是云服务器的话，直接在web管理界面的管理中添加规则（ 开放22122端口 ) 即可
-
 ```
 
 
 
-#### 2.2.3、查看默认创建的文件数
+### 查看默认创建的文件数
 
-- **进入如下的目录**
+进入如下的目录
 
-```linux
-
+```bash
 cd /opt/fastdfs/storage/files/data
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531190140636-1058734685.png" alt="image" style="zoom:67%;" />
-
-- 这里面有526个文件夹，而每一个文件夹里面又有526个文件夹，即256 * 256个文件夹，总的文件夹数目为6万多个
-
-  - 这256 * 256个文件夹的作用：解决的就是如下的问题
-
-  <img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531191447653-2142567796.png" alt="image" style="zoom:50%;" />
-
-  - 而fastDFS就是使用那256 * 256个文件夹，把文件分别放入哪些文件夹中，这样就让搜索变得方便了
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531190140636-1058734685.png" alt="image"  />
 
 
 
+这里面有526个文件夹，而每一个文件夹里面又有526个文件夹，即256 * 256个文件夹，总的文件夹数目为6万多个
+
+这256 * 256个文件夹的作用：解决的就是如下的问题
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202205/2421736-20220531191447653-2142567796.png" alt="image"  />
 
 
-#### 2.2.4、测试FastDFS
 
-##### 2.2.4.1、测试上传文件
+而fastDFS就是使用那256 * 256个文件夹，把文件分别放入那些文件夹中，这样就让搜索变得方便了
 
-- 要能进行测试的话，需要修改一个配置文件，因为这个配置文件中的配置信息是作者余庆的
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601085529351-1674223002.png" alt="image" style="zoom:67%;" />
 
-- **要修改的内容如下：**
+### 测试FastDFS
 
-```json
+#### 测试上传文件
 
+要能进行测试的话，需要修改一个配置文件，因为这个配置文件中的配置信息是作者余庆的
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601085529351-1674223002.png" alt="image"  />
+
+
+
+要修改的内容如下
+
+```bash
 # 注意：这个目录也要保证存在，不存在就是创建 mkdir -p /opt/fastdfs/client
 base_path=/opt/fastdfs/client
 
 tracker_server=自己服务器ip:22122
-
 ```
 
+搞一个用来测试上传的文件
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601095813784-1688866298.png" alt="image"  />
 
 
-- **搞一个用来测试上传的文件**
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601095813784-1688866298.png" alt="image" style="zoom:67%;" />
+执行文件上传命令
 
-- **执行文件上传命令**
+可以使用如下命令看一下测试文件上传命令是怎么写的
 
-  - 可以使用如下命令看一下测试文件上传命令是怎么写的
+```bash
+fdfs_test
+```
 
-    - ```linux
-      
-      fdfs_test
-      
-      ```
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601100046307-1815112793.png" alt="image"  />
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601100046307-1815112793.png" alt="image" style="zoom:67%;" />
 
-- **提取出测试命令语法**
 
-```linux
+**提取出测试命令语法**
 
+```bash
 fdfs_test <config_file> <operation>
 	operation: upload, download, getmeta, setmeta, delete and query_servers
 # <> 表示必填
 
 # 因此：在测试中，文件上传的指令为：
 fdfs_test /etc/fdfs/client.conf upload /root/hello-fastdfs.txt
-
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601101742207-1931098713.png" alt="image" style="zoom:67%;" />
+> 注意：防火墙的问题啊，要是报：`connect to 162.14.66.60:23000 fail, errno: 113, error info: No route to host`，这就是防火墙没开放23000端口，打开就可以了
 
-- **注意：防火墙的问题啊，要是报：`connect to 162.14.66.60:23000 fail, errno: 113, error info: No route to host`，这就是防火墙没开放23000端口，打开就可以了**
-
-```linux
-
+```bash
 # 开放23000端口
 firewall-cmd --zone=public --add-port=23000/tcp --permanent
 
 # 刷新防火墙
 systemctl restart firewalld.service
-
 ```
 
-- **上面成功之后有一堆信息，很重要**
 
-```json
 
+**上面成功之后有一堆信息，很重要**
+
+```bash
 This is FastDFS client test program v5.11
 
 Copyright (C) 2008, Happy Fish / YuQing
@@ -692,31 +638,31 @@ file timestamp=2022-06-01 10:17:07
 file size=641
 file crc32=1141168436
 example file url: http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2TQ590_big.txt
-
 ```
 
-- **单独说明：`remote_filename`**
 
-```json
 
+**单独说明：`remote_filename`**
+
+```
 remote_filename=M00/00/00/
 
-M00 指的是：/opt/fastdfs/storage/files/data			就是前面去看默认创建文件数( 256 * 256 )的位置，跟前面的配置有关啊
+M00 指的是：/opt/fastdfs/storage/files/data	就是前面去看默认创建文件数(256 * 256)的位置，跟前面的配置有关啊
 
 00/00/ 指的就是：/opt/fastdfs/storage/files/data目录下的00子目录，这里面的00目录
 
 CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt  指的是：保存的文件名  fastdfs会重新生成文件名，以防的就是同名文件，造成附件覆盖的问题
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103120994-99896373.png" alt="image" style="zoom:50%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103120994-99896373.png" alt="image"  />
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103154752-1302284835.png" alt="image" style="zoom:50%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103154752-1302284835.png" alt="image"  />
 
-- 上图中几个文件解读
 
-```json
 
+上图中几个文件解读
+
+```bash
 # _big 就是数据备份文件
 # ——m 就是meta data文件，即：文件属性文件（ 文件名、文件后缀、文件大小..... ）
 -rw-r--r-- 1 root root 641 Jun  1 10:17 CgAAEGKWzCOACGE1AAACgUQE2TQ590_big.txt
@@ -730,29 +676,25 @@ CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt  指的是：保存的文件名  fastdfs会�
 # CgAAEGKWzCOACGE1AAACgUQE2TQ590_big.txt 和 文件系统中的CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt存的内容是一样的
 
 # CgAAEGKWzCOACGE1AAACgUQE2TQ590_big.txt-m 和 CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt-m这两个备份文件也是相应的
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103625604-1533859055.png" alt="image" style="zoom:50%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601103625604-1533859055.png" alt="image"  />
 
 
 
-##### 2.2.4.2、测试文件下载和删除
+#### 测试文件下载和删除
 
-- 前面已经见过对应的语法了
+前面已经见过对应的语法了
 
-```linux
-
+```bash
 fdfs_test <config_file> <operation>
 	operation: upload, download, getmeta, setmeta, delete and query_servers
 # <> 表示必填
-
 ```
 
-- 变一下就可以了
+变一下就可以了
 
-```linux
-
+```bash
 # 变成下载的命令，然后使用此命令查看完整命令即可
 fdfs_test /etc/fdfs/client.conf download
 
@@ -768,87 +710,77 @@ fdfs_test /etc/fdfs/client.conf download group1 M00/00/00/CgAAEGKWzCOACGE1AAACgU
 
 # 同理：就可以得到文件删除的命令了
 fdfs_test /etc/fdfs/client.conf delete group1 M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt
-
 ```
 
-- 以上这些`fdfs_test`只会在测试时使用，其他地方基本上都不用的
+以上这些`fdfs_test`只会在测试时使用，其他地方基本上都不用的
 
 
 
+# 安装Nginx
+
+上传`fastdfs-niginx`扩展模块 并 解压。使用官网中wiki说明的命令拉取也行
+
+安装nginx，要是有的话就跳过
+
+注意点：`nginx`和`fastdfs-nginx`放到`/usr/local`目录下，不然可能会出现莫名其妙的问题
 
 
-## 2.3、安装Nginx
 
-- **上传`fastdfs-niginx`扩展模块 并 解压 - 使用官网中wiki说明的命令拉取也行**
+**记住两个目录**
 
-- **安装nginx，要是有的话就跳过**
-- **注意点：`nginx`和`fastdfs-nginx`放到`/usr/local`目录下，不然可能会出现莫名其妙的问题**
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601150551340-722514246.png" alt="image" style="zoom:50%;" />
-
-- **记住两个目录**
-
-```json
-
+```bash
 # nginx安装目录
 /usr/local/nginx_fdfs
 
 # fastdfs-nginx模块的src目录
 /usr/local/fastdfs-nginx-module-master/src
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601141711103-711656905.png" alt="image" style="zoom:50%;" />
 
-- **进入nginx安装目录，进行模块添加配置**
 
-```linux
+**进入nginx安装目录，进行模块添加配置**
 
+```bash
 # 进入nginx安装目录
 cd nginx_fdfs
 
 # 执行模块配置 
 # prefix 就是前面让记住的nginx安装目录	add-module就是fastdfs-nginx模块的src目录
 ./configure --prefix=/usr/local/nginx_fdfs --add-module=/usr/local/fastdfs-nginx-module-master/src
-
-
 ```
 
-- **编译并安装**
 
-```linux
+
+**Nginx的安装需要Linux安装相关的几个库，否则编译会出现错误，有这几个的话就不安装了**
+
+```bash
+yum install gcc openssl openssl-devel pcre pcre-devel zlib zlib-devel –y
+```
+
+
+
+**编译并安装**
+
+```bash
 # 在安装的nginx目录下载执行下述命令
 make & make install
-
-```
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601150912072-1052442485.png" alt="image" style="zoom:50%;" />
-
-- **注释事项：Nginx的安装需要Linux安装相关的几个库，否则编译会出现错误，有这几个的话就不安装了**
-
-```linux
-
-yum install gcc openssl openssl-devel pcre pcre-devel zlib zlib-devel –y
-
 ```
 
 
 
-### 2.3.1、修改需要的配置文件
+## 修改需要的配置文件
 
-- **将fastdfs-nginx扩展模块中的`mod_fastdfs.conf`文件复制到`/etc/fdfs`中**
+将fastdfs-nginx扩展模块中的`mod_fastdfs.conf`文件复制到`/etc/fdfs`中
 
-```linux
-
+```bash
 cp /usr/local/fastdfs-nginx-module-master/src/mod_fastdfs.conf /etc/fdfs
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601132037277-1059067263.png" alt="image" style="zoom:50%;" />
 
-- **修改`/etc/fdfs/mod_fastdfs.conf`**
 
-```conf
+修改`/etc/fdfs/mod_fastdfs.conf`
+
+```bash
 vim mod_fastdfs.conf
 
 # 修改内容如下：
@@ -861,16 +793,17 @@ tracker_server=自己服务器ip:22122
 url_have_group_name = true
 
 store_path0=/opt/fastdfs/storage/files
-
 ```
 
-- 上面`base_path`目录要是不存在记得创建
+上面`base_path`目录要是不存在记得创建
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601132631083-1262340685.png" alt="image" style="zoom:50%;" />
 
-- **进入`nginx_fdfs`的安装目录中，去`nginx.conf`中配置`fastdfs-nginx`的扩展模块**
 
-```conf
+
+
+**进入`nginx_fdfs`的安装目录中，去`nginx.conf`中配置`fastdfs-nginx`的扩展模块**
+
+```bash
 # 编辑nginx.conf文件
 vim /usr/local/nginx_fdfs/conf/nginx.conf
 
@@ -884,70 +817,54 @@ location ~ /group[1-9]/M0[0-9] {
 # 	这个指令不是Nginx本身提供的，是扩展模块提供的，根据这个指令找到FastDFS提供的Nginx模块配置文件，然后找到Tracker，最终找到Stroager
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601160836508-1504938975.png" alt="image" style="zoom:50%;" />
 
-- **启动`nginx`**
 
-```json
+## 启动Nginx
 
+```bash
 /usr/local/nginx_fdfs/sbin/nginx -c /usr/local/nginx_fdfs/conf/nginx.conf  -t
 
 /usr/local/nginx_fdfs/sbin/nginx -c /usr/local/nginx_fdfs/conf/nginx.conf
 
 # 保险起见，查看nginx是否启动成功
 ps -ef | grep nginx
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601154554178-1692693500.png" alt="image" style="zoom:50%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601154741181-1459702966.png" alt="image"  />
 
 
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601154741181-1459702966.png" alt="image" style="zoom:50%;" />
+注意：这里很容易出现启动不起来，如果下面这个进程没有启动起来
 
-- 注意：这里很容易出现启动不起来，如果下面这个进程没有启动起来
-
-```json
-
+```bash
 nobody    3895  3894  0 15:45 ?        00:00:00 nginx: worker process
-
 ```
 
-- 那么：就去查看日志文件
+那么：就去查看日志文件
 
-```linux
-
+```bash
 cd /usr/local/nginx_fdfs/logs
 
 
 # 还有一份日志中也可能出现错误信息
 cd /opt/fastdfs/nginx_mod
-
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601155004253-612848326.png" alt="image" style="zoom:50%;" />
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601155127364-1427912722.png" alt="image" style="zoom:50%;" />
-
-- **现在就可以去浏览器中查看刚刚上传的文件的**
-
-  - 注意开放端口啊
-
-  ```linux
-  
-  # 开放80端口
-  firewall-cmd --zone=public --add-port=80/tcp --permanent
-  
-  # 重启防火墙
-  systemctl restart firewalld.service
-  
-  ```
-
-  - 访问前面上传文件时的url地址
-
-```json
 
 
+**现在就可以去浏览器中查看刚刚上传的文件的**。注意开放端口啊
+
+```bash
+# 开放80端口
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+
+# 重启防火墙
+systemctl restart firewalld.service
+```
+
+访问前面上传文件时的url地址
+
+```bash
 This is FastDFS client test program v5.11
 
 Copyright (C) 2008, Happy Fish / YuQing
@@ -984,39 +901,41 @@ file timestamp=2022-06-01 10:17:07
 file size=641
 file crc32=1141168436
 example file url: http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2TQ590_big.txt
-
 ```
 
-- **访问：`http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt`**
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601160349162-2029736800.png" alt="image" style="zoom:50%;" />
 
 
-
-### 2.3.2、扩展模块执行流程
-
-- **下面这个流程很重要，涉及到后面的知识**
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601172753939-1467167321.png" alt="image" style="zoom:50%;" />
+**访问：`http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2TQ590.txt`**
 
 
 
-## 2.4、Java操作FastDFS
 
-> **依赖**
+
+## 扩展模块执行流程
+
+**下面这个流程很重要，涉及到后面的知识**
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220601172753939-1467167321.png" alt="image"  />
+
+
+
+# Java操作FastDFS
+
+依赖
 
 ```xml
-
-        <dependency>
-            <groupId>net.oschina.zcx7878</groupId>
-            <artifactId>fastdfs-client-java</artifactId>
-            <version>1.27.0.0</version>
-        </dependency>
-
+<dependency>
+    <groupId>net.oschina.zcx7878</groupId>
+    <artifactId>fastdfs-client-java</artifactId>
+    <version>1.27.0.0</version>
+</dependency>
 ```
 
-- 这个是可以从阿里仓库拉取的依赖，但是严格来说这不是作者的，但是不妨碍使用
-- 真正的依赖没有放到中央仓库中去，因此并不能通过maven拉取，而是需要去官网https://github.com/happyfish100/fastdfs-client-java/tags中下载源码，然后解压，进入解压目录，使用DOS窗口，执行`mvn clean install`命令，打成j本地ar包，然后就可以在maven中使用了，最后打出来的jar包是在`org.csource`目录下，所以正规依赖应该是下面这个
+
+
+这个是可以从阿里仓库拉取的依赖，但是严格来说这不是作者的，但是不妨碍使用
+
+真正的依赖没有放到中央仓库中去，因此并不能通过maven拉取，而是需要去官网https://github.com/happyfish100/fastdfs-client-java/tags中下载源码，然后解压，进入解压目录，使用DOS窗口，执行`mvn clean install`命令，打成j本地ar包，然后就可以在maven中使用了，最后打出来的jar包是在`org.csource`目录下，所以正规依赖应该是下面这个
 
 ```xml
 <dependency>
@@ -1026,29 +945,21 @@ example file url: http://162.14.66.60/group1/M00/00/00/CgAAEGKWzCOACGE1AAACgUQE2
 </dependency>
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602090958365-92162004.png" alt="image" style="zoom:50%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602090958365-92162004.png" alt="image"  />
 
 
 
+## 文件上传
 
+1、在`resources`目录下创建`fastdfs.conf`文件，并编写如下内容
 
-
-
-### 2.4.1、文件上传
-
-- **在`resources`目录下创建`fastdfs.conf`文件，并编写如下内容：**
-
-```conf
-
+```properties
 tracker_server=服务器ip:22122
-
 ```
 
 - **编写文件上传代码**
 
 ```java
-package com.zixieqing;
-
 import org.csource.common.MyException;
 import org.csource.fastdfs.*;
 
@@ -1132,23 +1043,17 @@ public class UploadFile {
 }
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602131009377-273499948.png" alt="image" style="zoom:50%;" />
+浏览器访问
+
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602131158122-421046807.png" alt="image"  />
 
 
 
-- **浏览器访问**
+## 文件下载
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602131158122-421046807.png" alt="image" style="zoom:50%;" />
-
-
-
-### 2.4.2、文件下载
-
-- 把前面的文件上传代码改一下即可，换成另一个API而已
+把前面的文件上传代码改一下即可，换成另一个API而已
 
 ```java
-package com.zixieqing;
-
 import org.csource.common.MyException;
 import org.csource.fastdfs.*;
 
@@ -1196,7 +1101,7 @@ public class DownloadFile {
             String remoteFileName = "M00/00/00/CgAAEGKYRg-AAIrWAAD8cA4U6dY771.jpg";
             // 存入本地磁盘路径+存入磁盘的文件名
             String localFileName = "d:/靓妹.jpg";
-            // 只有返回值是0才表示下载成功，否则只要是其他数字都是下载失败( 其他数字有可能是组名错了，远程文件名错了........
+            // 只有返回值是0才表示下载成功，否则只要是其他数字都是下载失败(其他数字有可能是组名错了，远程文件名错了........
             int result = storageClient.download_file(group, remoteFileName, localFileName);
 
             // 7、验证
@@ -1228,20 +1133,17 @@ public class DownloadFile {
 
 ```
 
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602183220360-869930375.png" alt="image" style="zoom:50%;" />
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602183346231-396977430.png" alt="image" style="zoom:50%;" />
 
 
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220602183346231-396977430.png" alt="image"  />
 
 
 
-### 2.4.3、文件删除
+
+
+## 文件删除
 
 ```java
-
-package com.zixieqing;
-
 import org.csource.common.MyException;
 import org.csource.fastdfs.*;
 
@@ -1314,22 +1216,15 @@ public class DeleteFile {
 
 
 
+# FastDFS集群
 
+> 示例的架构图
 
-
-
-# 3、FastDFS集群
-
-
-
-> **示例的架构图**
-
-<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220606100814159-1421740184.png" alt="image" style="zoom:50%;" />
+<img src="https://img2022.cnblogs.com/blog/2421736/202206/2421736-20220606100814159-1421740184.png" alt="image"  />
 
 
 
 ```bash
-
 FastDFS分布式文件系统集群环境搭建-操作步骤手册
 
 搭建一个FastDFS分布式文件系统集群，推荐至少部署6个服务器节点；
@@ -1431,7 +1326,7 @@ yum install lrzsz wget vim unzip net-tools -y
     进入安装目录
     cd /usr/local/nginx_fdfs
 
-    添加一个location 对请求进行拦截( 在nginx.conf的server{}前面加上下面的内容即可 )，配置一个正则规则 拦截fastdfs的文件路径， 并将请求转发到其余的4台storage服务器(修改 conf目录下nginx.conf 文件)
+    添加一个location 对请求进行拦截(在nginx.conf的server{}前面加上下面的内容即可)，配置一个正则规则 拦截fastdfs的文件路径， 并将请求转发到其余的4台storage服务器(修改 conf目录下nginx.conf 文件)
     #nginx拦截请求路径：
     location ~ /group[1-9]/M0[0-9] {   
         proxy_pass http://fastdfs_group_server; 
@@ -1515,7 +1410,7 @@ yum install lrzsz wget vim unzip net-tools -y
 
 
 
-    添加一个upstream 执行服务的IP为 2台tracker 的地址( 在nginx.conf的server{}前面加上下面的内容即可 )
+    添加一个upstream 执行服务的IP为 2台tracker 的地址(在nginx.conf的server{}前面加上下面的内容即可)
     #部署配置nginx负载均衡:
     upstream fastdfs_group_server {  
         server 192.168.171.135:80;  
@@ -1528,7 +1423,7 @@ yum install lrzsz wget vim unzip net-tools -y
 
 
 
-==============================补充资料============================================
+==============================补充============================================
 最后，为了让服务能正常连接tracker，请关闭所有机器的防火墙：
 systemctl status firewalld   查看防火墙状态
 systemctl disable firewalld  禁用开机启动防火墙
@@ -1541,29 +1436,6 @@ systemctl  stop  network     停止网络
 表示开机启动网卡，然后启动网络服务即可
 
 Keepalived当主nginx出现故障后会自动切换到备用nginx服务器的一款软件 通常由运维人员进行使用
-
-
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

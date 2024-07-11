@@ -27,7 +27,7 @@
 </dependency>
 
 
-<!-- Spring Boot2 -->
+<!-- Spring Boot3 -->
 <dependency>
     <groupId>com.baomidou</groupId>
     <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
@@ -114,6 +114,15 @@ mybatis-plus:
 ```
 
 > 逻辑删除进行上面配置后mp就可自动实现delete变update操作了，但逻辑删除会占用空间，影响性能，所以可采用删除前将数据迁移到另一张表中
+
+如果要表删除标志字段没统一的话，可以使用 `@TableLogic` 来指定
+
+```java
+@TableLogic
+private Boolean deleted;
+```
+
+
 
 
 
