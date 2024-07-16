@@ -1,12 +1,13 @@
 # Vue3
 
-官网：https://cn.vuejs.org/guide/introduction.html
-
+> 官网：https://cn.vuejs.org/guide/introduction.html
 
 
 ## 创建vue3项目
 
-官网文档：https://cli.vuejs.org/zh/guide/creating-a-project.html#vue-create
+> 官网文档：https://cli.vuejs.org/zh/guide/creating-a-project.html#vue-create
+
+
 
 ### 使用vue-cli创建
 
@@ -22,7 +23,7 @@ npm install -g @vue/cli
 # 创建Vue3项目
 vue create 项目名
 
-# 使用ui可视化界面创建【PS：会在浏览器中打开一个管理窗口，进行手动创建和配置选项，目前不建议用，学完所有就可以使用了 】
+# 使用ui可视化界面创建【PS：会在浏览器中打开一个管理窗口，进行手动创建和配置选项，目前不建议用，学完所有就可以使用了】
 vue ui
 
 # 启动Vue3项目
@@ -36,17 +37,20 @@ npm run serve
 
 ### 使用vite创建
 
-官网地址；https://v3.cn.vuejs.org/guide/installation.html#vite
+> 官网地址；https://v3.cn.vuejs.org/guide/installation.html#vite
 
-[vite](https://vitejs.cn/) 是另一门技术，是下一代的前端构建工具，是vue官网打造的，久一代的就是webpack。
+[vite](https://vitejs.cn/) 是另一门技术，是下一代的前端构建工具，是vue官方打造的，久一代的就是webpack。
 
 vite的优势：
 
 - 开发环境中，无需打包操作，可快速的冷启动。
-- 真正的按需编译，无需等待整个应用编译完成再启动【PS：图中我解读的哪里，是根据路由再找模块 】。
-- 轻量快速的热重载（HMR）【PS：webpack也可以热部署，只是vite更轻量和快 】。快：体现在热部署的方式不同【PS：官网中有对比图 】。
+- 真正的按需编译，无需等待整个应用编译完成再启动【PS：图中我解读的哪里，是根据路由再找模块】。
+- 轻量快速的热重载（HMR）【PS：webpack也可以热部署，只是vite更轻量和快】。快：体现在热部署的方式不同【PS：官网中有对比图】。
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026317-1105129922.png)
+
+
+
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134014469-52649622.png)
 
 
 
@@ -81,10 +85,10 @@ npm run dev
 
 ### 查看整个目录结构
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026044-385109988.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012043-344508458.png)
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026465-60369577.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013318-443801804.png)
 
 
 
@@ -93,7 +97,7 @@ npm run dev
 
 ### 分析入口文件main.js
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025940-1189345421.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134014083-197104268.png)
 
 其他的东西和vue2中没什么两样
 
@@ -101,7 +105,7 @@ npm run dev
 
 > 注意点：template中的写法和vue2相比有点变化
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024819-1657881489.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013692-729165777.png)
 
 
 
@@ -109,19 +113,20 @@ npm run dev
 
 ## 安装vue3的开发者工具
 
-> 注意：这里安装的测试版（data）。
+> 注意：这里安装的测试版（beta）。
 >
 > 另外：vue2和vue3的开发者工具最好别一起开启，很容器出问题。
 
-直接使用google进行安装（需会“魔法”上网）即可，无法进入google应用商店的话，那么：去百"度chrome插件网"就可以了。
+直接使用google应用商店进行安装（需会“魔法”上网），无法进入google应用商店的话，那么：去百度"chrome插件网"就可以了。
 
-![image-20240215184040236](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026169-963717389.png)
+![](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013504-1309160491.png)
+
 
 
 
 ## 常用Composition API / 组合式API
 
-### 认识 setup() 函数
+### 认识 setup 函数
 
 > setup是vue3的地基，<span style="color:red">setup是一个函数，且必须有返回值</span>，玩vue3，那么就需要提供一个平台，而这个平台就是setup。
 >
@@ -138,9 +143,6 @@ npm run dev
   <h1>性别: {{sex}}</h1>
   <h1>工种: {{job}}</h1>
 
-  <br>
-  <br>
-
   <button @click="helloword">调用一下vue3的setup中定义的方法</button>
 </template>
 
@@ -153,7 +155,7 @@ export default {
   setup(){
     // 这里面的配置和vue2中的差不多，什么数据、方法、计算属性、生命周期.......只是写法有区别
 
-    // 配置数据【PS：直接定义即可 】
+    // 配置数据【PS：直接定义即可】
     let name = '紫邪情';
     let sex = '女';
     let job = 'Java';
@@ -180,11 +182,11 @@ export default {
 </script>
 ```
 
-![image-20240215184523631](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026009-259230944.png)
+![image-20240215184523631](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134011957-986029355.png)
 
 
 
-> 补充：setup函数返回值的另一种写法：返回渲染函数写法 - 了解即可【PS：这是为了自定义渲染内容的 】。
+> 补充：setup函数返回值的另一种写法：返回渲染函数写法 - 了解即可【PS：这是为了自定义渲染内容的】。
 
 - 第一步：引入渲染函数h，指令：`import {h} from 'vue'`。
 
@@ -215,11 +217,11 @@ return () => h('h1','这是setup中的返回渲染函数用户')
 > 用setup和vue2的写法一起用。<span style = "color:red">最好：坚决别用</span>。
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025879-1909168715.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013856-2010613278.png)
 
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025972-244852109.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013107-1204560897.png)
 
 
 
@@ -229,26 +231,24 @@ return () => h('h1','这是setup中的返回渲染函数用户')
 
 但是：说过不建议vue3和vue2混合使用。来演示一下bug。
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026073-2057070791.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013090-416407187.png)
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024837-1261917934.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013686-555040764.png)
 
 注意：反过来在vue2的配置中可以获取setup函数中配置的东西，演示就跳过了。
 
-
-
-> 另外还有一个注意点：如果在vue2和vue3的setup中配置了相同的东西，那么：优先使用setup中的。
+> 一个注意点：如果在vue2和vue3的setup中配置了相同的东西，那么：优先使用setup中的。
 
 
 
 
 
-> setup()的另外一个注意点 和 其可以接收的两个参数
+> `setup()` 的另外一个注意点 和 其可以接收的两个参数
 
 setup执行时机：
 
-- 在beforeCreate之前执行一次，同时在 `setup(){}` 中的this是undefined，即：在setup中不可以用this拿到东西 【PS：可以试着定义一个beforeCreate和setup，里面都输出一句话，看控制台谁的话在前面即可】。
+- 在beforeCreate之前执行一次，同时在 `setup(){}` 的this是undefined，即：在setup中不可以用this拿到东西 【PS：可以试着定义一个beforeCreate和setup，里面都输出一句话，看控制台谁的话在前面即可】。
 
 
 
@@ -258,10 +258,8 @@ setup可以接受的两个参数：
 
 注意点：若在外部传递了数据，而内部没有配置props配置项进行声明接收，那么：vue2中不会有什么错误，但是：在vue3中就会在控制台抛错。
 
-- context：上下文对象。它里面有三个属性。
-  - attrs：俗称捡漏王。值为对象，**包含：组件外部传递过来，但没有在props配置中声明的属性**，相当于vue2中的`this.$attrs`。
-
-换言之：就是如果父组件传递了数据，但：子组件中的props配置没有声明要接收，那么：传递的数据就在子组件的attrs属性上。
+- context：上下文对象。里面有三个属性。
+  - attrs：俗称捡漏王。值为对象，**包含：组件外部传递过来，但没有在props配置中声明的属性**，相当于vue2中的`this.$attrs`。换言之：就是如果父组件传递了数据，但：子组件中的props配置没有声明要接收，那么：传递的数据就在子组件的attrs属性上。
 
   - slots：看名字就知道，就是收到的插槽内容，相当于vue2中的`this.$slots`。
   - emit：也是看名字就知道的，触发自定义事件的函数嘛，相当于vue2中的`this.$emit`。
@@ -279,7 +277,7 @@ setup可以接受的两个参数：
 
 > 所谓的setup，就是vue3中的一个全新配置项而已，值是一个函数，它是vue3中Composition API / 组合式API的地基，且这个setup函数必须有一个返回值。
 
-组件中所用的：数据、方法、计算属性、生命周期等，均可配置在setup函数中【PS：注意写法不太一样 】。
+组件中所用的：数据、方法、计算属性、生命周期等，均可配置在setup函数中【PS：注意写法不太一样】。
 
 setup函数的两种返回值写法：
 
@@ -312,16 +310,16 @@ setup函数的两种返回值写法：
 - setup可以接受的两个参数：
   - props：值为对象，**包含：组件外部传递过来 且 组件内部声明接收了的属性**。
     - 注意点：若在外部传递了数据，而内部没有配置props配置项进行声明接收，那么：vue2中不会有什么错误，但是：在vue3中就会在控制台抛错。
-  - context：上下文对象 【PS：它里面有三个属性 】。
-    - attrs：俗称捡漏王。值为对象，**包含：组件外部传递过来，但没有在props配置中声明的属性**，相当于vue2中的`this.$attrs`。
-      - 换言之：就是如果父组件传递了数据，但：子组件中的props配置没有声明要接收，那么：传递的数据就在子组件的attrs属性上。
+  - context：上下文对象 【PS：它里面有三个属性】。
+    - attrs：俗称捡漏王。值为对象，**包含：组件外部传递过来，但没有在props配置中声明的属性**，相当于vue2中的`this.$attrs`
+      		换言之：就是如果父组件传递了数据，但：子组件中的props配置没有声明要接收，那么：传递的数据就在子组件的attrs属性上。
     - slots：看名字就知道，就是收到的插槽内容，相当于vue2中的`this.$slots`。
     - emit：也是看名字就知道的，触发自定义事件的函数嘛，相当于vue2中的`this.$emit`。
-      - 但是：注意在vue3中，这个东西根据vue2的正常写法，好使，可是：控制台会抛警告，不想看到警告，那就在使用了这个emit的组件中，配置一个`emits`配置项即可。和props声明接收属性的配置一样，如：`emits: ['getField']`。
+      		但是：注意在vue3中，这个东西根据vue2的正常写法，好使，可是：控制台会抛警告，不想看到警告，那就在使用了这个emit的组件中，配置一个`emits`配置项即可。和props声明接收属性的配置一样，如：`emits: ['getField']`。
 
 
 
-### ref 函数：基本数据类型数据托管
+### ref() 函数：基本数据类型数据托管
 
 > 先做一个实例：修改setup中的数据
 
@@ -346,7 +344,7 @@ export default {
     function changeData(){
       name = '紫邪晴'
       sex = '男'
-      console.log("修改之后的数据: ",name,sex);
+      console.log("修改之后的数据: ",name, sex);
     }
 
     // 1、对象写法
@@ -362,7 +360,7 @@ export default {
 </script>
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024858-537605556.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012666-758463266.png)
 
 没实现出来，原因就是：vue不认你的修改，因此：需要借助ref函数来套娃。
 
@@ -412,21 +410,21 @@ export default {
 </script>
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140027616-1487158469.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013929-451888406.png)
 
 
 
 既然知道了ref函数的真身，那么：想要实现数据的改变就变得轻松了。
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026360-424219032.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012428-76653879.png)
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024820-193071497.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012753-624791770.png)
 
 
 
 > 有个注意点
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026421-1314326332.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134014243-242640457.png)
 
 
 
@@ -473,7 +471,7 @@ export default {
 </script>
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026281-992871199.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013398-1431852140.png)
 
 
 
@@ -481,7 +479,7 @@ export default {
 
 ##### 修改 ref 函数中对象的属性值
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026413-772385841.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012619-528393279.png)
 
 
 
@@ -489,33 +487,33 @@ export default {
 
 #### ref 函数总结一波
 
-作用：定义一个响应式的数据【PS：即，修改数据之后可以把改后的数据渲染到页面中 】。
+作用：定义一个响应式的数据【PS：即，修改数据之后可以把改后的数据渲染到页面中】。
 
 语法：`const xxx = ref(initValue)`。
 
-- 创建一个包含响应式数据的引用对应。
+- 创建一个包含响应式数据的引用对象。
 - js中操作数据：`xxx.value`。
-- 模板中读取数据：不需要.value，直接：`<div>{{xxx}}</div>`。
+- 模板中读取数据：不需要 `.value`，直接：`<div>{{xxx}}</div>`。
 
 
 
 注意点：
 
 - `ref()`函数中接收的数据可以是：基本类型、也可以是对象类型。
-  - ref函数修饰的是基本类型时【PS：即直接用 `let name = ref('紫邪情')` 】，则：数据代理就是 `Object.dinfineProperty` 的setter和getter。
-  - ref函数修饰的是对象类型时【PS：即 `let job = ref({}}` 】，则：数据代理的原理是Proxy对象【PS：这个对象其实是由Object转了一遍，即：Object ——> Proxy，而这个对象是window的ES6的全新配置 。这个对象后续会进行说明 】，对象内部 / 属性实质是借助了vue3的一个新函数 —— `reactive()函数`。
+  - ref函数修饰的是基本类型时【PS：即直接用 `let name = ref('紫邪情')`】，则：数据代理就是 `Object.dinfineProperty` 的setter和getter。
+  - ref函数修饰的是对象类型时【PS：即 `let job = ref({}`】，则：数据代理的原理是Proxy对象【PS：这个对象其实是由Object转了一遍，即：Object ——> Proxy，而这个对象是window的ES6的全新配置 。这个对象后续会进行说明】，对象内部 / 属性实质是借助了vue3的一个新函数 —— `reactive()函数`。
 
 
 
 
 
-### 认识 reactive() 函数：对象或数组类型数据托管 与 深度监视
+### 认识 reactive() 函数：托管对象或数组类型数据 和 深度监视
 
 > 这个函数就是专门用来处理数据是对象 / 数组类型的。
 >
-> `reactive()`函数不能处理基本类型，想要处理基本类型，那么：就使用ref()函数。
+> `reactive()`函数不能处理基本类型，想要处理基本类型，那么：就使用`ref()`函数。
 >
-> `ref({ })`这里面套对象的类型时，它的原理就是调用了`reactive()`函数。
+> `ref({})`这里面套对象的类型时，它的原理就是调用了`reactive()`函数。
 
 
 
@@ -523,17 +521,17 @@ export default {
 
 1. 引入 `reactive()` 函数，指令：`    import {reactive} from 'vue'`。
 
-2. 使用reactive()函数。
+2. 使用 `reactive()` 函数。
 
 ```html
 <template>
   <h1>ref托管的数据</h1>
   <h2>{{name}}</h2>
 
-
   <h1>reactive托管的数据</h1>
   <h2>{{job.type}}</h2>
   <h2>{{job.salary}}</h2>
+
 
   <button @click="changeData">修改ref和reactive托管的数据</button>
 </template>
@@ -541,7 +539,6 @@ export default {
 <script>
 
 import {ref,reactive} from 'vue'
-
 export default {
   name: 'App',
 
@@ -582,27 +579,26 @@ export default {
 
 
 
+#### reactive()怎么处理基本类型
 
-#### reactive( )怎么处理基本类型
-
-> 了解reactive的细节问题：`reactive()`怎么处理基本类型。
+> 了解reactive的细节问题：`reactive()`怎么处理基本类型
 
 前面说：`reacitve()`函数不能处理基本类型，那测试一下。
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025036-1020697799.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013512-1972577342.png)
 
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026517-1175805944.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012997-1346406332.png)
 
 
 
 `reacitve()`函数托管数组类型：
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026469-1775473576.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013111-892479234.png)
 
 
-![image](https://img2022.cnblogs.com/blog/2421736/202203/2421736-20220306203433121-1051507001.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012057-37766034.png)
 
 
 
@@ -610,20 +606,20 @@ export default {
 >
 > - 把基本类型 使用 对象写法嘛，包装一下呗。
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026390-1254090404.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013220-1988979297.png)
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026545-1753487429.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012349-85814492.png)
 
 
 
 `reactive()` 函数深度监视效果
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026733-861355665.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134014510-1732926878.png)
 
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025961-1735916623.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012010-375184953.png)
 
 
 
@@ -631,7 +627,7 @@ export default {
 
 #### reactive() 函数总结一波
 
-作用：定义一个对象类型的响应式数据【PS：基本类型别用它，用ref函数 】。
+作用：定义一个对象类型的响应式数据【PS：基本类型别用它，用ref函数】。
 
 语法：
 
@@ -673,10 +669,10 @@ reactive的内部是基于ES6的Proxy实现的，通过代理对象操作源对�
 
 ##### Proxy 长什么样子
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025167-1640093064.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012312-1201642862.png)
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024985-1877479762.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013166-1450237230.png)
 
 
 
@@ -706,36 +702,36 @@ reactive的内部是基于ES6的Proxy实现的，通过代理对象操作源对�
         // 利用Window.Proxy()来进行修改person
 
         // 先看一下Proxy的样子
-        // console.log( new Proxy(person,{} ) );
+        // console.log(new Proxy(person,{}));
 
         // 使用Proxy进行数据修改
         /* 
             people			就是代理对象 它代理的就是person
-            new Proxy()		就是创建一个代理对象嘛 - 后端的人太熟悉不过了
+            new Proxy()		就是创建一个代理对象嘛    后端的人再熟悉不过了
         */
-        const people = new Proxy( person, {
+        const people = new Proxy(person, {
             // 获取对象的属性时调用
             /* 
                 target 就是源对象 即：person
                 propName  就是对象中的属性名  如：name、sex.....
             */
-            get(target,propName){
-                console.log( "target,propName这两个参数为: ", target,propName);
+            get(target, propName){
+                console.log("target,propName这两个参数为: ", target,propName);
                 console.log(`有人获取person中的${propName}属性`);
                 return target[propName];
             },
 
-            // 修改对象中的属性时调用【PS：修改含增、改、删除是另一个配置 】
+            // 修改对象中的属性时调用【PS：修改含增、改、删除是另一个配置】
             // value就是修改之后的值
-            set( target,propName,value ){
-                console.log( "target,propName,value这三个参数为: ", target,propName,value);
-                console.log( `有人修改person中的${propName}属性` );
+            set(target, propName, value){
+                console.log("target,propName,value这三个参数为: ", target, propName, value);
+                console.log(`有人修改person中的${propName}属性`);
                 return target[propName] = value;
             },
 
             // 删除对象中的属性时调用
-            deleteProperty(target,propName){
-                console.log( "target,propName这两个参数为: ", target,propName);
+            deleteProperty(target, propName){
+                console.log("target,propName这两个参数为: ", target, propName);
                 return delete target[propName];
             }
         })
@@ -744,7 +740,7 @@ reactive的内部是基于ES6的Proxy实现的，通过代理对象操作源对�
 </html>
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024857-772263597.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013147-1340389699.png)
 
 
 
@@ -756,16 +752,17 @@ reactive的内部是基于ES6的Proxy实现的，通过代理对象操作源对�
 
 
 
+
 ##### 认识 Reflect 对象
 
 看看Reflect长什么样。
 
 ```javascript
 // 先看看Reflect长什么样
-console.log(window.Reflect);
+console.log(window. Reflect);
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026404-2080206543.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013567-401978502.png)
 
 
 
@@ -782,27 +779,27 @@ let person = {
 }
 
 // 先看看Reflect长什么样
-// console.log(window.Reflect);
+// console.log(window. Reflect);
 
 // 使用Reflect实现数据监视
 
-// 1、获取对象的属性 - key-value的形式
+// 1、获取对象的属性    key-value的形式
 /* 
     key 就是对象名
     value 就是对象的属性名
 */
-Reflect.get( person,'name' );
+Reflect.get(person, 'name');
 
 
 // 2、修改对象的属性 
-Reflect.set( person,'sex','男');
-Reflect.set( person,'age', '18');
+Reflect.set(person, 'sex', '男');
+Reflect.set(person, 'age', '18');
 
 // 3、删除对象的属性
-Reflect.deleteProperty( person,'sex');
+Reflect.deleteProperty(person, 'sex');
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024964-90690407.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012656-475833391.png)
 
 
 
@@ -832,31 +829,31 @@ Reflect.deleteProperty( person,'sex');
             sex: '女'
         }
 
-        const people = new Proxy( person, {
+        const people = new Proxy(person, {
             // 获取对象的属性时调用
-            get(target,propName){
-                console.log( "target,propName这两个参数为: ", target,propName);
+            get(target, propName){
+                console.log("target,propName这两个参数为: ", target, propName);
                 console.log(`有人获取person中的${propName}属性`);
                 // 此处进行了Reflect套娃
                 // return target[propName];
-                return Reflect.get(target,propName);
+                return Reflect.get(target, propName);
             },
 
-            // 修改对象中的属性时调用【PS：修改含增、改、删除是另一个配置 】
-            set( target,propName,value ){
-                console.log( "target,propName,value这三个参数为: ", target,propName,value);
-                console.log( `有人修改person中的${propName}属性` );
+            // 修改对象中的属性时调用【PS：修改含增、改、删除是另一个配置】
+            set(target, propName, value){
+                console.log("target,propName,value这三个参数为: ", target, propName, value);
+                console.log(`有人修改person中的${propName}属性`);
                 // 此处进行了Reflect套娃
                 // return target[propName] = value;
-                return Reflect.set(target,propName,value);
+                return Reflect.set(target, propName, value);
             },
 
             // 删除对象中的属性时调用
-            deleteProperty(target,propName){
-                console.log( "target,propName这两个参数为: ", target,propName);
+            deleteProperty(target, propName){
+                console.log("target,propName这两个参数为: ", target, propName);
                 // 此处进行了Reflect套娃
                 // return delete target[propName];
-                return Reflect.defineProperty(target,propName);
+                return Reflect.defineProperty(target, propName);
             }
         })
     </script>
@@ -870,36 +867,38 @@ Reflect.deleteProperty( person,'sex');
 
 #### Vue3 中数据监视原理总结
 
-通过Proxy代理对象：拦截对象中任意属性的变化，包括：属性值的读写、属性的添加、属性的删除等
+> 通过Proxy代理对象：拦截对象中任意属性的变化，包括：属性值的读写、属性的添加、属性的删除等。
+>
+> 通过Reflect反射对象：对被代理对象的属性进行操作。
 
-通过Reflect反射对象：对被代理对象的属性进行操作，例子如下：
+例子如下：
 
 ```javascript
-const people = new Proxy( person, {
+const people = new Proxy(person, {
     // 拦截读取属性值
-    get(target,propName){
-        console.log( "target,propName这两个参数为: ", target,propName);
+    get(target, propName){
+        console.log("target,propName这两个参数为: ", target, propName);
         console.log(`有人获取person中的${propName}属性`);
         // 此处进行了Reflect套娃
         // return target[propName];
-        return Reflect.get(target,propName);
+        return Reflect.get(target, propName);
     },
 
-    // 拦截修改属性值【PS：是修改和新增 】
-    set( target,propName,value ){
-        console.log( "target,propName,value这三个参数为: ", target,propName,value);
-        console.log( `有人修改person中的${propName}属性` );
+    // 拦截修改属性值【PS：是修改和新增】
+    set(target, propName, value){
+        console.log("target,propName,value这三个参数为: ", target, propName, value);
+        console.log(`有人修改person中的${propName}属性` );
         // 此处进行了Reflect套娃
         // return target[propName] = value;
-        return Reflect.set(target,propName,value);
+        return Reflect.set(target, propName, value);
     },
 
     // 拦截删除属性值
-    deleteProperty(target,propName){
-        console.log( "target,propName这两个参数为: ", target,propName);
+    deleteProperty(target, propName){
+        console.log("target,propName这两个参数为: ", target, propName);
         // 此处进行了Reflect套娃
         // return delete target[propName];
-        return Reflect.defineProperty(target,propName);
+        return Reflect.defineProperty(target, propName);
     }
 })
 
@@ -935,7 +934,7 @@ const people = new Proxy( person, {
 
 从原理角度对比：
 
-- ref 通过 `Object.defineProperty()` 的get和set来实现的数据劫持 / 数据监视 / 响应式。
+- ref 通过 `Object.defineProperty()` 的getter和setter来实现的数据劫持 / 数据监视 / 响应式。
 - reactive 通过使用Proxy代理对象来实现数据劫持，并通过Reflect操作源对象内部的数据。
 
 
@@ -957,18 +956,15 @@ const people = new Proxy( person, {
 <template>
   姓；<input type="text" v-model="person.firstName">
 
-  <br>
-
   名: <input type="text" v-model="person.lastName">
-
-  <br>
 
   <span>全名: {{person.fullName}}</span>
 </template>
 
 <script>
-/*	顺便说一下
-	@vue/runtime-core		这里的@表示特定路径的名称	可在 build/webpack.base.conf.js 中配置，如：
+/*	顺便说一下这个import引入的问题
+	@vue/runtime-core		这里的 @ 表示特定路径的名称	可在 build/webpack.base.conf.js 
+							或者 vite.config.js中配置，如：
 	
 		resolve: {
 			extensions: [',js', '.vue', '.json'],
@@ -978,7 +974,6 @@ const people = new Proxy( person, {
 			}
 		}
 	
-	在vue中导包最好都用这种写法
 */
 import { reactive } from '@vue/reactivity'
 
@@ -997,12 +992,12 @@ export default {
     })
 
     // 2、使用计算属性函数 setup中this无效，所以computed()中使用兰姆达和正常写法都无所谓
-    // 简写形式 - 只考虑读的问题
-    person.fullName = computed( ()=>{
+    // 简写形式    只考虑读的问题
+    person.fullName = computed(()=>{
       return person.firstName + "-" + person.lastName;
     })
 
-    // 完整写法 - 考虑读和改的问题
+    // 完整写法    考虑读和改的问题
    /*  person.fullName = computed({
       get(){
         return person.firstName + "-" + person.lastName;
@@ -1037,7 +1032,6 @@ export default {
 #### 监视 ref() 定义的数据
 
 
-
 ##### 简单写法：监视ref托管的单个响应式数据
 
 ```html
@@ -1066,11 +1060,11 @@ export default {
     /* 
       可以接受三个参数
           第一个：监视的是谁？
-          第二个：回调函数 - 新值 和 旧值
-          第三个：配置项 - deep深度监视也可以配置
+          第二个：回调函数		新值 和 旧值
+          第三个：配置项		deep深度监视也可以配置
     */
-    watch(num , (newValue,oldValue)=>{
-      console.log("num的值发生改变了",newValue,oldValue);
+    watch(num , (newValue, oldValue)=>{
+      console.log("num的值发生改变了",newValue, oldValue);
     },{immediate:true})
 
 
@@ -1085,13 +1079,12 @@ export default {
 
 
 
-
 ##### 数组写法（监视多个属性）：监视ref托管的多个响应式数据
 
 ```html
 <template>
   <span>当前名字为: {{name}}</span>
-  <br>
+
   <button @click="name += '!'">改变name</button>
 </template>
 
@@ -1106,15 +1099,16 @@ export default {
 
   setup(){
 
-    // 准备数据 - 用ref托管
+    // 准备数据    用ref托管
     let num = ref(0)
 
     let name = ref('紫邪情')
 
-    // 监视ref托管的多个响应式数据 - 变化就在这里 监事的是谁？采用数组写法即可
-    watch([num,name],(newValue,oldValue)=>{
-      console.log("num 和 name的值发生改变了",newValue,oldValue);
+    // 监视ref托管的多个响应式数据    变化就在这里 监事的是谁？采用数组写法即可
+    watch([num, name], (newValue, oldValue)=>{
+      console.log("num 和 name的值发生改变了",newValue, oldValue);
     },{immediate:true})
+
     return {
       num,name
     }
@@ -1133,12 +1127,12 @@ export default {
 
 ```html
 <template>
-  姓名: <input type="text" v-model="person.name"> <br>
-  性别: <input type="text" v-model="person.sex"> <br>
+  姓名: <input type="text" v-model="person.name">
+  性别: <input type="text" v-model="person.sex">
   地址: <input type="text" v-model="person.address.detailed.value">
 
-  <span>姓名: {{person.name}}</span> <br>
-  <span>性别: {{person.sex}}</span> <br>
+  <span>姓名: {{person.name}}</span>
+  <span>性别: {{person.sex}}</span>
   <span>地址: {{person.address.detailed.value}}</span>
 </template>
 
@@ -1163,8 +1157,8 @@ export default {
     })
 
     // 监视reactive托管的一个响应式数据中的全部属性
-    watch(person,(newValue,oldValue)=>{
-      console.log("person被修改了", newValue,oldValue);
+    watch(person, (newValue, oldValue)=>{
+      console.log("person被修改了", newValue, oldValue);
     })
 
     return {
@@ -1175,7 +1169,7 @@ export default {
 </script>
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024979-444371739.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013153-1592380799.png)
 
 
 
@@ -1185,11 +1179,11 @@ export default {
 
 > 还有一种坑，就是：此种类型是强制开启了深度监视，即：配置`deep:false`不顶用
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025386-1538670457.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013417-1949829775.png)
 
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025728-32251890.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134013527-1941802744.png)
 
 
 
@@ -1197,39 +1191,37 @@ export default {
 
 ```javascript
 // 类型二、监视reactive托管的一个响应式数据中的某一个属性
-/* 
+/*
   奇葩的地方：
       1、要监视的这个属性需要写成函数式 ()=> person.name
-      2、可以争取获取newValue、oldValue
+      2、可以正确获取newValue、oldValue
 */
-watch(()=> person.name , (newValue,oldValue)=>{
-  console.log("person中的name属性被修改了",newValue,oldValue);
+watch(()=> person.name , (newValue, oldValue)=>{
+  console.log("person中的name属性被修改了",newValue, oldValue);
 })
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024840-1679395242.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012260-1503893239.png)
 
 
 
 
 
-\
+
 
 ##### 函数式数组写法：监视reactive托管的一个响应式数据中的某些属性
 
 ```javascript
 // 类型三、监视reactive托管的一个响应式数据中的某些属性
-/* 
+/*
   奇葩的地方：
       1、监视的多个属性需要使用数组套起来
       2、数组中的每一个属性需要写成函数式
 */
-watch([()=> person.name , ()=> person.sex] , (newValue,oldValue)=>{
-  console.log("person中的name和sex属性被修改了",newValue,oldValue);
+watch([()=> person.name , ()=> person.sex] , (newValue, oldValue)=>{
+  console.log("person中的name和sex属性被修改了",newValue, oldValue);
 })
 ```
-
-
 
 
 
@@ -1239,25 +1231,24 @@ watch([()=> person.name , ()=> person.sex] , (newValue,oldValue)=>{
 
 ```javascript
 // 类型四、监视reactive托管的一个响应式数据中的某个属性，但：此属性又套娃了
-/* 
+/*
   奇葩的地方：
       1、需要开启深度监视 即：deep:true 又生效了
       2、不加 deep:true 配置，代码会无效
 */
-watch(()=> person.address , (newValue,oldValue)=>{
-  console.log("person中的address属性被修改了",newValue,oldValue);
+watch(()=> person.address , (newValue, oldValue)=>{
+  console.log("person中的address属性被修改了",newValue, oldValue);
 },{deep:true})
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026182-492050419.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012924-544965501.png)
 
 
 
 
 
 但是：如果不加`deep:true`配置呢？
-
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025052-2008486894.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012136-576548456.png)
 
 
 
@@ -1272,7 +1263,7 @@ watch(()=> person.address , (newValue,oldValue)=>{
 > 注：在vue3中可以同时配置多个watch，而在vue2中配置重复的，那只有前者有效。
 
 ```javascript
-// 准备数据 - 用reactive托管
+// 准备数据    用reactive托管
 let person = reactive({
   name: '紫邪情',
   sex: '女',
@@ -1290,8 +1281,8 @@ let person = reactive({
       1、无法正确获得oldValue的值【PS：因newValue和oldValue的值一样】
       2、简直强制开启了深度监视 【PS：即deep:false配置无效】
 */
-watch(person,(newValue,oldValue)=>{
-  console.log("person被修改了", newValue,oldValue);
+watch(person, (newValue, oldValue)=>{
+  console.log("person被修改了", newValue, oldValue);
 },{deep:false})
 /*
   如：这里关闭深度监视 理论上：应该监视不到address.detailed.value
@@ -1304,10 +1295,10 @@ watch(person,(newValue,oldValue)=>{
 /*
   奇葩的地方：
       1、要监视的这个属性需要写成函数式 ()=> person.name
-      2、可以争取获取newValue、oldValue
+      2、可以正确获取newValue、oldValue
 */
-watch(()=> person.name , (newValue,oldValue)=>{
-  console.log("person中的name属性被修改了",newValue,oldValue);
+watch(()=> person.name , (newValue, oldValue)=>{
+  console.log("person中的name属性被修改了",newValue, oldValue);
 })
 
 
@@ -1318,8 +1309,8 @@ watch(()=> person.name , (newValue,oldValue)=>{
       1、监视的多个属性需要使用数组套起来
       2、数组中的每一个属性需要写成函数式
 */
-watch([()=> person.name , ()=> person.sex] , (newValue,oldValue)=>{
-  console.log("person中的name和sex属性被修改了",newValue,oldValue);
+watch([()=> person.name , ()=> person.sex] , (newValue, oldValue)=>{
+  console.log("person中的name和sex属性被修改了",newValue, oldValue);
 })
 
 
@@ -1328,10 +1319,10 @@ watch([()=> person.name , ()=> person.sex] , (newValue,oldValue)=>{
 /*
   奇葩的地方：
       1、需要开启深度监视 即：deep:true 又生效了
-      2、不加 deep:true配置，代码会无效
+      2、不加 deep:true 配置，代码会无效
 */
-watch(()=> person.address , (newValue,oldValue)=>{
-  console.log("person中的address属性被修改了",newValue,oldValue);
+watch(()=> person.address , (newValue, oldValue)=>{
+  console.log("person中的address属性被修改了",newValue, oldValue);
 },{deep:true})
 
 return {
@@ -1347,16 +1338,16 @@ return {
 
 ### watchEffect() 智能监视函数
 
-> 注：此种监视对应ref托管 和 reactive托管都可以监视到。
+> 注：此种监视对ref托管 和 reactive托管都可以监视到。
 
 ```html
 <template>
-  姓名: <input type="text" v-model="person.name"> <br>
-  性别: <input type="text" v-model="person.sex"> <br>
+  姓名: <input type="text" v-model="person.name"> 
+  性别: <input type="text" v-model="person.sex"> 
   地址: <input type="text" v-model="person.address.detailed.value">
 
-  <span>姓名: {{person.name}}</span> <br>
-  <span>性别: {{person.sex}}</span> <br>
+  <span>姓名: {{person.name}}</span>
+  <span>性别: {{person.sex}}</span>
   <span>地址: {{person.address.detailed.value}}</span>
 </template>
 
@@ -1382,9 +1373,9 @@ export default {
     })
 
     // 2、使用watchEffect函数对响应式数据进行智能监视
-    /* 
+    /*
       1、不需要指名要监视谁
-      2、不需要newValue 和 oldValue【PS：因为都不知道要监视谁 】
+      2、不需要newValue 和 oldValue【PS：因为都不知道要监视谁】
     */
     watchEffect(()=>{
       // 所谓智能：就体现在这里面的函数体中
@@ -1421,8 +1412,8 @@ watchEffect 函数的套路是：不用指明要监视哪个属性，回调中�
 
 watchEffect 函数 和 Computed 函数有点像：
 
-- Computed 函数注重：计算出来的值 【PS：回调函数的返回值 】 ，所以必须写返回值。
-- watchEffect 函数注重：过程 【PS：回调函数的函数体 】，所以不用写返回值。
+- Computed 函数注重：计算出来的值 【PS：回调函数的返回值】 ，所以必须写返回值。
+- watchEffect 函数注重：过程 【PS：回调函数的函数体】，所以不用写返回值。
 
 
 
@@ -1432,8 +1423,7 @@ watchEffect 函数 和 Computed 函数有点像：
 
 和vue2的生命周期差不多，只是需要注意一些点而已
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026566-1700868154.png)
-
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134014593-83029070.png)
 
 
 
@@ -1442,7 +1432,7 @@ watchEffect 函数 和 Computed 函数有点像：
 
 > 对比vue2中的生命周期，vue3中改动的地方，如下所示：
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025434-1865858250.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134011919-963487905.png)
 
 
 
@@ -1454,7 +1444,7 @@ watchEffect 函数 和 Computed 函数有点像：
 
 
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140024922-645088242.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134012318-1712891160.png)
 
 
 
@@ -1462,7 +1452,7 @@ watchEffect 函数 和 Computed 函数有点像：
 
 > vue3中生命周期的写法问题
 
-1. 配置项写法：和name、`setup()`保持平级，写法就是：按照官网中说的哪些名字直接写即可。
+1. 配置项写法：和 `name`、`setup()`保持平级，写法就是：按照官网中说的那些名字直接写即可。
 
 ```javascript
 <script>
@@ -1472,18 +1462,18 @@ watchEffect 函数 和 Computed 函数有点像：
 
       setup() {},
 
-      // vue3中的生命周期 - 配置项写法 【PS：和name、setup保持平级即可 】
-      beforeCreate(){ console.log("------beforeCreate-----"); },
-      created(){ console.log("------created-----"); },
-          
-      beforeMount(){ console.log("------beforeMount-----"); },
-      mounted(){ console.log("------mounted-----"); },
-          
-      beforeUpdate(){ console.log("------beforeUpdate-----"); },
-      updated(){ console.log("------updated-----"); },
-          
-      beforeUnmount(){ console.log("------beforeUnmount-----"); },
-      unmounted(){ console.log("------unmounted-----"); },
+      // vue3中的生命周期    配置项写法 【PS：和name、setup保持平级即可】
+      beforeCreate(){console.log("------beforeCreate-----"); },
+      created(){console.log("------created-----"); },
+
+      beforeMount(){console.log("------beforeMount-----"); },
+      mounted(){console.log("------mounted-----"); },
+
+      beforeUpdate(){console.log("------beforeUpdate-----"); },
+      updated(){console.log("------updated-----"); },
+
+      beforeUnmount(){console.log("------beforeUnmount-----"); },
+      unmounted(){console.log("------unmounted-----"); },
     }
 </script>
 ```
@@ -1512,9 +1502,9 @@ export default {
   name: 'App',
 
   setup() {
-    
-    // 另一种写法 - 组合式API写法 - 万事引入对应的函数嘛
-    /* 
+
+    // 另一种写法    组合式API写法    万事引入对应的函数嘛
+    /*
       只是注意：setup()就相当于beforeCreate() 和 created()
     */
 
@@ -1540,19 +1530,20 @@ export default {
 
 
 
+
 ### Vue3中的函数封装思想
 
 这个玩意儿就相当于是vue2中的mixin混入，也是为了抽离代码而已。
 
 1, 新建一个封装函数的js文件。
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026520-982557757.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134014230-1967393970.png)
 
 
 
 2. 在需要的地方引入并使用。
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140025852-715592738.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134014191-670588776.png)
 
 
 
@@ -1562,11 +1553,12 @@ export default {
 
 
 
-### Vue3中的 toRef 和 toRefs 数据拆分函数
+### toRef() 和 toRefs() 数据拆分函数：交出数据
 
-> 这两个东西就是为了解决在模板中渲染时稍微方便点而已，因为在模板中使用插值表达式 xxx.xxxx.xxx 这种取值并不合理，插值表达式的宗旨就是简单取值嘛，所以通过 xxx.xxxx.xxx 的方式并不好。
+> 这两个东西就是为了解决在模板中渲染时稍微方便点而已，因为在模板中使用插值表达式 `xxx.xxxx.xxx` 这种取值并不合理，插值表达式的宗旨就是简单取值嘛，所以通过 `xxx.xxxx.xxx` 的方式并不好。
 
-当然：toRef和toRefs也不一定能够完全解决插值表达式的问题【PS：主要看自己设计 】。
+当然：toRef和toRefs也不一定能够完全解决插值表达式的问题【PS：主要看自己设计】。
+
 
 
 
@@ -1580,9 +1572,8 @@ export default {
   <h2>性别: {{person.sex}}</h2>
   <h2>地址: {{person.address.value}}</h2>
   <!-- 上面这种方式并不好，简化 -->
-  <br>
-  <br>
-  <h1>使用toRef和toRefs函数进行简化</h1> <br>
+
+  <h1>使用toRef和toRefs函数进行简化</h1> 
   <!-- 下面就可以直接简写了 -->
   <h2>姓名: {{name}}</h2>
   <h2>性别: {{sex}}</h2>
@@ -1610,14 +1601,14 @@ export default {
       person,
       // 2、使用toRef()函数
       // 使用toRef函数交出单个数据
-      /* 
+      /*
         第一个参数： 交出的数据是哪个对象中的
         第二个参数： 要交出的是对象中的哪个属性
       */
-      name: toRef(person,'name'),
-      sex: toRef(person,'sex'),
+      name: toRef(person, 'name'),
+      sex: toRef(person, 'sex'),
       // 这里需要注意一下：要交出的对象里面又套娃了，那么：第一个参数需要再进一步
-      address: toRef(person.address,'value'),
+      address: toRef(person.address, 'value'),
     }
   },
 }
@@ -1636,9 +1627,8 @@ export default {
   <h2>性别: {{person.sex}}</h2>
   <h2>地址: {{person.address.value}}</h2>
   <!-- 上面这种方式并不好，简化 -->
-  <br>
-  <br>
-  <h1>使用toRefs函数进行简化</h1> <br>
+
+  <h1>使用toRefs函数进行简化</h1> 
   <!-- 下面就可以直接简写了 -->
   <h2>姓名: {{name}}</h2>
   <h2>性别: {{sex}}</h2>
@@ -1688,10 +1678,10 @@ export default {
 使用 `toRef()` 举例，去看一下它长什么样子？toRefs()函数是一样的原理。
 
 ```javascript
-console.log( toRef(person,'name') );
+console.log(toRef(person, 'name'));
 ```
 
-![image](https://img2023.cnblogs.com/blog/2421736/202406/2421736-20240624140026506-1760429252.png)
+![image](https://img2023.cnblogs.com/blog/2421736/202407/2421736-20240716134015090-1668862190.png)
 
 
 
@@ -1719,8 +1709,6 @@ console.log( toRef(person,'name') );
 
 
 
-
-
 ## 其它 Composition API
 
 ### shallowReactive 与 shallowRef
@@ -1736,6 +1724,7 @@ shallowRef：只处理基本数据类型的响应式, 不进行对象的响应�
 
 
 
+
 ### readonly 与 shallowReadonly
 
 readonly: 让一个响应式数据变为只读的（深只读）。
@@ -1743,6 +1732,7 @@ readonly: 让一个响应式数据变为只读的（深只读）。
 shallowReadonly：让一个响应式数据变为只读的（浅只读）。
 
 应用场景: 不希望数据被修改时。
+
 
 
 
@@ -1764,6 +1754,7 @@ markRaw：
 
 
 
+
 ### customRef
 
 作用：创建一个自定义的 ref，并对其依赖项跟踪和更新触发进行显式控制。
@@ -1778,15 +1769,16 @@ markRaw：
 
 <script>
 	import {ref,customRef} from 'vue'
+
 	export default {
 		name:'Demo',
 		setup(){
 			// let keyword = ref('hello') //使用Vue准备好的内置ref
 			// 自定义一个myRef
-			function myRef(value,delay){
+			function myRef(value, delay){
 				let timer
 				// 通过customRef去实现自定义
-				return customRef((track,trigger)=>{
+				return customRef((track, trigger)=>{
 					return{
 						get(){
 							track() // 告诉Vue这个value值是需要被“追踪”的
@@ -1802,7 +1794,7 @@ markRaw：
 					}
 				})
 			}
-			let keyword = myRef('hello',500) // 使用程序员自定义的ref
+			let keyword = myRef('hello', 500) // 使用程序员自定义的ref
 			return {
 				keyword
 			}
@@ -1826,8 +1818,8 @@ markRaw：
    ```js
    setup(){
    	......
-       let car = reactive({name:'奔驰',price:'40万'})
-       provide('car',car)
+       let car = reactive({name:'奔驰', price:'40万'})
+       provide('car', car)
        ......
    }
    ```
@@ -1835,15 +1827,13 @@ markRaw：
 2. 后代组件中：
 
    ```js
-   setup(props,context){
+   setup(props, context){
    	......
        const car = inject('car')
        return {car}
    	......
    }
    ```
-
-
 
 
 
@@ -1932,7 +1922,7 @@ markRaw：
 
 ### Teleport
 
-- 什么是Teleport？—— `Teleport` 是一种能够将我们的<strong style="color:#DD5145">组件html结构</strong>移动到指定位置的技术。
+- 什么是Teleport？ `Teleport` 是一种能够将我们的<strong style="color:#DD5145">组件html结构</strong>移动到指定位置的技术。
 
   ```html
   <teleport to="移动位置">
@@ -1957,11 +1947,12 @@ markRaw：
 
     ```js
     import {defineAsyncComponent} from 'vue'
+    
     const Child = defineAsyncComponent(()=>import('./components/Child.vue'))
     ```
-
+  
   - 使用```Suspense```包裹组件，并配置好```default``` 与 ```fallback```
-
+  
     ```html
     <template>
     	<div class="app">
@@ -2083,4 +2074,4 @@ data选项应始终被声明为一个函数。
 
   
 
-  <strong style="color:red">移除</strong>过滤器（filter）：过滤器虽然这看起来很方便，但它需要一个自定义语法，打破大括号内表达式是 “只是 JavaScript” 的假设，这不仅有学习成本，而且有实现成本！建议用方法调用或计算属性去替换过滤器。
+  <strong style="color:red">移除</strong>过滤器（filter）：过滤器虽然看起来很方便，但它需要一个自定义语法，打破大括号内表达式是 “只是 JavaScript” 的假设，这不仅有学习成本，而且有实现成本！建议用方法调用或计算属性去替换过滤器。

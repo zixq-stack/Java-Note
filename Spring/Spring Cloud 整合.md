@@ -88,7 +88,7 @@ SOA指的是Service-OrientedArchitecture，即面向服务架构
 
 这样不同服务之间调用就可以通过统一接口进行调用了，如：用户服务需要调用订单服务，那么用户服务去找统一接口，然后由统一接口去调用订单服务，从而将订单服务中需要的结果通过统一接口的http+json或其他两种格式返回给用户服务，这样订单服务就是服务提供者，用户服务就是服务消费者，而统一接口就相当于是服务的注册与发现
 
-- 注意：上面这段话很重要，和后面要玩的微服务框架SpringCloud技术栈有关
+> 注意：上面这段话很重要，和后面要玩的微服务框架SpringCloud技术栈有关
 
 学过设计模式的话，上面这种不就类似行为型设计模式的“中介者模式”吗
 
@@ -142,7 +142,7 @@ SOA指的是Service-OrientedArchitecture，即面向服务架构
 
 SpringCloud中文官网：https://www.springcloud.cc/spring-cloud-greenwich.html#netflix-ribbon-starter
 
-SpringCloud英文网：https://spring.io/projects/spring-cloud
+SpringCloud英文网：https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients
 
 ## Eureka是什么？
 
@@ -314,7 +314,9 @@ eureka:
 #      enable-self-preservation: true
 ```
 
-- **注：**在SpringCloud中配置文件YAML有两种方式，一种是 `application.yml ` 另一种是 `bootstrap.yml `，这个知识后续Nacos注册中心会用到，区别去这里：https://www.cnblogs.com/sharpest/p/13678443.html
+
+
+> 注：在SpringCloud中配置文件YAML有两种方式，一种是 `application.yml ` 另一种是 `bootstrap.yml `，这个知识后续Nacos注册中心会用到，区别去这里：https://www.cnblogs.com/sharpest/p/13678443.html
 
 
 
@@ -417,7 +419,7 @@ public class UserApplication {
 }
 ```
 
-在eureka client启动类中，为什么有些人会加 `@EnableEurekaClient` 注解，而有些人不会加上，为什么？
+在eureka client启动类中，有些人会加 `@EnableEurekaClient` 注解，而有些人不会加上，为什么？除了显示声明还有其他原因吗？？
 
 要弄这个问题，首先看yml中的配置，有些是在yml中做了一个操作：
 
@@ -433,7 +435,7 @@ eureka:
 
 既然上面配置默认值都是true，那还有必要在启动类中加入 `@EnableEurekaClient` 注解吗？
 
-答案是根本不用加，加了也是多此一举(前提：yml配置中没有手动地把值改为false)，具体原因看源码：答案就在Eureka client对应的自动配置类 `EurekaClientAutoConfiguration 中`
+答案是根本不用加，加了也是多此一举(前提：yml配置中没有手动地把值改为false)，具体原因看源码：答案就在Eureka client对应的自动配置类 `EurekaClientAutoConfiguration` 中
 
 <img src="https://img2023.cnblogs.com/blog/2421736/202305/2421736-20230523140658133-980195700.png" alt="image-20230523140656713" />
 

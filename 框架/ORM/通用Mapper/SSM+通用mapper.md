@@ -6,13 +6,9 @@
 
 通用mapper是MyBatis的一个插件，是pageHelper的同一个作者进行开发的
 
-**作者gitee地址：**https://gitee.com/free
-
-**github地址：**https://github.com/abel533/Mapper
-
 **通用mapper官网地址：**https://gitee.com/free/Mapper
 
-**通用mapper文档介绍地址：**https://gitee.com/free/Mapper/wikis/Home
+**文档地址：** https://mapper.mybatis.io/
 
 
 
@@ -20,7 +16,7 @@
 
 ## 准备工作
 
-**建测试表**
+1、建测试表
 
 ```sql
 CREATE TABLE `user` (
@@ -38,7 +34,7 @@ insert  into `user`(`user_id`,`user_name`,`user_sex`,`user_salary`) values
 (3,'张三','男',999.99);
 ```
 
-**创建Spring项目 并 导入依赖**
+2、创建Spring项目 并 导入依赖
 
 ```xml
 <!--  spring整合mybatis的依赖  -->
@@ -117,7 +113,7 @@ insert  into `user`(`user_id`,`user_name`,`user_sex`,`user_salary`) values
 </dependencies>
 ```
 
-**编写SSM框架整合的xml文件**
+3、编写SSM框架整合的xml文件
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
