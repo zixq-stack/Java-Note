@@ -6,7 +6,7 @@
 下载Vue.js，链接：https://cn.vuejs.org/v2/guide/installation.html。开发版和生产版就字面意思。
 
 开发工具：VSCode。
-- vscode中的插件和设置自行百度进行配置。搜索vscode初始配置即可，然后后续的需要时百度进行配置即可。
+- VSCode中的插件和设置自行百度进行配置。搜索VSCode初始配置即可，然后后续的需要时百度进行配置即可。
 
 - 给浏览器安装vuejs devtool工具，可以“魔法”上网的话直接google商店搜索Vue即可（注意区分Vue2和Vue3），不能的话去阿里云盘链接: https://www.aliyundrive.com/s/JtHVq5SX3po 
 
@@ -89,7 +89,7 @@ for（）{}
 
 
 
-### 认识v-bind - 数据单向绑定
+### 认识v-bind：数据单向绑定
 
 ```html
 <!DOCTYPE html>
@@ -108,8 +108,7 @@ for（）{}
         <!-- 常规写法：v-bind 绑定的是属性 -->
         <a v-bind:href="url"></a> 
             <!-- 
-				多层嵌套取值：插值表达式   取的东西就是下面Vue实例new Vue({})
-                data中的东西，可以理解为在找寻集合中的元素
+				多层嵌套取值：插值表达式   取的东西就是下面Vue实例new Vue({}) data中的东西，可以理解为在找寻集合中的元素
             -->
         <h3>{{person.name}}</h3>
         <!-- 简写 -->
@@ -125,7 +124,7 @@ for（）{}
     new Vue({
         el: "#app",     // el指定的是为哪一个容器服务  值就是一个css中的选择器
         data: {         // data存储的就是数据，这些数据是供el指定的容器去用的
-            url: "https://www.cnblogs.com/xiegongzi/",
+            url: "https://www.cnblogs.com/zixq/",
 
             person: {
                 name: "紫邪情",
@@ -143,10 +142,10 @@ for（）{}
 
 > 小结：Vue模板有两大类
 
-1. 插值语法，前面已经见到了，就是：`{{ 取data中保存的数据 }}`。
+1. 插值语法，前面已经见到了，就是：`{{取data中保存的数据}}`。
 
 - 功能：解析标签体的内容。
-- 注意：{{}}中的东西必须是js表达式。
+- 注意：`{{}}`中的东西必须是js表达式。
 
 2. 指令语法：
 
@@ -160,7 +159,7 @@ for（）{}
 
 ### 认识Vue的数据绑定
 
-> 这里需要了解mvvm模式，要理解，可以先参照java中的mvc模式，然后再了解MVVM，具体内容自行先百度了解一下。@紫邪情
+> 这里需要了解mvvm模式，要理解，可以先参照Java中的MVC模式，然后再了解MVVM，具体内容自行先百度了解一下。@紫邪情
 
 
 
@@ -339,7 +338,7 @@ for（）{}
         },
        });
 
-       console.log( vm );
+       console.log(vm);
     </script>
   </body>
 </html>
@@ -411,7 +410,7 @@ for（）{}
       			sex	为具体修改的对象中的哪个属性
       			{} 对修改属性的配置
       */
-       Object.defineProperty( person , 'sex' , {
+       Object.defineProperty(person , 'sex' , {
         //  以下就是{}中的相关配置
         //  value: '男',
         //  enumerable: true,    // 这个sex是否可以被遍历

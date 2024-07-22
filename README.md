@@ -17,7 +17,7 @@
 
 [Go语言编程【@人民邮电出版社：许式伟 等著】](https://github.com/zixq-stack/Java-Note/blob/master/Go%E8%AF%AD%E8%A8%80/Go%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8B%E3%80%90%40%E4%BA%BA%E6%B0%91%E9%82%AE%E7%94%B5%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E8%AE%B8%E5%BC%8F%E4%BC%9F%20%E7%AD%89%E8%91%97%E3%80%91.mobi)。文件格式：mobi
 
-> mobi格式是电子书格式，这种格式直接使用WPS即可打开（WPS个人版除外），自己亦可使用其他软件打开。
+> mobi格式是电子书格式，这种格式直接使用WPS即可打开（WPS专业版除外），自己亦可使用其他软件打开。
 
 
 
@@ -63,7 +63,7 @@ JVM（Java虚拟机）：
 
 # Python
 
-[Python3程序开发指南【@人民邮电出版社：王弘博 等译 - 第2版】)](https://github.com/zixq-stack/Java-Note/blob/master/Python/Python3%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97%E3%80%90%40%E4%BA%BA%E6%B0%91%E9%82%AE%E7%94%B5%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E7%8E%8B%E5%BC%98%E5%8D%9A%20%E7%AD%89%E8%AF%91%20-%20%E7%AC%AC2%E7%89%88%E3%80%91.pdf)。文件格式：PDF
+[Python3程序开发指南【@人民邮电出版社：王弘博 等译 - 第2版】](https://github.com/zixq-stack/Java-Note/blob/master/Python/Python3%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97%E3%80%90%40%E4%BA%BA%E6%B0%91%E9%82%AE%E7%94%B5%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E7%8E%8B%E5%BC%98%E5%8D%9A%20%E7%AD%89%E8%AF%91%20-%20%E7%AC%AC2%E7%89%88%E3%80%91.pdf)。文件格式：PDF
 
 
 
@@ -251,7 +251,7 @@ MongoDB:
 
 消息队列：
 
-- [rabbitMQ](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RabbitMQ/rabbitMQ.md)。文件格式：md
+- [RabbitMQ](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RabbitMQ/rabbitMQ.md)。文件格式：md
 - [Kafka权威指南【@人民邮电出版社：薛命灯 译】](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/kafaka/Kafka%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%90%40%E4%BA%BA%E6%B0%91%E9%82%AE%E7%94%B5%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E8%96%9B%E5%91%BD%E7%81%AF%20%E8%AF%91%E3%80%91.pdf)。文件格式：PDF
 - [RocketMQ实战与原理解析【@机械工业出版社：杨开元 著】](https://github.com/zixq-stack/Java-Note/blob/master/%E6%A1%86%E6%9E%B6/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RocketMQ/RocketMQ%E5%AE%9E%E6%88%98%E4%B8%8E%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90%E3%80%90%40%E6%9C%BA%E6%A2%B0%E5%B7%A5%E4%B8%9A%E5%87%BA%E7%89%88%E7%A4%BE%EF%BC%9A%E6%9D%A8%E5%BC%80%E5%85%83%20%E8%91%97%E3%80%91.mobi)。文件格式：mobi
 
@@ -297,7 +297,7 @@ ORM：
 
 [Maven 笔记整理](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/Maven%20%E7%AC%94%E8%AE%B0.md)。文件格式：md
 
-[Git：廖雪峰](https://www.liaoxuefeng.com/wiki/896043488029600)
+[Git：@廖雪峰](https://www.liaoxuefeng.com/wiki/896043488029600)
 
 [GitLab](https://github.com/zixq-stack/Java-Note/blob/master/%E9%83%A8%E7%BD%B2%2B%E5%B7%A5%E5%85%B7/GitLab.md)。文件格式：md
 
