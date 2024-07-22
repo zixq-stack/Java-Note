@@ -335,6 +335,10 @@ Linux：
 
 # 面经+简历模板
 
+[简历、面试、试用期、转正](https://github.com/zixq-stack/Java-Note/blob/master/%E9%9D%A2%E7%BB%8F%E4%B8%8E%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF/%E7%AE%80%E5%8E%86%E3%80%81%E9%9D%A2%E8%AF%95%E3%80%81%E8%BD%AC%E6%AD%A3.md)。文件格式：md
+
+
+
 [简历模板](https://github.com/zixq-stack/Java-Note/tree/master/%E9%9D%A2%E7%BB%8F%E4%B8%8E%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF/%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF)
 
 - 适合中文的简历模板收集（推荐，开源免费）：[https://github.com/dyweb/awesome-resume-for-chineseopen in new window](https://github.com/dyweb/awesome-resume-for-chinese)
